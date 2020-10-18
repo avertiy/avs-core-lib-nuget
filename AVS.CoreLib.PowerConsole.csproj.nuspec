@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>AVS.CoreLib.PowerConsole</id>
+    <version>1.0.0</version>
+    <authors>Artem Vertii</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">GPL</license>
+    <projectUrl>https://github.com/avertiy/avs-core-lib-nuget/</projectUrl>
+    <iconUrl>https://github.com/avertiy/avs-core-lib-nuget/blob/main/AVS.CoreLib.PowerConsole/command-line-icon.jpg</iconUrl>
+    <description>Power Console extenions</description>
+    <releaseNotes>This is a first realease version of the PowerConsole library.</releaseNotes>
+    <copyright>Copyright 2020</copyright>
+    <tags>Console PowerConsole ConsoleTools</tags>
+    <dependencies>
+      <group targetFramework=".NETStandard2.1">
+        <dependency id="SampleDependency" version="1.0.0" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>
