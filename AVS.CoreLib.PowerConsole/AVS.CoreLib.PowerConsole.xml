@@ -1,0 +1,153 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AVS.CoreLib.PowerConsole</name>
+    </assembly>
+    <members>
+        <member name="M:AVS.CoreLib.PowerConsole.Extensions.ServiceCollectionExtensions.AddPowerConsoleFormatter(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Func{System.FormattableString,System.String})">
+            <summary>
+            Sets formatter for PowerConsole.PrintF functionality
+            use string.Format analog, for example X.Format from AVS.CoreLib.Text
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.PowerConsole.PowerConsole.NewLineFlag">
+            <summary>
+            Indicates whether new line (\r\n) has been just written 
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.PowerConsole.PowerConsole.BeepOnMessageStatus">
+            <summary>
+            Status of the message will produce beep sound when written to console
+            <see cref="M:AVS.CoreLib.PowerConsole.PowerConsole.WriteLine(System.String,AVS.CoreLib.PowerConsole.MessageStatus,System.String)"/>
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "P:AVS.CoreLib.PowerConsole.PowerConsole.Format" -->
+        <member name="M:AVS.CoreLib.PowerConsole.PowerConsole.PrintF(System.FormattableString,System.ConsoleColor,System.Boolean)">
+            <summary>
+            Using color argument create a <see cref="T:AVS.CoreLib.PowerConsole.Utilities.ColorScheme"/> and apply it
+            Format string calling <see cref="P:AVS.CoreLib.PowerConsole.PowerConsole.Format"/> delegate
+            Create a <see cref="T:AVS.CoreLib.PowerConsole.Utilities.ColorFormattedString"/> and print it
+            Restore initial color(s)
+            </summary>
+            <remarks>
+            in case you use X.Format
+            strings staring with @ symbol are treated as strings with expression(s) and processed by TextProcessor(s)
+            </remarks>
+        </member>
+        <member name="M:AVS.CoreLib.PowerConsole.PowerConsole.PrintF(System.FormattableString,System.Boolean)">
+            <summary>
+            Format string calling <see cref="P:AVS.CoreLib.PowerConsole.PowerConsole.Format"/> delegate
+            than create a <see cref="T:AVS.CoreLib.PowerConsole.Utilities.ColorFormattedString"/> and print it
+            </summary>
+            <remarks>
+            in case you use X.Format
+            strings staring with @ symbol are treated as strings with expression(s) and processed by TextProcessor(s)
+            </remarks>
+        </member>
+        <member name="M:AVS.CoreLib.PowerConsole.PowerConsole.PrintF(AVS.CoreLib.PowerConsole.Utilities.ColorFormattedString,System.Boolean)">
+            <summary>
+            Print color formatted string (does a console color magic) 
+            e.g. $"{1:-Red} {"abc":--DarkGray}"
+            where 
+            -Red makes font color Red
+            --DarkGray makes bg color DarkGray
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.PowerConsole.PowerConsole.ReadLine(System.String,System.ConsoleColor,System.String)">
+            <summary>
+            Writes a message with options and wait for the user input
+            </summary>
+            <param name="message">Message text to be written in console output</param>
+            <param name="color">Console color to be used to write only tis line of text</param>
+            <param name="timeFormat">Display format for the date and time</param>
+            <returns>Returns entered value from the user</returns>
+        </member>
+        <member name="M:AVS.CoreLib.PowerConsole.PowerConsole.ReadLine(System.String,AVS.CoreLib.PowerConsole.MessageStatus,System.String)">
+            <summary>
+            Writes a message with options and wait for the user input
+            </summary>
+            <param name="message">Message text to be written in console output</param>
+            <param name="status">Message status to be used to output message text</param>
+            <param name="timeFormat">Display format for the date and time</param>
+            <returns>Returns entered value from the user</returns>
+        </member>
+        <member name="M:AVS.CoreLib.PowerConsole.PowerConsole.ReadLine``1(System.String,System.ConsoleColor,System.String)">
+            <summary>
+            Writes a message with options and wait for the user input
+            </summary>
+            <typeparam name="T">Generic type to validate the input and request for re-entering if eneted value is invalid</typeparam>
+            <param name="message">Message text to be written in console output</param>
+            <param name="color">Console color to be used to write only tis line of text</param>
+            <param name="timeFormat">Display format for the date and time</param>
+            <returns>Returns entered value from the user</returns>
+        </member>
+        <member name="M:AVS.CoreLib.PowerConsole.PowerConsole.WriteLine(System.String,System.ConsoleColor,System.String)">
+            <summary>
+            Writes the specified string value, followed by the current line terminator,
+            to the standard output stream.
+            </summary>
+            <param name="message">Message to be written to console output</param>
+            <param name="color">Color of message text</param>
+            <param name="timeFormat">Date and time format of the time written next to message in console output</param>
+        </member>
+        <member name="M:AVS.CoreLib.PowerConsole.PowerConsole.WriteLine(System.String,AVS.CoreLib.PowerConsole.MessageStatus,System.String)">
+            <summary>
+            Writes the specified string value, followed by the current line terminator,
+            to the standard output stream.
+            </summary>
+            <param name="message">Message to be written to console output</param>
+            <param name="status">status of the message to be written to console output</param>
+            <param name="timeFormat">Date and time format of the time written next to message in console output</param>
+        </member>
+        <member name="T:AVS.CoreLib.PowerConsole.MessageStatus">
+            <summary>
+            Basic enumeration of message statuses
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.PowerConsole.Utilities.ColorFormattedString">
+            <summary>
+            Color formatted string is a string that contains patterns $$text:-Color$
+            e.g. "$$text in red font:-Red$ any plain text $$text with blue background:--Blue$"
+            ColorFormattedString enumerates tuples (string plainText, ColorScheme scheme, string coloredText)
+            
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.PowerConsole.Utilities.ColorFormattedString.Regex">
+            <summary>
+            parses $$some text:-Color$
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.PowerConsole.Utilities.ColorHelper.TryParse(System.String,AVS.CoreLib.PowerConsole.Utilities.ColorScheme@)">
+            <summary>
+            Parse <see cref="T:AVS.CoreLib.PowerConsole.Utilities.ColorScheme"/> by its
+            short representation: `-ForegroundColor` or `--BackgroundColor`
+            or
+            full representation: `-ForegroundColor --BackgroundColor`
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.PowerConsole.Utilities.ColorScheme.op_Implicit(System.String)~AVS.CoreLib.PowerConsole.Utilities.ColorScheme">
+            <summary>
+            converts strings in format -Color or --Color into ColorScheme
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.PowerConsole.Utilities.ColorScheme.GetStatusColorScheme(AVS.CoreLib.PowerConsole.MessageStatus)">
+            <summary>
+            Gets the color for specific message status enumeration value
+            </summary>
+            <param name="status">Status of the message</param>
+            <returns>Console color for the passed message status enumeration value</returns>
+        </member>
+        <member name="T:AVS.CoreLib.PowerConsole.Utilities.ConsoleLocker">
+            <summary>
+            Synchronize output to console for multi threading flows,
+            remember and restore console color scheme <see cref="T:AVS.CoreLib.PowerConsole.Utilities.ColorScheme"/>
+            usage: using(var locker = ConsoleLocker.Create()){  console write operations..}
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.PowerConsole.Utilities.FontInfo">
+            <summary>
+            Console font info
+            </summary>
+        </member>
+    </members>
+</doc>

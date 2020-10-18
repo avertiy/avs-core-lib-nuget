@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Artem Vertii</Authors>
+    <Company>Artem Vertii</Company>
+    <PackageProjectUrl>https://github.com/avertiy/avs-core-lib-nuget</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/avertiy/avs-core-lib-nuget</RepositoryUrl>
+    <RepositoryType>public</RepositoryType>
+    <PackageTags>Console PowerConsole</PackageTags>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <FileVersion>1.0.1.0</FileVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>K:\WORK\AVS.NET-CORE\avs-core-lib\AVS.CoreLib.PowerConsole\AVS.CoreLib.PowerConsole.xml</DocumentationFile>
+    <NoWarn>1701;1702;1591</NoWarn>
+  </PropertyGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy /Y &quot;$(TargetDir)/$(TargetName).dll&quot; &quot;$(SolutionDir)/../_references/CoreLib/$(TargetName).dll&quot;&#xD;&#xA;copy /Y &quot;$(TargetDir)/$(TargetName).pdb&quot; &quot;$(SolutionDir)/../_references/CoreLib/$(TargetName).pdb&quot;&#xD;&#xA;copy /Y &quot;$(TargetDir)/$(TargetName).xml&quot; &quot;$(SolutionDir)/../_references/CoreLib/$(TargetName).xml&quot;" />
+  </Target>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions">
+      <HintPath>C:\Users\Home\.nuget\packages\microsoft.extensions.dependencyinjection.abstractions\2.1.0\lib\netstandard2.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
