@@ -42,23 +42,7 @@ namespace AVS.CoreLib.PowerConsole.Utilities
                 Console.BackgroundColor = Background;
             }
         }
-
-        /*public ColorScheme Set(ConsoleColor color)
-        {
-            _previous = Console.ForegroundColor;
-            Console.ForegroundColor = color;
-            Foreground = color;
-            return this;
-        }
-
-        public ColorScheme SetBackground(ConsoleColor color)
-        {
-            Console.BackgroundColor = color;
-            _previousBackground = Background;
-            Background = color;
-            return this;
-        }*/
-
+        
         public void Restore()
         {
             if (_previous.HasValue)

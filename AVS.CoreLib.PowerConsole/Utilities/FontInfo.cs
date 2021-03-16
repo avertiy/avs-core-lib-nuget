@@ -19,7 +19,7 @@ namespace AVS.CoreLib.PowerConsole.Utilities
 
         public override string ToString()
         {
-            return $"{FontName} [{FontSize};{FontWeight}]";
+            return $"{FontName} [{FontFamily} {FontSize};{FontWeight}]";
         }
     }
 }

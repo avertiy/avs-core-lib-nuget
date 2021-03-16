@@ -15,3 +15,16 @@ of useful console stuff:
  - printF - writing colored text to console empowered by custom formatter i.e. rich text formatting
 requires string.Format analog like X.Format to be added through service extensions: services.AddPowerConsoleFormatter(x=> X.Format(x)), 
 by default a standard string.Format is used i.e basic .NET formatting only
+
+
+# How to plusbish package to nuget
+
+https://docs.microsoft.com/en-us/nuget/quickstart/create-and-publish-a-package-using-visual-studio?tabs=netcore-cli
+
+1. Open a command line and change to the folder containing the .nupkg file.
+
+2. Run the following command, replacing the key value with your API key
+
+dotnet nuget push AVS.CoreLib.PowerConsole.1.0.0.nupkg --api-key APIKEY --source https://api.nuget.org/v3/index.json
+
+

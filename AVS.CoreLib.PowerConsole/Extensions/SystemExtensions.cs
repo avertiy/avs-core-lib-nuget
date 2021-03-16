@@ -22,7 +22,7 @@ namespace AVS.CoreLib.PowerConsole.Extensions
             foreach (var element in enumerable)
             {
                 var str = formatter == null ? element.ToString() : formatter(element);
-                if (inRow || str.Length > 10)
+                if (inRow || (count == 0 && str.Length > 10))
                 {
                     inRow = true;
                     sb.AppendLine();

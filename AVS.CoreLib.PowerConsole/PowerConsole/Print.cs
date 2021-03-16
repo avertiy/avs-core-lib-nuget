@@ -8,6 +8,16 @@ namespace AVS.CoreLib.PowerConsole
 {
     public static partial class PowerConsole
     {
+        public static void Print(string str, bool endLine = true)
+        {
+            Write(str);
+            if (endLine && NewLineFlag == false)
+            {
+                Console.WriteLine();
+                NewLineFlag = true;
+            }
+        }
+
         public static void Print(string str, ConsoleColor color, bool endLine = true)
         {
             Write(str, color);

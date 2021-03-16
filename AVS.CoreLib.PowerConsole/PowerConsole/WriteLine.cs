@@ -80,7 +80,7 @@ namespace AVS.CoreLib.PowerConsole
             WriteLine(str, MessageStatus.Debug, timeFormat);
         }
 
-        public static void WriteError(Exception ex, bool printStackTrace, string timeFormat = "yyyy-MM-dd hh:mm:ss.ff")
+        public static void WriteError(Exception ex, bool printStackTrace = true, string timeFormat = "yyyy-MM-dd hh:mm:ss.ff")
         {
             Write($"\r\n {ex.GetType().Name}: ", ConsoleColor.DarkRed);
             WriteLine(ex.Message, MessageStatus.Error, timeFormat);
