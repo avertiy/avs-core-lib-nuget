@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace AVS.CoreLib.PowerConsole.Extensions
@@ -12,6 +13,43 @@ namespace AVS.CoreLib.PowerConsole.Extensions
             return str.Substring(0, Math.Min(str.Length, maxLength));
         }
 
+        public static string ToArrayString<T>(this IEnumerable<T> enumerable, Func<T, string> formatter = null, bool addLength = true)
+        {
+            var sb = new StringBuilder("[");
+
+            var count = 0;
+            var inRow = false;
+            foreach (var element in enumerable)
+            {
+                var str = formatter == null ? element.ToString() : formatter(element);
+                if (inRow || str.Length > 10)
+                {
+                    inRow = true;
+                    sb.AppendLine();
+                    sb.Append(str);
+                    sb.Append(",");
+                }
+                else
+                {
+                    if (count > 0)
+                    {
+                        sb.Append(" ");
+                    }
+                    sb.Append(str);
+                    sb.Append(",");
+                }
+                count++;
+            }
+            sb.Length -= 1;
+            sb.Append("]");
+
+            if (addLength && count > 5)
+                sb.Append($"(#{count})");
+
+            return sb.ToString();
+        }
+
+        [Obsolete]
         public static string ToArrayString(this Array arr, bool addLength = true)
         {
             var sb = new StringBuilder("[");

@@ -30,12 +30,10 @@ namespace AVS.CoreLib.PowerConsole
             scheme.Restore();
         }
 
-        public static void Print(string message, Array arr, ConsoleColor color = ConsoleColor.Gray)
+        public static void Print<T>(string message, IEnumerable<T> arr, ConsoleColor color = ConsoleColor.Gray)
         {
             Print($"{message} {arr.ToArrayString()}", color);
         }
-
-        
 
         public static void PrintAllColors()
         {
@@ -48,10 +46,38 @@ namespace AVS.CoreLib.PowerConsole
             }
         }
 
+        public static void PrintArray<T>(IEnumerable<T> enumerable, Func<T, string> formatter = null, bool endLine = true)
+        {
+            Write(enumerable.ToArrayString(formatter));
+            if (endLine && NewLineFlag == false)
+            {
+                Console.WriteLine();
+                NewLineFlag = true;
+            }
+        }
+
         public static void PrintHeader(string header, ConsoleColor color = ConsoleColor.Cyan, string template = "==========", string lineIdentation = "\r\n\r\n")
         {
             var str = $"{lineIdentation}{template} {header} {template}{lineIdentation}";
             Print(str, color, false);
+        }
+        
+        public static void PrintTable<T>(IEnumerable<T> data, ConsoleColor color = ConsoleColor.White, bool endLine = true)
+        {
+            Print(Table.Create(data).ToString(), color, endLine);
+        }
+
+        public static void PrintTest(string message, bool test, int padRight, bool endLine = true)
+        {
+            Write(message.PadRight(padRight));
+            if (test)
+            {
+                Print("OK", ConsoleColor.Green, endLine);
+            }
+            else
+            {
+                Print("Fail", ConsoleColor.DarkRed, endLine);
+            }
         }
 
         public static void PrintTimeElapsed(DateTime @from, string comment)
@@ -61,11 +87,6 @@ namespace AVS.CoreLib.PowerConsole
                 return;
 
             Print($"{comment} => elapsed:{ms:N3} ms", ConsoleColor.Green);
-        }
-
-        public static void PrintTable<T>(IEnumerable<T> data, ConsoleColor color = ConsoleColor.White, bool endLine = true)
-        {
-            Print(Table.Create(data).ToString(), color, endLine);
         }
     }
 }
