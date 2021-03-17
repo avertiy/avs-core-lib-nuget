@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.PowerConsole", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AVS.CoreLib.PowerConsole.DemoApp", "AVS.CoreLib.PowerConsole.DemoApp\AVS.CoreLib.PowerConsole.DemoApp.csproj", "{C05D7881-BC01-47C3-8114-510999D8CFF6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AVS.CoreLib.ConsoleTools", "AVS.CoreLib.ConsoleTools\AVS.CoreLib.ConsoleTools.csproj", "{C21FAD00-E005-4BB3-AF26-DCDCA903D540}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{C05D7881-BC01-47C3-8114-510999D8CFF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C05D7881-BC01-47C3-8114-510999D8CFF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C05D7881-BC01-47C3-8114-510999D8CFF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C21FAD00-E005-4BB3-AF26-DCDCA903D540}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C21FAD00-E005-4BB3-AF26-DCDCA903D540}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C21FAD00-E005-4BB3-AF26-DCDCA903D540}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C21FAD00-E005-4BB3-AF26-DCDCA903D540}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

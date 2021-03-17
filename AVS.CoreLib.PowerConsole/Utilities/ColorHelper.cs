@@ -1,5 +1,6 @@
 ﻿using System;
-
+using System.Text.RegularExpressions;
+using AVS.CoreLib.PowerConsole.Extensions;
 namespace AVS.CoreLib.PowerConsole.Utilities
 {
     public class ColorHelper
@@ -73,18 +74,6 @@ namespace AVS.CoreLib.PowerConsole.Utilities
             color = ConsoleColor.Black;
             return false;
         }
-/*
-        public static bool TryExtractColor(ref string input, out ConsoleColor color)
-        {
-            var matches = input.GetMatches("@\\w+");
-            if (matches.Length == 1 && Enum.TryParse(matches[0], out color))
-            {
-                input = input.Replace(matches[0], "");
-                return true;
-            }
-            color = ConsoleColor.Gray;
-            return false;
-        }
 
         public static ConsoleColor ExtractColor(ref string input, ConsoleColor defaultColor)
         {
@@ -93,6 +82,6 @@ namespace AVS.CoreLib.PowerConsole.Utilities
             if (matches.Length == 1 && Enum.TryParse(matches[0], out ConsoleColor color))
                 return color;
             return defaultColor;
-        }*/
+        }
     }
 }

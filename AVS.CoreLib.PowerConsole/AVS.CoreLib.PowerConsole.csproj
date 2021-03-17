@@ -16,7 +16,7 @@
     <PackageIcon>command-line-icon.jpg</PackageIcon>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <NeutralLanguage />
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <Description>contains vairous useful console utility methods, including print table, print array, colored printing by means of color formatted string, console get/set font, read key, prompting etc.</Description>
   </PropertyGroup>
 
