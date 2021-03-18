@@ -17,6 +17,8 @@ requires string.Format analog like X.Format to be added through service extensio
 by default a standard string.Format is used i.e basic .NET formatting only
 
 
+for usage see the demo app - ConsoleFeaturesDemoService.cs
+
 # How to plusbish package to nuget
 
 https://docs.microsoft.com/en-us/nuget/quickstart/create-and-publish-a-package-using-visual-studio?tabs=netcore-cli
