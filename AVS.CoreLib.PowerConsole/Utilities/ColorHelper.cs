@@ -13,6 +13,12 @@ namespace AVS.CoreLib.PowerConsole.Utilities
         /// </summary>
         public static bool TryParse(string str, out ColorScheme scheme)
         {
+            if (string.IsNullOrEmpty(str))
+            {
+                scheme = ColorScheme.Default;
+                return true;
+            }
+                
             scheme = null;
             ConsoleColor color;
             var ind = str.LastIndexOf('-');

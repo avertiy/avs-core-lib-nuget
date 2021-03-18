@@ -35,7 +35,7 @@ namespace AVS.CoreLib.PowerConsole.Utilities
 
                 var schemeStr = match.Groups["scheme"].Value;
                 var text = match.Groups["text"].Value;
-                if (ColorHelper.TryParse(schemeStr, out ColorScheme scheme))
+                if (ColorHelper.TryParse(schemeStr, out var scheme))
                 {
                     yield return (text:plainText, scheme, coloredText:text);
                 }
@@ -49,7 +49,7 @@ namespace AVS.CoreLib.PowerConsole.Utilities
             if (pos < Value.Length)
             {
                 var restText = Value.Substring(pos);
-                yield return (text: restText, null, null);
+                yield return (text: restText, ColorScheme.Current, null);
             }
         }
 
