@@ -8,6 +8,15 @@
     <Company>AV Stuido</Company>
     <Product>Console Tools</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageIcon>command-line-icon.jpg</PackageIcon>
+    <PackageProjectUrl>https://github.com/avertiy/avs-core-lib-nuget</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/avertiy/avs-core-lib-nuget</RepositoryUrl>
+    <PackageTags>Console ConsoleTools ConsoleBootstrap avs</PackageTags>
+    <RepositoryType>public</RepositoryType>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <FileVersion>1.0.1.0</FileVersion>
+    <Version>1.0.1</Version>
+    <Description>contains console bootstrap utitlities and ConsoleLogger</Description>
   </PropertyGroup>
 
 <ItemGroup>
@@ -15,5 +24,12 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.9" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="3.1.9" />
   </ItemGroup>
+
+<ItemGroup>
+  <None Include="command-line-icon.jpg">
+    <Pack>True</Pack>
+    <PackagePath></PackagePath>
+  </None>
+</ItemGroup>
 
 </Project>

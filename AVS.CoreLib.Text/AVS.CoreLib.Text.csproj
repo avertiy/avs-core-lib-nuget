@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <RootNamespace>AVS.CoreLib.Text</RootNamespace>
+    <AssemblyName>AVS.CoreLib.Text</AssemblyName>
+    <AssemblyName>AVS.CoreLib.Text</AssemblyName>
+    <RootNamespace>AVS.CoreLib.ConsoleTools</RootNamespace>
+    <Authors>Artem Vertii</Authors>
+    <Company>AV Stuido</Company>
+    <Product>Console Tools</Product>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Description>contains XFormatProvider that extends standard string format modifiers with custom formatters
+e.g. ColorFormatter, NotEmptyFormatter, PriceFormatter, EnumFormatter etc.</Description>
+    <Copyright>Artem Vertii</Copyright>
+    <PackageProjectUrl>https://github.com/avertiy/avs-core-lib-nuget</PackageProjectUrl>
+    <PackageTags>Text FormatProvider avs</PackageTags>
+    <RepositoryUrl>https://github.com/avertiy/avs-core-lib-nuget</RepositoryUrl>
+    <RepositoryType>public</RepositoryType>
+  </PropertyGroup>
+
+</Project>

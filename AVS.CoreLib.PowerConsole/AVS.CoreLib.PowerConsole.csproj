@@ -9,14 +9,14 @@
     <PackageProjectUrl>https://github.com/avertiy/avs-core-lib-nuget</PackageProjectUrl>
     <RepositoryUrl>https://github.com/avertiy/avs-core-lib-nuget</RepositoryUrl>
     <RepositoryType>public</RepositoryType>
-    <PackageTags>Console PowerConsole</PackageTags>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
-    <FileVersion>1.0.1.0</FileVersion>
+    <PackageTags>Console PowerConsole avs</PackageTags>
+    <AssemblyVersion>1.0.4.0</AssemblyVersion>
+    <FileVersion>1.0.4.0</FileVersion>
     <Copyright>Copyright 2020</Copyright>
     <PackageIcon>command-line-icon.jpg</PackageIcon>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <NeutralLanguage />
-    <Version>1.0.2</Version>
+    <Version>1.0.4</Version>
     <Description>contains vairous useful console utility methods, including print table, print array, colored printing by means of color formatted string, console get/set font, read key, prompting etc.</Description>
   </PropertyGroup>
 

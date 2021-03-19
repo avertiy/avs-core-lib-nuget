@@ -5,9 +5,11 @@ VisualStudioVersion = 16.0.29025.244
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.PowerConsole", "AVS.CoreLib.PowerConsole\AVS.CoreLib.PowerConsole.csproj", "{433672CA-EEC5-44CB-85A0-7790B8A18856}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AVS.CoreLib.PowerConsole.DemoApp", "AVS.CoreLib.PowerConsole.DemoApp\AVS.CoreLib.PowerConsole.DemoApp.csproj", "{C05D7881-BC01-47C3-8114-510999D8CFF6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.PowerConsole.DemoApp", "AVS.CoreLib.PowerConsole.DemoApp\AVS.CoreLib.PowerConsole.DemoApp.csproj", "{C05D7881-BC01-47C3-8114-510999D8CFF6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AVS.CoreLib.ConsoleTools", "AVS.CoreLib.ConsoleTools\AVS.CoreLib.ConsoleTools.csproj", "{C21FAD00-E005-4BB3-AF26-DCDCA903D540}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.ConsoleTools", "AVS.CoreLib.ConsoleTools\AVS.CoreLib.ConsoleTools.csproj", "{C21FAD00-E005-4BB3-AF26-DCDCA903D540}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.Text", "AVS.CoreLib.Text\AVS.CoreLib.Text.csproj", "{258C979B-5389-49BB-8776-3FD5D57BD257}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{C21FAD00-E005-4BB3-AF26-DCDCA903D540}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C21FAD00-E005-4BB3-AF26-DCDCA903D540}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C21FAD00-E005-4BB3-AF26-DCDCA903D540}.Release|Any CPU.Build.0 = Release|Any CPU
+		{258C979B-5389-49BB-8776-3FD5D57BD257}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{258C979B-5389-49BB-8776-3FD5D57BD257}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{258C979B-5389-49BB-8776-3FD5D57BD257}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{258C979B-5389-49BB-8776-3FD5D57BD257}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
