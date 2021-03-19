@@ -5,7 +5,7 @@
     <RootNamespace>AVS.CoreLib.Text</RootNamespace>
     <AssemblyName>AVS.CoreLib.Text</AssemblyName>
     <AssemblyName>AVS.CoreLib.Text</AssemblyName>
-    <RootNamespace>AVS.CoreLib.ConsoleTools</RootNamespace>
+    <RootNamespace>AVS.CoreLib.Text</RootNamespace>
     <Authors>Artem Vertii</Authors>
     <Company>AV Stuido</Company>
     <Product>Console Tools</Product>

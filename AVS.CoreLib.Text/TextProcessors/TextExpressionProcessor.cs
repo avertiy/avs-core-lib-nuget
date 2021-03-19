@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 using System.Text.RegularExpressions;
 
 namespace AVS.CoreLib.Text.TextProcessors
@@ -11,14 +9,14 @@ namespace AVS.CoreLib.Text.TextProcessors
     /// </summary>
     public class TextExpressionProcessor : ITextProcessor
     {
-        private static readonly Regex Regex = new Regex("(`.*?:.*?`)");
+        private static readonly Regex _regex = new Regex("(`.*?:.*?`)");
 
         public string Process(string str)
         {
             if (!str.StartsWith("@"))
                 return str;
 
-            var parts = Regex.Split(str.Substring(1));
+            var parts = _regex.Split(str.Substring(1));
             var sb = new StringBuilder();
 
             foreach (var part in parts)
