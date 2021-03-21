@@ -37,7 +37,7 @@ namespace AVS.CoreLib.PowerConsole.Utilities
                 var text = match.Groups["text"].Value;
                 if (ColorHelper.TryParse(schemeStr, out var scheme))
                 {
-                    yield return (text:plainText, scheme, coloredText:text);
+                    yield return (text: plainText, scheme, coloredText: text);
                 }
                 else
                 {

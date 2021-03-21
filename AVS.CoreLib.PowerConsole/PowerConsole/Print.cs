@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using AVS.CoreLib.PowerConsole.Extensions;
 using AVS.CoreLib.PowerConsole.Utilities;
 
@@ -71,7 +70,7 @@ namespace AVS.CoreLib.PowerConsole
             var str = $"{lineIdentation}{template} {header} {template}{lineIdentation}";
             Print(str, color, false);
         }
-        
+
         public static void PrintTable<T>(IEnumerable<T> data, ConsoleColor color = ConsoleColor.White, bool endLine = true)
         {
             Print(Table.Create(data).ToString(), color, endLine);

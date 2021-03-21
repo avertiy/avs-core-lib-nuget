@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using AVS.CoreLib.PowerConsole.Utilities;
+﻿using AVS.CoreLib.PowerConsole.Utilities;
 
 namespace AVS.CoreLib.PowerConsole
 {

@@ -20,7 +20,7 @@
     ///  -UpgradeCustomerAccount
     ///  -SubmitOrder
     /// </summary>
-    public interface ICommand : IMessage {}
+    public interface ICommand : IMessage { }
 
     /// <summary>
     /// Event signifies that something has happened.Events are published(using Publish).

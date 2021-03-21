@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace AVS.CoreLib.Abstractions.Messaging.PubSub
 {

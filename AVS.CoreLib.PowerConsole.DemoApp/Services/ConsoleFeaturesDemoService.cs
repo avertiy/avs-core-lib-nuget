@@ -49,10 +49,10 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
         public void PrintArray()
         {
             Console.PrintHeader($"PrintArray");
-            var array = new List<double> {1.0, 2.999, -3000.001, 0, 10.99, 0.1234567890};
+            var array = new List<double> { 1.0, 2.999, -3000.001, 0, 10.99, 0.1234567890 };
             Console.PrintArray(array);
             Console.PrintHeader($"PrintArray with formatter");
-            Console.PrintArray(array, x => x+"m");
+            Console.PrintArray(array, x => x + "m");
         }
 
         public void PrintTest()

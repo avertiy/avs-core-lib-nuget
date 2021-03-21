@@ -18,7 +18,7 @@ namespace AVS.CoreLib.PowerConsole.Utilities
             Foreground = foreground;
             Background = System.Console.BackgroundColor;
             _previous = null;
-            _previousBackground= null;
+            _previousBackground = null;
         }
 
         public ColorScheme(ConsoleColor background, ConsoleColor foreground)
@@ -28,7 +28,7 @@ namespace AVS.CoreLib.PowerConsole.Utilities
             _previous = null;
             _previousBackground = null;
         }
-        
+
         public void Apply()
         {
             if (Console.ForegroundColor != Foreground)
@@ -42,7 +42,7 @@ namespace AVS.CoreLib.PowerConsole.Utilities
                 Console.BackgroundColor = Background;
             }
         }
-        
+
         public void Restore()
         {
             if (_previous.HasValue)
@@ -155,7 +155,7 @@ namespace AVS.CoreLib.PowerConsole.Utilities
             {
                 return ((int)Background * 397) ^ (int)Foreground;
             }
-        } 
+        }
         #endregion
     }
 }

@@ -1,5 +1,5 @@
-﻿using AVS.CoreLib.Text.Formatters;
-using System;
+﻿using System;
+using AVS.CoreLib.Text.Formatters;
 
 namespace AVS.CoreLib.Text.FormatProviders
 {

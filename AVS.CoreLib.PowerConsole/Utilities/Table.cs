@@ -20,7 +20,7 @@ namespace AVS.CoreLib.PowerConsole.Utilities
                 totalWidth += Columns[0].Width;
             }
 
-            if(totalWidth > MAX_WIDTH)
+            if (totalWidth > MAX_WIDTH)
                 throw new Exception("too many columns to display in console");
 
             for (var i = 0; i < Columns.Count; i++)
@@ -31,7 +31,7 @@ namespace AVS.CoreLib.PowerConsole.Utilities
                     var cell = row[i];
                     if (cell.Value == null)
                         continue;
-                        
+
                     if (cell.Text.Length > column.Width)
                     {
                         var diff = cell.Text.Length - column.Width;
@@ -46,7 +46,7 @@ namespace AVS.CoreLib.PowerConsole.Utilities
                             totalWidth += diff;
                         }
                     }
-                } 
+                }
             }
 
             for (var i = 0; i < Columns.Count; i++)
@@ -63,20 +63,20 @@ namespace AVS.CoreLib.PowerConsole.Utilities
 
 
         public override string ToString()
-        {   
+        {
             return $"{string.Join(" | ", Columns)}\r\n{string.Join("\r\n", Rows)}";
         }
 
         public static Table Create<T>(IEnumerable<T> data)
         {
             var type = typeof(T);
-            var allProperties = type.GetProperties(BindingFlags.Instance| BindingFlags.Public);
-            var props = allProperties.Where(p=>p.CanRead).ToArray();
-           
+            var allProperties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+            var props = allProperties.Where(p => p.CanRead).ToArray();
+
 
             var table = new Table
             {
-                Columns = props.Select(pi=> new Column() { Title = pi.Name }).ToList(),
+                Columns = props.Select(pi => new Column() { Title = pi.Name }).ToList(),
                 Rows = data.Select(row => Row.Create(row, props)).ToList()
             };
             table.SetupColumnsWidth();
@@ -115,13 +115,13 @@ namespace AVS.CoreLib.PowerConsole.Utilities
 
             public static Row Create<T>(T obj, PropertyInfo[] props)
             {
-                var row = new Row(){Cells = new List<Cell>()};
+                var row = new Row() { Cells = new List<Cell>() };
 
                 foreach (var pi in props)
                 {
                     var value = pi.GetValue(obj);
                     row.AddCell(value);
-                } 
+                }
                 return row;
             }
         }
@@ -134,7 +134,7 @@ namespace AVS.CoreLib.PowerConsole.Utilities
                 Text = value?.ToString();
             }
 
-            public object Value { get;}
+            public object Value { get; }
             public string Text { get; set; }
 
             public int Width { get; set; }
@@ -142,7 +142,7 @@ namespace AVS.CoreLib.PowerConsole.Utilities
             public override string ToString()
             {
                 var text = Text;
-                if(Text.Length > Width)
+                if (Text.Length > Width)
                     text = Text.Truncate(Width - 2) + "..";
                 else
                 {

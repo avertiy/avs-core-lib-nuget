@@ -12,7 +12,7 @@ namespace AVS.CoreLib.Collections
         {
             Data = new Dictionary<TKey, TValue>();
         }
-        
+
         protected BaseDictionary(int capacity)
         {
             Data = new Dictionary<TKey, TValue>(capacity);
@@ -83,7 +83,7 @@ namespace AVS.CoreLib.Collections
         {
             return Data.TryGetValue(key, out value);
         }
-        
+
         public TValue this[TKey key]
         {
             get => Data[key];

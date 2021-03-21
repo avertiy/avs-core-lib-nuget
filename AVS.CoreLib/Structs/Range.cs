@@ -26,7 +26,7 @@ namespace AVS.CoreLib.Structs
         {
             this = other;
         }
-        
+
         public bool Contains(T value)
         {
             return Min.CompareTo(value) <= 0 && Max.CompareTo(value) >= 0;

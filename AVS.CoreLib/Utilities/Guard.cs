@@ -50,4 +50,3 @@ namespace AVS.CoreLib.Utilities
         }
     }
 }
-    

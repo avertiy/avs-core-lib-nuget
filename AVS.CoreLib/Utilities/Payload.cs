@@ -11,7 +11,7 @@ namespace AVS.CoreLib.Utilities
     {
         public string RelativeUrl { get; set; }
 
-        private readonly Dictionary<string,string> _items = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _items = new Dictionary<string, string>();
         public Payload()
         {
         }
@@ -88,9 +88,9 @@ namespace AVS.CoreLib.Utilities
                 }
                 return this;
             }
-            catch(Exception ex) { throw new ArgumentException("Invalid request data arguments", ex);}
+            catch (Exception ex) { throw new ArgumentException("Invalid request data arguments", ex); }
         }
-        
+
         public IPayload AddParameter(string input)
         {
             //possible cases 1. parameter1=value 2. /url?parameter1=value
@@ -107,13 +107,14 @@ namespace AVS.CoreLib.Utilities
                     RelativeUrl = input.Substring(0, ind);
                     input = input.Substring(ind);
                 }
-            }else if (input.Contains("?"))
+            }
+            else if (input.Contains("?"))
             {
                 var arr = input.Split('?');
                 RelativeUrl = arr[0] + "?";
                 input = arr[1];
             }
-            
+
             var parts = input.Split('=');
             if (parts.Length == 2)
             {
@@ -155,7 +156,7 @@ namespace AVS.CoreLib.Utilities
                 yield return kp;
             }
         }
-        
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
@@ -190,7 +191,7 @@ namespace AVS.CoreLib.Utilities
             var data = new Payload();
             data.Add(parameters);
             return data;
-        } 
+        }
         #endregion
 
         public static Payload Create(string queryStringParameters)

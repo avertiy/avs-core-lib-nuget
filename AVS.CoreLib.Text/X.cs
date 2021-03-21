@@ -1,6 +1,6 @@
-﻿using AVS.CoreLib.Text.FormatProviders;
+﻿using System;
+using AVS.CoreLib.Text.FormatProviders;
 using AVS.CoreLib.Text.TextProcessors;
-using System;
 
 namespace AVS.CoreLib.Text
 {

@@ -74,7 +74,7 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
             IServiceProvider sp =
                 ServiceProviderBuilder.BuildServiceProvider(startup.RegisterServices, startup.ConfigureLogging);
             startup.ConfigureServices(sp);
-            
+
             var hostEnv = sp.GetService<IHostEnvironment>();
             try
             {
@@ -97,7 +97,7 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
         ///    Run(sp=> {Console.WriteLine("Hello World"); sp.GetService();})
         /// };
         /// </example>
-        public static async Task RunAsync<TStartup>(Func<IServiceProvider,Task> main) where TStartup : IStartup, new()
+        public static async Task RunAsync<TStartup>(Func<IServiceProvider, Task> main) where TStartup : IStartup, new()
         {
             ColorScheme.DarkGray.Apply();
             SetCurrentCulture("en-US");

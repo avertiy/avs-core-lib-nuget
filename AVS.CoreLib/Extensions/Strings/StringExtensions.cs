@@ -74,7 +74,7 @@ namespace AVS.CoreLib.Extensions
             return matches.ToArray();
         }
 
-        public static string ReplaceAll(this string input, string[] values, string replacement ="")
+        public static string ReplaceAll(this string input, string[] values, string replacement = "")
         {
             StringBuilder sb = new StringBuilder(input);
             foreach (var value in values)

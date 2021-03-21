@@ -18,7 +18,7 @@ namespace AVS.CoreLib.PowerConsole.Utilities
         [return: MarshalAs(UnmanagedType.Bool)]
         [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         internal static extern bool GetCurrentConsoleFontEx(IntPtr hConsoleOutput, bool MaximumWindow, ref FontInfo ConsoleCurrentFontEx);
-        
+
         private static readonly IntPtr ConsoleOutputHandle = GetStdHandle(StandardOutputHandle);
 
         public static bool TryGetCurrentFont(out FontInfo fontInfo)
@@ -56,13 +56,13 @@ namespace AVS.CoreLib.PowerConsole.Utilities
             SetFont(fontInfo);
         }
 
-        public static FontInfo GetFontInfoOrDefault(string font = "Courier New", short size =12, int weight = 400)
+        public static FontInfo GetFontInfoOrDefault(string font = "Courier New", short size = 12, int weight = 400)
         {
             var fontInfo = new FontInfo
             {
                 cbSize = Marshal.SizeOf<FontInfo>()
             };
-            if(GetCurrentConsoleFontEx(ConsoleOutputHandle, false, ref fontInfo))
+            if (GetCurrentConsoleFontEx(ConsoleOutputHandle, false, ref fontInfo))
                 return fontInfo;
             return new FontInfo
             {

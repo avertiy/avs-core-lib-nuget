@@ -4,7 +4,8 @@ namespace AVS.CoreLib.Abstractions.Responses
 {
     /// <summary>
     /// allows to substitute ResponseFactory (through singleton Instance)
-    /// if you want to inherit from Response to keep Response.Create(...) methods work with your inherited response
+    /// if you want to inherit from Response to keep Response.Create(...)
+    /// methods work with your inherited response
     /// </summary>
     public interface IResponseFactory
     {

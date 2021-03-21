@@ -19,7 +19,7 @@ namespace AVS.CoreLib.ConsoleTools.Logging
         {
             if (configure == null)
                 throw new ArgumentNullException(nameof(configure));
-            
+
             AddConsoleLogger(builder);
             builder.Services.Configure(configure);
             return builder;

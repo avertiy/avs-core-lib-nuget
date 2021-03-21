@@ -43,14 +43,14 @@ namespace AVS.CoreLib.Collections.Extensions
                 threshold = avg;
             return items.Where(i => selector(i) >= threshold).ToList();
         }
-        
+
         public static IEnumerable<T> Take<T>(this IList<T> items, IPageOptions options)
         {
             var take = options.Limit > 0 && options.Limit < items.Count ? options.Limit : items.Count;
 
             for (var i = options.Offset; i < items.Count; i++)
             {
-                if(take == 0)
+                if (take == 0)
                     break;
                 yield return items[i];
                 take--;

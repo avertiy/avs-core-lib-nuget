@@ -11,12 +11,12 @@ namespace AVS.CoreLib.Extensions.DependencyInjection
         /// note IOptions has scoped lifetime
         /// </summary>
         public static TOptions GetNamedOptions<TOptions>(
-            this IServiceProvider sp, string name, bool required = true) 
+            this IServiceProvider sp, string name, bool required = true)
             where TOptions : class, new()
         {
             var snapshot = sp.GetService<IOptionsMonitor<TOptions>>();
             var options = snapshot.Get(name);
-            if(required)
+            if (required)
                 Guard.AgainstNull(options, $"named {name} {typeof(TOptions).Name} required");
             return options;
         }

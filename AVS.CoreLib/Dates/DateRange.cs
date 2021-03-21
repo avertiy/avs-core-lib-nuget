@@ -9,7 +9,7 @@ namespace AVS.CoreLib.Dates
     /// support string literals e.g. today, yesterday, day, week, month, 15m, 30m, 1h, 24h, 1d,2d, 1M, 1Q, 1Y etc.
     /// </summary>
     [TypeConverter(typeof(DateRangeTypeConverter))]
-    public readonly struct DateRange 
+    public readonly struct DateRange
     {
         //[JsonProperty("from")]
         public DateTime From { get; }

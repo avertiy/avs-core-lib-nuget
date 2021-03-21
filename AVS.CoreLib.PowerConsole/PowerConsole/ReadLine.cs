@@ -53,20 +53,20 @@ namespace AVS.CoreLib.PowerConsole
         /// <param name="color">Console color to be used to write only tis line of text</param>
         /// <param name="timeFormat">Display format for the date and time</param>
         /// <returns>Returns entered value from the user</returns>
-        public static T ReadLine<T>(string message, ConsoleColor color = ConsoleColor.Gray, string timeFormat = "yyyy-MM-dd hh:mm:ss.ff") 
+        public static T ReadLine<T>(string message, ConsoleColor color = ConsoleColor.Gray, string timeFormat = "yyyy-MM-dd hh:mm:ss.ff")
             where T : IConvertible
         {
             WriteLine(message, color, timeFormat);
             string input = Console.ReadLine();
-                    try
-                    {
-                        return (T)Convert.ChangeType(input, typeof(T));
-                    }
-                    catch (Exception ex)
-                    {
-                        PowerConsole.WriteError(ex, true, timeFormat);
-                        return ReadLine<T>(message, color, timeFormat);
-                    }
+            try
+            {
+                return (T)Convert.ChangeType(input, typeof(T));
+            }
+            catch (Exception ex)
+            {
+                PowerConsole.WriteError(ex, true, timeFormat);
+                return ReadLine<T>(message, color, timeFormat);
+            }
         }
     }
 }

@@ -65,7 +65,7 @@ namespace AVS.CoreLib.Collections
 
         public void Add(TKey key, TValue1 value1, TValue2 value2)
         {
-            
+
             this.Add(key, new DualObject<TValue1, TValue2>(value1, value2));
         }
     }

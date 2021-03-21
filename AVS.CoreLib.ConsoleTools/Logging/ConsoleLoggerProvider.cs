@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -12,7 +11,7 @@ namespace AVS.CoreLib.ConsoleTools.Logging
         private readonly ConcurrentDictionary<string, ConsoleLogger> _loggers;
         private IExternalScopeProvider _scopeProvider;
         private readonly IOptionsMonitor<ConsoleLoggerOptions> _options;
-        
+
         public ConsoleLoggerProvider(IOptionsMonitor<ConsoleLoggerOptions> options)
         {
             _options = options;

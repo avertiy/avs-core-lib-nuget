@@ -16,12 +16,12 @@ namespace AVS.CoreLib.ConsoleTools.Logging
         public readonly string Name;
         protected ConsoleLoggerOptions Settings { get; }
         protected IExternalScopeProvider ScopeProvider { get; set; }
-        
+
         public ConsoleLogger(string name, IExternalScopeProvider scopeProvider, ConsoleLoggerOptions settings)
         {
             Settings = settings;
             ScopeProvider = scopeProvider;
-            Name =  name;
+            Name = name;
         }
 
         /// <summary>Begins a logical operation scope.</summary>
@@ -37,7 +37,7 @@ namespace AVS.CoreLib.ConsoleTools.Logging
         /// Checks if the given <paramref name="logLevel" /> is enabled.
         /// </summary>
         public bool IsEnabled(LogLevel logLevel) => logLevel != LogLevel.None;
-        
+
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
             Func<TState, Exception, string> formatter)
         {
@@ -46,7 +46,7 @@ namespace AVS.CoreLib.ConsoleTools.Logging
 
             if (formatter == null)
                 throw new ArgumentNullException(nameof(formatter));
-            
+
             var message = FormatState(state, exception, formatter);
 
             var scheme = logLevel.GetColorScheme();
@@ -116,8 +116,8 @@ namespace AVS.CoreLib.ConsoleTools.Logging
                     break;
                 case LogLevel.Information:
                     return "";
-                    //text ="info";
-                    //break;
+                //text ="info";
+                //break;
                 case LogLevel.Warning:
                     text = "warn";
                     break;
@@ -308,7 +308,8 @@ namespace AVS.CoreLib.ConsoleTools.Logging
             if (enumerable != null)
             {
                 var cast = Enumerable.Cast<object>(enumerable);
-                var eee = Enumerable.Select(cast, delegate (object o) { return o ?? "(null)"; }).ToArray();
+                var eee = Enumerable.Select(cast, delegate (object o)
+                { return o ?? "(null)"; }).ToArray();
                 return string.Join(", ", eee);
             }
             return value;
@@ -316,4 +317,3 @@ namespace AVS.CoreLib.ConsoleTools.Logging
     }
 }
 
-    

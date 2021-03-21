@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using AVS.CoreLib.PowerConsole.DemoApp.Services;
 
 namespace AVS.CoreLib.PowerConsole.DemoApp

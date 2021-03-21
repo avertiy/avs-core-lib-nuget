@@ -3,7 +3,7 @@ using Console = AVS.CoreLib.PowerConsole.PowerConsole;
 
 namespace AVS.CoreLib.ConsoleTools.Logging
 {
-    public class ConsoleScope:IDisposable
+    public class ConsoleScope : IDisposable
     {
         private ConsoleColor Color { get; set; }
         public bool UseCurlyBrackets { get; set; } = true;
@@ -29,7 +29,7 @@ namespace AVS.CoreLib.ConsoleTools.Logging
         {
             if (HashCode == hashcode)
                 return;
-            
+
             Close();
             Console.WriteLine(false);
             Console.Print(UseCurlyBrackets ? $"\t{scope}\r\n {{" : $"\t{scope}", color);

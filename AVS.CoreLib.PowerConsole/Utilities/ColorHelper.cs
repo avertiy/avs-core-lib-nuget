@@ -18,11 +18,11 @@ namespace AVS.CoreLib.PowerConsole.Utilities
                 scheme = ColorScheme.Default;
                 return true;
             }
-                
+
             scheme = null;
             ConsoleColor color;
             var ind = str.LastIndexOf('-');
-            
+
             //no `-` symbol just Color
             if (ind < 0)
             {
@@ -34,14 +34,14 @@ namespace AVS.CoreLib.PowerConsole.Utilities
                 }
                 return false;
             }
-            
+
             scheme = new ColorScheme();
 
             //foreground color: -Color e.g. -Red
             if (ind == 0)
             {
-                scheme.Foreground = TryParseConsoleColor(str.Substring(1), out color) 
-                    ? color 
+                scheme.Foreground = TryParseConsoleColor(str.Substring(1), out color)
+                    ? color
                     : ColorScheme.Default.Foreground;
                 scheme.Background = ColorScheme.Default.Background;
             }
@@ -49,14 +49,14 @@ namespace AVS.CoreLib.PowerConsole.Utilities
             else if (ind == 1)
             {
                 scheme.Foreground = ColorScheme.Default.Foreground;
-                scheme.Background = TryParseConsoleColor(str.Substring(2), out color) 
-                    ? color 
+                scheme.Background = TryParseConsoleColor(str.Substring(2), out color)
+                    ? color
                     : ColorScheme.Default.Background;
             }
             else
             {
                 //e.g. -Red --Gray
-                var parts = str.Split(new[] {' ', '-'}, StringSplitOptions.RemoveEmptyEntries);
+                var parts = str.Split(new[] { ' ', '-' }, StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length != 2)
                     return false;
 

@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Linq;
 
 namespace AVS.CoreLib.Extensions.Numbers
 {
     public static class NumberExtensions
     {
         #region doubles
-        
+
         public static double Round(this double value, int decimals)
         {
             return Math.Round(value, decimals, MidpointRounding.AwayFromZero);
@@ -37,7 +36,7 @@ namespace AVS.CoreLib.Extensions.Numbers
         {
             return Math.Round(value, decimals, MidpointRounding.AwayFromZero);
         }
-        
+
         public static decimal RoundUp(this decimal value, int decimals)
         {
             var k = (decimal)Math.Pow(10, decimals);
@@ -58,11 +57,11 @@ namespace AVS.CoreLib.Extensions.Numbers
 
         public static decimal RoundDown(this decimal value, int decimals)
         {
-            var k = (decimal) Math.Pow(10, decimals);
+            var k = (decimal)Math.Pow(10, decimals);
             return Math.Floor((value * k)) / k;
         }
 
-        
+
         public static decimal Abs(this decimal value)
         {
             if (value < 0)
