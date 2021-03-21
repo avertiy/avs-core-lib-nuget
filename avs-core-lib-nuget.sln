@@ -11,6 +11,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.ConsoleTools", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.Text", "AVS.CoreLib.Text\AVS.CoreLib.Text.csproj", "{258C979B-5389-49BB-8776-3FD5D57BD257}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AVS.CoreLib", "AVS.CoreLib\AVS.CoreLib.csproj", "{20C015B5-6950-4456-87B4-62D82EC6491F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AVS.CoreLib.Abstractions", "AVS.CoreLib.Abstractions\AVS.CoreLib.Abstractions.csproj", "{B55962B7-72BA-4441-A5F0-8EA337E0D964}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,14 @@ Global
 		{258C979B-5389-49BB-8776-3FD5D57BD257}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{258C979B-5389-49BB-8776-3FD5D57BD257}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{258C979B-5389-49BB-8776-3FD5D57BD257}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20C015B5-6950-4456-87B4-62D82EC6491F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20C015B5-6950-4456-87B4-62D82EC6491F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20C015B5-6950-4456-87B4-62D82EC6491F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20C015B5-6950-4456-87B4-62D82EC6491F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B55962B7-72BA-4441-A5F0-8EA337E0D964}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B55962B7-72BA-4441-A5F0-8EA337E0D964}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B55962B7-72BA-4441-A5F0-8EA337E0D964}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B55962B7-72BA-4441-A5F0-8EA337E0D964}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
