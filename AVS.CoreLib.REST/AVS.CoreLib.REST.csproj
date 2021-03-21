@@ -2,12 +2,23 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <RootNamespace>AVS.CoreLib.REST</RootNamespace>
+    <AssemblyName>AVS.CoreLib.REST</AssemblyName>
+    <AssemblyName>AVS.CoreLib.REST</AssemblyName>
+    <RootNamespace>AVS.CoreLib.REST</RootNamespace>
+    <Authors>Artem Vertii</Authors>
+    <Company>AV Stuido</Company>
+    <Product>CoreLib</Product>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <FileVersion>1.0.1.0</FileVersion>
+    <Description>CoreLib REST tools, RestClient </Description>
+    <Copyright>Artem Vertii</Copyright>
+    <PackageProjectUrl>https://github.com/avertiy/avs-core-lib-nuget</PackageProjectUrl>
+    <PackageTags>RestClient avs</PackageTags>
+    <RepositoryUrl>https://github.com/avertiy/avs-core-lib-nuget</RepositoryUrl>
+    <RepositoryType>public</RepositoryType>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
-  <ItemGroup>  
-    <PackageReference Include="AVS.CoreLib.Abstractions" Version="1.0.0" />
-    <PackageReference Include="AVS.CoreLib" Version="1.0.0" />
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-  </ItemGroup>
 </Project>
