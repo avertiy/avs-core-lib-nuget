@@ -15,9 +15,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib", "AVS.CoreLib\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.Abstractions", "AVS.CoreLib.Abstractions\AVS.CoreLib.Abstractions.csproj", "{B55962B7-72BA-4441-A5F0-8EA337E0D964}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AVS.CoreLib.REST", "AVS.CoreLib.REST\AVS.CoreLib.REST.csproj", "{FDCCC39D-1E43-4225-A4E5-F47997CBBE58}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.REST", "AVS.CoreLib.REST\AVS.CoreLib.REST.csproj", "{FDCCC39D-1E43-4225-A4E5-F47997CBBE58}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.Trading", "AVS.CoreLib.Trading\AVS.CoreLib.Trading.csproj", "{AD48C561-8CD8-453F-B07D-DCB5B5D84F73}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.WebSockets", "AVS.CoreLib.WebSockets\AVS.CoreLib.WebSockets.csproj", "{EE7E9691-2C7A-4BBF-88EE-1B726569FD98}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +59,10 @@ Global
 		{AD48C561-8CD8-453F-B07D-DCB5B5D84F73}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD48C561-8CD8-453F-B07D-DCB5B5D84F73}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AD48C561-8CD8-453F-B07D-DCB5B5D84F73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE7E9691-2C7A-4BBF-88EE-1B726569FD98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE7E9691-2C7A-4BBF-88EE-1B726569FD98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE7E9691-2C7A-4BBF-88EE-1B726569FD98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE7E9691-2C7A-4BBF-88EE-1B726569FD98}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
