@@ -6,7 +6,7 @@ namespace AVS.CoreLib.WebSockets
     /// <summary>
     /// Wrapper for low level communication details for ClientWebSocket
     /// </summary>
-    public interface ISocketCommunicator: IDisposable
+    public interface ISocketCommunicator : IDisposable
     {
         bool IsConnected { get; }
         /// <summary>
@@ -15,7 +15,7 @@ namespace AVS.CoreLib.WebSockets
         /// <param name="command"></param>
         /// <returns></returns>
         Task SendAsync(IChannelCommand command);
-        
+
         Task ReconnectAsync();
 
         event Action<string> MessageArrived;

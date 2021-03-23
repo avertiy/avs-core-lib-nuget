@@ -29,11 +29,11 @@ namespace AVS.CoreLib.WebSockets
             start:
             if (_webSocket.State == WebSocketState.Open)
             {
-                if(_backgroundTaskStarted)
+                if (_backgroundTaskStarted)
                     return true;
 
                 int i = 10;
-                while (!_backgroundTaskStarted && i> 0)
+                while (!_backgroundTaskStarted && i > 0)
                 {
                     Thread.Sleep(10);
                     i--;
@@ -96,7 +96,7 @@ namespace AVS.CoreLib.WebSockets
         /// <inheritdoc />
         public async Task ReconnectAsync()
         {
-            if(_disposing)
+            if (_disposing)
                 return;
             if (_webSocket.State == WebSocketState.Open)
                 throw new InvalidOperationException("Connection state is Open");
@@ -121,12 +121,12 @@ namespace AVS.CoreLib.WebSockets
 
             await ConnectAsync();
         }
-        
+
         /// <inheritdoc />
         public async Task ConnectAsync()
         {
             start:
-            if(_disposing)
+            if (_disposing)
                 return;
             if (_webSocket.State == WebSocketState.Connecting)
             {
@@ -224,7 +224,7 @@ namespace AVS.CoreLib.WebSockets
                     RaiseConnectionError(ex);
                 }
             }
-            
+
             if (_webSocket.State != WebSocketState.CloseReceived &&
                 _webSocket.State != WebSocketState.Closed)
             {
@@ -247,7 +247,7 @@ namespace AVS.CoreLib.WebSockets
                                             String.Empty,
                                             CancellationToken.None)
                                 .ConfigureAwait(false);
-                
+
             }
             catch (Exception ex)
             {

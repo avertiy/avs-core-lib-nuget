@@ -24,7 +24,7 @@ namespace AVS.CoreLib.Trading.Types
 
         public void Add(params string[] items)
         {
-            foreach (var item in items) 
+            foreach (var item in items)
                 Items.Add(item);
         }
 
@@ -36,7 +36,7 @@ namespace AVS.CoreLib.Trading.Types
             if (String.IsNullOrEmpty(str))
                 return;
 
-            if (str.Either("all","*") && AllItems.Length > 0)
+            if (str.Either("all", "*") && AllItems.Length > 0)
             {
                 foreach (var exchange in AllItems)
                     base.Add(exchange);

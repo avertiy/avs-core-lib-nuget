@@ -26,8 +26,8 @@ namespace AVS.CoreLib.WebSockets
         private readonly ISocketCommunicator _communicator;
         private bool _disposing;
         public bool IsConnected => _communicator.IsConnected;
-        
-        protected WebSocketClient(string wssApiUrl): this(new SocketCommunicator(wssApiUrl))
+
+        protected WebSocketClient(string wssApiUrl) : this(new SocketCommunicator(wssApiUrl))
         {
         }
 
@@ -38,12 +38,12 @@ namespace AVS.CoreLib.WebSockets
             _communicator.ConnectionError += OnSocketConnectionError;
             _communicator.MessageArrived += OnMessageArrived;
         }
-        
+
         protected async Task SendCommandAsync(IChannelCommand command)
         {
             await _communicator.SendAsync(command);
         }
-        
+
         protected virtual void OnMessageArrived(string message) { }
 
         protected virtual void OnSocketConnectionError(Exception obj)

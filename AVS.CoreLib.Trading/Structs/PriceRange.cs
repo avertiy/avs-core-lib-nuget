@@ -1,7 +1,7 @@
-﻿using AVS.CoreLib.Text;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using AVS.CoreLib.Text;
 
 namespace AVS.CoreLib.Trading.Structs
 {

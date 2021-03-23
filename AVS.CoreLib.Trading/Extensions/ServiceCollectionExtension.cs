@@ -22,7 +22,7 @@ namespace AVS.CoreLib.Trading.Extensions
             X.FormatProvider.AppendFormatter(new CurrencySymbolFormatter());
             return services;
         }
-        
+
         public static IServiceCollection AddTradingHelpers(this IServiceCollection services)
         {
             services.AddSingleton<IRankHelper, RankHelper>();

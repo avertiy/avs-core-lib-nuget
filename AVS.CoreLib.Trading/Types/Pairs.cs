@@ -21,7 +21,7 @@ namespace AVS.CoreLib.Trading.Types
             return Parse(exchanges);
         }
 
-        internal override string[] AllItems => TradingHelper.Instance.GetTopPairs("BTC","USD","USDT","USDC","UAH");
+        internal override string[] AllItems => TradingHelper.Instance.GetTopPairs("BTC", "USD", "USDT", "USDC", "UAH");
 
         public static Pairs Parse(string str)
         {

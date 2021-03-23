@@ -23,7 +23,7 @@ namespace AVS.CoreLib.REST.Reduce
         public decimal Factor { get; }
 
         public bool IsDynamic => Value <= 0;
-        
+
         public bool HasValue => Value > 0 || Factor > 0;
 
         public ReduceOptions(decimal value, decimal factor = 1)

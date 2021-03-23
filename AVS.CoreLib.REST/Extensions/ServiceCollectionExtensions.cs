@@ -1,6 +1,5 @@
 ﻿using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.REST.Clients;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -12,8 +11,7 @@ namespace AVS.CoreLib.REST.Extensions
         /// Adds Scoped IRestClient and IRequestBuilder
         /// </summary>
         /// <param name="services"></param>
-        /// <param name="config"></param>
-        public static void AddRestClient(this IServiceCollection services, IConfiguration config)
+        public static void AddRestClient(this IServiceCollection services)
         {
             services.TryAddScoped<IRequestBuilder, RequestBuilder>();
             services.TryAddScoped<IRestClient, RestClient>();

@@ -14,7 +14,7 @@ namespace AVS.CoreLib.Messaging.PubSub
         {
             _serviceFactory = serviceFactory;
         }
-       
+
         public IEventConsumer[] ResolveAll(Type type)
         {
             if (_subscribers.ContainsKey(type))

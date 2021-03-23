@@ -19,7 +19,7 @@ namespace AVS.CoreLib.Messaging.PubSub
 
         public void Publish(IEvent @event)
         {
-            Publish(@event, new PublishContext(){Isolated = true});
+            Publish(@event, new PublishContext() { Isolated = true });
         }
 
         public void Publish(IEvent @event, IPublishContext context)

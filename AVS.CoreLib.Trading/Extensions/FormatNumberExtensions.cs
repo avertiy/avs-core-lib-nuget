@@ -62,17 +62,18 @@ namespace AVS.CoreLib.Trading.Extensions
         }
 
         public static string FormatAsPrice(this decimal value)
-        {  
+        {
             if (value > 999999999)
             {
                 //billions
                 return value.ToString("0,,,.###B", CultureInfo.InvariantCulture);
-            }else if (value > 999999)
+            }
+            else if (value > 999999)
             {
                 //millions
                 return value.ToString("0,,.###M", CultureInfo.InvariantCulture);
             }
-            else if(value > 99999)
+            else if (value > 99999)
             {
                 return value.ToString("0,.##K", CultureInfo.InvariantCulture);
             }

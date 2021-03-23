@@ -13,7 +13,7 @@ namespace AVS.CoreLib.REST.Pagination
     [TypeConverter(typeof(PageOptionsTypeConverter))]
     public class PageOptions : IQueryStringFormattable
     {
-        public PageOptions(int limit =0, int offset=0, string sort = "DESC")
+        public PageOptions(int limit = 0, int offset = 0, string sort = "DESC")
         {
             Limit = limit;
             Offset = offset;
@@ -33,11 +33,11 @@ namespace AVS.CoreLib.REST.Pagination
 
         public override string ToString()
         {
-            if(Offset > 0)
+            if (Offset > 0)
                 return $"{Offset} {Limit} {Sort}";
             return $"{Limit} {Sort}";
         }
-        
+
         public string ToQueryString(string format = "offset={0}&limit={1}&sort={2}")
         {
             return string.Format(format, Offset, Limit, Sort);
@@ -56,10 +56,10 @@ namespace AVS.CoreLib.REST.Pagination
             options = new PageOptions();
             if (string.IsNullOrEmpty(str))
                 return false;
-            
+
             int limit;
-            string[] parts = str.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
-            
+            string[] parts = str.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
             if (parts.Length == 3 && int.TryParse(parts[0], out int offset) &&
                 int.TryParse(parts[1], out limit))
             {

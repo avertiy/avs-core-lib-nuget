@@ -1,8 +1,8 @@
-﻿using AVS.CoreLib.Abstractions;
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Globalization;
 using System.Text.Json.Serialization;
+using AVS.CoreLib.Abstractions;
 
 namespace AVS.CoreLib.Trading.Structs
 {

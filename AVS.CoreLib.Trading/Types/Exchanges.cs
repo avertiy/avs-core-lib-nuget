@@ -14,7 +14,7 @@ namespace AVS.CoreLib.Trading.Types
         public Exchanges(IList<string> items) : base(items)
         {
         }
-        
+
         [DebuggerStepThrough]
         public static implicit operator Exchanges(string exchanges)
         {
@@ -24,7 +24,7 @@ namespace AVS.CoreLib.Trading.Types
         public Exchanges Clone()
         {
             var exchanges = new Exchanges();
-            foreach (var item in Items) 
+            foreach (var item in Items)
                 exchanges.Add(item);
             return exchanges;
         }

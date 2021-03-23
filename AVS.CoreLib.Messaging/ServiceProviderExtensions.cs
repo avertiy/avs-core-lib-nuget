@@ -1,7 +1,6 @@
 ﻿using AVS.CoreLib.Abstractions.Messaging;
 using AVS.CoreLib.Abstractions.Messaging.CommandBus;
 using AVS.CoreLib.Abstractions.Messaging.PubSub;
-using AVS.CoreLib.Messaging.PubSub;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -22,7 +21,7 @@ namespace AVS.CoreLib.Messaging
         /// <summary>
         /// Add <see cref="IEventConsumer{TEvent,TContext}"/> as singleton if it has not been already registered
         /// </summary>
-        public static void TryAddEventConsumer<TEvent,TContext, TConsumer>(this IServiceCollection services)
+        public static void TryAddEventConsumer<TEvent, TContext, TConsumer>(this IServiceCollection services)
             where TEvent : class, IEvent
             where TContext : class, IPublishContext
             where TConsumer : class, IEventConsumer<TEvent, TContext>

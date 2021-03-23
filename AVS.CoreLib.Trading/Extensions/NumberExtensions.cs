@@ -16,7 +16,7 @@ namespace AVS.CoreLib.Trading.Extensions
             var x = 0;
             while (value * Math.Pow(10, x) <= n)
                 x++;
-            return x > 0 ? x - 1: x;
+            return x > 0 ? x - 1 : x;
         }
 
         public static double DiffPercentage(this double value1, double value2)

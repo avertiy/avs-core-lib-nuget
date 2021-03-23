@@ -1,6 +1,4 @@
-﻿using AVS.CoreLib.Structs;
-
-namespace AVS.CoreLib.REST.Pagination
+﻿namespace AVS.CoreLib.REST.Pagination
 {
     public interface IPageable
     {

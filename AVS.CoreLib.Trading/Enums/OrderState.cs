@@ -24,7 +24,7 @@
         /// order has been executed 
         /// </summary>
         Executed = 41,
-        
+
         //Closed = 45,
         /// <summary>
         /// order is quite old marked as archived

@@ -1,7 +1,7 @@
-﻿using AVS.CoreLib.Text.Formatters;
-using AVS.CoreLib.Trading.Structs;
-using System;
+﻿using System;
+using AVS.CoreLib.Text.Formatters;
 using AVS.CoreLib.Trading.Helpers;
+using AVS.CoreLib.Trading.Structs;
 
 namespace AVS.CoreLib.Trading.FormatProviders
 {

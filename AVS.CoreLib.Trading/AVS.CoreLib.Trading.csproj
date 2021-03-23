@@ -31,7 +31,7 @@
   <ItemGroup>
     <PackageReference Include="AVS.CoreLib" Version="1.0.0" />
     <PackageReference Include="AVS.CoreLib.Text" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.13" />
     <PackageReference Include="System.Text.Json" Version="5.0.1" />
   </ItemGroup>
 

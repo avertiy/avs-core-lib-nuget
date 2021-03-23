@@ -42,7 +42,7 @@ namespace AVS.CoreLib.Messaging.PubSub
 
         protected virtual void HandleInternal(TEvent @event, TContext context)
         {
-            
+
         }
     }
 }

@@ -29,26 +29,26 @@ namespace AVS.CoreLib.Trading.Helpers
                 case "BUSD":
                 case "TUSD":
                 case "DAI":
-                {
-                    rank = GetRankForUSD(total);
-                    break;
-                }
+                    {
+                        rank = GetRankForUSD(total);
+                        break;
+                    }
                 case "RUB":
                 case "UAH":
-                {
-                    rank = GetRankForUSD(total / 25);
-                    break;
-                }
+                    {
+                        rank = GetRankForUSD(total / 25);
+                        break;
+                    }
                 case "BTC":
-                {
-                    rank = GetRankForBTC(total);
-                    break;
-                }
+                    {
+                        rank = GetRankForBTC(total);
+                        break;
+                    }
                 case "ETH":
-                {
-                    rank = GetRankForBTC(total * 0.03m);
-                    break;
-                }
+                    {
+                        rank = GetRankForBTC(total * 0.03m);
+                        break;
+                    }
                 default:
                     throw new NotSupportedException($"{baseCurrency} not supported");
             }

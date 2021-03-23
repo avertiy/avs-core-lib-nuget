@@ -1,5 +1,5 @@
-﻿using AVS.CoreLib.Extensions;
-using System;
+﻿using System;
+using AVS.CoreLib.Extensions;
 
 namespace AVS.CoreLib.Trading.Structs
 {

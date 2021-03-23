@@ -1,8 +1,8 @@
-﻿using AVS.CoreLib.Extensions;
-using AVS.CoreLib.Trading.Structs;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AVS.CoreLib.Extensions;
+using AVS.CoreLib.Trading.Structs;
 
 namespace AVS.CoreLib.Trading.Helpers
 {
