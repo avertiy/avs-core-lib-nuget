@@ -101,92 +101,64 @@ namespace AVS.CoreLib.REST.Projections
             _selectTokenPath = path;
         }
 
-        protected void LoadToken(Action<JToken> action)
+        //method is public to allow caller code to debug token deserialization in case map fails without error
+        public TToken LoadToken<TToken>() where TToken : JToken
         {
-            using (var stringReader = new StringReader(JsonText))
-            using (var reader = new JsonTextReader(stringReader))
-            {
-                var token = JToken.Load(reader);
+            using var stringReader = new StringReader(JsonText);
+            using var reader = new JsonTextReader(stringReader);
+            var token = JToken.Load(reader);
 
-                if (_selectTokenPath != null)
-                {
-                    token = token.SelectToken(_selectTokenPath);
-                    if (token == null)
-                        throw new JsonReaderException($"Invalid token path {_selectTokenPath}");
-                }
-                try
-                {
-                    action(token);
-                }
-                catch (Exception ex)
-                {
-                    throw new MapException("LoadToken failed", ex);
-                }
+            if (_selectTokenPath != null)
+            {
+                token = token.SelectToken(_selectTokenPath);
+                if (token == null)
+                    throw new JsonReaderException($"Invalid token path {_selectTokenPath}");
             }
+
+            if (token is TToken tToken)
+            {
+                return tToken;
+            }
+
+            throw new JsonReaderException($"Unexpected JToken type {token.Type} [expect {typeof(TToken).Name}");
         }
 
+        protected void LoadToken(Action<JToken> action)
+        {
+            try
+            {
+                var token = LoadToken<JToken>();
+                action(token);
+            }
+            catch (Exception ex)
+            {
+                throw new MapException("LoadToken failed", ex);
+            }
+        }
 
         protected void LoadToken<TToken, TProjection, TItem>(Action<TToken> action) where TToken : JContainer
         {
-            using (var stringReader = new StringReader(JsonText))
-            using (var reader = new JsonTextReader(stringReader))
+            try
             {
-                var token = JToken.Load(reader);
-
-                if (_selectTokenPath != null)
-                {
-                    token = token.SelectToken(_selectTokenPath);
-                    if (token == null)
-                        throw new JsonReaderException($"Invalid token path {_selectTokenPath}");
-                }
-
-                if (token is TToken tToken)
-                {
-                    try
-                    {
-                        action(tToken);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new MapJsonException<TProjection, TItem>(ex);
-                    }
-                }
-                else
-                {
-                    throw new JsonReaderException($"Unexpected JToken type {token.Type} [expect {typeof(TToken).Name}");
-                }
+                var token = LoadToken<TToken>();
+                action(token);
+            }
+            catch (Exception ex)
+            {
+                throw new MapJsonException<TProjection, TItem>(ex);
             }
         }
-
+        
         protected void LoadToken<TToken, TProjection>(Action<TToken> action) where TToken : JContainer
         {
-            using (var stringReader = new StringReader(JsonText))
-            using (var reader = new JsonTextReader(stringReader))
+            try
             {
-                JToken token = JToken.Load(reader);
-
-                if (_selectTokenPath != null)
-                {
-                    token = token.SelectToken(_selectTokenPath);
-                    if (token == null)
-                        throw new JsonReaderException($"Invalid token path {_selectTokenPath}");
-                }
-
-                if (token is TToken tToken)
-                {
-                    try
-                    {
-                        action(tToken);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new MapJsonException<TProjection>(ex);
-                    }
-                }
-                else
-                {
-                    throw new JsonReaderException($"Unexpected JToken type {token.Type} [expect {typeof(TToken).Name}");
-                }
+                var token = LoadToken<TToken>();
+                action(token);
+            }
+            catch (Exception ex)
+            {
+                throw new MapJsonException<TProjection>(ex);
             }
         }
 

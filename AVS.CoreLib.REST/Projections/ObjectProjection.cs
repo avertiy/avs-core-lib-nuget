@@ -11,7 +11,7 @@ namespace AVS.CoreLib.REST.Projections
     {
         protected Action<T> _postProcessAction;
         protected Action<T> _preProcessAction;
-        protected IObjectBuilder<T> _builder;
+        public IObjectBuilder<T> Builder { get; private set; }
         [DebuggerStepThrough]
         public ObjectProjection(string jsonText, string source = null) : base(jsonText, source)
         {
@@ -34,7 +34,7 @@ namespace AVS.CoreLib.REST.Projections
         {
             var builder = new TBuilder();
             initialize?.Invoke(builder);
-            _builder = builder;
+            Builder = builder;
             return this;
         }
 
@@ -45,7 +45,7 @@ namespace AVS.CoreLib.REST.Projections
 
         public Response<T> Map()
         {
-            if (_builder == null)
+            if (Builder == null)
                 throw new AppException("Builder is not initialized", "You might need to use UseBuilder<TBuilder>() method first");
 
             var response = Response.Create<T>();
@@ -53,7 +53,7 @@ namespace AVS.CoreLib.REST.Projections
 
             if (IsEmpty)
             {
-                response.Data = _builder.Create();
+                response.Data = Builder.Create();
             }
             else if (ContainsError(out string err))
             {
@@ -63,10 +63,10 @@ namespace AVS.CoreLib.REST.Projections
             {
                 LoadToken<JObject, T>(jObject =>
                 {
-                    JsonHelper.Populate(_builder, jObject);
+                    JsonHelper.Populate(Builder, jObject);
                 });
 
-                var data = _builder.Create();
+                var data = Builder.Create();
                 _preProcessAction?.Invoke(data);
                 _postProcessAction?.Invoke(data);
                 response.Data = data;
