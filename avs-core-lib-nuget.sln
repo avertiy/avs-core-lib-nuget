@@ -23,7 +23,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.WebSockets", "A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.Messaging", "AVS.CoreLib.Messaging\AVS.CoreLib.Messaging.csproj", "{EF6550C7-29C3-4CD5-B8D1-69572F8065E4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AVS.CoreLib.UnitTesting", "AVS.CoreLib.UnitTesting\AVS.CoreLib.UnitTesting.csproj", "{519BFCCB-9868-4EBC-BEA6-EAEC8505BBDD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.UnitTesting", "AVS.CoreLib.UnitTesting\AVS.CoreLib.UnitTesting.csproj", "{519BFCCB-9868-4EBC-BEA6-EAEC8505BBDD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.Extra", "AVS.CoreLib.Extra\AVS.CoreLib.Extra.csproj", "{9B7A9056-AB02-455A-9798-C1368788A93B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,6 +77,10 @@ Global
 		{519BFCCB-9868-4EBC-BEA6-EAEC8505BBDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{519BFCCB-9868-4EBC-BEA6-EAEC8505BBDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{519BFCCB-9868-4EBC-BEA6-EAEC8505BBDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B7A9056-AB02-455A-9798-C1368788A93B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B7A9056-AB02-455A-9798-C1368788A93B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B7A9056-AB02-455A-9798-C1368788A93B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B7A9056-AB02-455A-9798-C1368788A93B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

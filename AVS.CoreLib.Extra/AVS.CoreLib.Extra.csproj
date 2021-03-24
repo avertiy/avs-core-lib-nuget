@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <RootNamespace>AVS.CoreLib.Extra</RootNamespace>
+    <AssemblyName>AVS.CoreLib.Extra</AssemblyName>
+    <AssemblyName>AVS.CoreLib.Extra</AssemblyName>
+    <RootNamespace>AVS.CoreLib.Extra</RootNamespace>
+    <Authors>Artem Vertii</Authors>
+    <Company>AV Stuido</Company>
+    <Product>CoreLib</Product>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Description>CoreLib extra utils for caching DDD etc.</Description>
+    <Copyright>Artem Vertii</Copyright>
+    <PackageProjectUrl>https://github.com/avertiy/avs-core-lib-nuget</PackageProjectUrl>
+    <PackageTags>avs corelib</PackageTags>
+    <RepositoryUrl>https://github.com/avertiy/avs-core-lib-nuget</RepositoryUrl>
+    <RepositoryType>public</RepositoryType>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="DDD\**" />
+    <Compile Remove="DDD\EventSourcing\**" />
+    <Compile Remove="EventSourcing\**" />
+    <Compile Remove="Messaging\**" />
+    <EmbeddedResource Remove="DDD\**" />
+    <EmbeddedResource Remove="DDD\EventSourcing\**" />
+    <EmbeddedResource Remove="EventSourcing\**" />
+    <EmbeddedResource Remove="Messaging\**" />
+    <None Remove="DDD\**" />
+    <None Remove="DDD\EventSourcing\**" />
+    <None Remove="EventSourcing\**" />
+    <None Remove="Messaging\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="10.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="3.1.9" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.9" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.9" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AVS.CoreLib\AVS.CoreLib.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DDD\EventSourcing\" />
+  </ItemGroup>
+</Project>

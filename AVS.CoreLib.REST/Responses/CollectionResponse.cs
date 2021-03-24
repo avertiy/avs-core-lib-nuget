@@ -34,13 +34,5 @@ namespace AVS.CoreLib.REST.Responses
         public virtual bool ShouldSerializeCount() => false;
 
         #endregion
-
-        //public static implicit operator T(CollectionResponse<T> response)
-        //{
-        //    if (response.Count == 1)
-        //        return response.First();
-
-        //    throw new InvalidCastException("Response must contain exactly one item.");
-        //}
     }
 }
