@@ -44,7 +44,7 @@ namespace AVS.CoreLib.Trading.Structs
         {
             var parts = pair.Value.Split('_');
             if (parts.Length == 2)
-                return parts[1];
+                return parts[0];
             throw new ArgumentException($"Pair {pair} is not valid");
         }
 
@@ -52,7 +52,7 @@ namespace AVS.CoreLib.Trading.Structs
         {
             var parts = pair.Value.Split('_');
             if (parts.Length == 2)
-                return parts[0];
+                return parts[1];
             throw new ArgumentException($"Pair {pair} is not valid");
         }
     }
