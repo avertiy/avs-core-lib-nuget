@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using AVS.CoreLib.PowerConsole.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AVS.CoreLib.PowerConsole.Extensions
@@ -28,6 +29,14 @@ namespace AVS.CoreLib.PowerConsole.Extensions
             PowerConsole.Format = format;
             PowerConsole.InputEncoding = encoding;
             PowerConsole.OutputEncoding = encoding;
+            ColorScheme.Default.Apply();
+            return sp;
+        }
+
+        public static IServiceProvider UseDefaultColorScheme(this IServiceProvider sp, ColorScheme scheme)
+        {
+            PowerConsole.SetDefaultColorScheme(scheme);
+            PowerConsole.ApplyColorScheme(scheme);
             return sp;
         }
     }

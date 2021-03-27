@@ -52,10 +52,15 @@ namespace AVS.CoreLib.ConsoleTools.Logging
             var scheme = logLevel.GetColorScheme();
 
             ScopeHelper.OpenScope(ScopeProvider, state, Name);
-            Console.Print(logLevel.GetLogLevelText(" "), scheme, false);
-
-            scheme.Foreground = ColorHelper.ExtractColor(ref message, scheme.Foreground);
-            Console.Print(message, scheme);
+            var color = ColorHelper.ExtractColor(ref message, scheme.Foreground);
+            using (var locker = ConsoleLocker.Create())
+            {
+                Console.WriteLine();
+                Console.Print(logLevel.GetLogLevelText(" "), scheme, false);
+                scheme.Foreground = color;
+                Console.Print(message, scheme);
+                Console.WriteLine(exception.StackTrace, ConsoleColor.DarkGray, null);
+            }
         }
 
         protected virtual string FormatState<TState>(TState state, Exception exception,

@@ -5,6 +5,18 @@ namespace AVS.CoreLib.PowerConsole
 {
     public static partial class PowerConsole
     {
+        public static ConsoleColor Foreground
+        {
+            get => System.Console.ForegroundColor;
+            set => System.Console.ForegroundColor = value;
+        }
+
+        public static ConsoleColor BackgroundColor
+        {
+            get => System.Console.BackgroundColor;
+            set => System.Console.BackgroundColor = value;
+        }
+
         public static Encoding InputEncoding
         {
             get => Console.InputEncoding;

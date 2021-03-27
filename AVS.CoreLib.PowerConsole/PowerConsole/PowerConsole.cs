@@ -5,7 +5,33 @@ namespace AVS.CoreLib.PowerConsole
 {
     public static partial class PowerConsole
     {
-        public static ColorScheme Scheme => ColorScheme.Current;
+        public static ColorScheme CurrentColorScheme => ColorScheme.Current;
+
+        public static void ApplyColorScheme(ColorScheme scheme)
+        {
+            scheme.Apply();
+        }
+
+        /// <summary>
+        /// Applies default color scheme
+        /// </summary>
+        public static void ColorSchemeReset()
+        {
+            ColorScheme.Default.Apply();
+        }
+
+        public static void SetDefaultColorScheme(ColorScheme scheme)
+        {
+            ColorScheme.Default = scheme;
+        }
+
+        /// <summary>
+        /// Restores ColorScheme.Default to ColorScheme.Classic
+        /// </summary>
+        public static void RestoreDefaultColorScheme()
+        {
+            ColorScheme.Default = ColorScheme.Classic;
+        }
 
         /// <summary>
         /// Indicates whether new line (\r\n) has been just written 

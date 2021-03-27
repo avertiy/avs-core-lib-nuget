@@ -85,7 +85,7 @@ namespace AVS.CoreLib.PowerConsole
             Write($"\r\n {ex.GetType().Name}: ", ConsoleColor.DarkRed);
             WriteLine(ex.Message, MessageStatus.Error, timeFormat);
             if (printStackTrace)
-                WriteLine(ex.Message, MessageStatus.Debug, null);
+                WriteLine(ex.StackTrace, MessageStatus.Debug, null);
         }
     }
 }

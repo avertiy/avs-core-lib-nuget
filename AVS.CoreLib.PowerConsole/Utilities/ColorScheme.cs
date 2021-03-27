@@ -4,7 +4,11 @@ namespace AVS.CoreLib.PowerConsole.Utilities
 {
     public struct ColorScheme
     {
-        public static ColorScheme Default { get; } = new ColorScheme(System.Console.BackgroundColor, System.Console.ForegroundColor);
+        /// <summary>
+        /// returns classic console colors: black / dark gray
+        /// </summary>
+        public static ColorScheme Classic => new ColorScheme(ConsoleColor.Black, ConsoleColor.DarkGray);
+        public static ColorScheme Default { get; internal set; } = new ColorScheme(Console.BackgroundColor, Console.ForegroundColor);
         public static ColorScheme Current => new ColorScheme(System.Console.BackgroundColor, System.Console.ForegroundColor);
 
         public ConsoleColor Background { get; set; }
@@ -29,7 +33,7 @@ namespace AVS.CoreLib.PowerConsole.Utilities
             _previousBackground = null;
         }
 
-        public void Apply()
+        internal void Apply()
         {
             if (Console.ForegroundColor != Foreground)
             {
@@ -84,7 +88,7 @@ namespace AVS.CoreLib.PowerConsole.Utilities
             ApplyScheme(Default);
         }
 
-        #region Popular colors
+        #region Popular schemes
         public static ColorScheme Blue => new ColorScheme(ConsoleColor.Blue);
         public static ColorScheme DarkBlue => new ColorScheme(ConsoleColor.DarkBlue);
         public static ColorScheme Red => new ColorScheme(ConsoleColor.Red);

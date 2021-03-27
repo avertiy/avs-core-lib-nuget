@@ -14,6 +14,7 @@ namespace AVS.CoreLib.Trading.Helpers
 
     public class RankHelper : IRankHelper
     {
+        public const int MaxRank = 12;
         public int GetRank(decimal total, string baseCurrency)
         {
             var rank = 0;
