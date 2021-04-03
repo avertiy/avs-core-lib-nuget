@@ -22,35 +22,34 @@ namespace AVS.CoreLib.Trading.FormatProviders
 
         protected override string CustomFormat(string format, object arg, IFormatProvider formatProvider)
         {
-            if (arg is double d)
+            return arg switch
             {
-                switch (format.ToLower())
-                {
-                    case "price":
-                    case "p":
-                        return d.FormatAsPrice();
-                    case "n":
-                    case "normalized":
-                        return d.ToStringNormalized();
-                    default:
-                        return d.FormatNumber();
-                }
-            }
-            else if (arg is decimal dec)
+                double d => FormatDecimal(format, Convert.ToDecimal(d)),
+                decimal dec => FormatDecimal(format, dec),
+                _ => arg?.ToString()
+            };
+        }
+
+        private static string FormatDecimal(string format, decimal d)
+        {
+            switch (format)
             {
-                switch (format)
-                {
-                    case "price":
-                    case "p":
-                        return dec.FormatAsPrice();
-                    case "N":
-                    case "normalized":
-                        return dec.ToStringNormalized();
-                    default:
-                        return dec.FormatNumber();
-                }
+                case "price":
+                case "p":
+                    return d.FormatAsPrice();
+                case "total":
+                case "t":
+                    return d.FormatAsTotal();
+                case "quantity":
+                case "qty":
+                case "q":
+                    return d.FormatNumber(3);
+                case "N":
+                case "normalized":
+                    return d.ToStringNormalized();
+                default:
+                    return d.FormatNumber();
             }
-            return arg?.ToString();
         }
 
         protected override bool Match(string format)

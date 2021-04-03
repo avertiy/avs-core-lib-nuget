@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using AVS.CoreLib.Trading.Constants;
 
 namespace AVS.CoreLib.Trading.Extensions
 {
@@ -33,220 +34,129 @@ namespace AVS.CoreLib.Trading.Extensions
             return arr;
         }
 
-        public static string FormatAsPrice(this double value)
+        public static string FormatAsPrice(this double value, int? decimalPlaces = null)
         {
-            var M = 1000 * 1000;
-            var K = 1000;
-
-            if (value > M)
-                return $@"{value / M:N5}M";
-
-            if (value > K)
-                return $@"{value / K:N5}K";
-
-            if (value > 10)
-                return $@"{value:N4}";
-
-            //0.100456 => 100.4 => 0.456
-            var v = value * 1000;
-            var diff = v - Math.Floor(v);
-            if (diff > 0)
-            {
-                v = value * 10000;
-                diff = v - Math.Floor(v);
-                if (diff > 0)
-                    return $@"{value:N8}";
-                return $@"{value:N4}";
-            }
-            return $@"{value:N3}";
+            return FormatAsPrice((decimal)value, decimalPlaces);
         }
 
-        public static string FormatAsPrice(this decimal value)
+        public static string FormatAsPrice(this decimal value, int? decimalPlaces = null)
         {
-            if (value > 999999999)
-            {
-                //billions
-                return value.ToString("0,,,.###B", CultureInfo.InvariantCulture);
-            }
-            else if (value > 999999)
-            {
-                //millions
-                return value.ToString("0,,.###M", CultureInfo.InvariantCulture);
-            }
-            else if (value > 99999)
-            {
-                return value.ToString("0,.##K", CultureInfo.InvariantCulture);
-            }
-            else if (value > 9999)
-            {
-                return value.ToString("0,0.", CultureInfo.InvariantCulture);
-            }
-            else if (value > 999)
-            {
-                return value.ToString("0,0.00", CultureInfo.InvariantCulture);
-            }
-            else if (value > 10)
-            {
-                return value.ToString("0,0.000", CultureInfo.InvariantCulture);
-            }
-
-
-            //if (value > 10)
-            //    return $@"{value:N4}";
-
-            //0.100456 => 100.4 => 0.456
-            var v = value * 1000;
-            var diff = v - Math.Floor(v);
-            if (diff > 0)
-            {
-                v = value * 10000;
-                diff = v - Math.Floor(v);
-                if (diff > 0)
-                    return $@"{value:N8}";
-                return $@"{value:N4}";
-            }
-            return $@"{value:N3}";
-        }
-
-        /// <summary>
-        /// formats value as quantity i.e. keeping only meaningful digits
-        /// when value is greater than billion - 1.123 B 
-        /// when value is greater than million - 1.123 M 
-        /// when value is greater than thousand - 1.123 K
-        /// </summary>
-        public static string FormatNumber(this double value)
-        {
-            if (value > 10000)
-                return value.FormatBigNumber();
-            return value.FormatSmallNumber();
-        }
-        /// <summary>
-        /// formats value as quantity i.e. keeping only meaningful digits
-        /// when value is greater than billion - 1.123 B 
-        /// when value is greater than million - 1.123 M 
-        /// when value is greater than thousand - 1.123 K
-        /// </summary>
-        public static string FormatNumber(this decimal value)
-        {
-            if (value > 10000)
-                return value.FormatBigNumber();
-            return value.FormatSmallNumber();
-        }
-
-        private static string FormatBigNumber(this double value)
-        {
-            if (value < 10000)
-                throw new ArgumentException(nameof(value));
-
-            var million = 1000 * 1000;
-            if (value < million)
-            {
-                var k = value / 1000;
-                return $@"{k:N3}K";
-            }
-
-            if (value < (million * 1000))
-            {
-                var m = value / million;
-                return $@"{m:N3}M";
-            }
-
-            if (value < (million * 1000 * 1000))
-            {
-                var m = value / (million * 1000);
-                return $@"{m:N3}B";
-            }
-
-            var b = value / (million * 1000 * 1000);
-            return $@"{b:N3}T";
-
-        }
-
-        private static string FormatBigNumber(this decimal value)
-        {
-            if (value < 10000)
-                throw new ArgumentException(nameof(value));
-
-            var million = 1000 * 1000;
-            if (value < million)
-            {
-                var k = value / 1000;
-                return $@"{k:N3}K";
-            }
-
-            if (value < (million * 1000))
-            {
-                var m = value / million;
-                return $@"{m:N3}M";
-            }
-
-            if (value < (million * 1000 * 1000))
-            {
-                var m = value / (million * 1000);
-                return $@"{m:N3}B";
-            }
-
-            var b = value / (million * 1000 * 1000);
-            return $@"{b:N3}T";
-
-        }
-
-        private static string FormatSmallNumber(this double value)
-        {
-            if (value > 10000 || value < 0)
-                throw new ArgumentOutOfRangeException(nameof(value), $"value must be within range [0;10000]");
-
             if (value >= 1)
             {
-                if (value > 100)
-                    return $@"{value:0.##}";
-                if (value > 10)
-                    return $@"{value:0.###}";
+                if (value < 100)
+                    return Format(value, decimalPlaces ?? 3, string.Empty);
 
-                return $@"{value:0.####}";
+                if (value < 100000)
+                    return Format(value, decimalPlaces ?? 2, string.Empty);
+
+                var million = 1000000m;
+                if (value < million)
+                {
+                    var k = value / 1000;
+                    return Format(k, decimalPlaces ?? 3, "K");
+                }
+
+                if (value < (million * 1000))
+                {
+                    var m = value / million;
+                    return Format(m, decimalPlaces ?? 3, "M");
+                }
+
+                if (value < (million * 1000 * 1000))
+                {
+                    var b = value / (million * 1000);
+                    return Format(b, decimalPlaces ?? 3, "B");
+                }
+
+                var t = value / (million * 1000 * 1000);
+                return Format(t, decimalPlaces ?? 3, "T");
             }
-
-            if (value < 0.000099)
-                return $@"{value:0.########}";
-            if (value < 0.00099)
-                return $@"{value:0.#######}";
-            if (value < 0.0099)
-                return $@"{value:0.######}";
-            if (value < 0.099)
-                return $@"{value:0.#####}";
-            if (value < 0.99)
-                return $@"{value:0.####}";
-
-            return $@"{value:0.########}";
+            else
+            {
+                //0.100456 => 100.4 => 0.456
+                var v = value * 1000;
+                var diff = v - Math.Floor(v);
+                if (diff > 0)
+                {
+                    v = value * 10000;
+                    diff = v - Math.Floor(v);
+                    if (diff > 0)
+                        return $@"{value:N8}";
+                    return $@"{value:N4}";
+                }
+                return $@"{value:N3}";
+            }
         }
 
-        private static string FormatSmallNumber(this decimal value)
+        public static string FormatAsTotal(this decimal value, int? decimalPlaces = null)
         {
-            if (value > 10000 || value < 0)
-                throw new ArgumentOutOfRangeException(nameof(value), $"value must be within range [0;10000]");
+            return FormatNumber(value, decimalPlaces ?? 2);
+        }
 
+        public static string FormatNumber(this decimal value, int? decimalPlaces = null)
+        {
             if (value >= 1)
             {
-                if (value > 100)
-                    return $@"{value:0.##}";
-                if (value > 10)
-                    return $@"{value:0.###}";
+                if (value < 100)
+                    return Format(value, decimalPlaces ?? 3, string.Empty);
 
-                return $@"{value:0.####}";
+                var million = 1000000m;
+                if (value < million)
+                {
+                    var k = value / 1000;
+                    return Format(k, decimalPlaces ?? 3, "K");
+                }
+
+                if (value < (million * 1000))
+                {
+                    var m = value / million;
+                    return Format(m, decimalPlaces ?? 3, "M");
+                }
+
+                if (value < (million * 1000 * 1000))
+                {
+                    var b = value / (million * 1000);
+                    return Format(b, decimalPlaces ?? 3, "B");
+                }
+
+                var t = value / (million * 1000 * 1000);
+                return Format(t, decimalPlaces ?? 3, "T");
             }
 
-            if (value < 0.000099m)
-                return $@"{value:0.########}";
-            if (value < 0.00099m)
-                return $@"{value:0.#######}";
-            if (value < 0.0099m)
-                return $@"{value:0.######}";
-            if (value < 0.099m)
-                return $@"{value:0.#####}";
-            if (value < 0.99m)
-                return $@"{value:0.####}";
+            if (value >= 0)
+            {
+                if (value < TradingConstants.OneSatoshi / 10)
+                    return "0";
 
-            return $@"{value:0.########}";
+                var million = 1000000m;
+                if (value < 0.000009m)
+                    return Format(value*million, decimalPlaces ?? 3,"mk");
+
+                if (value < 0.01m)
+                    return Format(value * 1000, decimalPlaces ?? 3, "m");
+
+                return Format(value, decimalPlaces ?? 3, string.Empty);
+            }
+            else
+            {
+                return "-" + FormatNumber(-1 * value, decimalPlaces);
+            }
+        }
+
+        public static string FormatNumber(this double value, int? decimalPlaces = null)
+        {
+            return FormatNumber((decimal)value, decimalPlaces);
+        }
+        private static string Format(decimal d, int n, string suffix)
+        {
+            return n switch
+            {
+                0 => $"{d:N0}{suffix}",
+                1 => $"{d:N1}{suffix}",
+                2 => $"{d:N2}{suffix}",
+                3 => $"{d:N3}{suffix}",
+                _ => $"{d:N4}{suffix}"
+            };
         }
     }
 }

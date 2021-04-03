@@ -68,7 +68,8 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
         /// </example>
         public static void Run<TStartup>(Action<IServiceProvider> main) where TStartup : IStartup, new()
         {
-            ColorScheme.DarkGray.Apply();
+            PowerConsole.PowerConsole.SetDefaultColorScheme(ColorScheme.DarkGray);
+            PowerConsole.PowerConsole.ApplyColorScheme(ColorScheme.DarkGray);
             SetCurrentCulture("en-US");
             var startup = new TStartup();
             IServiceProvider sp =
@@ -99,7 +100,8 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
         /// </example>
         public static async Task RunAsync<TStartup>(Func<IServiceProvider, Task> main) where TStartup : IStartup, new()
         {
-            ColorScheme.DarkGray.Apply();
+            PowerConsole.PowerConsole.SetDefaultColorScheme(ColorScheme.DarkGray);
+            PowerConsole.PowerConsole.ApplyColorScheme(ColorScheme.DarkGray);
             SetCurrentCulture("en-US");
             var startup = new TStartup();
             var sp = ServiceProviderBuilder.BuildServiceProvider(startup.RegisterServices, startup.ConfigureLogging);
@@ -142,7 +144,8 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
                 else
                 {
                     hostBuilder.UseConsoleLifetime();
-                    ColorScheme.DarkGray.Apply();
+                    PowerConsole.PowerConsole.SetDefaultColorScheme(ColorScheme.DarkGray);
+                    PowerConsole.PowerConsole.ApplyColorScheme(ColorScheme.DarkGray);
                 }
 
                 SetCurrentCulture("en-US");
