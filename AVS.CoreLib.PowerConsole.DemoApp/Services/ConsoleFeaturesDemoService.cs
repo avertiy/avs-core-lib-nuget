@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using AVS.CoreLib.PowerConsole.ConsoleTable;
 using AVS.CoreLib.PowerConsole.Utilities;
 using Console = AVS.CoreLib.PowerConsole.PowerConsole;
 
@@ -21,6 +22,7 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
                 PrintTimeElapsed();
                 PrintFormattedString();
                 PrintTable();
+                PrintColorString();
                 PrintTableFormattedString();
                 ClearLine();
                 WriteDebug();
@@ -33,6 +35,20 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
             {
                 Console.WriteError(ex);
             }
+        }
+
+        //private void PrintASCIISymbols()
+        //{
+        //    System.Console.OutputEncoding = System.Text.Encoding.Unicode;
+        //    System.Console.WriteLine("&#8712;");
+
+        //    Console.ReadLine();
+        //}
+
+        public void PrintColorString()
+        {
+            Console.PrintHeader($"PrintF(ColoredString)  [format: $$text:-Color$]");
+            Console.PrintF($"$$text in red background:--Red$ ### some other text $$green text::-Green$");
         }
 
         public void PrintHeader()
@@ -155,6 +171,15 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
                 } };
 
             Console.PrintTable(arr, ConsoleColor.DarkCyan);
+            Console.WriteLine();
+
+            var table = Table.Create(new []{"Buys","Sells","Column 3", "Column 4"}, new []{ ColorScheme.DarkGreen, ColorScheme.DarkRed });
+            table.AddRow(new object[]{"buys trade1","sell trade1", "adasdasd","sadasd adqw 23 2323"});
+            table.AddRow(new object[]{"buys trade2","sell trade2", "adasdasd", "sadasd adqw 23 2323" });
+            table.AddRow(new object[]{"cell 3 asdas dasdasd das d","", "adasdasd", "sadasd adqw 23 2323" });
+            table.AddRow(new object[]{"","cell 4 sdfdsf eewewer", "adasdasd", "sadasd adqw 23 2323" });
+            
+            Console.PrintTable(table);
         }
 
         public void PrintTableFormattedString()

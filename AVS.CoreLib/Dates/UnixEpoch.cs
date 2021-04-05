@@ -15,6 +15,16 @@ namespace AVS.CoreLib.Dates
             return DateTimeUnixEpochStart.AddMilliseconds(unixTimeStampMilliseconds);
         }
 
+        public static DateTime GetDateFromUnixTime(long unixTimeStamp, bool milliseconds = true)
+        {
+            return milliseconds ? DateTimeUnixEpochStart.AddMilliseconds(unixTimeStamp) : DateTimeUnixEpochStart.AddSeconds(unixTimeStamp);
+        }
+
+        public static DateTime GetDateFromUnixTime(ulong unixTimeStamp, bool milliseconds = true)
+        {
+            return milliseconds ? DateTimeUnixEpochStart.AddMilliseconds(unixTimeStamp) : DateTimeUnixEpochStart.AddSeconds(unixTimeStamp);
+        }
+
         /// <summary>
         /// to unix time stamp in seconds from unix epoch start
         /// </summary>

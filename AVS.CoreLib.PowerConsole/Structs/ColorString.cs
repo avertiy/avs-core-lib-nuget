@@ -1,18 +1,28 @@
-﻿using System;
+﻿using AVS.CoreLib.PowerConsole.Utilities;
 
 namespace AVS.CoreLib.PowerConsole.Structs
 {
     public struct ColorString
     {
         public string Text { get; set; }
-        public ConsoleColor Color { get; set; }
+        public ColorScheme Color { get; set; }
 
-        public ColorString(string text, ConsoleColor color)
+        public ColorString(string text)
+        {
+            Text = text;
+            Color = ColorScheme.Current;
+        }
+
+        public ColorString(string text, ColorScheme color)
         {
             Text = text;
             Color = color;
         }
 
+        public override string ToString()
+        {
+            return $"$${Text}:-{Color.Foreground} --{Color.Background}$";
+        }
     }
 }
 //    public class ColorText : IColorText

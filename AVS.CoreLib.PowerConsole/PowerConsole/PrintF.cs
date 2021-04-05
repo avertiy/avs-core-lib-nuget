@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
+using System.Text.RegularExpressions;
 using AVS.CoreLib.PowerConsole.Utilities;
 
 namespace AVS.CoreLib.PowerConsole
@@ -30,7 +32,7 @@ namespace AVS.CoreLib.PowerConsole
         {
             var formattedString = Format(str);
             var scheme = new ColorScheme(color);
-            scheme.Apply();
+            ApplyColorScheme(scheme);
             //1. x-formatted string might contain color formatting: $$text:--Color$
             //Table/Square/Header tag formatters are not implemented yet
             //but the idea is to parse tags: 
@@ -47,7 +49,7 @@ namespace AVS.CoreLib.PowerConsole
             //XFormattedStringFactory.Create(formattedString) => ColorFormattedString or TableFormatted or something else
 
             PrintF(new ColorFormattedString(formattedString), endLine);
-            scheme.Restore();
+            ColorSchemeReset();
         }
 
         /// <summary>
@@ -62,6 +64,32 @@ namespace AVS.CoreLib.PowerConsole
         {
             var formattedString = Format(str);
             PrintF(new ColorFormattedString(formattedString), endLine);
+        }
+
+        public static void PrintF(int posX, int posY, FormattableString str, bool endLine = true)
+        {
+            var formattedString = Format(str);
+            var rows = Regex.Matches(formattedString, Environment.NewLine).Count;
+            ClearRegion(posX, posY, rows);
+            PrintF(new ColorFormattedString(formattedString), endLine);
+        }
+
+        public static void PrintF(int posX, int posY, string str, bool endLine = true)
+        {
+            var rows = Regex.Matches(str, Environment.NewLine).Count;
+            ClearRegion(posX, posY, rows);
+            PrintF(new ColorFormattedString(str), endLine);
+        }
+
+        public static void PrintF(int posX, int posY, string str, ConsoleColor color, bool endLine = true)
+        {
+            var rows = Regex.Matches(str, Environment.NewLine).Count;
+            ClearRegion(posX, posY, rows);
+            var scheme = new ColorScheme(color);
+            ApplyColorScheme(scheme);
+            PrintF(new ColorFormattedString(str), endLine);
+            ColorSchemeReset();
+            ClearLine();
         }
 
         /// <summary>

@@ -9,64 +9,28 @@ namespace AVS.CoreLib.PowerConsole.Utilities
         /// </summary>
         public static ColorScheme Classic => new ColorScheme(ConsoleColor.Black, ConsoleColor.DarkGray);
         public static ColorScheme Default { get; internal set; } = new ColorScheme(Console.BackgroundColor, Console.ForegroundColor);
-        public static ColorScheme Current => new ColorScheme(System.Console.BackgroundColor, System.Console.ForegroundColor);
+        public static ColorScheme Current => new ColorScheme(Console.BackgroundColor, Console.ForegroundColor);
 
         public ConsoleColor Background { get; set; }
         public ConsoleColor Foreground { get; set; }
 
-        private ConsoleColor? _previous;
-        private ConsoleColor? _previousBackground;
-
         public ColorScheme(ConsoleColor foreground)
         {
             Foreground = foreground;
-            Background = System.Console.BackgroundColor;
-            _previous = null;
-            _previousBackground = null;
+            Background = Console.BackgroundColor;
         }
 
         public ColorScheme(ConsoleColor background, ConsoleColor foreground)
         {
             Background = background;
             Foreground = foreground;
-            _previous = null;
-            _previousBackground = null;
         }
-
-        internal void Apply()
-        {
-            if (Console.ForegroundColor != Foreground)
-            {
-                _previous = Console.ForegroundColor;
-                Console.ForegroundColor = Foreground;
-            }
-            if (Console.BackgroundColor != Background)
-            {
-                _previousBackground = Console.BackgroundColor;
-                Console.BackgroundColor = Background;
-            }
-        }
-
-        public void Restore()
-        {
-            if (_previous.HasValue)
-            {
-                Console.ForegroundColor = _previous.Value;
-                Foreground = _previous.Value;
-            }
-
-            if (_previousBackground.HasValue)
-            {
-                Console.BackgroundColor = _previousBackground.Value;
-                Background = _previousBackground.Value;
-            }
-        }
-
+        
         public override string ToString()
         {
-            return $"-f {Foreground} -b {Background}";
+            return $"-{Foreground} --{Background}";
         }
-
+        
         /// <summary>
         /// converts strings in format -Color or --Color into ColorScheme
         /// </summary>

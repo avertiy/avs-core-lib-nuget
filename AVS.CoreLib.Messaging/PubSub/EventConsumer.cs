@@ -9,11 +9,11 @@ namespace AVS.CoreLib.Messaging.PubSub
         where TEvent : IEvent
         where TContext : IPublishContext
     {
-        private readonly ILogger _logger;
+        protected ILogger Logger { get; }
 
         protected EventConsumer(ILogger logger)
         {
-            _logger = logger;
+            Logger = logger;
         }
 
         public void Handle(TEvent @event, TContext context)
@@ -24,7 +24,7 @@ namespace AVS.CoreLib.Messaging.PubSub
             }
             catch (Exception ex)
             {
-                _logger.LogError(EventCodes.HandleEvent, ex, "Failed to handle {event} {context}", @event, context);
+                HandleError(ex, @event, context);
             }
         }
 
@@ -36,13 +36,18 @@ namespace AVS.CoreLib.Messaging.PubSub
             }
             catch (Exception ex)
             {
-                _logger.LogError(EventCodes.HandleEvent, ex, "Failed to handle {event} {context}", @event, context);
+                Logger.LogError(EventCodes.HandleEvent, ex, "Failed to handle {event} {context}", @event, context);
             }
         }
 
         protected virtual void HandleInternal(TEvent @event, TContext context)
         {
 
+        }
+
+        protected virtual void HandleError(Exception ex, TEvent @event, TContext context)
+        {
+            Logger.LogError(EventCodes.HandleEvent, ex, "Failed to handle {event} {context}", @event, context);
         }
     }
 }

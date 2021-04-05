@@ -19,10 +19,10 @@ namespace AVS.CoreLib.PowerConsole
                 message = $"{DateTime.Now.ToString(timeFormat)} {message}";
 
             var scheme = new ColorScheme(color);
-            scheme.Apply();
+            ApplyColor(color);
             Console.WriteLine(message);
             NewLineFlag = true;
-            scheme.Restore();
+            ColorSchemeReset();
         }
 
         public static void WriteLine(string message, ColorScheme scheme, string timeFormat = "yyyy-MM-dd hh:mm:ss.ff")
@@ -30,10 +30,10 @@ namespace AVS.CoreLib.PowerConsole
             if (!string.IsNullOrEmpty(timeFormat))
                 message = $"{DateTime.Now.ToString(timeFormat)} {message}";
 
-            scheme.Apply();
+            ApplyColorScheme(scheme);
             Console.WriteLine(message);
             NewLineFlag = true;
-            scheme.Restore();
+            ColorSchemeReset();
         }
 
 
@@ -49,6 +49,15 @@ namespace AVS.CoreLib.PowerConsole
             WriteLine(message, ColorScheme.GetStatusColorScheme(status), timeFormat);
             if (BeepOnMessageStatus.HasValue && status == BeepOnMessageStatus.Value)
                 Console.Beep();
+        }
+
+        public static void WriteLine(int posX, int posY, params string[] arr)
+        {
+            ClearRegion(posX, posY, arr.Length);
+            foreach (var text in arr)
+            {
+                Console.WriteLine(text);
+            }
         }
 
         public static void WriteLine(bool voidMultipleEmptyLines = true)
@@ -67,10 +76,17 @@ namespace AVS.CoreLib.PowerConsole
 
         public static void Write(string value, ConsoleColor color)
         {
-            var scheme = new ColorScheme(color);
-            scheme.Apply();
+            ApplyColor(color);
             Console.Write(value);
-            scheme.Restore();
+            ColorSchemeReset();
+            NewLineFlag = value.EndsWith("\r\n");
+        }
+
+        public static void Write(string value, ColorScheme scheme)
+        {
+            ApplyColorScheme(scheme);
+            Console.Write(value);
+            ColorSchemeReset();
             NewLineFlag = value.EndsWith("\r\n");
         }
 

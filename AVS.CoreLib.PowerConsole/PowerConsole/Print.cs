@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using AVS.CoreLib.PowerConsole.ConsoleTable;
 using AVS.CoreLib.PowerConsole.Extensions;
 using AVS.CoreLib.PowerConsole.Structs;
 using AVS.CoreLib.PowerConsole.Utilities;
@@ -41,14 +42,15 @@ namespace AVS.CoreLib.PowerConsole
 
         public static void Print(string str, ColorScheme scheme, bool endLine = true)
         {
-            scheme.Apply();
+            ApplyColorScheme(scheme);
             Write(str);
             if (endLine && NewLineFlag == false)
             {
                 Console.WriteLine();
                 NewLineFlag = true;
             }
-            scheme.Restore();
+
+            ColorSchemeReset();
         }
 
         public static void Print<T>(string message, IEnumerable<T> arr, ConsoleColor color = ConsoleColor.Gray)
@@ -86,6 +88,19 @@ namespace AVS.CoreLib.PowerConsole
         public static void PrintTable<T>(IEnumerable<T> data, ConsoleColor color = ConsoleColor.White, bool endLine = true)
         {
             Print(Table.Create(data).ToString(), color, endLine);
+        }
+
+        public static void PrintTable<T>(IEnumerable<T> data, Action<Table> configure = null, bool endLine = true)
+        {
+            var table = Table.Create(data);
+            var colorFormattedString = table.ToColorFormattedString();
+            PrintF(colorFormattedString, endLine);
+        }
+
+        public static void PrintTable(Table table, bool endLine = true)
+        {
+            var colorFormattedString = table.ToColorFormattedString();
+            PrintF(colorFormattedString, endLine);
         }
 
         public static void PrintTest(string message, bool test, int padRight, bool endLine = true)

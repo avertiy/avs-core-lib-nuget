@@ -22,4 +22,8 @@ e.g. ColorFormatter, NotEmptyFormatter, PriceFormatter, EnumFormatter etc.</Desc
     <Version>1.0.1</Version>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>K:\WORK\AVS.NET-CORE\avs-core-lib-nuget\AVS.CoreLib.Text\AVS.CoreLib.Text.xml</DocumentationFile>
+  </PropertyGroup>
+
 </Project>

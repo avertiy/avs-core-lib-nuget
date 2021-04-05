@@ -7,9 +7,10 @@ namespace AVS.CoreLib.PowerConsole.DemoApp
     {
         static async Task Main(string[] args)
         {
-            //var demo = new ConsoleFeaturesDemoService();
-            var demo = new XFormatDemoService();
+            var demo = new ConsoleFeaturesDemoService();
             await demo.DemoAsync();
+            var demo2 = new XFormatDemoService();
+            await demo2.DemoAsync();
         }
     }
 }

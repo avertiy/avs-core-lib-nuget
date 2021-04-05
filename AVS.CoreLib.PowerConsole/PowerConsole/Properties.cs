@@ -81,5 +81,15 @@ namespace AVS.CoreLib.PowerConsole
             get => Console.WindowTop;
             set => Console.WindowTop = value;
         }
+
+        public static void SetCursorPosition(int left, int top)
+        {
+            Console.SetCursorPosition(left, top);
+        }
+
+        public static void SetWindowPosition(int left, int top)
+        {
+            Console.SetWindowPosition(left, top);
+        }
     }
 }

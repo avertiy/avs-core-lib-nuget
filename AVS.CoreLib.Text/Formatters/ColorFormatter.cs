@@ -5,7 +5,7 @@ namespace AVS.CoreLib.Text.Formatters
     /// <summary>
     /// formats input "{DateTime.Now:!--Red d}" into string $$01/01/2020:--Red$
     /// - foreground color
-    /// --background color 
+    /// --background color
     /// </summary>
     public class ColorFormatter : CustomFormatter
     {
@@ -19,7 +19,7 @@ namespace AVS.CoreLib.Text.Formatters
                 : string.Empty;
 
             var value = DefaultFormat(nextFormat, arg, formatProvider);
-            string str = $"$${value}:{parts[0]}$";
+            var str = $"$${value}:{parts[0]}$";
             return str;
         }
 

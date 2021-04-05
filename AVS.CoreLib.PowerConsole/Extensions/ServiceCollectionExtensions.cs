@@ -29,7 +29,7 @@ namespace AVS.CoreLib.PowerConsole.Extensions
             PowerConsole.Format = format;
             PowerConsole.InputEncoding = encoding;
             PowerConsole.OutputEncoding = encoding;
-            ColorScheme.Default.Apply();
+            PowerConsole.ApplyColorScheme(ColorScheme.Default);
             return sp;
         }
 

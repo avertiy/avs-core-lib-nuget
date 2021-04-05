@@ -10,7 +10,7 @@ namespace AVS.CoreLib.Trading.FormatProviders
         /// <summary>
         /// qualifiers: "q|quote; b|base; p|pair; Q|B|symbol"
         /// </summary>
-        public static string GetQualifiers => "q|quote; b|base; p|pair; Q|B|$";
+        public static string GetQualifiers => "q|quote; b|base; p|pair; Q|B";
         protected override string CustomFormat(string format, object arg, IFormatProvider formatProvider)
         {
             switch (arg)
@@ -26,7 +26,6 @@ namespace AVS.CoreLib.Trading.FormatProviders
                             return new CurrencyPair(pair).QuoteCurrency;
                         case "Q":
                             return CoinHelper.GetCurrencySymbol(new CurrencyPair(pair).QuoteCurrency);
-                        case "$":
                         case "B":
                             return CoinHelper.GetCurrencySymbol(new CurrencyPair(pair).BaseCurrency);
                         default:
@@ -43,7 +42,6 @@ namespace AVS.CoreLib.Trading.FormatProviders
                             return cp.QuoteCurrency;
                         case "Q":
                             return CoinHelper.GetCurrencySymbol(cp.QuoteCurrency);
-                        case "$":
                         case "B":
                             return CoinHelper.GetCurrencySymbol(cp.BaseCurrency);
                         default:
@@ -60,7 +58,6 @@ namespace AVS.CoreLib.Trading.FormatProviders
                             return new CurrencyPair(pairString.Value).QuoteCurrency;
                         case "Q":
                             return CoinHelper.GetCurrencySymbol(new CurrencyPair(pairString.Value).QuoteCurrency);
-                        case "$":
                         case "B":
                             return CoinHelper.GetCurrencySymbol(new CurrencyPair(pairString.Value).BaseCurrency);
                         default:

@@ -1,13 +1,14 @@
 ﻿using System;
+using AVS.CoreLib.Text;
 using AVS.CoreLib.Text.Formatters;
 
 namespace AVS.CoreLib.Trading.FormatProviders
 {
-    public class TradingFormatProvider : CustomFormatter
+    public class TradingFormatter : CustomFormatter
     {
-        public static TradingFormatProvider Instance = new TradingFormatProvider();
+        public static TradingFormatter Instance = new TradingFormatter();
         private readonly CustomFormatter _formatter;
-        public TradingFormatProvider()
+        public TradingFormatter()
         {
             var enumsFormatter = new TradingEnumsFormatter();
             var pairStringFormatter = new PairStringFormatter() { Next = enumsFormatter };

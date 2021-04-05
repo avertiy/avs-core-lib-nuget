@@ -16,7 +16,7 @@ namespace AVS.CoreLib.Text
         /// </summary>
         public static XFormatProvider FormatProvider
         {
-            get => _formatProvider ?? (_formatProvider = new XFormatProvider());
+            get => _formatProvider ??= new XFormatProvider();
             set => _formatProvider = value;
         }
 
@@ -27,20 +27,29 @@ namespace AVS.CoreLib.Text
         /// </summary>
         public static ITextProcessor TextProcessor
         {
-            get => _textProcessor ?? (_textProcessor = new TextExpressionProcessor());
+            get => _textProcessor ??= new TextExpressionProcessor();
             set => _textProcessor = value;
         }
 
         /// <summary>
         /// Replaces the format item(s) in a specified string with the string representation of the corresponding object
         /// Standard string format modifiers like N2, C etc. are extended with <see cref="XFormatProvider"/>
+        /// 
         /// If string starts with @ it is treated as string with expressions and processed by text processor
         /// the default text processor is <see cref="TextExpressionProcessor"/>
         /// e.g. "@any text before `expression: arg;` text after"
         /// if arg is empty the whole expression will not be included into result string: "any text before text after"
+        /// 
+        /// </summary>
+        /// <example>
+        /// ColorFormatter
+        /// example: $"{DateTime.Now:!--Red d}" - will translate into color formatted output string: $$01/01/2020:--Red$
+        /// example: $"{0.25:!--Green P}" - will translate into color formatted output string: $$25%:--Green$
+        /// </example>
+        /// <remarks>
         /// Note symbol @ at the beginning of the string and expression delimiters ``(quotes) 
         /// treated as service symbols which are not included in the result string
-        /// </summary>
+        /// </remarks>
         public static string Format(FormattableString str)
         {
             var result = str.ToString(FormatProvider);
