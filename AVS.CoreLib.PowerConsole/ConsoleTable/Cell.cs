@@ -8,6 +8,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
     {
         public string Text { get; set; }
         public int Width { get; set; }
+        public int Colspan { get; set; } = 1;
 
         public bool IsEmpty => string.IsNullOrEmpty(Text);
 
@@ -35,21 +36,6 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
                 text = text.PadRight(Width, ' ');
             }
             return text;
-        }
-
-        public ColorString ToColorString()
-        {
-            var text = Text;
-            var spacing = Row?.Table?.Style?.Spacing ?? " ";
-            if (Text.Length > Width)
-                text = spacing + Text.Truncate(Width - 2 - spacing.Length) + "..";
-            else
-            {
-                text = spacing + text.PadRight(Width - spacing.Length, ' ');
-            }
-
-            var scheme = ColorScheme ?? Row?.ColorScheme ?? Column.ColorScheme;
-            return scheme.HasValue ? new ColorString(text, scheme.Value) : new ColorString(text);
         }
     }
 

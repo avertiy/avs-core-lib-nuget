@@ -30,15 +30,22 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
             }
 
             if (TotalWidth > MAX_WIDTH)
-                throw new ConsoleException($"Table total width {TotalWidth} exceeds MAX_WIDTH {MAX_WIDTH}");
+                throw new TableException($"Table total width {TotalWidth} exceeds MAX_WIDTH {MAX_WIDTH}");
 
             for (var i = 0; i < Columns.Count; i++)
             {
                 var column = Columns[i];
                 foreach (var row in Rows)
                 {
+                    if(i >= row.Cells.Count)
+                        continue;
+
                     var cell = row[i];
-                    cell.Column = column;
+                    if (cell.Column == null)
+                    {
+                        cell.Column = column;
+                    }
+
                     if (string.IsNullOrEmpty(cell.Text))
                         continue;
 
@@ -60,15 +67,44 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
             }
 
             TotalWidth += Columns.Count*2;
-            for (var i = 0; i < Columns.Count; i++)
+
+            foreach (var row in Rows)
             {
-                var column = Columns[i];
-                foreach (var row in Rows)
+                var index = 0;
+                foreach (var cell in row.Cells)
                 {
-                    var cell = row[i];
-                    cell.Width = column.Width;
-                }
+                    if (cell.Colspan == 1)
+                    {
+                        cell.Width = cell.Column.Width;
+                        index++;
+                        continue;
+                    }
+
+                    for (var i = 0; i < cell.Colspan; i++)
+                    {
+                        var ind = index + i;
+                        if(ind >= Columns.Count)
+                            break;
+
+                        cell.Width += Columns[ind].Width;
+                    }
+                    cell.Width += cell.Colspan -1;
+                    index += cell.Colspan;
+                } 
             }
+
+            //for (var i = 0; i < Columns.Count; i++)
+            //{
+            //    var column = Columns[i];
+            //    foreach (var row in Rows)
+            //    {
+            //        if (i >= row.Cells.Count)
+            //            continue;
+
+            //        var cell = row[i];
+            //        cell.Width = column.Width;
+            //    }
+            //}
 
         }
 
@@ -90,26 +126,19 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
             Columns.Add(new Column() { Title = title, Width = colWidth, ColorScheme = scheme});
         }
 
+        public Row AddRow(ColorScheme? scheme = null)
+        {
+            var row = new Row() { ColorScheme = scheme, Table = this };
+            Rows.Add(row);
+            return row;
+        }
+
         public void AddRow(object[] values, ColorScheme? scheme = null)
         {
             var row = new Row(){ ColorScheme = scheme, Table = this};
             for (var i = 0; i < values.Length && i < Columns.Count; i++)
             {
-                row.AddCell(values[i]);
-            }
-            Rows.Add(row);
-        }
-
-        public void AddRow(string[] values, ColorScheme? scheme = null, ColorScheme[] cellSchemes = null)
-        {
-            var row = new Row() { ColorScheme = scheme, Table = this};
-            for (var i = 0; i < values.Length && i < Columns.Count; i++)
-            {
-                ColorScheme? cellScheme = null;
-                if (cellSchemes != null)
-                    cellScheme = cellSchemes[i];
-
-                row.AddCell(values[i], Columns[i], cellScheme);
+                row.AddCellWithValue(values[i]);
             }
             Rows.Add(row);
         }

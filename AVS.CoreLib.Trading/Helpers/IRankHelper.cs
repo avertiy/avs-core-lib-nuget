@@ -14,7 +14,7 @@ namespace AVS.CoreLib.Trading.Helpers
 
     public class RankHelper : IRankHelper
     {
-        public const int MaxRank = 12;
+        public const int MaxRank = 10;
         public int GetRank(decimal total, string baseCurrency)
         {
             var rank = 0;
@@ -62,30 +62,26 @@ namespace AVS.CoreLib.Trading.Helpers
             var rank = 0;
             if (total <= 100)
                 rank = 0;
-            else if (total < 500)
-                rank = 1;
             else if (total < 1000)
-                rank = 2;
+                rank = 1;
             else if (total < 2500)
-                rank = 3;
+                rank = 2;
             else if (total < 5000)
-                rank = 4;
+                rank = 3;
             else if (total < 10000)
-                rank = 5;
+                rank = 4;
             else if (total < 25000)
-                rank = 6;
+                rank = 5;
             else if (total < 50000)
-                rank = 7;
+                rank = 6;
             else if (total < 100000)
-                rank = 8;
+                rank = 7;
             else if (total < 250000)
-                rank = 9;
+                rank = 8;
             else if (total < 500000)
+                rank = 9;
+            else 
                 rank = 10;
-            else if (total < 1000000)
-                rank = 11;
-            else
-                rank = 12;
             return rank;
         }
 

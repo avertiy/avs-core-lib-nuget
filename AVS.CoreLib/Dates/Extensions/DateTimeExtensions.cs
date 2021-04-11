@@ -57,11 +57,23 @@ namespace AVS.CoreLib.Dates.Extensions
         }
 
         /// <summary>
-        /// example: DateTime nearestHour = DateTime.Now.Round(new TimeSpan(1,0,0));
+        /// Round date time value to the nearest timespan value
+        /// <example>
+        /// span = 1h: time 11:30 => 12:00; 11:29 => 11:00
+        /// </example>
         /// </summary>
         public static DateTime Round(this DateTime date, TimeSpan span)
         {
-            long ticks = (date.Ticks + (span.Ticks / 2) + 1) / span.Ticks;
+            var ticks = (date.Ticks + (span.Ticks / 2) + 1) / span.Ticks;
+            return new DateTime(ticks * span.Ticks);
+        }
+        /// <summary>
+        /// Round down date time value to the nearest down value
+        /// <example>span = 1h: 11:30 => 11:00;  11:59=> 11:00 </example> 
+        /// </summary>
+        public static DateTime RoundDown(this DateTime date, TimeSpan span)
+        {
+            var ticks = date.Ticks / span.Ticks;
             return new DateTime(ticks * span.Ticks);
         }
 
@@ -70,9 +82,19 @@ namespace AVS.CoreLib.Dates.Extensions
             return date.Round(TimeSpan.FromMilliseconds(milliseconds));
         }
 
+        public static DateTime RoundDown(this DateTime date, double milliseconds)
+        {
+            return date.RoundDown(TimeSpan.FromMilliseconds(milliseconds));
+        }
+
         public static DateTime Round(this DateTime date, int seconds)
         {
             return date.Round(TimeSpan.FromSeconds(seconds));
+        }
+
+        public static DateTime RoundDown(this DateTime date, int seconds)
+        {
+            return date.RoundDown(TimeSpan.FromSeconds(seconds));
         }
 
         /// <summary>

@@ -1,28 +1,25 @@
 ﻿using System.Linq;
 using System.Reflection;
 using System.Text;
+using AVS.CoreLib.PowerConsole.Extensions;
+using AVS.CoreLib.PowerConsole.Structs;
 using AVS.CoreLib.PowerConsole.Utilities;
 
 namespace AVS.CoreLib.PowerConsole.ConsoleTable
 {
     public static class TableExtensions
     {
-        public static string GetBorderLine(this Table tbl)
-        {
-            var style = tbl.Style;
-            return style.Cross + string.Join(style.Cross, tbl.Columns.Select(x => "".PadRight(x.Width, style.Pad))) + style.Cross;
-        }
-
-        internal static void AddRow<T>(this Table table, T obj, PropertyInfo[] props)
+        internal static Row AddRow<T>(this Table table, T obj, PropertyInfo[] props)
         {
             var row = new Row() { Table = table };
 
             foreach (var pi in props)
             {
                 var value = pi.GetValue(obj);
-                row.AddCell(value);
+                row.AddCellWithValue(value);
             }
             table.Rows.Add(row);
+            return row;
         }
 
         public static ColorFormattedString ToColorFormattedString(this Table table, bool useAutoWidth = true)
@@ -59,6 +56,41 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
             }
             sb.AppendLine(line);
             return new ColorFormattedString(sb.ToString());
+        }
+
+        public static ColorString ToColorString(this Cell cell)
+        {
+            var row = cell.Row;
+            var width = cell.Width;
+            if (cell.Colspan > 1)
+            {
+                var index = row.Cells.IndexOf(cell);
+                if (index >= 0 && index + cell.Colspan < row.Cells.Count)
+                {
+                    for (var i = 1; i < cell.Colspan; i++)
+                    {
+                        width += row[i + index].Width;
+                    }
+                }
+            }
+
+            var text = cell.Text;
+            var spacing = row?.Table?.Style?.Spacing ?? " ";
+            if (text.Length > width)
+                text = spacing + text.Truncate(width - 2 - spacing.Length) + "..";
+            else
+            {
+                text = spacing + text.PadRight(width - spacing.Length, ' ');
+            }
+
+            var scheme = cell.ColorScheme ?? row?.ColorScheme ?? cell.Column.ColorScheme;
+            return scheme.HasValue ? new ColorString(text, scheme.Value) : new ColorString(text);
+        }
+
+        private static string GetBorderLine(this Table tbl)
+        {
+            var style = tbl.Style;
+            return style.Cross + string.Join(style.Cross, tbl.Columns.Select(x => "".PadRight(x.Width, style.Pad))) + style.Cross;
         }
     }
 }

@@ -29,6 +29,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.Extra", "AVS.Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.WebApi", "AVS.CoreLib.WebApi\AVS.CoreLib.WebApi.csproj", "{9932C355-DF64-4B00-8EB5-D176E8C49AE6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{4A9D3A9E-083A-4C07-8789-FFC257D4A3DF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.Tests", "tests\AVS.CoreLib.Tests\AVS.CoreLib.Tests.csproj", "{68DFA0B4-3C39-4BB0-AE01-9CEB064DE29A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -87,9 +91,16 @@ Global
 		{9932C355-DF64-4B00-8EB5-D176E8C49AE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9932C355-DF64-4B00-8EB5-D176E8C49AE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9932C355-DF64-4B00-8EB5-D176E8C49AE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68DFA0B4-3C39-4BB0-AE01-9CEB064DE29A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68DFA0B4-3C39-4BB0-AE01-9CEB064DE29A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68DFA0B4-3C39-4BB0-AE01-9CEB064DE29A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68DFA0B4-3C39-4BB0-AE01-9CEB064DE29A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{68DFA0B4-3C39-4BB0-AE01-9CEB064DE29A} = {4A9D3A9E-083A-4C07-8789-FFC257D4A3DF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F0BC5348-2A0B-4051-BFD7-86F74D429B5D}
