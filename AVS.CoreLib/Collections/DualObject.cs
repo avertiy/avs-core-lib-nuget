@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace AVS.CoreLib.Collections
 {
@@ -7,6 +8,7 @@ namespace AVS.CoreLib.Collections
     /// </summary>
     /// <typeparam name="TValue1">The first type</typeparam>
     /// <typeparam name="TValue2">The second type</typeparam>
+    [DebuggerDisplay("DualObject [Value1: {Value1}; Value2: {Value2}]")]
     [Serializable]
     public class DualObject<TValue1, TValue2>
         : IEquatable<DualObject<TValue1, TValue2>>

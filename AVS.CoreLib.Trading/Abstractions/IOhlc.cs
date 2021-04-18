@@ -2,9 +2,14 @@
 {
     public interface IOhlc
     {
-        decimal Open { get; }
-        decimal High { get; }
-        decimal Low { get; }
-        decimal Close { get; }
+        decimal Open { get; set; }
+        decimal High { get; set; }
+        decimal Low { get; set; }
+        decimal Close { get; set; }
+    }
+
+    public interface IOhlcv : IOhlc
+    {
+        decimal Volume { get; set; }
     }
 }
