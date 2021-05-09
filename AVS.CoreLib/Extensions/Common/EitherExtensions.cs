@@ -23,5 +23,15 @@ namespace AVS.CoreLib.Extensions
         {
             return values.Contains(value);
         }
+
+        public static bool StartsWithEither(this string value, params string[] values)
+        {
+            return values.Any(value.StartsWith);
+        }
+
+        public static bool EndsWithEither(this string value, params string[] values)
+        {
+            return values.Any(value.EndsWith);
+        }
     }
 }

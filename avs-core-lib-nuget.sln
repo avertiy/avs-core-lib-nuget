@@ -33,6 +33,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{4A9D3A9E
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.Tests", "tests\AVS.CoreLib.Tests\AVS.CoreLib.Tests.csproj", "{68DFA0B4-3C39-4BB0-AE01-9CEB064DE29A}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.Caching", "AVS.CoreLib.Caching\AVS.CoreLib.Caching.csproj", "{5081BB5D-0A59-4860-8A0D-C41B6501414F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -95,6 +97,10 @@ Global
 		{68DFA0B4-3C39-4BB0-AE01-9CEB064DE29A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68DFA0B4-3C39-4BB0-AE01-9CEB064DE29A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68DFA0B4-3C39-4BB0-AE01-9CEB064DE29A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5081BB5D-0A59-4860-8A0D-C41B6501414F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5081BB5D-0A59-4860-8A0D-C41B6501414F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5081BB5D-0A59-4860-8A0D-C41B6501414F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5081BB5D-0A59-4860-8A0D-C41B6501414F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

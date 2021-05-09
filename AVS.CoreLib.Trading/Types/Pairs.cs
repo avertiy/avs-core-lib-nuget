@@ -11,14 +11,21 @@ namespace AVS.CoreLib.Trading.Types
         {
         }
 
+
         public Pairs(params string[] items) : base(items)
         {
         }
 
         [DebuggerStepThrough]
-        public static implicit operator Pairs(string exchanges)
+        public static implicit operator Pairs(string pairs)
         {
-            return Parse(exchanges);
+            return Parse(pairs);
+        }
+
+        [DebuggerStepThrough]
+        public static implicit operator Pairs(string[] pairs)
+        {
+            return new Pairs(pairs);
         }
 
         internal override string[] AllItems => TradingHelper.Instance.GetTopPairs("BTC", "USD", "USDT", "USDC", "UAH");

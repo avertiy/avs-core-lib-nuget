@@ -8,7 +8,6 @@ namespace AVS.CoreLib.REST.Responses
     {
         #region Properties
 
-        //[JsonProperty(Order = -10)]
         [ArrayProperty(-10, true)]
         public string Error { get; set; }
 

@@ -1,4 +1,7 @@
-﻿using System.Globalization;
+﻿using System.Collections.Generic;
+using System.Globalization;
+using System.Threading.Tasks;
+using AVS.CoreLib.REST.Responses;
 
 namespace AVS.CoreLib.REST.Extensions
 {
@@ -12,6 +15,17 @@ namespace AVS.CoreLib.REST.Extensions
                 output += value[i].ToString("x2", CultureInfo.InvariantCulture);
             }
             return (output);
+        }
+
+        public static async Task<AggregatedResponse<T>> ToAggregatedResponseAsync<T>(this IDictionary<string, Task<Response<T>>> tasks)
+        {
+            await Task.WhenAll(tasks.Values);
+            var aggregatedResponse = new AggregatedResponse<T>();
+            foreach (var kp in tasks)
+            {
+                aggregatedResponse.Add(kp.Key, kp.Value.Result);
+            }
+            return aggregatedResponse;
         }
     }
 }

@@ -8,5 +8,10 @@ namespace AVS.CoreLib.WebApi.Middleware
         {
             return builder.UseMiddleware<ExceptionHandlerMiddleware>();
         }
+
+        public static IApplicationBuilder UseDeveloperJsonExceptionMiddleware(this IApplicationBuilder builder)
+        {
+            return builder.UseMiddleware<DeveloperJsonExceptionMiddleware>();
+        }
     }
 }

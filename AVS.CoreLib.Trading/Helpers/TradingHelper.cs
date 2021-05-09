@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using AVS.CoreLib.Trading.Enums;
 
 namespace AVS.CoreLib.Trading.Helpers
@@ -24,26 +25,45 @@ namespace AVS.CoreLib.Trading.Helpers
         {
             var list = new List<string>();
 
-            if (currencies.HasFlag(CryptoCategory.Top20))
-                list.AddRange(new[] { "BCH", "BTC", "DASH", "DOGE", "ETH", "LTC", "XLM", "XEM", "XMR", "XRP" });
+            if (currencies.HasFlag(CryptoCategory.Top))
+                list.AddRange(new[]
+                {
+                    "ADA", 
+                    "BNB", "BTC", "BCH", 
+                    "DOGE", "DOT",
+                    "EOS", "ETH",
+                    "LTC",
+                    "NEO",
+                    "TRX",
+                    "XEM", "XLM", "XMR", "XRP",
+                    "ZEC", 
+                });
 
             if (currencies.HasFlag(CryptoCategory.StableCoin))
-                list.AddRange(new[] { "USDT", "USDC", "BUSD", "DAI", "TUSD", "PAX" });
+                list.AddRange(new[] { "USDT", "USDC", "BUSD", "DAI", "HUSD", "USDJ", "TUSD", "PAX" });
+
+            if (currencies.HasFlag(CryptoCategory.DeFi))
+                list.AddRange(new[] { "AAVE", "AVAX", "CAKE", "COMP","JST", "KAVA","LINK", "LUNA", "MKR", "OCEAN", "REEF","SOL", "SWAP", "UNI", "YFI"});
+
+            if (currencies.HasFlag(CryptoCategory.Gen2d))
+                list.AddRange(new[] { "ATOM", "BTT", "FIL", "THETA", "VET", "ZRX" });
 
             if (currencies.HasFlag(CryptoCategory.Fiat))
                 list.AddRange(new[] { "USD", "UAH", "EUR", "RUB", "AUD", "CAD", "GBP", "INR", "IDR", "PHP", "SGD", "SNI" });
 
-            //if (currencies.HasFlag(CryptoCategory.Tradeable))
-            //    list.AddRange(new[] { "ADA", "ATOM", "BTT", "EOS", "EXM", "IOTA", "LSK", "NEO", "PTI", "QTUM", "TRX", "XTZ", "WAVES", "ZEC", "ZRX" });
+            if (currencies.HasFlag(CryptoCategory.LeveragedToken))
+                list.AddRange(new[] {
+                    "ADABULL", "BULL", "BCHBULL","ETHBULL","EOSBULL","LINKBULL","TRXBULL", "XRPBULL",
+                    "ADABEAR", "BEAR", "BCHBEAR","ETHBEAR","EOSBEAR","LINKBEAR","TRXBEAR", "XRPBEAR"});
 
-            return list.ToArray();
+            return list.Distinct().ToArray();
         }
 
         public string[] GetBaseCurrencies(bool all = true)
         {
             return all ?
-                new[] { "BTC", "ETH", "USDT", "USDC", "USD", "UAH", "EUR", "RUB", "GBP", "CAD" } :
-                new[] { "BTC", "ETH", "USDT", "USDC", "USD", "UAH" };
+                new[] { "BTC", "BNB", "USDT", "USDC", "BUSD", "TUSD", "ETH", "USD", "UAH", "RUB", "EUR", "GBP", "CAD" } :
+                new[] { "BTC", "USDT", "USD", "UAH" };
         }
 
         public string[] GetFiatCurrencies(CryptoCategory currencies = CryptoCategory.Fiat)
@@ -64,31 +84,40 @@ namespace AVS.CoreLib.Trading.Helpers
                 switch (baseCurrency)
                 {
                     case "BTC":
-                        {
-                            res.AddRange(PairHelper.GeneratePairs("BTC", "BCH", "DASH", "DOGE", "ETH", "LTC", "XEM", "XLM", "XMR", "XRP", "ZEC"));
-                            break;
-                        }
-                    case "USD":
-                        {
-                            res.AddRange(PairHelper.GeneratePairs("USD", "BTC", "BCH", "DASH", "DOGE", "ETH", "LTC", "XEM", "XLM", "XMR", "XRP", "USDT", "USDC", "ZEC"));
-                            break;
-                        }
-
+                    {
+                        res.AddRange(PairHelper.GeneratePairs("BTC", GetCurrencies(CryptoCategory.Top)));
+                        break;
+                    }
                     case "USDT":
-                        {
-                            res.AddRange(PairHelper.GeneratePairs("USDT", "BTC", "BCH", "DASH", "DOGE", "ETH", "LTC", "XEM", "XLM", "XMR", "XRP", "ZEC"));
-                            break;
-                        }
+                    {
+                        res.AddRange(PairHelper.GeneratePairs("USDT",
+                            GetCurrencies(CryptoCategory.AllCrypto)));
+                        break;
+                    }
+                    case "BUSD":
+                    {
+                        res.AddRange(PairHelper.GeneratePairs("BUSD",
+                            GetCurrencies(CryptoCategory.Top & CryptoCategory.StableCoin)));
+                        break;
+                    }
                     case "USDC":
-                        {
-                            res.AddRange(PairHelper.GeneratePairs("USDC", "BTC", "BCH", "DASH", "DOGE", "ETH", "LTC", "XEM", "XLM", "XMR", "XRP"));
-                            break;
-                        }
+                    {
+                        res.AddRange(PairHelper.GeneratePairs("USDC", "BTC", "BCH", "DASH", "DOGE", "ETH", "LTC", "XEM",
+                            "XLM", "XMR", "XRP"));
+                        break;
+                    }
+                    case "USD":
+                    {
+                        res.AddRange(PairHelper.GeneratePairs("USD", "BTC", "BCH", "DASH", "DOGE", "ETH", "LTC", "XEM",
+                            "XLM", "XMR", "XRP", "USDT", "USDC", "ZEC"));
+                        break;
+                    }
                     case "UAH":
-                        {
-                            res.AddRange(PairHelper.GeneratePairs("UAH", "BTC", "BCH", "DASH", "ETH", "LTC", "XEM", "XLM", "XRP", "USDT", "ZEC"));
-                            break;
-                        }
+                    {
+                        res.AddRange(PairHelper.GeneratePairs("UAH", "BTC", "BCH", "DASH", "ETH", "LTC", "XEM", "XLM",
+                            "XRP", "USDT", "ZEC"));
+                        break;
+                    }
                 }
             }
 

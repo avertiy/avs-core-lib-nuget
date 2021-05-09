@@ -26,7 +26,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AVS.CoreLib" Version="1.0.0" />
+    <PackageReference Include="AVS.CoreLib" Version="1.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 

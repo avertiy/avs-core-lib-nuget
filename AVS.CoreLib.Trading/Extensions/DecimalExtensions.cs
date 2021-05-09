@@ -24,9 +24,41 @@ namespace AVS.CoreLib.Trading.Extensions
             return Math.Abs(value1 - value2) < TradingConstants.OneSatoshi;
         }
 
-        public static decimal Normalize(this decimal value)
+        public static decimal Normalize(this decimal value, int? decimalPlaces = null)
         {
-            return Math.Round(value, TradingConstants.PrecisionDigits, MidpointRounding.AwayFromZero);
+            int precisionDigits;
+            if (value >= 1)
+            {
+                if (value < 100)
+                    precisionDigits = 3;
+                else if (value < 10000)
+                    precisionDigits = 2;
+                else if (value < 100000)
+                    precisionDigits = 1;
+                else
+                    precisionDigits = 0;
+            }
+            else if(value > 0)
+            {
+                if (value > 0.1m)
+                    precisionDigits = 4;
+                else if (value > 0.0000003m)
+                    precisionDigits = 8;
+                else 
+                    precisionDigits = TradingConstants.PrecisionDigits;
+            }else if (value == 0)
+            {
+                precisionDigits = 0;
+            }
+            else
+            {
+                return Normalize(value * -1);
+            }
+
+            if (decimalPlaces.HasValue && decimalPlaces < precisionDigits)
+                precisionDigits = decimalPlaces.Value;
+
+            return Math.Round(value, precisionDigits, MidpointRounding.AwayFromZero);
         }
     }
 }

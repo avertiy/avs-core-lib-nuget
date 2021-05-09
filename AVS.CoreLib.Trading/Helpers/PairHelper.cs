@@ -8,16 +8,6 @@ namespace AVS.CoreLib.Trading.Helpers
 {
     public static class PairHelper
     {
-        public static bool IsBtcPair(string pair)
-        {
-            return pair.EndsWith("BTC");
-        }
-
-        public static bool IsUsdPair(string pair)
-        {
-            return pair.EndsWith("USDT") || pair.EndsWith("USD") || pair.EndsWith("USDC") || pair.EndsWith("DAI");
-        }
-
         public static PairString[] CreateCombinations(string baseCurrencies, string quoteCurrencies, bool isBaseCurrencyFirst = true)
         {
             var pairs = new List<PairString>();
@@ -29,6 +19,21 @@ namespace AVS.CoreLib.Trading.Helpers
                         pairs.Add(baseCur + "_" + quoteCur);
                     else
                         pairs.Add(quoteCur + "_" + baseCur);
+                }
+            }
+            return pairs.ToArray();
+        }
+
+        public static string[] GeneratePairs(string[] baseCurrencies, string[] quoteCurrencies)
+        {
+            var pairs = new List<string>();
+            foreach (var baseCurrency in baseCurrencies)
+            {
+                foreach (var quoteCur in quoteCurrencies)
+                {
+                    if (quoteCur == baseCurrency)
+                        continue;
+                    pairs.Add(baseCurrency + "_" + quoteCur);
                 }
             }
             return pairs.ToArray();

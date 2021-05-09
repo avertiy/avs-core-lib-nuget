@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace AVS.CoreLib.Collections
 {
@@ -18,7 +20,7 @@ namespace AVS.CoreLib.Collections
             Data = new Dictionary<TKey, TValue>(capacity);
         }
 
-        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+        public virtual IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
             return Data.GetEnumerator();
         }
@@ -28,27 +30,32 @@ namespace AVS.CoreLib.Collections
             return Data.GetEnumerator();
         }
 
-        public void Add(KeyValuePair<TKey, TValue> item)
+        public virtual void Add(KeyValuePair<TKey, TValue> item)
         {
             Data.Add(item);
         }
 
-        public void Clear()
+        public virtual void Clear()
         {
             Data.Clear();
         }
 
-        public bool Contains(KeyValuePair<TKey, TValue> item)
+        public virtual bool Contains(TKey key, TValue value)
+        {
+            return Data.Contains(new KeyValuePair<TKey, TValue>(key, value));
+        }
+
+        public virtual bool Contains(KeyValuePair<TKey, TValue> item)
         {
             return Data.Contains(item);
         }
 
-        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+        public virtual void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
         {
             Data.CopyTo(array, arrayIndex);
         }
 
-        public bool Remove(KeyValuePair<TKey, TValue> item)
+        public virtual bool Remove(KeyValuePair<TKey, TValue> item)
         {
             return Data.Remove(item);
         }
@@ -69,33 +76,33 @@ namespace AVS.CoreLib.Collections
             Data.Add(key, value);
         }
 
-        public bool ContainsKey(TKey key)
+        public virtual bool ContainsKey(TKey key)
         {
             return Data.ContainsKey(key);
         }
 
-        public bool Remove(TKey key)
+        public virtual bool Remove(TKey key)
         {
             return Data.Remove(key);
         }
 
-        public bool TryGetValue(TKey key, out TValue value)
+        public virtual bool TryGetValue(TKey key, out TValue value)
         {
             return Data.TryGetValue(key, out value);
         }
 
-        public TValue this[TKey key]
+        public virtual TValue this[TKey key]
         {
             get => Data[key];
             set => Data[key] = value;
         }
 
-        public ICollection<TKey> Keys => Data.Keys;
+        public virtual ICollection<TKey> Keys => Data.Keys;
 
-        protected bool ShouldSerializeKeys() => false;
+        protected virtual bool ShouldSerializeKeys() => false;
 
-        public ICollection<TValue> Values => Data.Values;
+        public virtual ICollection<TValue> Values => Data.Values;
 
-        protected bool ShouldSerializeValues() => false;
+        protected virtual bool ShouldSerializeValues() => false;
     }
 }

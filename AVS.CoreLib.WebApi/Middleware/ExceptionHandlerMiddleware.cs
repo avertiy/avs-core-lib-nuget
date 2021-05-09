@@ -34,7 +34,7 @@ namespace AVS.CoreLib.WebApi.Middleware
 
             var statusCode = context.Response.StatusCode;
 
-            if (e is ArgumentException || e is ArgumentNullException)
+            if (e is ArgumentException)
             {
                 statusCode = StatusCodes.Status400BadRequest;
                 context.Response.Headers.Add("error", e.Message);
