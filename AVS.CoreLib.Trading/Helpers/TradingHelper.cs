@@ -62,7 +62,7 @@ namespace AVS.CoreLib.Trading.Helpers
         public string[] GetBaseCurrencies(bool all = true)
         {
             return all ?
-                new[] { "BTC", "BNB", "USDT", "USDC", "BUSD", "TUSD", "ETH", "USD", "UAH", "RUB", "EUR", "GBP", "CAD" } :
+                new[] { "BTC", "BNB", "USDT", "USDC", "BUSD", "TUSD", "ETH", "USD", "UAH", "RUB","PAX","VAI", "EUR", "GBP", "CAD" } :
                 new[] { "BTC", "USDT", "USD", "UAH" };
         }
 
