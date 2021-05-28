@@ -35,6 +35,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.Tests", "tests\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.Caching", "AVS.CoreLib.Caching\AVS.CoreLib.Caching.csproj", "{5081BB5D-0A59-4860-8A0D-C41B6501414F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.FileLogger", "AVS.CoreLib.FileLogger\AVS.CoreLib.FileLogger.csproj", "{E4F993FA-7337-44BE-BD8E-597D5153D0D0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AVS.CoreLib.LoggingTestApp", "AVS.CoreLib.LoggingTestApp\AVS.CoreLib.LoggingTestApp.csproj", "{11BADA18-506B-4529-9358-12788A43B778}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -101,6 +105,14 @@ Global
 		{5081BB5D-0A59-4860-8A0D-C41B6501414F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5081BB5D-0A59-4860-8A0D-C41B6501414F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5081BB5D-0A59-4860-8A0D-C41B6501414F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4F993FA-7337-44BE-BD8E-597D5153D0D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4F993FA-7337-44BE-BD8E-597D5153D0D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4F993FA-7337-44BE-BD8E-597D5153D0D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4F993FA-7337-44BE-BD8E-597D5153D0D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11BADA18-506B-4529-9358-12788A43B778}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11BADA18-506B-4529-9358-12788A43B778}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11BADA18-506B-4529-9358-12788A43B778}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11BADA18-506B-4529-9358-12788A43B778}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

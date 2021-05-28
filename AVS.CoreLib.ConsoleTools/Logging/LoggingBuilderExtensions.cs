@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging.Configuration;
 
 namespace AVS.CoreLib.ConsoleTools.Logging
 {
-    public static partial class LoggerFactoryExtensions
+    public static class LoggingBuilderExtensions
     {
         public static ILoggingBuilder AddConsoleLogger(this ILoggingBuilder builder)
         {

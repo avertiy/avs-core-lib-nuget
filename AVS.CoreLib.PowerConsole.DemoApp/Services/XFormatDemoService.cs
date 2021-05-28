@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using AVS.CoreLib.ConsoleTools.Bootstrapping;
 using AVS.CoreLib.Text;
 using AVS.CoreLib.Trading.FormatProviders;
 

@@ -4,148 +4,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using AVS.CoreLib.PowerConsole.Utilities;
-using Microsoft.Extensions.Logging;
-using Console = AVS.CoreLib.PowerConsole.PowerConsole;
 
-namespace AVS.CoreLib.ConsoleTools.Logging
+namespace AVS.CoreLib.FileLogger.Common
 {
-    public class ConsoleLogger : ILogger
-    {
-        public static readonly ConsoleScope Scope = new ConsoleScope();
-        public readonly string Name;
-        protected ConsoleLoggerOptions Settings { get; }
-        protected IExternalScopeProvider ScopeProvider { get; set; }
-
-        public ConsoleLogger(string name, IExternalScopeProvider scopeProvider, ConsoleLoggerOptions settings)
-        {
-            Settings = settings;
-            ScopeProvider = scopeProvider;
-            Name = name;
-        }
-
-        /// <summary>Begins a logical operation scope.</summary>
-        /// <param name="state">The identifier for the scope.</param>
-        public IDisposable BeginScope<TState>(TState state)
-        {
-            //this method is called by only when ScopeLogger.ExternalScopeProvider is null
-            //but framework initializes it for us so this method is never called
-            return ScopeProvider?.Push(state) ?? NullScope.Instance;
-        }
-
-        /// <summary>
-        /// Checks if the given <paramref name="logLevel" /> is enabled.
-        /// </summary>
-        public bool IsEnabled(LogLevel logLevel)
-        {
-            return logLevel != LogLevel.None;
-        }
-
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
-            Func<TState, Exception, string> formatter)
-        {
-            if (!IsEnabled(logLevel))
-                return;
-
-            if (formatter == null)
-                throw new ArgumentNullException(nameof(formatter));
-
-            var message = FormatState(state, exception, formatter);
-
-            var scheme = logLevel.GetColorScheme();
-
-            ScopeHelper.OpenScope(ScopeProvider, state, Name);
-            var color = ColorHelper.ExtractColor(ref message, scheme.Foreground);
-            using (var locker = ConsoleLocker.Create())
-            {
-                Console.WriteLine();
-                Console.Print(logLevel.GetLogLevelText(" "), scheme, false);
-                scheme.Foreground = color;
-                Console.Print(message, scheme);
-                Console.WriteLine(exception?.StackTrace, ConsoleColor.DarkGray, null);
-            }
-        }
-
-        protected virtual string FormatState<TState>(TState state, Exception exception,
-            Func<TState, Exception, string> formatter)
-        {
-            return formatter(state, exception);
-        }
-
-        // In ASP.NET Core 3.0 this classes is now internal. This means you need to add it to your code.
-        private sealed class NullScope : IDisposable
-        {
-            public static NullScope Instance { get; } = new NullScope();
-
-            private NullScope()
-            {
-            }
-
-            public void Dispose()
-            {
-            }
-        }
-    }
-
-    static class LogLevelExtensions
-    {
-        public static ColorScheme GetColorScheme(this LogLevel lvl)
-        {
-            var background = ConsoleColor.Black;
-            switch (lvl)
-            {
-                case LogLevel.Trace:
-                    return new ColorScheme(background, ConsoleColor.DarkGray);
-                case LogLevel.Debug:
-                    return new ColorScheme(background, ConsoleColor.Cyan);
-                case LogLevel.Information:
-                    return new ColorScheme(background, ConsoleColor.White);
-                case LogLevel.Warning:
-                    return new ColorScheme(background, ConsoleColor.Yellow);
-                case LogLevel.Error:
-                    return new ColorScheme(background, ConsoleColor.Red);
-                case LogLevel.Critical:
-                    return new ColorScheme(ConsoleColor.DarkRed, ConsoleColor.White);
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(lvl));
-            }
-        }
-
-        public static string GetLogLevelText(this LogLevel logLevel, string append = " ")
-        {
-            string text;
-            switch (logLevel)
-            {
-                case LogLevel.Trace:
-                    text = "trce";
-                    break;
-                case LogLevel.Debug:
-                    text = "dbug";
-                    break;
-                case LogLevel.Information:
-                    return "";
-                //text ="info";
-                //break;
-                case LogLevel.Warning:
-                    text = "warn";
-                    break;
-                case LogLevel.Error:
-                    text = "fail";
-                    break;
-                case LogLevel.Critical:
-                    text = "crit";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(logLevel));
-            }
-            return text + append;
-        }
-
-    }
-
-
-    //taken from decompiled microsoft logging sources
-    internal class LogValuesFormatter
+    /// <summary>
+    /// taken from decompiled microsoft logging sources
+    /// </summary>
+    public class LogValuesFormatter
     {
         private const string NullValue = "(null)";
 
@@ -153,8 +18,8 @@ namespace AVS.CoreLib.ConsoleTools.Logging
 
         private static readonly char[] FormatDelimiters = new char[2]
         {
-        ',',
-        ':'
+            ',',
+            ':'
         };
 
         private readonly string _format;
@@ -317,11 +182,10 @@ namespace AVS.CoreLib.ConsoleTools.Logging
             {
                 var cast = Enumerable.Cast<object>(enumerable);
                 var eee = Enumerable.Select(cast, delegate (object o)
-                { return o ?? "(null)"; }).ToArray();
+                    { return o ?? "(null)"; }).ToArray();
                 return string.Join(", ", eee);
             }
             return value;
         }
     }
 }
-

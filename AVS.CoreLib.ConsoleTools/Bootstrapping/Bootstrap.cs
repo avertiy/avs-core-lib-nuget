@@ -11,11 +11,28 @@ using Console = AVS.CoreLib.PowerConsole.PowerConsole;
 
 namespace AVS.CoreLib.ConsoleTools.Bootstrapping
 {
-    //https://www.stevejgordon.co.uk/running-net-core-generic-host-applications-as-a-windows-service
-    public class Bootstrap
+    public static class Bootstrap
     {
+        public static ServiceProvider ConfigureServices(Action<ServiceCollection> configure)
+        {
+            try
+            {
+                var services = new ServiceCollection();
+                configure(services);
+                return services.BuildServiceProvider();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteError(ex);
+                throw;
+            }
+        }
+
+        
+
         /// <summary>
         /// To run program as windows service
+        /// https://www.stevejgordon.co.uk/running-net-core-generic-host-applications-as-a-windows-service
         /// </summary>
         public static void RunAsService<TStartup>(string[] args)
             where TStartup : IStartup, new()
@@ -72,7 +89,7 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
             PowerConsole.PowerConsole.ApplyColorScheme(ColorScheme.DarkGray);
             SetCurrentCulture("en-US");
             var startup = new TStartup();
-            IServiceProvider sp =
+            var sp =
                 ServiceProviderBuilder.BuildServiceProvider(startup.RegisterServices, startup.ConfigureLogging);
             startup.ConfigureServices(sp);
 
@@ -162,6 +179,12 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
                 Console.WriteError(ex);
                 return null;
             }
+        }
+
+        public static void PressEnterToExit()
+        {
+            Console.Write("Press enter to exit");
+            Console.ReadLine();
         }
     }
 }
