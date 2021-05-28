@@ -1,4 +1,6 @@
-﻿using AVS.CoreLib.ConsoleLogger;
+﻿using System;
+using AVS.CoreLib.Abstractions;
+using AVS.CoreLib.ConsoleLogger;
 using AVS.CoreLib.ConsoleTools.Bootstrapping;
 using AVS.CoreLib.FileLogger;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,8 +25,8 @@ namespace AVS.CoreLib.Loggers.TestApp
                         })
                         .AddTransient<ITestService, FileLoggerTestService>();
                 })
-                .RunAllTest()
-                .PressEnterToExit();
+                .RunAllTest();
+            Console.ReadLine();
         }
     }
 }

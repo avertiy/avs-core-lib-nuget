@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace AVS.CoreLib.PowerConsole.Bootstrapping
+namespace AVS.CoreLib.Abstractions
 {
     public interface ITestService
     {

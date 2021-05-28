@@ -17,6 +17,7 @@
     <FileVersion>1.0.1.0</FileVersion>
     <Version>1.0.1</Version>
     <Description>contains console bootstrap utitlities and ConsoleLogger</Description>
+    <UserSecretsId>91a53b9d-7d12-4825-9877-5c9dc5583994</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,9 +27,10 @@
   </ItemGroup>
 
 <ItemGroup>
-    <PackageReference Include="AVS.CoreLib.PowerConsole" Version="1.0.5" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.9" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="3.1.9" />
+    <PackageReference Include="AVS.CoreLib.Abstractions" Version="1.0.1" />
+    <PackageReference Include="AVS.CoreLib.PowerConsole" Version="1.0.7" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.15" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="3.1.15" />
   </ItemGroup>
 
 <ItemGroup>
@@ -36,10 +38,6 @@
     <Pack>True</Pack>
     <PackagePath></PackagePath>
   </None>
-</ItemGroup>
-
-<ItemGroup>
-  <ProjectReference Include="..\AVS.CoreLib.PowerConsole\AVS.CoreLib.PowerConsole.csproj" />
 </ItemGroup>
 
 </Project>

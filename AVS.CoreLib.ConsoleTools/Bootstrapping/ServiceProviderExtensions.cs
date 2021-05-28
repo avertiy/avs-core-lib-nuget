@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using AVS.CoreLib.PowerConsole.Bootstrapping;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AVS.CoreLib.ConsoleTools.Bootstrapping

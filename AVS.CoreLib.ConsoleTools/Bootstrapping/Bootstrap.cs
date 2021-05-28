@@ -1,79 +1,17 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using AVS.CoreLib.PowerConsole.Bootstrapping;
+using AVS.CoreLib.Abstractions;
 using AVS.CoreLib.PowerConsole.Utilities;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Console = AVS.CoreLib.PowerConsole.PowerConsole;
+using BootstrapBase = AVS.CoreLib.PowerConsole.Bootstrapping.Bootstrap;
 
 namespace AVS.CoreLib.ConsoleTools.Bootstrapping
 {
-    public static class Bootstrap
+    public class Bootstrap : BootstrapBase
     {
-        public static IBootstrap Bootstrapper = new Bootstrapper();
-        public static IServiceProvider ConfigureServices(Action<ServiceCollection> configure)
-        {
-            try
-            {
-                var services = new ServiceCollection();
-                configure(services);
-                return services.BuildServiceProvider();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteError(ex);
-                throw;
-            }
-        }
-
-        public static void Run<TStartup>() where TStartup : IStartup, new()
-        {
-            Console.SetDefaultColorScheme(ColorScheme.DarkGray);
-            Console.ApplyColorScheme(ColorScheme.DarkGray);
-            SetCulture("en-US");
-            Bootstrapper.Run<TStartup>();
-        }
-
-        /// <summary>
-        /// Builds service provider <see cref="IServiceProvider"/>
-        /// </summary>
-        /// <example>
-        /// Main(string[] args){
-        ///    Run(sp=> {Console.WriteLine("Hello World"); sp.GetService();})
-        /// };
-        /// </example>
-        public static void Run<TStartup>(Action<IServiceProvider> main) where TStartup : IStartup, new()
-        {
-            Console.SetDefaultColorScheme(ColorScheme.DarkGray);
-            Console.ApplyColorScheme(ColorScheme.DarkGray);
-            SetCulture("en-US");
-            Bootstrapper.Run<TStartup>(main);
-        }
-
-        /// <summary>
-        /// Builds service provider <see cref="IServiceProvider"/>
-        /// </summary>
-        /// <example>
-        /// Main(string[] args){
-        ///    Run(sp=> {Console.WriteLine("Hello World"); sp.GetService();})
-        /// };
-        /// </example>
-        public static Task RunAsync<TStartup>(Func<IServiceProvider, Task> main) where TStartup : IStartup, new()
-        {
-            Console.SetDefaultColorScheme(ColorScheme.DarkGray);
-            Console.ApplyColorScheme(ColorScheme.DarkGray);
-            SetCulture("en-US");
-            return Bootstrapper.RunAsync<TStartup>(main);
-        }
-
-        public static void SetCulture(string culture = "en-US")
-        {
-            Thread.CurrentThread.CurrentCulture = new CultureInfo(culture);
-        }
-
         /// <summary>
         /// To run program as windows service
         /// https://www.stevejgordon.co.uk/running-net-core-generic-host-applications-as-a-windows-service
@@ -82,7 +20,8 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
             where TStartup : IStartup, new()
         {
             var isService = !(Debugger.IsAttached || args.Contains("--console"));
-            Bootstrapper.Run<TStartup>(args, isService);
+            var host = CreateHost<TStartup>(args, isService);
+            host.Run();
         }
 
         /// <summary>
@@ -92,7 +31,8 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
             where TStartup : IStartup, new()
         {
             var isService = !(Debugger.IsAttached || args.Contains("--console"));
-            return Bootstrapper.RunAsync<TStartup>(args, isService);
+            var host = CreateHost<TStartup>(args, isService);
+            return host.RunAsync();
         }
 
         /// <summary>
@@ -102,7 +42,8 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
         public static void RunAsHost<TStartup>(string[] args)
             where TStartup : IStartup, new()
         {
-            Bootstrapper.Run<TStartup>(args);
+            var host = CreateHost<TStartup>(args, false);
+            host.Run();
         }
 
         /// <summary>
@@ -112,7 +53,44 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
         public static Task RunAsHostAsync<TStartup>(string[] args)
             where TStartup : IStartup, new()
         {
-            return Bootstrapper.RunAsync<TStartup>(args);
+            var host = CreateHost<TStartup>(args, false);
+            return host.RunAsync();
+        }
+
+        private static IHost CreateHost<TStartup>(string[] args, bool windowsService = false)
+            where TStartup : IStartup, new()
+        {
+            try
+            {
+                Bootstrap.SetCulture("en-US");
+                var hostBuilder = (HostBuilder)Host.CreateDefaultBuilder(args);
+                var startup = new TStartup();
+                hostBuilder.ConfigureServices(startup.RegisterServices);
+
+                if (windowsService)
+                {
+                    hostBuilder.UseWindowsService();
+                }
+                else
+                {
+                    hostBuilder.UseConsoleLifetime();
+                    Console.SetDefaultColorScheme(ColorScheme.DarkGray);
+                    Console.ApplyColorScheme(ColorScheme.DarkGray);
+                }
+
+                var host = hostBuilder.Build();
+
+                startup.ConfigureServices(host.Services);
+
+                if (!windowsService)
+                    Console.WriteDebug("host is built");
+                return host;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteError(ex);
+                return null;
+            }
         }
     }
 }

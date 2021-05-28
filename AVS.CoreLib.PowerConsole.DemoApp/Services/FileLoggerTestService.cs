@@ -1,4 +1,4 @@
-﻿using AVS.CoreLib.ConsoleTools.Bootstrapping;
+﻿using AVS.CoreLib.Abstractions;
 using Microsoft.Extensions.Logging;
 
 namespace AVS.CoreLib.PowerConsole.DemoApp.Services

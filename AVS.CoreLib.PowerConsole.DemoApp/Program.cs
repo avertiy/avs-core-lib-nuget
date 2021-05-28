@@ -1,4 +1,5 @@
-﻿using AVS.CoreLib.ConsoleTools.Bootstrapping;
+﻿using AVS.CoreLib.Abstractions;
+using AVS.CoreLib.ConsoleTools.Bootstrapping;
 using AVS.CoreLib.PowerConsole.DemoApp.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -22,8 +23,8 @@ namespace AVS.CoreLib.PowerConsole.DemoApp
                         .AddTransient<IDemoService, ConsoleFeaturesDemoService>();
                 })
                 .RunAllTest()
-                .RunAllDemo()
-                .PressEnterToExit();
+                .RunAllDemo();
+            PowerConsole.PressEnterToExit();
         }
     }
 }
