@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AVS.CoreLib.ConsoleTools.Bootstrapping
+namespace AVS.CoreLib.PowerConsole.Bootstrapping
 {
     public static class ServiceProviderExtensions
     {
@@ -14,30 +14,8 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
             }
             catch (Exception ex)
             {
-                PowerConsole.PowerConsole.Write($"Run() failed");
-                PowerConsole.PowerConsole.WriteError(ex);
-            }
-
-            return sp;
-        }
-
-        public static IServiceProvider RunTest<TService>(this IServiceProvider sp) where TService : ITestService
-        {
-            var service = sp.GetService<TService>();
-            if (service == null)
-            {
-                throw new ArgumentException($"{typeof(TService).Name} is null");
-            }
-
-            try
-            {
-                service.Test();
-            }
-            catch (Exception ex)
-            {
-                PowerConsole.PowerConsole.Write($"{typeof(TService).Name}.Test() failed");
-                PowerConsole.PowerConsole.WriteError(ex);
-                throw;
+                PowerConsole.Write("Run() failed");
+                PowerConsole.WriteError(ex);
             }
 
             return sp;
@@ -56,8 +34,8 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
                     }
                     catch (Exception ex)
                     {
-                        PowerConsole.PowerConsole.Write($"{demoService.GetType().Name}.DemoAsync() failed");
-                        PowerConsole.PowerConsole.WriteError(ex);
+                        PowerConsole.Write($"{demoService.GetType().Name}.DemoAsync() failed");
+                        PowerConsole.WriteError(ex);
                     }
                 }
             });
@@ -76,10 +54,32 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
                 }
                 catch (Exception ex)
                 {
-                    PowerConsole.PowerConsole.Write($"{testService.GetType().Name}.Test() failed");
-                    PowerConsole.PowerConsole.WriteError(ex);
+                    PowerConsole.Write($"{testService.GetType().Name}.Test() failed");
+                    PowerConsole.WriteError(ex);
                 }
             }
+            return sp;
+        }
+
+        public static IServiceProvider RunTest<TService>(this IServiceProvider sp) where TService : ITestService
+        {
+            var service = sp.GetService<TService>();
+            if (service == null)
+            {
+                throw new ArgumentException($"{typeof(TService).Name} is null");
+            }
+
+            try
+            {
+                service.Test();
+            }
+            catch (Exception ex)
+            {
+                PowerConsole.Write($"{typeof(TService).Name}.Test() failed");
+                PowerConsole.WriteError(ex);
+                throw;
+            }
+
             return sp;
         }
 
@@ -97,8 +97,8 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
             }
             catch (Exception ex)
             {
-                PowerConsole.PowerConsole.Write($"{typeof(TService).Name}.Test() failed");
-                PowerConsole.PowerConsole.WriteError(ex);
+                PowerConsole.Write($"{typeof(TService).Name}.Test() failed");
+                PowerConsole.WriteError(ex);
             }
 
             return sp;

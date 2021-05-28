@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using AVS.CoreLib.FileLogger.Common;
+using AVS.CoreLib.AbstractLogger;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace AVS.CoreLib.FileLogger
+namespace AVS.CoreLib.ConsoleLogger
 {
-    [ProviderAlias("File")]
-    public class FileLoggerProvider : ILoggerProvider, ISupportExternalScope
+    [ProviderAlias("Console")]
+    public class ConsoleLoggerProvider : ILoggerProvider, ISupportExternalScope
     {
-        private readonly ConcurrentDictionary<string, AbstractLogger> _loggers;
+        private readonly ConcurrentDictionary<string, AbstractLogger.AbstractLogger> _loggers;
         private readonly LogScope _currentScope;
-        public FileLoggerProvider(IOptionsMonitor<FileLoggerOptions> options)
+        public ConsoleLoggerProvider(IOptionsMonitor<ConsoleLoggerOptions> options)
         {
-            _loggers = new ConcurrentDictionary<string, AbstractLogger>(StringComparer.Ordinal);
+            _loggers = new ConcurrentDictionary<string, AbstractLogger.AbstractLogger>(StringComparer.Ordinal);
             var optionsValue = options.CurrentValue;
             if (string.IsNullOrEmpty(optionsValue.DateFormat))
             {
@@ -24,13 +24,13 @@ namespace AVS.CoreLib.FileLogger
             {
                 PrintLoggerName = optionsValue.PrintLoggerName,
                 UseCurlyBrackets = optionsValue.UseCurlyBracketsForScope,
-                Writer = new FileLogWriter(options)
+                Writer = new ConsoleLogWriter(options)
             };
         }
 
         public ILogger CreateLogger(string categoryName)
         {
-            return _loggers.GetOrAdd(categoryName, category => new AbstractLogger(categoryName, _currentScope));
+            return _loggers.GetOrAdd(categoryName, category => new AbstractLogger.AbstractLogger(categoryName, _currentScope));
         }
 
         public void SetScopeProvider(IExternalScopeProvider scopeProvider)

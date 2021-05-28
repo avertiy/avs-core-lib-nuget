@@ -18,7 +18,6 @@ namespace AVS.CoreLib.PowerConsole
             if (!string.IsNullOrEmpty(timeFormat))
                 message = $"{DateTime.Now.ToString(timeFormat)} {message}";
 
-            var scheme = new ColorScheme(color);
             ApplyColor(color);
             Console.WriteLine(message);
             NewLineFlag = true;

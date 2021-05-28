@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using AVS.CoreLib.ConsoleTools.Logging;
+//using AVS.CoreLib.ConsoleTools.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -27,7 +27,7 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
                 services.AddLogging(builder =>
                 {
                     builder.AddConfiguration(ctx.Configuration.GetSection("Logging"));
-                    builder.AddConsoleLogger();
+                    //builder.AddConsoleLogger();
                 });
             else
                 services.AddLogging(builder =>
@@ -35,23 +35,6 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
                     builder.AddConfiguration(ctx.Configuration.GetSection("Logging"));
                     configureLogging(ctx, builder);
                 });
-
-
-            //hostBuilder.ConfigureAppConfiguration((Action<HostBuilderContext, IConfigurationBuilder>)((hostingContext, config) =>
-            //{
-            //    IHostEnvironment hostingEnvironment = hostingContext.HostingEnvironment;
-            //    config.AddJsonFile("appsettings.json", true, true).AddJsonFile("appsettings." + hostingEnvironment.EnvironmentName + ".json", true, true);
-            //    if (hostingEnvironment.IsDevelopment() && !string.IsNullOrEmpty(hostingEnvironment.ApplicationName))
-            //    {
-            //        Assembly assembly = Assembly.Load(new AssemblyName(hostingEnvironment.ApplicationName));
-            //        if (assembly != (Assembly)null)
-            //            config.AddUserSecrets(assembly, true);
-            //    }
-            //    config.AddEnvironmentVariables();
-            //    if (args == null)
-            //        return;
-            //    config.AddCommandLine(args);
-            //}))
 
 
             services.AddSingleton(ctx.HostingEnvironment);
@@ -66,7 +49,7 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
 
         private static IConfiguration GetConfiguration()
         {
-            var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection();
+            IConfigurationBuilder configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection();
             configurationBuilder.AddJsonFile("appsettings.json", true, true);
             configurationBuilder.AddEnvironmentVariables();
             return configurationBuilder.Build();

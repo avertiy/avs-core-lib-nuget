@@ -10,6 +10,7 @@ namespace AVS.CoreLib.FileLogger
     {
         public static ILoggingBuilder AddFileLogger(this ILoggingBuilder builder)
         {
+            builder.AddConfiguration();
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, FileLoggerProvider>());
             LoggerProviderOptions.RegisterProviderOptions<FileLoggerOptions, FileLoggerProvider>(builder.Services);
             return builder;

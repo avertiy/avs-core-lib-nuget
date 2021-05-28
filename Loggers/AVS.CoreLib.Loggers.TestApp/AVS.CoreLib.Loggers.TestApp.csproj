@@ -4,14 +4,16 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
-<ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.9" />
     <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="3.1.9" />
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\AVS.CoreLib.ConsoleTools\AVS.CoreLib.ConsoleTools.csproj" />
-    <ProjectReference Include="..\AVS.CoreLib.Text\AVS.CoreLib.Text.csproj" />
-    <ProjectReference Include="..\AVS.CoreLib.Trading\AVS.CoreLib.Trading.csproj" />
+    <ProjectReference Include="..\..\AVS.CoreLib.ConsoleTools\AVS.CoreLib.ConsoleTools.csproj" />
+    <ProjectReference Include="..\AVS.CoreLib.ConsoleLogger\AVS.CoreLib.ConsoleLogger.csproj" />
+    <ProjectReference Include="..\AVS.CoreLib.FileLogger\AVS.CoreLib.FileLogger.csproj" />
   </ItemGroup>
 
 </Project>

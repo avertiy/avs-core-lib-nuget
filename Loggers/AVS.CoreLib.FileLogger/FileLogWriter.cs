@@ -3,7 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using AVS.CoreLib.FileLogger.Common;
+using AVS.CoreLib.AbstractLogger;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 

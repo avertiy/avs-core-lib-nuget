@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 
-namespace AVS.CoreLib.FileLogger.Common
+namespace AVS.CoreLib.AbstractLogger
 {
     /// <summary>
     /// taken from decompiled microsoft logging sources

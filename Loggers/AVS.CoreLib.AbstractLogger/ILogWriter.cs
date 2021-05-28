@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Logging;
 
-namespace AVS.CoreLib.FileLogger.Common
+namespace AVS.CoreLib.AbstractLogger
 {
     public interface ILogWriter
     {

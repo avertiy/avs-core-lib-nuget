@@ -1,9 +1,10 @@
-﻿using AVS.CoreLib.ConsoleTools.Bootstrapping;
-using AVS.CoreLib.PowerConsole.DemoApp.Services;
+﻿using AVS.CoreLib.ConsoleLogger;
+using AVS.CoreLib.ConsoleTools.Bootstrapping;
+using AVS.CoreLib.FileLogger;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace AVS.CoreLib.PowerConsole.DemoApp
+namespace AVS.CoreLib.Loggers.TestApp
 {
     class Program
     {
@@ -15,14 +16,14 @@ namespace AVS.CoreLib.PowerConsole.DemoApp
                         .AddLogging(configure =>
                         {
                             configure
-                                .AddConsole();
+                                //.AddConsole()
+                                .AddFileLogger()
+                                .AddConsoleLogger()
+                                ;
                         })
-                        .AddTransient<ITestService, FileLoggerTestService>()
-                        .AddTransient<IDemoService, XFormatDemoService>()
-                        .AddTransient<IDemoService, ConsoleFeaturesDemoService>();
+                        .AddTransient<ITestService, FileLoggerTestService>();
                 })
                 .RunAllTest()
-                .RunAllDemo()
                 .PressEnterToExit();
         }
     }

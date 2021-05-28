@@ -22,17 +22,6 @@ namespace AVS.CoreLib.PowerConsole
         {
             Console.ForegroundColor = scheme.Foreground;
             Console.BackgroundColor = scheme.Background;
-            //if (Console.ForegroundColor != scheme.Foreground)
-            //{
-            //    PreviousScheme.Foreground = Console.ForegroundColor;
-            //    Console.ForegroundColor = scheme.Foreground;
-            //}
-
-            //if (Console.BackgroundColor != scheme.Background)
-            //{
-            //    PreviousScheme.Background = Console.BackgroundColor;
-            //    Console.BackgroundColor = scheme.Background;
-            //}
         }
 
         /// <summary>
@@ -84,6 +73,12 @@ namespace AVS.CoreLib.PowerConsole
                 Console.Write(clearLine);
             }
             Console.SetCursorPosition(left, top);
+        }
+
+        public static void PressEnterToExit()
+        {
+            Console.Write("Press enter to quit.");
+            Console.ReadLine();
         }
     }
 }
