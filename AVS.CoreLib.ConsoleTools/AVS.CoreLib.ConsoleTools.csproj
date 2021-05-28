@@ -38,4 +38,8 @@
   </None>
 </ItemGroup>
 
+<ItemGroup>
+  <ProjectReference Include="..\AVS.CoreLib.PowerConsole\AVS.CoreLib.PowerConsole.csproj" />
+</ItemGroup>
+
 </Project>

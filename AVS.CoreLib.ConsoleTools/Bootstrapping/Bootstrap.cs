@@ -4,16 +4,17 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AVS.CoreLib.PowerConsole.Bootstrapping;
 using AVS.CoreLib.PowerConsole.Utilities;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Console = AVS.CoreLib.PowerConsole.PowerConsole;
 
 namespace AVS.CoreLib.ConsoleTools.Bootstrapping
 {
     public static class Bootstrap
     {
-        public static ServiceProvider ConfigureServices(Action<ServiceCollection> configure)
+        public static IBootstrap Bootstrapper = new Bootstrapper();
+        public static IServiceProvider ConfigureServices(Action<ServiceCollection> configure)
         {
             try
             {
@@ -28,49 +29,12 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
             }
         }
 
-        /// <summary>
-        /// To run program as windows service
-        /// https://www.stevejgordon.co.uk/running-net-core-generic-host-applications-as-a-windows-service
-        /// </summary>
-        public static void RunAsService<TStartup>(string[] args)
-            where TStartup : IStartup, new()
+        public static void Run<TStartup>() where TStartup : IStartup, new()
         {
-            var isService = !(Debugger.IsAttached || args.Contains("--console"));
-            var host = CreateHost<TStartup>(args, isService);
-            host.Run();
-        }
-
-        /// <summary>
-        /// To run program as windows service
-        /// </summary>
-        public static Task RunAsServiceAsync<TStartup>(string[] args)
-            where TStartup : IStartup, new()
-        {
-            var isService = !(Debugger.IsAttached || args.Contains("--console"));
-            var host = CreateHost<TStartup>(args, isService);
-            return host.RunAsync();
-        }
-
-        /// <summary>
-        /// to execute service when host is started
-        /// implement IHostedService interface and register it as AddHostedService
-        /// </summary>
-        public static void RunAsHost<TStartup>(string[] args)
-            where TStartup : IStartup, new()
-        {
-            var host = CreateHost<TStartup>(args);
-            host.Run();
-        }
-
-        /// <summary>
-        /// to execute service when host is started
-        /// implement IHostedService interface and register it as AddHostedService
-        /// </summary>
-        public static Task RunAsHostAsync<TStartup>(string[] args)
-            where TStartup : IStartup, new()
-        {
-            var host = CreateHost<TStartup>(args);
-            return host.RunAsync();
+            Console.SetDefaultColorScheme(ColorScheme.DarkGray);
+            Console.ApplyColorScheme(ColorScheme.DarkGray);
+            SetCulture("en-US");
+            Bootstrapper.Run<TStartup>();
         }
 
         /// <summary>
@@ -83,28 +47,12 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
         /// </example>
         public static void Run<TStartup>(Action<IServiceProvider> main) where TStartup : IStartup, new()
         {
-            PowerConsole.PowerConsole.SetDefaultColorScheme(ColorScheme.DarkGray);
-            PowerConsole.PowerConsole.ApplyColorScheme(ColorScheme.DarkGray);
-            SetCurrentCulture("en-US");
-            var startup = new TStartup();
-            var sp =
-                ServiceProviderBuilder.BuildServiceProvider(startup.RegisterServices, startup.ConfigureLogging);
-            startup.ConfigureServices(sp);
-
-            var hostEnv = sp.GetService<IHostEnvironment>();
-            try
-            {
-                main(sp);
-            }
-            catch (Exception ex)
-            {
-                Console.Print($"{hostEnv.ApplicationName} unhandled error", ConsoleColor.Red);
-                Console.WriteError(ex, true);
-            }
-
-            //Console.Print("Press enter to quit.");
-            //Console.ReadLine();
+            Console.SetDefaultColorScheme(ColorScheme.DarkGray);
+            Console.ApplyColorScheme(ColorScheme.DarkGray);
+            SetCulture("en-US");
+            Bootstrapper.Run<TStartup>(main);
         }
+
         /// <summary>
         /// Builds service provider <see cref="IServiceProvider"/>
         /// </summary>
@@ -113,76 +61,58 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
         ///    Run(sp=> {Console.WriteLine("Hello World"); sp.GetService();})
         /// };
         /// </example>
-        public static async Task RunAsync<TStartup>(Func<IServiceProvider, Task> main) where TStartup : IStartup, new()
+        public static Task RunAsync<TStartup>(Func<IServiceProvider, Task> main) where TStartup : IStartup, new()
         {
-            PowerConsole.PowerConsole.SetDefaultColorScheme(ColorScheme.DarkGray);
-            PowerConsole.PowerConsole.ApplyColorScheme(ColorScheme.DarkGray);
-            SetCurrentCulture("en-US");
-            var startup = new TStartup();
-            var sp = ServiceProviderBuilder.BuildServiceProvider(startup.RegisterServices, startup.ConfigureLogging);
-            startup.ConfigureServices(sp);
-
-            var hostEnv = sp.GetService<IHostEnvironment>();
-            try
-            {
-                await main(sp);
-            }
-            catch (Exception ex)
-            {
-                Console.Print($"{hostEnv.ApplicationName} unhandled error", ConsoleColor.Red);
-                Console.WriteError(ex, true);
-            }
-
-            //Console.Print("Press enter to quit.");
-            //Console.ReadLine();
+            Console.SetDefaultColorScheme(ColorScheme.DarkGray);
+            Console.ApplyColorScheme(ColorScheme.DarkGray);
+            SetCulture("en-US");
+            return Bootstrapper.RunAsync<TStartup>(main);
         }
 
-        public static void SetCurrentCulture(string culture = "en-US")
+        public static void SetCulture(string culture = "en-US")
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo(culture);
         }
 
-        private static IHost CreateHost<TStartup>(string[] args, bool windowsService = false)
+        /// <summary>
+        /// To run program as windows service
+        /// https://www.stevejgordon.co.uk/running-net-core-generic-host-applications-as-a-windows-service
+        /// </summary>
+        public static void RunAsService<TStartup>(string[] args)
             where TStartup : IStartup, new()
         {
-            try
-            {
-                var hostBuilder = (HostBuilder)Host.CreateDefaultBuilder(args);
-                var startup = new TStartup();
-                hostBuilder.ConfigureServices(startup.RegisterServices);
-                hostBuilder.ConfigureLogging(startup.ConfigureLogging);
-
-                if (windowsService)
-                {
-                    hostBuilder.UseWindowsService();
-                }
-                else
-                {
-                    hostBuilder.UseConsoleLifetime();
-                    PowerConsole.PowerConsole.SetDefaultColorScheme(ColorScheme.DarkGray);
-                    PowerConsole.PowerConsole.ApplyColorScheme(ColorScheme.DarkGray);
-                }
-
-                SetCurrentCulture("en-US");
-                var host = hostBuilder.Build();
-
-                startup.ConfigureServices(host.Services);
-
-                if (!windowsService)
-                    Console.WriteDebug("host is built");
-                return host;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteError(ex);
-                return null;
-            }
+            var isService = !(Debugger.IsAttached || args.Contains("--console"));
+            Bootstrapper.Run<TStartup>(args, isService);
         }
 
-        public static void PressEnterToExit()
+        /// <summary>
+        /// To run program as windows service
+        /// </summary>
+        public static Task RunAsServiceAsync<TStartup>(string[] args)
+            where TStartup : IStartup, new()
         {
-            Console.Write("Press enter to exit");
-            Console.ReadLine();
+            var isService = !(Debugger.IsAttached || args.Contains("--console"));
+            return Bootstrapper.RunAsync<TStartup>(args, isService);
+        }
+
+        /// <summary>
+        /// to execute service when host is started
+        /// implement IHostedService interface and register it as AddHostedService
+        /// </summary>
+        public static void RunAsHost<TStartup>(string[] args)
+            where TStartup : IStartup, new()
+        {
+            Bootstrapper.Run<TStartup>(args);
+        }
+
+        /// <summary>
+        /// to execute service when host is started
+        /// implement IHostedService interface and register it as AddHostedService
+        /// </summary>
+        public static Task RunAsHostAsync<TStartup>(string[] args)
+            where TStartup : IStartup, new()
+        {
+            return Bootstrapper.RunAsync<TStartup>(args);
         }
     }
 }
