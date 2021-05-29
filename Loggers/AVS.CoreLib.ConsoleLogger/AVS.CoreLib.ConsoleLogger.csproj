@@ -11,6 +11,7 @@
     <Authors>Artem Vertii</Authors>
     <Company>AV Stuido</Company>
     <Product>Console Logger</Product>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
