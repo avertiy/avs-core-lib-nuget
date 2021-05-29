@@ -14,7 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AVS.CoreLib.PowerConsole" Version="1.0.6" />
+    <PackageReference Include="AVS.CoreLib.PowerConsole" Version="1.0.8" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.15" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.15" />
     <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="3.1.15" />
