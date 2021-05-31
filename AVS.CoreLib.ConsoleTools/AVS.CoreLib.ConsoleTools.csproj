@@ -29,6 +29,7 @@
 <ItemGroup>
     <PackageReference Include="AVS.CoreLib.Abstractions" Version="1.0.1" />
     <PackageReference Include="AVS.CoreLib.PowerConsole" Version="1.0.8" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="3.1.15" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="3.1.15" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="3.1.15" />
   </ItemGroup>

@@ -2,6 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>Artem Vertii</Authors>
+    <Company>AV Studio</Company>
+    <Copyright>Artem Vertii</Copyright>
+    <PackageProjectUrl>https://github.com/avertiy/avs-core-lib-nuget</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/avertiy/avs-core-lib-nuget</RepositoryUrl>
+    <RepositoryType>public</RepositoryType>
+    <PackageTags>avs abstractlogger</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
