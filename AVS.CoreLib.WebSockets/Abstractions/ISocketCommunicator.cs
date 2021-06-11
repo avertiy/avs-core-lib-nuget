@@ -1,22 +1,22 @@
 ﻿using System;
+using System.Net.WebSockets;
+using System.Threading;
 using System.Threading.Tasks;
 
-namespace AVS.CoreLib.WebSockets
+namespace AVS.CoreLib.WebSockets.Abstractions
 {
     /// <summary>
     /// Wrapper for low level communication details for ClientWebSocket
     /// </summary>
     public interface ISocketCommunicator : IDisposable
     {
-        bool IsConnected { get; }
-        /// <summary>
-        /// Sends command data on <see cref="T:System.Net.WebSockets.ClientWebSocket" /> as an asynchronous operation.
-        /// </summary>
-        /// <param name="command"></param>
-        /// <returns></returns>
-        Task SendAsync(IChannelCommand command);
+        WebSocketState State { get; }
 
-        Task ReconnectAsync();
+        Task<bool> ConnectAsync(Uri uri, CancellationToken cancellationToken);
+
+        Task SendAsync(string commandMessage, CancellationToken cancellationToken);
+
+        void ResetWebSocket();
 
         event Action<string> MessageArrived;
 

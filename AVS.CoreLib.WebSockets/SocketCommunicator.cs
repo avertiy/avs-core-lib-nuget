@@ -4,102 +4,415 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using AVS.CoreLib.WebSockets.Abstractions;
+using AVS.CoreLib.WebSockets.Extensions;
 
 namespace AVS.CoreLib.WebSockets
 {
-    /// <inheritdoc />
     public class SocketCommunicator : ISocketCommunicator
     {
+        private bool _disposing = false;
         private ClientWebSocket _webSocket;
-        private Uri _url;
+        public WebSocketState State => _webSocket.State;
+
+        public SocketCommunicator()
+        {
+            _webSocket = new ClientWebSocket();
+        }
+
+        public async Task<bool> ConnectAsync(Uri uri, CancellationToken cancellationToken)
+        {
+            if (_disposing)
+                return false;
+            if (State == WebSocketState.Open)
+                return true;
+
+            await _webSocket.ConnectAsync(uri, cancellationToken)
+                .ConfigureAwait(false);
+
+            _ = RunReceiveMessages(cancellationToken);
+
+            WaitWebSocketConnecting();
+            return State == WebSocketState.Open;
+        }
+
+        //public async Task Test(Uri uri, string commandMessage, CancellationToken cancellationToken)
+        //{
+        //    await ConnectAsync(uri, cancellationToken).ConfigureAwait(false);
+        //    Console.WriteLine($"WebSocket state:{State}");
+        //    await SendAsync(commandMessage, cancellationToken).ConfigureAwait(false);
+        //    Console.WriteLine($"command has been sent");
+        //    Console.WriteLine($"Closing web socket");
+        //    Thread.Sleep(2500);
+        //    await CloseAsync().ConfigureAwait(false);
+        //    Thread.Sleep(100);
+        //    _webSocket.Dispose();
+        //    Console.WriteLine($"web socket is Disposed!");
+        //    _webSocket = new ClientWebSocket();
+        //    Console.WriteLine($"New web socket created");
+        //    await ConnectAsync(uri, cancellationToken).ConfigureAwait(false);
+        //    Console.WriteLine($"WebSocket state:{State}");
+        //    await SendAsync(commandMessage, cancellationToken).ConfigureAwait(false);
+        //    Thread.Sleep(2500);
+        //    Console.WriteLine($"Closing web socket");
+        //    await CloseAsync().ConfigureAwait(false);
+        //    Console.WriteLine($"web socket closed!");
+        //    Thread.Sleep(500);
+        //    _webSocket.Dispose();
+        //    Console.WriteLine($"web socket is Disposed!");
+        //    _webSocket = new ClientWebSocket();
+        //    Console.WriteLine($"New web socket created");
+        //}
+
+
+        public async Task SendAsync(string commandMessage, CancellationToken cancellationToken)
+        {
+            if(_disposing)
+                return;
+
+            var bytes = Encoding.UTF8.GetBytes(commandMessage);
+            var messageToSend = new ArraySegment<byte>(bytes);
+
+            WaitWebSocketConnecting();
+            if (State != WebSocketState.Open)
+                throw new SocketCommunicatorException($"State must be Open [state: {State}]");
+
+            await _webSocket.SendAsync(messageToSend, WebSocketMessageType.Text, true, cancellationToken);
+        }
+
+        public void ResetWebSocket()
+        {
+            if (_webSocket != null)
+            {
+                _webSocket.Dispose();
+                _webSocket = null;
+                _webSocket = new ClientWebSocket();
+            }
+        }
+
+        private void WaitWebSocketConnecting()
+        {
+            while (State == WebSocketState.Connecting)
+            {
+                Thread.Sleep(10);
+            }
+        }
+
+        private Task RunReceiveMessages(CancellationToken cancellationToken)
+        {
+            return Task.Run(() => this.BackgroundTask(cancellationToken), cancellationToken);
+        }
+
+        private async Task BackgroundTask(CancellationToken cancellationToken)
+        {
+            try
+            {
+                start:
+                switch (State)
+                {
+                    case WebSocketState.Connecting:
+                        WaitWebSocketConnecting();
+                        goto start;
+                    case WebSocketState.Open:
+                    {
+                        await ReceiveMessagesLoopAsync(cancellationToken).ConfigureAwait(false);
+                        FireConnectionClosed();
+                        break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                FireConnectionError(ex);
+            }
+        }
+
+        private async Task ReceiveMessagesLoopAsync(CancellationToken cancellationToken)
+        {
+            /*We define a certain constant which will represent
+              size of received data. It is established by us and 
+              we can set any value. We know that in this case the size of the sent
+              data is very small.
+            */
+            const int maxMessageSize = 2048;
+
+            // Buffer for received bits.
+            var receivedDataBuffer = new ArraySegment<byte>(new byte[maxMessageSize]);
+
+            var memoryStream = new MemoryStream();
+
+            //var i = 1;
+            // Check WebSocket state.
+            while (State == WebSocketState.Open && !_disposing)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    await CloseAsync();
+                    break;
+                }
+
+                memoryStream.Position = 0;
+                memoryStream.SetLength(0);
+
+                // Receive web socket message
+                var webSocketReceiveResult = await _webSocket.GetWebSocketReceiveResultAsync(
+                    memoryStream, receivedDataBuffer, cancellationToken).ConfigureAwait(false);
+
+                if (webSocketReceiveResult.MessageType == WebSocketMessageType.Close)
+                {
+                    await CloseAsync();
+                    break;
+                }
+
+                var message = await ReadMessageAsync(memoryStream);
+                FireMessageArrived(message);
+
+                //if (i++ % 100 == 0)
+                //{
+                //    //emulate closed connection
+                //    throw new SocketCommunicatorException("test exception");
+                //}
+            }
+        }
+
+        private async Task CloseAsync()
+        {
+            await _webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure,
+                    string.Empty,
+                    CancellationToken.None)
+                .ConfigureAwait(false);
+        }
+
+        private async Task<string> ReadMessageAsync(MemoryStream memoryStream)
+        {
+            memoryStream.Position = 0;
+            var streamReader = new StreamReader(memoryStream);
+            return await streamReader.ReadToEndAsync();
+        }
+
+        #region events 
+
+        public event Action<string> MessageArrived;
+        public event Action ConnectionClosed;
+        public event Action<Exception> ConnectionError;
+
+        /// <summary>
+        /// Fire FireMessageArrived event
+        /// </summary>
+        protected virtual void FireMessageArrived(string message)
+        {
+            MessageArrived?.Invoke(message);
+        }
+
+        /// <summary>
+        /// Fire ConnectionClosed event
+        /// </summary>
+        protected virtual void FireConnectionClosed()
+        {
+            ConnectionClosed?.Invoke();
+        }
+
+        /// <summary>
+        /// Fire ConnectionError event
+        /// </summary>
+        protected virtual void FireConnectionError(Exception ex)
+        {
+            ConnectionError?.Invoke(ex);
+        }
+        #endregion
+
+        public void Dispose()
+        {
+            _disposing = true;
+            _webSocket.Dispose();
+            _webSocket = null;
+        }
+    }
+
+    /*
+    public class SocketCommunicatorOld //: ISocketCommunicator
+    {
+        private readonly ILogger _logger;
+        private ClientWebSocket _webSocket;
+        private Uri _uri;
         private CancellationTokenSource _cancellationTokenSource;
         private CancellationToken _cancellationToken;
         private bool _disposing = false;
-        private bool _backgroundTaskStarted = false;
+        private bool _receiveMessagesLoopIsRunning = false;
         private readonly object _sync = new object();
         /// <summary>
         /// When enabled messages about connection closed/error etc. will be written by System.Diagnostics.Debug
         /// </summary>
         public bool DiagnosticEnabled { get; set; }
 
-        public bool IsConnected => _webSocket.State == WebSocketState.Open && _backgroundTaskStarted;
+        public bool IsConnected => _webSocket.State == WebSocketState.Open && _receiveMessagesLoopIsRunning;
 
-        public async Task<bool> EnsureConnected()
-        {
-            start:
-            if (_webSocket.State == WebSocketState.Open)
-            {
-                if (_backgroundTaskStarted)
-                    return true;
-
-                int i = 10;
-                while (!_backgroundTaskStarted && i > 0)
-                {
-                    Thread.Sleep(10);
-                    i--;
-                }
-
-                if (IsConnected)
-                    return true;
-            }
-            await ConnectAsync();
-
-            if (_disposing)
-                return false;
-            goto start;
-        }
+        public WebSocketState State => _webSocket.State;
 
         /// <inheritdoc />
         public event Action<string> MessageArrived;
         public event Action ConnectionClosed;
         public event Action<Exception> ConnectionError;
 
-        public SocketCommunicator(string uriString) :
-            this(new Uri(uriString))
-        {
-        }
-
-        public SocketCommunicator(Uri url)
-        {
-            _webSocket = new ClientWebSocket();
-            _url = url;
-            _cancellationTokenSource = new CancellationTokenSource();
-            _cancellationToken = _cancellationTokenSource.Token;
-        }
-
         public Uri Url
         {
-            get => _url;
+            get => _uri;
             set
             {
                 if (value == null)
                     throw new SocketCommunicatorException("Url must be not null");
-                _url = value;
+                _uri = value;
             }
         }
 
-        /// <inheritdoc />
+        public SocketCommunicator(ILogger logger)
+        {
+            _logger = logger;
+            _webSocket = new ClientWebSocket();
+            //_uri = new Uri(uriString);
+            _cancellationTokenSource = new CancellationTokenSource();
+            _cancellationToken = _cancellationTokenSource.Token;
+        }
+
+        /// <summary>
+        /// Ensure connected and send command message to web socket channel
+        /// </summary>
         public async Task SendAsync(IChannelCommand command)
         {
-            byte[] bytes = Encoding.UTF8.GetBytes(command.ToJsonMessage());
-            ArraySegment<byte> messageToSend = new ArraySegment<byte>(bytes);
+            var message = command.ToJsonMessage();
+            var bytes = Encoding.UTF8.GetBytes(message);
+            var messageToSend = new ArraySegment<byte>(bytes);
 
             if (!IsConnected)
             {
                 var connected = await EnsureConnected();
                 if (!connected)
-                    throw new SocketCommunicatorException("Not connected", $"[WebSocket state: {_webSocket.State}; disposing: {_disposing}]");
+                {
+                    _logger.LogError("{class}::{method}: web socket connection failed [state: {state}; background task: {task}]",
+                        nameof(SocketCommunicator),
+                        nameof(SendAsync),
+                        State,
+                        _receiveMessagesLoopIsRunning);
+                    throw new SocketCommunicatorException("Not connected",
+                        $"[state: {State}; background task: {_disposing}]");
+                }
+            }
+
+            if (DiagnosticEnabled)
+            {
+                _logger.LogInformation(
+                    "{class}::{method}: sending message {message} to {url} [state: {state}; background task: {task}]",
+                    nameof(SocketCommunicator),
+                    nameof(SendAsync),
+                    message,
+                    Url,
+                    State,
+                    _receiveMessagesLoopIsRunning);
             }
 
             await _webSocket.SendAsync(messageToSend, WebSocketMessageType.Text, true, _cancellationToken);
         }
-        /// <inheritdoc />
-        public async Task ReconnectAsync()
+
+        /// <summary>
+        /// connect web socket to uri channel and start background task to receive messages
+        /// </summary>
+        public async Task<bool> EnsureConnected(int attempts = 3)
+        {
+            if (IsConnected)
+                return true;
+
+            do
+            {
+                await ConnectAsync();
+                if (IsConnected)
+                    return true;
+                Thread.Sleep(10);
+            } while (attempts-- > 0);
+
+            return false;
+        }
+
+        /// <summary>
+        /// connect web socket to Url and start background task to read messages
+        /// </summary>
+        public async Task<bool> ConnectAsync()
+        {
+            if (State == WebSocketState.None)
+            {
+                if (DiagnosticEnabled)
+                {
+                    _logger.LogInformation("{class}::{method}: connecting to {url} [state: {state}]",
+                        nameof(SocketCommunicator), nameof(ConnectAsync), Url, State);
+                }
+
+                try
+                {
+                    await _webSocket.ConnectAsync(Url, _cancellationToken)
+                        .ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex,
+                        "{class}::{method}: connect to {url} failed [state: {state}]. Raising ConnectionError event.",
+                        nameof(SocketCommunicator), nameof(ConnectAsync), Url, State);
+                    return false;
+                }
+            }
+
+            WaitWhileConnecting();
+
+            if (DiagnosticEnabled)
+            {
+                _logger.LogInformation("{class}::{method}: connected [state: {state}]",
+                    nameof(SocketCommunicator), nameof(ConnectAsync), State);
+            }
+
+            RunReceiveMessagesTask();
+            return true;
+        }
+
+        private void RunReceiveMessagesTask()
+        {
+            if (State != WebSocketState.Open)
+                throw new SocketCommunicatorException($"Open state expected [state: {State}]");
+
+            if (!_receiveMessagesLoopIsRunning)
+                lock (_sync)
+                {
+                    if (!_receiveMessagesLoopIsRunning && State == WebSocketState.Open)
+                    {
+                        if (DiagnosticEnabled)
+                        {
+                            _logger.LogInformation(
+                                "{class}::{method}: starting background task",
+                                nameof(SocketCommunicator), nameof(RunReceiveMessagesTask));
+                        }
+
+                        _ = Task.Run(this.BackgroundTask, _cancellationToken);
+
+                        WaitWhileReceiveMessagesTaskStarting();
+                        if (DiagnosticEnabled)
+                        {
+                            _logger.LogInformation(
+                                "{class}::{method}: background task is started",
+                                nameof(SocketCommunicator), nameof(RunReceiveMessagesTask));
+                        }
+                    }
+                }
+        }
+
+        /// <summary>
+        /// reconnect web socket
+        /// </summary>
+        public async Task<bool> ReconnectAsync()
         {
             if (_disposing)
-                return;
-            if (_webSocket.State == WebSocketState.Open)
+                return false;
+            if (State == WebSocketState.Open)
                 throw new InvalidOperationException("Connection state is Open");
+
+            _logger.LogInformation("{class}::{method}: reconnecting [state: {state}]",
+                nameof(SocketCommunicator), nameof(ReconnectAsync), State);
 
             if (_cancellationTokenSource != null)
             {
@@ -112,103 +425,152 @@ namespace AVS.CoreLib.WebSockets
             _cancellationTokenSource = new CancellationTokenSource();
             _cancellationToken = _cancellationTokenSource.Token;
 
-            if (_webSocket != null && _webSocket.State == WebSocketState.Aborted)
+            if (_webSocket != null && (State == WebSocketState.Aborted || State == WebSocketState.Closed))
             {
                 _webSocket.Dispose();
                 _webSocket = null;
                 _webSocket = new ClientWebSocket();
+                if (DiagnosticEnabled)
+                {
+                    _logger.LogInformation("{class}::{method} WebSocket disposed and new one created [state: {state}]",
+                        nameof(SocketCommunicator),
+                        nameof(ReconnectAsync), 
+                        State);
+                }
             }
 
-            await ConnectAsync();
+            return await EnsureConnected();
         }
 
-        /// <inheritdoc />
-        public async Task ConnectAsync()
+        private void WaitWhileConnecting()
         {
             start:
-            if (_disposing)
-                return;
-            if (_webSocket.State == WebSocketState.Connecting)
+            if (State == WebSocketState.Connecting)
             {
+                if (DiagnosticEnabled)
+                {
+                    _logger.LogInformation("{class}::{method}: waiting connect to {url}  [state: {state}]",
+                        nameof(SocketCommunicator), nameof(ConnectAsync), Url, State);
+                }
                 Thread.Sleep(10);
                 goto start;
             }
-
-            if (_webSocket.State != WebSocketState.Open)
-            {
-                try
-                {
-                    await _webSocket.ConnectAsync(_url, _cancellationToken)
-                        .ConfigureAwait(false);
-                }
-                catch (Exception ex)
-                {
-                    RaiseConnectionError(ex);
-                }
-            }
-
-            if (!_backgroundTaskStarted)
-                lock (_sync)
-                {
-                    if (!_backgroundTaskStarted)
-                    {
-                        _ = Task.Run(this.RunAsync, _cancellationToken);
-                        _backgroundTaskStarted = true;
-                    }
-                }
         }
 
-        /// <inheritdoc />
+        private void WaitWhileReceiveMessagesTaskStarting()
+        {
+            var i = 10;
+            while (!_receiveMessagesLoopIsRunning && i > 0)
+            {
+                Thread.Sleep(10);
+                i--;
+            }
+        }
+
+        
+
+        /// <summary>
+        /// Raises FireMessageArrived event
+        /// </summary>
         protected virtual void RaiseMessageArrived(string message)
         {
             MessageArrived?.Invoke(message);
         }
-        /// <inheritdoc />
+
+        /// <summary>
+        /// Raises ConnectionClosed event
+        /// </summary>
         protected virtual void RaiseConnectionClosed()
         {
-            if (DiagnosticEnabled)
-                System.Diagnostics.Debug.Write("Connection has been closed", this.GetType().Name);
             ConnectionClosed?.Invoke();
         }
-        /// <inheritdoc />
+        /// <summary>
+        /// Raises ConnectionError event
+        /// </summary>
         protected virtual void RaiseConnectionError(Exception ex)
         {
-            if (DiagnosticEnabled)
-                System.Diagnostics.Debug.Write("A connection error occured: " + ex.Message, this.GetType().Name);
             ConnectionError?.Invoke(ex);
         }
 
-        private async Task RunAsync()
+        private async Task BackgroundTask()
         {
             try
             {
-                /*We define a certain constant which will represent
-                  size of received data. It is established by us and 
-                  we can set any value. We know that in this case the size of the sent
-                  data is very small.
-                */
-                const int maxMessageSize = 2048;
+                await ReceiveMessagesLoopAsync();
+            }
+            catch (WebSocketException ex)
+            {
+                _logger.LogError(ex,
+                    "{class}::{method}: web socket error. Raising ConnectionError event.",
+                    nameof(SocketCommunicator), nameof(BackgroundTask));
+                RaiseConnectionError(ex);
+            }
+            catch (Exception ex)
+            {
+                if (_cancellationToken.IsCancellationRequested)
+                {
+                    _logger.LogError(ex, "{class}::{method}: !!!!! cancellation requested !!!!!", nameof(SocketCommunicator), nameof(BackgroundTask));
+                }
+                else
+                {
+                    _logger.LogError(ex,
+                        "{class}::{method}: failed. Raising ConnectionError event.",
+                        nameof(SocketCommunicator), nameof(BackgroundTask));
+                    RaiseConnectionError(ex);
+                }
+            }
 
-                // Buffer for received bits.
-                ArraySegment<byte> receivedDataBuffer = new ArraySegment<byte>(new byte[maxMessageSize]);
+        }
 
-                MemoryStream memoryStream = new MemoryStream();
+        private async Task ReceiveMessagesLoopAsync()
+        {
+            _receiveMessagesLoopIsRunning = true;
 
-                // Checks WebSocket state.
-                while (IsConnected && !_cancellationToken.IsCancellationRequested)
+            
+            const int maxMessageSize = 2048;
+
+            // Buffer for received bits.
+            var receivedDataBuffer = new ArraySegment<byte>(new byte[maxMessageSize]);
+
+            var memoryStream = new MemoryStream();
+            try
+            {
+                // Check WebSocket state.
+                while (IsConnected)
                 {
                     // Reads data.
-                    WebSocketReceiveResult webSocketReceiveResult =
-                        await ReadMessage(receivedDataBuffer, memoryStream).ConfigureAwait(false);
+                    var webSocketReceiveResult = await _webSocket.GetWebSocketReceiveResultAsync(
+                        memoryStream, receivedDataBuffer, _cancellationToken).ConfigureAwait(false);
 
-                    if (webSocketReceiveResult.MessageType != WebSocketMessageType.Close)
+                    if (webSocketReceiveResult.MessageType == WebSocketMessageType.Close)
                     {
-                        memoryStream.Position = 0;
-                        OnNewMessage(memoryStream);
+                        if (DiagnosticEnabled)
+                        {
+                            _logger.LogInformation(
+                                "{class}::{method}: WebSocket Close message received",
+                                nameof(SocketCommunicator), nameof(ReceiveMessagesLoopAsync));
+                        }
+
+                        await _webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure,
+                                string.Empty,
+                                CancellationToken.None)
+                            .ConfigureAwait(false);
+                        _receiveMessagesLoopIsRunning = false;
+                        RaiseConnectionClosed();
+                        break;
                     }
-                    else if (webSocketReceiveResult.MessageType == WebSocketMessageType.Close)
+
+                    await ReadMessageAsync(memoryStream);
+
+                    if (_cancellationToken.IsCancellationRequested)
                     {
-                        await CloseWebSocket().ConfigureAwait(false);
+                        if (DiagnosticEnabled)
+                        {
+                            _logger.LogInformation("{class}::{method}: cancellation requested",
+                                nameof(SocketCommunicator),
+                                nameof(ReceiveMessagesLoopAsync));
+                        }
+
                         break;
                     }
 
@@ -216,76 +578,30 @@ namespace AVS.CoreLib.WebSockets
                     memoryStream.SetLength(0);
                 }
             }
-            catch (Exception ex)
-            {
-                if (!(ex is OperationCanceledException) ||
-                    !_cancellationToken.IsCancellationRequested)
-                {
-                    RaiseConnectionError(ex);
-                }
-            }
-
-            if (_webSocket.State != WebSocketState.CloseReceived &&
-                _webSocket.State != WebSocketState.Closed)
-            {
-                await CloseWebSocket().ConfigureAwait(false);
-            }
-            _backgroundTaskStarted = false;
-            RaiseConnectionClosed();
-        }
-
-        private async Task CloseWebSocket()
-        {
-            _backgroundTaskStarted = false;
-            if (_webSocket.State == WebSocketState.CloseReceived ||
-                _webSocket.State == WebSocketState.Closed)
-                return;
-
-            try
-            {
-                await _webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure,
-                                            String.Empty,
-                                            CancellationToken.None)
-                                .ConfigureAwait(false);
-
-            }
-            catch (Exception ex)
+            catch (OperationCanceledException ex)
             {
                 if (DiagnosticEnabled)
-                    System.Diagnostics.Debug.Write("CloseWebSocket failed: " + ex.Message, this.GetType().Name);
-                //throw ex;
+                {
+                    _logger.LogInformation(ex,
+                        "{class}::{method}: operation canceled exception",
+                        nameof(SocketCommunicator), nameof(BackgroundTask));
+                }
             }
-        }
-
-        private async Task<WebSocketReceiveResult> ReadMessage(ArraySegment<byte> receivedDataBuffer, MemoryStream memoryStream)
-        {
-            WebSocketReceiveResult webSocketReceiveResult;
-
-            do
+            finally
             {
-                webSocketReceiveResult =
-                    await _webSocket.ReceiveAsync(receivedDataBuffer, _cancellationToken)
-                                    .ConfigureAwait(false);
-
-                await memoryStream.WriteAsync(receivedDataBuffer.Array,
-                                              receivedDataBuffer.Offset,
-                                              webSocketReceiveResult.Count,
-                                              _cancellationToken)
-                                  .ConfigureAwait(false);
+                _receiveMessagesLoopIsRunning = false;
             }
-            while (!webSocketReceiveResult.EndOfMessage);
-
-            return webSocketReceiveResult;
         }
 
-        private void OnNewMessage(MemoryStream payloadData)
+        private async Task ReadMessageAsync(MemoryStream memoryStream)
         {
-            var streamReader = new StreamReader(payloadData);
-            var message = streamReader.ReadToEnd();
-
+            memoryStream.Position = 0;
+            var streamReader = new StreamReader(memoryStream);
+            var message = await streamReader.ReadToEndAsync();
             if (DiagnosticEnabled)
-                System.Diagnostics.Debug.Write("Received message: {Message} " + message, this.GetType().Name);
-
+            {
+                _logger.LogTrace("{class}::{method}: WebSocket message received {message}", nameof(SocketCommunicator), nameof(ReadMessageAsync), message);
+            }
             RaiseMessageArrived(message);
         }
         /// <inheritdoc />
@@ -298,5 +614,5 @@ namespace AVS.CoreLib.WebSockets
             _webSocket.Dispose();
             _webSocket = null;
         }
-    }
+    }*/
 }

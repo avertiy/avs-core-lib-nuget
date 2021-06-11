@@ -48,7 +48,7 @@ namespace AVS.CoreLib.PowerConsole
         /// <summary>
         /// Indicates whether new line (\r\n) has been just written 
         /// </summary>
-        public static bool NewLineFlag = false;
+        public static bool NewLineFlag = true;
 
         /// <summary>
         /// Status of the message will produce beep sound when written to console

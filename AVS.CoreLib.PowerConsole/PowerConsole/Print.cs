@@ -79,9 +79,10 @@ namespace AVS.CoreLib.PowerConsole
             }
         }
 
-        public static void PrintHeader(string header, ConsoleColor color = ConsoleColor.Cyan, string template = "==========", string lineIdentation = "\r\n\r\n")
+        public static void PrintHeader(string header, ConsoleColor color = ConsoleColor.Cyan, string template = "============", string lineIdentation = "\r\n\r\n")
         {
-            var str = $"{lineIdentation}{template} {header} {template}{lineIdentation}";
+            WriteLine();
+            var str = $"{template} {header} {template}{lineIdentation}";
             Print(str, color, false);
         }
 
