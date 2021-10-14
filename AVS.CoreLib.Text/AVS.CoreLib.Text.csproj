@@ -26,4 +26,8 @@ e.g. ColorFormatter, NotEmptyFormatter, PriceFormatter, EnumFormatter etc.</Desc
     <DocumentationFile>K:\WORK\AVS.NET-CORE\avs-core-lib-nuget\AVS.CoreLib.Text\AVS.CoreLib.Text.xml</DocumentationFile>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="5.0.2" />
+  </ItemGroup>
+
 </Project>

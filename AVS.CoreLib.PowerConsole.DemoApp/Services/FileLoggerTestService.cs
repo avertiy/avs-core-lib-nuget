@@ -12,14 +12,12 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
             _logger = logger;
         }
 
-        public void Demo()
-        {
-            
-        }
-
         public void Test()
         {
-            _logger.LogInformation("test info log");
+            _logger.LogDebug("debug log");
+            _logger.LogInformation("info log");
+            _logger.LogWarning("warning log");
+            _logger.LogError("error log");
         }
     }
 }

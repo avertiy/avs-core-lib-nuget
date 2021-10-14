@@ -18,6 +18,7 @@ namespace AVS.CoreLib.Trading.FormatProviders
                     _formatProvider = new XFormatProvider();
                     _formatProvider.AppendFormatter(new PriceFormatter());
                     _formatProvider.AppendFormatter(new PairStringFormatter());
+                    _formatProvider.AppendFormatter(new OhlcFormatter());
                     _formatProvider.AppendFormatter(new TradingEnumsFormatter());
                     _formatProvider.AppendFormatter(new CurrencySymbolFormatter());
                 }

@@ -3,9 +3,6 @@
     public enum CandleType
     {
         None = 0,
-        Small,
-        Average,
-        Big,
         LongTail,
         /// <summary>
         /// opens and closes at the same price with bi-directional price fluctuation

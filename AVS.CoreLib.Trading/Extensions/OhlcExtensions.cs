@@ -1,4 +1,5 @@
-﻿using AVS.CoreLib.Trading.Abstractions;
+﻿using System;
+using AVS.CoreLib.Trading.Abstractions;
 using AVS.CoreLib.Trading.Enums;
 
 namespace AVS.CoreLib.Trading.Extensions
@@ -23,8 +24,17 @@ namespace AVS.CoreLib.Trading.Extensions
         /// </summary>
         public static decimal CandleHeight(this IOhlc ohlc)
         {
-            // diff / (open + close) / 2 * 100
-            return (ohlc.High - ohlc.Low) / (ohlc.Open + ohlc.Close) * 50;
+            return (ohlc.High - ohlc.Low) / ohlc.Low;
+        }
+
+        public static decimal CandleAvgPrice(this IOhlc ohlc)
+        {
+            return (ohlc.Open + ohlc.Close) / 2;
+        }
+
+        public static ConsoleColor GetCandleColor(this IOhlc ohlc)
+        {
+            return ohlc.Close >= ohlc.Open ? ConsoleColor.Green : ConsoleColor.Red;
         }
 
         public static bool IsGreenCandle(this IOhlc ohlc)
@@ -35,6 +45,50 @@ namespace AVS.CoreLib.Trading.Extensions
         public static bool IsRedCandle(this IOhlc ohlc)
         {
             return ohlc.Close < ohlc.Open;
+        }
+
+        public static CandleSize GetCandleSize(this IOhlc ohlc, TimeFrame timeFrame = TimeFrame.M30)
+        {
+            var h = ohlc.CandleHeight();
+            var size = CandleSize.Normal;
+            switch (timeFrame)
+            {
+                case TimeFrame.H4:
+                {
+                    if (h < 0.025m)
+                        size = CandleSize.Small;
+                    else if (h > 0.06m)
+                        size = CandleSize.Big;
+                    break;
+                }
+                case TimeFrame.H1:
+                {
+                    if (h < 0.015m)
+                        size = CandleSize.Small;
+                    else if (h > 0.05m)
+                        size = CandleSize.Big;
+                    break;
+                }
+                case TimeFrame.D:
+                {
+                    if (h < 0.05m)
+                        size = CandleSize.Small;
+                    else if (h > 0.15m)
+                        size = CandleSize.Big;
+                    break;
+                    }
+                case TimeFrame.M30:
+                default:
+                {
+                    if (h < 0.01m)
+                        size = CandleSize.Small;
+                    else if (h > 0.025m)
+                        size = CandleSize.Big;
+                    break;
+                }
+            }
+
+            return size;
         }
 
         /// <summary>

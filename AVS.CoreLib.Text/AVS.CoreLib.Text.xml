@@ -1,0 +1,152 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AVS.CoreLib.Text</name>
+    </assembly>
+    <members>
+        <member name="T:AVS.CoreLib.Text.Extensions.JsonExtensions">
+            <summary>
+            Json extensions
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Text.Extensions.JsonExtensions.ToJsonString``1(``0,System.Boolean)">
+            <summary>
+            Converts the value of a type specified into a JSON string through <see cref="T:System.Text.Json.JsonSerializer"/>
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Text.Extensions.JsonExtensions.ToJsonString``1(``0,System.Text.Json.JsonSerializerOptions)">
+            <summary>
+            Converts the value of a type specified into a JSON string through <see cref="T:System.Text.Json.JsonSerializer"/>
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Text.FormatProviders.XFormatProvider">
+            <summary>
+            Extends standard string format modifiers like N2, C etc. with custom formatters
+            (e.g. ColorFormatter, NotEmptyFormatter, PriceFormatter, EnumFormatter etc) 
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Text.FormatProviders.XFormatProvider.AppendFormatter(AVS.CoreLib.Text.Formatters.CustomFormatter)">
+            <summary>
+            You can extend base functionality by adding custom formatters
+            e.g. 
+            X.FormatProvider.AppendFormatter(new PriceFormatter());
+            X.FormatProvider.AppendFormatter(new PairStringFormatter());
+            X.FormatProvider.AppendFormatter(new TradingEnumsFormatter());
+            usually custom formatters are added within RegisterServices
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Text.Formatters.ColorFormatter">
+            <summary>
+            formats input "{DateTime.Now:!--Red d}" into string $$01/01/2020:--Red$
+            - foreground color
+            --background color
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Text.Formatters.CustomFormatter">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Text.Formatters.CustomFormatter.AppendFormatter(AVS.CoreLib.Text.Formatters.CustomFormatter)">
+            <summary>
+            
+            </summary>
+            <param name="formatter"></param>
+        </member>
+        <member name="M:AVS.CoreLib.Text.Formatters.CustomFormatter.Format(System.String,System.Object,System.IFormatProvider)">
+            <summary>
+            
+            </summary>
+            <param name="format"></param>
+            <param name="arg"></param>
+            <param name="formatProvider"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AVS.CoreLib.Text.Formatters.CustomFormatter.CustomFormat(System.String,System.Object,System.IFormatProvider)">
+            <summary>
+            
+            </summary>
+            <param name="format"></param>
+            <param name="arg"></param>
+            <param name="formatProvider"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AVS.CoreLib.Text.Formatters.CustomFormatter.Match(System.String)">
+            <summary>
+            Matches the format qualifier
+            when True - CustomFormat(format, arg) is called
+            when False - DefaultFormat(format, arg) is called
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Text.Formatters.CustomFormatter.DefaultFormat(System.String,System.Object,System.IFormatProvider)">
+            <summary>
+            
+            </summary>
+            <param name="format"></param>
+            <param name="arg"></param>
+            <param name="formatProvider"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AVS.CoreLib.Text.Formatters.CustomFormatter.GetFormat(System.Type)">
+            <summary>
+            
+            </summary>
+            <param name="formatType"></param>
+            <returns></returns>
+        </member>
+        <member name="T:AVS.CoreLib.Text.Formatters.NotEmptyFormatter">
+            <summary>
+            if argument  format starts with "!"  than in case argument is empty or (0 for numeric types, MinValue etc.) than returns string.Empty 
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Text.StringBuilderExtensions.XAppend(System.Text.StringBuilder,System.FormattableString)">
+            <summary>
+            Append X.Format(str)
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Text.TextProcessors.TextExpressionProcessor">
+            <summary>
+            if string starts with @ symbol it is treated as string with expressions: `anything:value` or `anything:value;`
+            where value is tested whether it is empty or not, if it is empty the whole expression will not be included in result string
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Text.X">
+            <summary>
+            X is just a short notation
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Text.X.FormatProvider">
+            <summary>
+            Extends .NET string format modifiers like N2, d, C etc. with custom formatters
+            (e.g. ColorFormatter, NotEmptyFormatter, PriceFormatter, EnumFormatter etc) 
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Text.X.TextProcessor">
+            <summary>
+            string started with "@..." considered as text that TextProcessor should process
+            by default X.Format uses <seealso cref="T:AVS.CoreLib.Text.TextProcessors.TextExpressionProcessor"/> as TextProcessor
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Text.X.Format(System.FormattableString)">
+            <summary>
+            Replaces the format item(s) in a specified string with the string representation of the corresponding object
+            Standard string format modifiers like N2, C etc. are extended with <see cref="T:AVS.CoreLib.Text.FormatProviders.XFormatProvider"/>
+            
+            If string starts with @ it is treated as string with expressions and processed by text processor
+            the default text processor is <see cref="T:AVS.CoreLib.Text.TextProcessors.TextExpressionProcessor"/>
+            e.g. "@any text before `expression: arg;` text after"
+            if arg is empty the whole expression will not be included into result string: "any text before text after"
+            
+            </summary>
+            <example>
+            ColorFormatter
+            example: $"{DateTime.Now:!--Red d}" - will translate into color formatted output string: $$01/01/2020:--Red$
+            example: $"{0.25:!--Green P}" - will translate into color formatted output string: $$25%:--Green$
+            </example>
+            <remarks>
+            Note symbol @ at the beginning of the string and expression delimiters ``(quotes) 
+            treated as service symbols which are not included in the result string
+            </remarks>
+        </member>
+    </members>
+</doc>

@@ -28,7 +28,7 @@ namespace AVS.CoreLib.Extensions
                 return type.Name;
 
             var args = type.GetGenericArguments();
-            StringBuilder sb = new StringBuilder(type.Name);
+            var sb = new StringBuilder(type.Name);
             sb.Append("<");
             foreach (var typeArgument in args)
             {

@@ -10,6 +10,11 @@ using BootstrapBase = AVS.CoreLib.PowerConsole.Bootstrapping.Bootstrap;
 
 namespace AVS.CoreLib.ConsoleTools.Bootstrapping
 {
+    /// <remarks>
+    /// This Bootstrap was written first, it builds a Host and can run it as a windows service 
+    /// I've decided to include a lightweight Bootstrap version in PowerConsole package also put there ArgsParser
+    /// as i don't need windows service, in most cases only DI container is needed from Bootstrap
+    /// </remarks>
     public class Bootstrap : BootstrapBase
     {
         /// <summary>

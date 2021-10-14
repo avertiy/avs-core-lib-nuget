@@ -3,18 +3,38 @@ using System.Diagnostics;
 
 namespace AVS.CoreLib.Text.Formatters
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public abstract class CustomFormatter : IFormatProvider, ICustomFormatter
     {
         public CustomFormatter Next { get; set; }
 
-        public void AppendFormatter(CustomFormatter formatter)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="formatter"></param>
+        public CustomFormatter AppendFormatter(CustomFormatter formatter)
         {
             if (Next == null)
+            {
                 Next = formatter;
+            }
             else
+            {
                 Next.AppendFormatter(formatter);
+            }
+
+            return formatter;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="format"></param>
+        /// <param name="arg"></param>
+        /// <param name="formatProvider"></param>
+        /// <returns></returns>
         public virtual string Format(string format, object arg, IFormatProvider formatProvider)
         {
             if (Equals(null, arg))
@@ -26,6 +46,13 @@ namespace AVS.CoreLib.Text.Formatters
             return Match(format) ? CustomFormat(format, arg, formatProvider) : DefaultFormat(format, arg, formatProvider);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="format"></param>
+        /// <param name="arg"></param>
+        /// <param name="formatProvider"></param>
+        /// <returns></returns>
         protected virtual string CustomFormat(string format, object arg, IFormatProvider formatProvider)
         {
             return DefaultFormat(format, arg, formatProvider);
@@ -38,6 +65,13 @@ namespace AVS.CoreLib.Text.Formatters
         /// </summary>
         protected virtual bool Match(string format) => true;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="format"></param>
+        /// <param name="arg"></param>
+        /// <param name="formatProvider"></param>
+        /// <returns></returns>
         protected string DefaultFormat(string format, object arg, IFormatProvider formatProvider)
         {
             if (Next == null)
@@ -46,6 +80,11 @@ namespace AVS.CoreLib.Text.Formatters
             return Next.Format(format, arg, formatProvider);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="formatType"></param>
+        /// <returns></returns>
         [DebuggerStepThrough]
         public object GetFormat(Type formatType)
         {

@@ -16,18 +16,23 @@ namespace AVS.CoreLib.WebSockets
         private readonly ILogger _logger;
         private ISocketCommunicator _communicator;
         private bool _disposing;
-        private readonly Uri _uri;
+        private Uri _uri;
         private CancellationTokenSource _cancellationTokenSource;
         private readonly CancellationToken _cancellationToken;
         private string _lastCommand;
         public bool IsConnected => State == WebSocketState.Open;
         public bool DiagnosticEnabled { get; set; }
+        public event Action<Exception> ConnectionClosed;
+        public Uri Uri
+        {
+            get => _uri == null ? throw new InvalidOperationException("Uri was not initialized") : _uri;
+            set => _uri = value;
+        }
 
         protected WebSocketState State => _communicator.State;
 
-        protected WebSocketClient(string wssApiUrl, ILogger logger) : this(CreateCommunicator(), logger)
+        protected WebSocketClient(ILogger logger) : this(new SocketCommunicator(), logger)
         {
-            _uri = new Uri(wssApiUrl);
         }
 
         protected WebSocketClient(ISocketCommunicator communicator, ILogger logger)
@@ -54,17 +59,17 @@ namespace AVS.CoreLib.WebSockets
                 return true;
 
             if(DiagnosticEnabled)
-                _logger.LogInformation("{class}::{method}: web socket connecting to {uri} [state: {state}]", nameof(WebSocketClient), nameof(EnsureConnected), _uri, State);
+                _logger.LogInformation("{class}::{method}: web socket connecting to {uri} [state: {state}]", nameof(WebSocketClient), nameof(EnsureConnected), Uri, State);
 
             try
             {
-                return await _communicator.ConnectAsync(_uri, _cancellationToken).ConfigureAwait(false);
+                return await _communicator.ConnectAsync(Uri, _cancellationToken).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex,
                     "{class}::{method}: connect to {url} failed [state: {state}]",
-                    nameof(WebSocketClient), nameof(EnsureConnected), _uri, State);
+                    nameof(WebSocketClient), nameof(EnsureConnected), Uri, State);
                 throw new SocketCommunicatorException($"WebSocket connection failed [state: {State}]", ex);
             }
         }
@@ -113,6 +118,8 @@ namespace AVS.CoreLib.WebSockets
                 _logger.LogInformation("{class}::{method}: socket connection closed [reconnect: {reconnect}]",
                     nameof(WebSocketClient), nameof(OnSocketConnectionClosed), !_disposing);
             }
+
+            ConnectionClosed?.Invoke(null);
         }
 
         protected virtual async void OnSocketConnectionError(Exception error)
@@ -134,17 +141,35 @@ namespace AVS.CoreLib.WebSockets
             if (_lastCommand == null || _disposing)
                 return;
 
+            var attempt = 0;
+            connect:
             if (DiagnosticEnabled)
             {
-                _logger.LogInformation("{class}::{method}: reconnecting",
+                _logger.LogInformation("{class}::{method}: trying to reconnect",
                     nameof(WebSocketClient), nameof(ReconnectAsync), _lastCommand != null);
             }
 
-            _communicator.ResetWebSocket();
-            await EnsureConnected();
+            try
+            {
+                _communicator.ResetWebSocket();
+                await EnsureConnected();
+            }
+            catch (SocketCommunicatorException ex)
+            {
+                // try a few times before throw
+                attempt++;
+                if (attempt < 10)
+                {
+                    //let some time to fix the network issue before the app fails
+                    Thread.Sleep(5000 + attempt * 1000);
+                    goto connect;
+                }
+
+                ConnectionClosed?.Invoke(ex);
+            }
+
             await SendCommandAsync(_lastCommand).ConfigureAwait(false);
         }
-        
 
         public void Dispose()
         {
@@ -154,11 +179,6 @@ namespace AVS.CoreLib.WebSockets
             _cancellationTokenSource = null;
             _communicator.Dispose();
             _communicator = null;
-        }
-
-        private static SocketCommunicator CreateCommunicator()
-        {
-            return new SocketCommunicator();
         }
     }
 }

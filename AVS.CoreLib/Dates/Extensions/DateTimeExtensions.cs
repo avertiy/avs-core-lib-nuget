@@ -77,19 +77,18 @@ namespace AVS.CoreLib.Dates.Extensions
             return new DateTime(ticks * span.Ticks);
         }
 
-        public static DateTime Round(this DateTime date, double milliseconds)
+        public static DateTime Round(this DateTime date, double seconds)
         {
-            return date.Round(TimeSpan.FromMilliseconds(milliseconds));
+            return date.Round(TimeSpan.FromSeconds(seconds));
         }
-
-        public static DateTime RoundDown(this DateTime date, double milliseconds)
-        {
-            return date.RoundDown(TimeSpan.FromMilliseconds(milliseconds));
-        }
-
         public static DateTime Round(this DateTime date, int seconds)
         {
             return date.Round(TimeSpan.FromSeconds(seconds));
+        }
+
+        public static DateTime RoundDown(this DateTime date, double seconds)
+        {
+            return date.RoundDown(TimeSpan.FromSeconds(seconds));
         }
 
         public static DateTime RoundDown(this DateTime date, int seconds)

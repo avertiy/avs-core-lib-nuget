@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Reflection;
 using AVS.CoreLib.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -33,13 +35,6 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
             services.AddOptions();
         }
 
-
-        protected void AddOptions<TOptions>(IServiceCollection services, string configSectionKey) where TOptions : class
-        {
-            var section = Configuration.GetSection(configSectionKey);
-            services.Configure<TOptions>(section.Bind);
-        }
-
         protected virtual void AddEventConsumers(IServiceCollection services)
         {
             //services.AddScoped<EventHandler>(); // handler implement IListener<TEvent>
@@ -54,18 +49,57 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
         {
         }
 
-        protected virtual IConfiguration LoadAppSettings(string appSettings = "appsettings.json")
+        protected virtual IConfiguration LoadAppSettings(bool reloadOnChange = false)
         {
-            var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection();
-            configurationBuilder.AddJsonFile(appSettings, true, true);
-            configurationBuilder.AddEnvironmentVariables();
-            return configurationBuilder.Build();
+            var builder = new ConfigurationBuilder().AddInMemoryCollection();
+            CreateSecretsDirectory();
+            var configuration = builder
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange)
+                .AddJsonFile($"appsettings.{ENVIRONMENT}.json", optional: true, reloadOnChange)
+                .AddEnvironmentVariables()
+                .AddJsonFile(UserSecretsPath, optional: true, reloadOnChange)
+                .Build();
+            return configuration;
+        }
+
+        /// <summary>
+        /// avoid using common path for secrets due to common location like microsoft/UserSecrets/.. kind of dangerous
+        /// malicious software will target that path to get all user secrets for all apps at once
+        /// </summary>
+        protected virtual string UserSecretsPath
+        {
+            get
+            {
+                var userFolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile);
+                return Path.Combine(userFolder, ".secrets", AppName, "secrets.json");
+            }
+        }
+
+        protected virtual string AppName => Assembly.GetEntryAssembly()?.GetName().Name;
+
+        private void CreateSecretsDirectory()
+        {
+            if (IsDevelopment)
+            {
+                var path = UserSecretsPath;
+                var dirPath = Path.GetDirectoryName(path);
+                if (dirPath != null && !Directory.Exists(dirPath))
+                {
+                    Directory.CreateDirectory(dirPath);
+                }
+
+                if (!File.Exists(path))
+                {
+                    File.Create(path);
+                }
+            }
         }
 
         public virtual void ConfigureServices(IServiceProvider services)
         {
-
         }
 
+        protected virtual string ENVIRONMENT => Environment.GetEnvironmentVariable("NETCORE_ENVIRONMENT") ?? "dev";
+        protected virtual bool IsDevelopment => ENVIRONMENT == "dev" || ENVIRONMENT == "development";
     }
 }

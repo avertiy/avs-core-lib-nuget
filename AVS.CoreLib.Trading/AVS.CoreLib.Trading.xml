@@ -1,0 +1,266 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AVS.CoreLib.Trading</name>
+    </assembly>
+    <members>
+        <member name="F:AVS.CoreLib.Trading.Enums.CandleSize.Small">
+            <summary>
+            a short candle with a little price differences
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.CandleSize.Big">
+            <summary>
+            a candle with a major price differences
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.CandleType.Doji">
+            <summary>
+            opens and closes at the same price with bi-directional price fluctuation
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.CandleType.Gravestone">
+            <summary>
+            open and close at the same price with upper price fluctuation
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.CandleType.Dragonfly">
+            <summary>
+            open and close at the same price with down price fluctuation
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.CandleType.Whirligig">
+            <summary>
+            High - Open = Close - Low or High - Close = Open - Low with short body
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.CandleType.HangingMan">
+            <summary>
+            ohlc.High == ohlc.Open and ohlc.Close - ohlc.Low > body * 2
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.CandleType.InverseHammer">
+            <summary>
+            ohlc.Low == ohlc.Open and ohlc.High - ohlc.Close > body * 2
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.CandleType.ShootingStar">
+            <summary>
+            ohlc.Low == ohlc.Close and ohlc.High - ohlc.Open > body * 2
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderCondition.BuyIfAskRise">
+            <summary>
+            когда мы собираемся войти в рынок в long как только будет преодолена трендовая линия
+            но текущая цена ниже чем та по которой мы хотим купить
+            к примеру текущая цена 400$ а мы ждем пока преодолеем уровень 500$ 
+            и  только тогда затариваемся в лонг
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderCondition.SellIfBidFall">
+            <summary>
+            когда мы собираемся войти в рынок в short при падении ниже трендовой линии
+            но текущая цена пока выше и не понятно будет ли дальнейшее снижение
+            например: текущая цена 500$ а мы ждем падения ниже линии до 400$ только тогда открываем шорт
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderState.Pending">
+            <summary>
+            order has not been posted (not opened)
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderState.Open">
+            <summary>
+            order has been posted (opened) on stock-exchange
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderState.Processing">
+            <summary>
+            order is being processing by algorithm
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderState.Canceled">
+            <summary>
+            order has been canceled (not executed)
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderState.Executed">
+            <summary>
+            order has been executed 
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderState.Archived">
+            <summary>
+            order is quite old marked as archived
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Enums.TimeFrame">
+            <summary>Represents a time frame of a market.</summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.M1">
+            <summary>A time interval of 1 minute.</summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.M5">
+            <summary>A time interval of 5 minutes.</summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.M15">
+            <summary>A time interval of 15 minutes.</summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.M30">
+            <summary>A time interval of 30 minutes.</summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.H2">
+            <summary>A time interval of 2 hours.</summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.H4">
+            <summary>A time interval of 4 hours.</summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.D">
+            <summary>A time interval of a day.</summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.DecimalExtensions.Deduct(System.Decimal,System.Decimal)">
+            <summary>
+            deducts specified percent from the value
+            e.g. commission 0.25%, buy 100 xrp in real you will get 100-0.25% = 99.75 xrp 
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.FormatNumberExtensions.FormatPrices(System.Double[],System.String)">
+            <summary>
+            format numbers to string using n.FormatPrice()
+            leading zeros will be replaced by replacement
+            (e.g. 0.0001234 => 0..1234) 
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.NumberExtensions.GetLeastExpDiff(System.Double,System.Double)">
+            <summary>
+            Determines the lowest exp for the value so the value*10^exp. > n
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.NumberExtensions.Normalize(System.Double)">
+            <summary>
+            Rounds value to 8 digits AwayFromZero
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.OhlcExtensions.CandleHeight(AVS.CoreLib.Trading.Abstractions.IOhlc)">
+            <summary>
+            OHLC height in percentage
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.OhlcExtensions.GetCandleType(AVS.CoreLib.Trading.Abstractions.IOhlc)">
+            <summary>
+            not implemented to classify all candle types but some basic candle classification is possible
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.FormatProviders.CurrencySymbolFormatter.GetQualifiers">
+            <summary>
+            qualifiers: "$|symbol; i|iso"
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.FormatProviders.PairStringFormatter.GetQualifiers">
+            <summary>
+            qualifiers: "q|quote; b|base; p|pair; Q|B|symbol"
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.FormatProviders.OhlcFormatter.GetQualifiers">
+            <summary>
+            qualifiers: "q|quote; b|base; p|pair; Q|B|symbol"
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.FormatProviders.PriceFormattedString">
+            <summary>
+            takes FormattableString and applies PriceFormatProvider to it => str.ToString(PriceFormatProvider.Instance)
+            usage: X.Format($"amount {1.25:a}; price {9.99:price}"); 
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.FormatProviders.PriceFormattedString.op_Implicit(AVS.CoreLib.Trading.FormatProviders.PriceFormattedString)~System.String">
+            <summary>
+            this is to return PriceFormattedString as a string
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.FormatProviders.PriceFormatter">
+            <summary> 
+            qualifiers: a|amount; p|price; q|qty|quantity; n|number 
+            represents ICustomFormatter implementation (usually it is used by FormatProvider e.g. PriceFormatProvider) 
+            usage:
+            - string.Format(new PriceFormatProvider(), "amount: {1.25:a}; price: {9.99:price}");
+            - X.Format($"amount {1.25:a}; price {9.99:price}"); 
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.FormatProviders.PriceFormatter.GetQualifiers">
+            <summary>
+            qualifiers: a|amount; p|price; q|qty|quantity; n|number; t|total
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.FormatProviders.T.FormatProvider">
+            <summary>
+            Include formatters: PriceFormatter, PairStringFormatter, TradingEnumsFormatter, CurrencySymbolFormatter
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.FormatProviders.T.Format(System.FormattableString)">
+             <summary>
+             Format string with <see cref="P:AVS.CoreLib.Trading.FormatProviders.T.FormatProvider"/> matching trading formatters
+             
+             PriceFormatter qualifiers:
+                 a|amount - FormatNumber(default) [3-4 decimals];
+                 p|price - FormatAsPrice();
+                 q|qty|quantity - FormatNumber(3)
+                 t|total - FormatNumber(2)
+                 N|normalized - 0.######## [PrecisionDigits]
+            
+             PairString qualifiers:
+               q|quote - quote currency;
+               b|base - base currency;
+               p|pair - currency pair;
+               Q - quote currency symbol
+               B|$ - base currency symbol
+             
+             TradingEnums qualifiers:
+                 `+` - +/-;
+                 c|character - buy/sell;
+                 n|number - int value
+             
+             CurrencySymbol qualifiers:
+                 $|symbol - currency symbol;
+                 i|iso - iso code;
+             </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.FormatProviders.TradingEnumsFormatter.GetQualifiers">
+            <summary>
+            qualifiers: +; c|character; n|number
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Helpers.IRankHelper.GetRank(System.Decimal,System.String)">
+            <summary>
+            estimates trade total rank
+            was it a micro trade or a large one
+            the greater rank the larger the trade was
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Structs.CurrencyValue">
+            <summary>
+            Represents values like 10.00 UAH, 2.2 XRP etc.
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Structs.CurrencyValue.Parse(System.String)">
+            <summary>
+            parses string for the value
+            </summary>
+            <param name="str">"100.00 UAH"</param>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Structs.PairString">
+            <summary>
+            by default PairString supposed to be a normalized pair with a base currency in first position and '_' separator e.g. BTC_LTC
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Types.StringCollection">
+            <summary>
+            base type to make bind-able string[] parameter type <see cref="T:AVS.CoreLib.Trading.Types.Exchanges"/>
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Types.StringCollection.System#Collections#Generic#ICollection{System#String}#Add(System.String)">
+            <summary>
+            the Add method implemented explicitly due to model binding mechanics 
+            </summary>
+        </member>
+    </members>
+</doc>

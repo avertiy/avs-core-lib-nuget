@@ -18,6 +18,7 @@ namespace AVS.CoreLib.Trading.Extensions
         {
             X.FormatProvider.AppendFormatter(new PriceFormatter());
             X.FormatProvider.AppendFormatter(new PairStringFormatter());
+            X.FormatProvider.AppendFormatter(new OhlcFormatter());
             X.FormatProvider.AppendFormatter(new TradingEnumsFormatter());
             X.FormatProvider.AppendFormatter(new CurrencySymbolFormatter());
             return services;

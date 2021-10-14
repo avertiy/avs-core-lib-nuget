@@ -102,5 +102,14 @@ namespace AVS.CoreLib.PowerConsole
             if (printStackTrace)
                 WriteLine(ex.StackTrace, MessageStatus.Debug, null);
         }
+
+        public static void WriteEndLine(bool endLine)
+        {
+            if (endLine && NewLineFlag == false)
+            {
+                Console.WriteLine();
+                NewLineFlag = true;
+            }
+        }
     }
 }

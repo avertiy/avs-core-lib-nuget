@@ -16,11 +16,11 @@ namespace AVS.CoreLib.Messaging.PubSub
             Logger = logger;
         }
 
-        public void Handle(TEvent @event, TContext context)
+        void IEventConsumer<TEvent, TContext>.Handle(TEvent @event, TContext context)
         {
             try
             {
-                this.HandleInternal(@event, context);
+                this.Handle(@event, context);
             }
             catch (Exception ex)
             {
@@ -28,11 +28,23 @@ namespace AVS.CoreLib.Messaging.PubSub
             }
         }
 
+        //public void Handle(TEvent @event, TContext context)
+        //{
+        //    try
+        //    {
+        //        this.Handle(@event, context);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        HandleError(ex, @event, context);
+        //    }
+        //}
+
         public void Handle(IEvent @event, IPublishContext context)
         {
             try
             {
-                this.HandleInternal((TEvent)@event, (TContext)context);
+                this.Handle((TEvent)@event, (TContext)context);
             }
             catch (Exception ex)
             {
@@ -40,7 +52,7 @@ namespace AVS.CoreLib.Messaging.PubSub
             }
         }
 
-        protected virtual void HandleInternal(TEvent @event, TContext context)
+        protected virtual void Handle(TEvent @event, TContext context)
         {
 
         }

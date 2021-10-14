@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Runtime.InteropServices;
 using AVS.CoreLib.PowerConsole.ConsoleTable;
 using AVS.CoreLib.PowerConsole.Extensions;
 using AVS.CoreLib.PowerConsole.Structs;
 using AVS.CoreLib.PowerConsole.Utilities;
+using AVS.CoreLib.Text.Extensions;
 
 namespace AVS.CoreLib.PowerConsole
 {
@@ -23,33 +21,20 @@ namespace AVS.CoreLib.PowerConsole
         public static void Print(string str, bool endLine = true)
         {
             Write(str);
-            if (endLine && NewLineFlag == false)
-            {
-                Console.WriteLine();
-                NewLineFlag = true;
-            }
+            WriteEndLine(endLine);
         }
 
         public static void Print(string str, ConsoleColor color, bool endLine = true)
         {
             Write(str, color);
-            if (endLine && NewLineFlag == false)
-            {
-                Console.WriteLine();
-                NewLineFlag = true;
-            }
+            WriteEndLine(endLine);
         }
 
         public static void Print(string str, ColorScheme scheme, bool endLine = true)
         {
             ApplyColorScheme(scheme);
             Write(str);
-            if (endLine && NewLineFlag == false)
-            {
-                Console.WriteLine();
-                NewLineFlag = true;
-            }
-
+            WriteEndLine(endLine);
             ColorSchemeReset();
         }
 
@@ -61,8 +46,7 @@ namespace AVS.CoreLib.PowerConsole
         public static void PrintAllColors()
         {
             var values = Enum.GetNames(typeof(ConsoleColor));
-
-            foreach (string colorName in values)
+            foreach (var colorName in values)
             {
                 var color = Enum.Parse<ConsoleColor>(colorName);
                 Print(colorName, color);
@@ -79,10 +63,22 @@ namespace AVS.CoreLib.PowerConsole
             }
         }
 
-        public static void PrintHeader(string header, ConsoleColor color = ConsoleColor.Cyan, string template = "============", string lineIdentation = "\r\n\r\n")
+        public static void PrintKeyValue<TKey,TValue>(IDictionary<TKey, TValue> dictionary, ConsoleColor color = ConsoleColor.White, string keyValueSeparator = " => ", string separator = "\r\n", bool endLine = true)
+        {
+            Write(dictionary.ToKeyValueString(keyValueSeparator, separator), color);
+            WriteEndLine(endLine);
+        }
+
+        public static void PrintJson<T>(T obj, bool indented = false, ConsoleColor color = ConsoleColor.White, bool endLine = true)
+        {
+            Write(obj.ToJsonString(indented), color);
+            WriteEndLine(endLine);
+        }
+
+        public static void PrintHeader(string header, ConsoleColor color = ConsoleColor.Cyan, string template = "============", string lineIndentation = "\r\n\r\n")
         {
             WriteLine();
-            var str = $"{template} {header} {template}{lineIdentation}";
+            var str = $"{template} {header} {template}{lineIndentation}";
             Print(str, color, false);
         }
 

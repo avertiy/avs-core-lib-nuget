@@ -75,6 +75,17 @@ namespace AVS.CoreLib.PowerConsole.Extensions
 
             return sb.ToString();
         }
+
+        public static string ToKeyValueString<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, string keyValueSeparator =" => ", string separator = "\r\n")
+        {
+            var sb= new StringBuilder();
+            foreach (var kp in dictionary)
+            {
+                sb.Append($"{kp.Key}{keyValueSeparator}{kp.Value}{separator}");
+            }
+            sb.Length -= separator.Length;
+            return sb.ToString();
+        }
     }
 }
 

@@ -1,9 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace AVS.CoreLib.ConsoleTools.Utils
+namespace AVS.CoreLib.PowerConsole.Utilities
 {
+    /// <summary>
+    /// Deal with args parameters supplied in Main method of the console app 
+    /// </summary>
     public class ArgsParser
     {
         private const string ARGS_REGEX = @"-((?<param>(\w)+) (?<arg>(\w|\S)+))";
