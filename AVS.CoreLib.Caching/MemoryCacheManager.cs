@@ -199,7 +199,7 @@ namespace AVS.CoreLib.Caching
         {
             if (key.CacheTime <= 0 || data == null)
                 return;
-
+            _memoryCache.Set(key.Key, data, TimeSpan.Zero)
             _memoryCache.Set(key.Key, data, PrepareEntryOptions(key, shortTerm? _options.ShortTermCacheTime : _options.DefaultCacheTime));
         }
 

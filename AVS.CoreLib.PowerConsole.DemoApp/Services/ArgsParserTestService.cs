@@ -11,7 +11,7 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
             var args = new[] {""};
             PowerConsole.Print("args: ", args, ConsoleColor.DarkGreen);
             var dict = ArgsParser.Parse(args);
-            PowerConsole.PrintDictionary();
+            //PowerConsole.PrintDictionary();
         }
     }
 }

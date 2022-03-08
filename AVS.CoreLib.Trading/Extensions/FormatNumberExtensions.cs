@@ -97,7 +97,7 @@ namespace AVS.CoreLib.Trading.Extensions
         {
             if (value >= 1)
             {
-                if (value < 100)
+                if (value < 1000)
                     return Format(value, decimalPlaces ?? 3, string.Empty);
 
                 var million = 1000000m;

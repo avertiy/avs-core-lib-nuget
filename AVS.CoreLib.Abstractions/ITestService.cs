@@ -7,6 +7,11 @@ namespace AVS.CoreLib.Abstractions
         void Test();
     }
 
+    public interface ITestAsyncService
+    {
+        Task TestAsync();
+    }
+
     public interface IDemoService
     {
         Task DemoAsync();

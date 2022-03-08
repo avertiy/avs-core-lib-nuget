@@ -53,7 +53,7 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
 
         /// <summary>
         /// to execute service when host is started
-        /// implement IHostedService interface and register it as AddHostedService
+        /// implement IHostedService interface (or inherit from BackgroundService) and register it as AddHostedService
         /// </summary>
         public static Task RunAsHostAsync<TStartup>(string[] args)
             where TStartup : IStartup, new()
