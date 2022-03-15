@@ -74,5 +74,15 @@ namespace AVS.CoreLib.Trading.Extensions
         {
             return obj.GetCurrencyPair().BaseCurrency;
         }
+
+        public static string QuoteCurrency(this string pair)
+        {
+            return new CurrencyPair(pair).QuoteCurrency;
+        }
+
+        public static string BaseCurrency(this string pair)
+        {
+            return new CurrencyPair(pair).BaseCurrency;
+        }
     }
 }

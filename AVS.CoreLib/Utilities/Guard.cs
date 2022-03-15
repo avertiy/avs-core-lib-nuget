@@ -30,6 +30,12 @@ namespace AVS.CoreLib.Utilities
             }
         }
 
+        public static void MustBeEqual(string str1, string str2)
+        {
+            if (!str1.Equals(str2))
+                throw new ArgumentException($"'{str1}' expected to be equal '{str2}'");
+        }
+
         public static void MustHaveValue(IHasValue obj)
         {
             if (obj == null || !obj.HasValue)
