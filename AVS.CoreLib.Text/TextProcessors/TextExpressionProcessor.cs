@@ -11,6 +11,7 @@ namespace AVS.CoreLib.Text.TextProcessors
     {
         private static readonly Regex _regex = new Regex("(`.*?:.*?`)");
 
+        /// <inheritdoc />
         public string Process(string str)
         {
             if (!str.StartsWith("@"))

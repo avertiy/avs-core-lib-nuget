@@ -4,6 +4,10 @@ using AVS.CoreLib.Trading.Enums;
 
 namespace AVS.CoreLib.Trading.FormatProviders
 {
+    /// <summary>
+    /// This formatter is replaced with <see cref="CompositeFormatter"/>
+    /// formatter for TradeType, OrderSide, PositionType enums
+    /// </summary>
     public class TradingEnumsFormatter : CustomFormatter
     {
         /// <summary>

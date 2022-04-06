@@ -16,7 +16,7 @@ namespace AVS.CoreLib.PowerConsole.Utilities
 
         private ConsoleLocker()
         {
-            _previous = ColorScheme.Current;
+            _previous = ColorScheme.GetCurrentScheme();
         }
 
         public static ConsoleLocker Create()

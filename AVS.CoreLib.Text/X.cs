@@ -1,5 +1,8 @@
 ﻿using System;
+using AVS.CoreLib.Text.FormatPreprocessors;
 using AVS.CoreLib.Text.FormatProviders;
+using AVS.CoreLib.Text.Formatters;
+using AVS.CoreLib.Text.Formatters.ColorMarkup;
 using AVS.CoreLib.Text.TextProcessors;
 
 namespace AVS.CoreLib.Text
@@ -9,50 +12,79 @@ namespace AVS.CoreLib.Text
     /// </summary>
     public static class X
     {
-        private static XFormatProvider _formatProvider;
         /// <summary>
         /// Extends .NET string format modifiers like N2, d, C etc. with custom formatters
         /// (e.g. ColorFormatter, NotEmptyFormatter, PriceFormatter, EnumFormatter etc) 
         /// </summary>
-        public static XFormatProvider FormatProvider
-        {
-            get => _formatProvider ??= new XFormatProvider();
-            set => _formatProvider = value;
-        }
+        public static XFormatProvider FormatProvider { get; set; } = new XFormatProvider();
 
-        private static ITextProcessor _textProcessor;
         /// <summary>
-        /// string started with "@..." considered as text that TextProcessor should process
+        /// string started with "@..." considered as text expression for TextProcessor
         /// by default X.Format uses <seealso cref="TextExpressionProcessor"/> as TextProcessor
         /// </summary>
-        public static ITextProcessor TextProcessor
-        {
-            get => _textProcessor ??= new TextExpressionProcessor();
-            set => _textProcessor = value;
-        }
+        public static ITextProcessor TextProcessor { get; set; } = new TextExpressionProcessor();
 
         /// <summary>
-        /// Replaces the format item(s) in a specified string with the string representation of the corresponding object
-        /// Standard string format modifiers like N2, C etc. are extended with <see cref="XFormatProvider"/>
-        /// 
-        /// If string starts with @ it is treated as string with expressions and processed by text processor
-        /// the default text processor is <see cref="TextExpressionProcessor"/>
-        /// e.g. "@any text before `expression: arg;` text after"
-        /// if arg is empty the whole expression will not be included into result string: "any text before text after"
-        /// 
+        /// allows to preprocess/modify argument's format 
         /// </summary>
-        /// <example>
-        /// ColorFormatter
-        /// example: $"{DateTime.Now:!--Red d}" - will translate into color formatted output string: $$01/01/2020:--Red$
-        /// example: $"{0.25:!--Green P}" - will translate into color formatted output string: $$25%:--Green$
-        /// </example>
-        /// <remarks>
-        /// Note symbol @ at the beginning of the string and expression delimiters ``(quotes) 
-        /// treated as service symbols which are not included in the result string
-        /// </remarks>
+        public static FormatPreprocessor FormatPreprocessor { get; set; } = new FormatPreprocessor();
+
+        /// <summary>
+        /// Format string using <see cref="XFormatProvider"/>
+        /// 
+        /// <see cref="NotEmptyFormatter"/> format symbol: !
+        /// in case argument is null, empty (0 for numeric types, MinValue for datetime etc.) such arg is replaced with string.Empty $"{0:!}" => "";
+        /// 
+        /// <see cref="ColorMarkupFormatter"/> format symbol: -Color (foreground color) --Color (background color)
+        /// put color markup $"{arg:-Red}" => "$$arg:-Red$"
+        /// <remarks>color markup is used by PowerConsole</remarks>
+        ///  
+        /// <see cref="CompositeFormatter"/> by default does not include any formatters
+        /// </summary>
         public static string Format(FormattableString str)
         {
             var result = str.ToString(FormatProvider);
+            return result;
+        }
+
+        /// <summary>
+        /// applies format modifier before string format and there after process the result with <see cref="TextExpressionProcessor"/>
+        /// </summary>
+        public static string Format(FormattableString str, IFormatPreprocessor preprocessor)
+        {
+            if (!(str is FormattableString2 str2))
+            {
+                str2 = new FormattableString2(str);
+            }
+            var result = str2.ToString(FormatProvider, preprocessor, TextProcessor);
+            return result;
+        }
+
+        /// <summary>
+        /// Format <see cref="FormattableString"/> string to string
+        /// </summary>
+        /// <param name="str">string</param>
+        /// <param name="preprocessor">if not null each argument format is preprocessed by preprocessor</param>
+        public static string Format(FormattableString2 str, IFormatPreprocessor preprocessor)
+        {
+            var result = str.ToString(FormatProvider, preprocessor, TextProcessor);
+            return TextProcessor.Process(result);
+        }
+
+        /// <summary>
+        /// Format <see cref="FormattableString"/> string to string
+        /// </summary>
+        /// <param name="str">string</param>
+        /// <param name="preprocessor">if not null each argument format is preprocessed by preprocessor</param>
+        /// <param name="textProcessor"><see cref="TextProcessor"/></param>
+        public static string Format(FormattableString str, IFormatPreprocessor preprocessor, ITextProcessor textProcessor)
+        {
+            if (!(str is FormattableString2 str2))
+            {
+                str2 = new FormattableString2(str);
+            }
+
+            var result = str2.ToString(FormatProvider, preprocessor, textProcessor);
             return TextProcessor.Process(result);
         }
     }

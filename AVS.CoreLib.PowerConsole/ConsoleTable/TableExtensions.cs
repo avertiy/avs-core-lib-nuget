@@ -4,6 +4,7 @@ using System.Text;
 using AVS.CoreLib.PowerConsole.Extensions;
 using AVS.CoreLib.PowerConsole.Structs;
 using AVS.CoreLib.PowerConsole.Utilities;
+using AVS.CoreLib.Text.Formatters.ColorMarkup;
 
 namespace AVS.CoreLib.PowerConsole.ConsoleTable
 {
@@ -22,7 +23,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
             return row;
         }
 
-        public static ColorFormattedString ToColorFormattedString(this Table table, bool useAutoWidth = true)
+        public static ColorMarkupString ToColorFormattedString(this Table table, bool useAutoWidth = true)
         {
             if (useAutoWidth)
                 table.CalculateWidth();
@@ -55,7 +56,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
                 sb.AppendLine();
             }
             sb.AppendLine(line);
-            return new ColorFormattedString(sb.ToString());
+            return new ColorMarkupString(sb.ToString());
         }
 
         public static ColorString ToColorString(this Cell cell)

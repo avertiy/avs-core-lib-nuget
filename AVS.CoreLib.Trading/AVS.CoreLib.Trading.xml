@@ -118,6 +118,26 @@
         <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.D">
             <summary>A time interval of a day.</summary>
         </member>
+        <member name="T:AVS.CoreLib.Trading.Extensions.CompositeFormatterExtensions">
+            <summary>
+            GenericFormatter extensions
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.CompositeFormatterExtensions.AddTradeTypeFormatter(AVS.CoreLib.Text.Formatters.CompositeFormatter)">
+            <summary>
+            Register <see cref="T:AVS.CoreLib.Trading.Enums.TradeType"/> enum formatting
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.CompositeFormatterExtensions.AddOrderSideFormatter(AVS.CoreLib.Text.Formatters.CompositeFormatter)">
+            <summary>
+            Register <see cref="T:AVS.CoreLib.Trading.Enums.OrderSide"/> enum formatting
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.CompositeFormatterExtensions.AddPositionTypeFormatter(AVS.CoreLib.Text.Formatters.CompositeFormatter)">
+            <summary>
+            Register <see cref="T:AVS.CoreLib.Trading.Enums.PositionType"/> enum formatting
+            </summary>
+        </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.DecimalExtensions.Deduct(System.Decimal,System.Decimal)">
             <summary>
             deducts specified percent from the value
@@ -151,17 +171,40 @@
             not implemented to classify all candle types but some basic candle classification is possible
             </summary>
         </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.ServiceCollectionExtension.AddTradingCore(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Add trading formatters core services
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.XFormatProviderExtensions.AddTradingFormatters(AVS.CoreLib.Text.FormatProviders.XFormatProvider)">
+            <summary>
+            Add string formatters
+                <see cref="T:AVS.CoreLib.Trading.FormatProviders.PriceFormatter"/>
+                <see cref="T:AVS.CoreLib.Trading.FormatProviders.PairStringFormatter"/>
+                <see cref="T:AVS.CoreLib.Trading.FormatProviders.OhlcFormatter"/>
+                <see cref="T:AVS.CoreLib.Trading.FormatProviders.CurrencySymbolFormatter"/>
+            and type formatters for enums:
+                <see cref="T:AVS.CoreLib.Trading.Enums.TradeType"/>
+                <see cref="T:AVS.CoreLib.Trading.Enums.OrderSide"/>
+                <see cref="T:AVS.CoreLib.Trading.Enums.PositionType"/>
+            </summary>
+        </member>
         <member name="P:AVS.CoreLib.Trading.FormatProviders.CurrencySymbolFormatter.GetQualifiers">
             <summary>
             qualifiers: "$|symbol; i|iso"
             </summary>
         </member>
-        <member name="P:AVS.CoreLib.Trading.FormatProviders.PairStringFormatter.GetQualifiers">
+        <member name="T:AVS.CoreLib.Trading.FormatProviders.OhlcFormatter">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.FormatProviders.OhlcFormatter.GetQualifiers">
             <summary>
             qualifiers: "q|quote; b|base; p|pair; Q|B|symbol"
             </summary>
         </member>
-        <member name="P:AVS.CoreLib.Trading.FormatProviders.OhlcFormatter.GetQualifiers">
+        <member name="P:AVS.CoreLib.Trading.FormatProviders.PairStringFormatter.GetQualifiers">
             <summary>
             qualifiers: "q|quote; b|base; p|pair; Q|B|symbol"
             </summary>
@@ -189,6 +232,11 @@
         <member name="P:AVS.CoreLib.Trading.FormatProviders.PriceFormatter.GetQualifiers">
             <summary>
             qualifiers: a|amount; p|price; q|qty|quantity; n|number; t|total
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.FormatProviders.PriceFormatter.CustomFormat(System.String,System.Object,System.IFormatProvider)">
+            <summary>
+            format double/decimal argument to string
             </summary>
         </member>
         <member name="P:AVS.CoreLib.Trading.FormatProviders.T.FormatProvider">
@@ -224,9 +272,26 @@
                  i|iso - iso code;
              </summary>
         </member>
+        <member name="T:AVS.CoreLib.Trading.FormatProviders.TradingEnumsFormatter">
+            <summary>
+            This formatter is replaced with <see cref="T:AVS.CoreLib.Text.Formatters.CompositeFormatter"/>
+            formatter for TradeType, OrderSide, PositionType enums
+            </summary>
+        </member>
         <member name="P:AVS.CoreLib.Trading.FormatProviders.TradingEnumsFormatter.GetQualifiers">
             <summary>
             qualifiers: +; c|character; n|number
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.FormatProviders.TradingFormatter">
+            <summary>
+            Combines a set of custom trading formatters such as
+            <see cref="T:AVS.CoreLib.Trading.FormatProviders.CurrencySymbolFormatter"/>
+            <see cref="T:AVS.CoreLib.Trading.FormatProviders.PriceFormatter"/>
+            <see cref="T:AVS.CoreLib.Trading.FormatProviders.PairStringFormatter"/>
+            <see cref="T:AVS.CoreLib.Trading.FormatProviders.OhlcFormatter"/>
+            used by X.Format util <see cref="M:AVS.CoreLib.Text.X.Format(System.FormattableString)"/> <seealso cref="T:AVS.CoreLib.Text.FormatProviders.XFormatProvider"/>
+            TradingFormatter is registered by <see cref="M:AVS.CoreLib.Trading.Extensions.ServiceCollectionExtension.AddTradingCore(Microsoft.Extensions.DependencyInjection.IServiceCollection)"/>
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Trading.Helpers.IRankHelper.GetRank(System.Decimal,System.String)">
@@ -235,6 +300,22 @@
             was it a micro trade or a large one
             the greater rank the larger the trade was
             </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Models.Balance.BalanceBook.Count">
+            <summary>
+            Gets the number of currencies in balance book 
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Models.Balance.BalanceBook.Parse(System.String)">
+            <summary>
+            Can parse BalanceBook from strings like "0.2 BTC;10 USD; 25 TRX;0.05 ETH" 
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Structs.CurrencyBalance.Parse(System.String)">
+            <summary>
+            parses values like 10.00 UAH, 2.2 XRP into currency balance 
+            </summary>
+            <param name="str">"100.00 UAH"</param>
         </member>
         <member name="T:AVS.CoreLib.Trading.Structs.CurrencyValue">
             <summary>
@@ -246,6 +327,11 @@
             parses string for the value
             </summary>
             <param name="str">"100.00 UAH"</param>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Structs.PairCurrencyValue.Parse(System.String)">
+            <summary>
+            parses values like 0.2 BTC;10 USD into corresponding PairAmount value 
+            </summary>
         </member>
         <member name="T:AVS.CoreLib.Trading.Structs.PairString">
             <summary>

@@ -1,6 +1,8 @@
 ﻿using AVS.CoreLib.Abstractions;
 using AVS.CoreLib.PowerConsole.Bootstrapping;
 using AVS.CoreLib.PowerConsole.DemoApp.Services;
+using AVS.CoreLib.PowerConsole.Utilities;
+using AVS.CoreLib.Trading.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -10,11 +12,16 @@ namespace AVS.CoreLib.PowerConsole.DemoApp
     {
         public static void Main(string[] args)
         {
-            Bootstrap.ConfigureServices(services => services
-                    .AddLogging(x => x.AddConsole())
-                    .AddTransient<ITestService, FileLoggerTestService>()
-                    .AddTransient<IDemoService, XFormatDemoService>()
-                    .AddTransient<IDemoService, ConsoleFeaturesDemoService>())
+            ColorScheme.ApplyScheme(ColorScheme.Classic);
+            Bootstrap.ConfigureServices(delegate(ServiceCollection services)
+                {
+                    services
+                        .AddLogging(x => x.AddConsole())
+                        .AddTradingCore()
+                        .AddTransient<ITestService, FileLoggerTestService>()
+                        .AddTransient<IDemoService, XFormatDemoService>()
+                        .AddTransient<IDemoService, ConsoleFeaturesDemoService>();
+                })
                 .RunAllTest()
                 .RunAllDemo();
             PowerConsole.PressEnterToExit();

@@ -4,7 +4,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions;
 using AVS.CoreLib.PowerConsole.ConsoleTable;
+using AVS.CoreLib.PowerConsole.Printers;
 using AVS.CoreLib.PowerConsole.Utilities;
+using AVS.CoreLib.Text;
+using AVS.CoreLib.Text.FormatPreprocessors;
+using AVS.CoreLib.Trading.Enums;
 using Console = AVS.CoreLib.PowerConsole.PowerConsole;
 
 namespace AVS.CoreLib.PowerConsole.DemoApp.Services
@@ -15,13 +19,15 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
         {
             try
             {
+                FormatPreprocessorTest();
+                PrinterTest();
                 PrintHeader();
                 PrintColorScheme();
                 PrintAllColors();
                 PrintArray();
                 PrintTest();
                 PrintTimeElapsed();
-                PrintFormattedString();
+                PrintFTests();
                 PrintTable();
                 PrintColorString();
                 PrintTableFormattedString();
@@ -38,18 +44,26 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
             }
         }
 
-        //private void PrintASCIISymbols()
-        //{
-        //    System.Console.OutputEncoding = System.Text.Encoding.Unicode;
-        //    System.Console.WriteLine("&#8712;");
+        private void FormatPreprocessorTest()
+        {
+            Console.PrintHeader($"Format Preprocessor Test");
+            X.FormatPreprocessor.Add(new EnumFormatPreprocessor());
+            Console.PrintF($"Supposed to be DarkGray: {TradeType.Buy}");
+            Console.PrintF($"Supposed to be Cyan: {TradeType.Sell}");
+        }
 
-        //    Console.ReadLine();
-        //}
+        private void PrinterTest()
+        {
+            Console.PrintHeader($" Printer Test");
+
+            Console.Print($"some text {TradeType.Buy} some other text {TradeType.Sell}", ColorPalette.RedGreen);
+            Console.Print($"some text {TradeType.Buy} some other text {TradeType.Sell}", new [] {ConsoleColor.DarkYellow, ConsoleColor.Cyan }, true);
+        }
 
         public void PrintColorString()
         {
-            Console.PrintHeader($"PrintF(ColoredString)  [format: $$text:-Color$]");
-            Console.PrintF($"$$text in red background:--Red$ ### some other text $$green text::-Green$");
+            Console.PrintHeader($"PrintF(ColoredString)  [format: {{text:-Color}}]");
+            Console.PrintF($"{{text in red background:--Red$}} ### some other text {{green text::-Green}}");
         }
 
         public void PrintHeader()
@@ -94,13 +108,13 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
         }
         public void WriteDebug()
         {
-            Console.PrintHeader($"WriteDebug");
+            Console.PrintHeader("WriteDebug test");
             Console.WriteDebug("this is a debug message");
         }
 
         public void WriteError()
         {
-            Console.PrintHeader($"WriteError");
+            Console.PrintHeader("WriteError test");
             try
             {
                 throw new Exception("test exception");
@@ -138,15 +152,24 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
             Console.PrintAllColors();
         }
 
-        public void PrintFormattedString()
+        public void PrintFTests()
         {
             //sorry not supported yet
             //PrintF requires format provider which is not brought here yet
-            //object[] arguments = new object[] { "abc", 0, DateTime.Today };
-            //Console.PrintHeader($"PrintF tests:");
-            //Console.PrintF($"1) arg[0]: {arguments[0]:!-Green}; arg[1]: {arguments[1]:!};arg[2]: {arguments[2]:!}");
+            var arguments = new object[] { "abc", 0, DateTime.Today };
+            Console.PrintHeader($"PrintF tests:");
+            Console.Print("1. PrintF($\"{100500:-Red} {abc:--DarkGray} {DateTime.Today:-DarkGreen dd/MM/yyyy}\":");
+            Console.PrintF($"{100500:-Red} {"abc":--DarkGray} {DateTime.Today:-DarkGreen dd/MM/yyyy}");
+            Console.Print("2. PrintF($\"{arguments[0]:-Green}; {arguments[0]:--Green}; {arguments[0]:!-Blue}\":");
+            Console.PrintF($"{arguments[0]:-Green}; {arguments[0]:--Green}; {arguments[0]:!-Blue}");
+
+            var tradingTypes = new object[] { OrderSide.Buy, TradeType.Sell, PositionType.Long };
+
+            Console.PrintF($"{tradingTypes[0]}; {tradingTypes[0]:-Yellow c}; {tradingTypes[0]:-Blue --Yellow n}");
+
+
             //Console.PrintF($"2) @text before `arg[0]: {arguments[0]:--DarkYellow};``arg[1]: {arguments[1]:!-DarkRed};``arg[2]: {arguments[2]:!}`");
-            //Console.PrintF($"3) {100500:-Red} {"abc":--DarkGray} {DateTime.Today:-DarkGreen dd/MM/yyyy}");
+
             //Console.PrintF($"4) <square>5x5:`abc`</square>");
         }
 

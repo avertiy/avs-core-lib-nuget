@@ -20,6 +20,9 @@ namespace AVS.CoreLib.Trading.FormatProviders
         /// </summary>
         public static string GetQualifiers => "a|amount; p|price; q|qty|quantity; n|number; t|total; N|normalized";
 
+        /// <summary>
+        /// format double/decimal argument to string
+        /// </summary>
         protected override string CustomFormat(string format, object arg, IFormatProvider formatProvider)
         {
             return arg switch

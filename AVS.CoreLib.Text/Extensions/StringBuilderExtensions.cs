@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Text;
 
-namespace AVS.CoreLib.Text
+namespace AVS.CoreLib.Text.Extensions
 {
+    /// <summary>
+    /// StringBuilder extensions
+    /// </summary>
     public static class StringBuilderExtensions
     {
         /// <summary>

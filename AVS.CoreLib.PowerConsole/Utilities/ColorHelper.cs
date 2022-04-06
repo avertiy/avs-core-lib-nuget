@@ -19,7 +19,6 @@ namespace AVS.CoreLib.PowerConsole.Utilities
                 return true;
             }
 
-            scheme = null;
             ConsoleColor color;
             var ind = str.LastIndexOf('-');
 
@@ -32,6 +31,8 @@ namespace AVS.CoreLib.PowerConsole.Utilities
                     scheme = new ColorScheme(color);
                     return true;
                 }
+
+                scheme = new ColorScheme();
                 return false;
             }
 

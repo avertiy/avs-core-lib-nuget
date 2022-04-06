@@ -2,7 +2,7 @@
 namespace AVS.CoreLib.Text.Formatters
 {
     /// <summary>
-    /// if argument  format starts with "!"  than in case argument is empty or (0 for numeric types, MinValue etc.) than returns string.Empty 
+    /// if argument format starts with "!"  than in case argument is empty or (0 for numeric types, MinValue etc.) than returns string.Empty 
     /// </summary>
     public class NotEmptyFormatter : CustomFormatter
     {

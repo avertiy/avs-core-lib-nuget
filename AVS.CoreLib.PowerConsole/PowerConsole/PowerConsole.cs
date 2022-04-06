@@ -5,17 +5,20 @@ namespace AVS.CoreLib.PowerConsole
 {
     public static partial class PowerConsole
     {
-        public static ColorScheme CurrentColorScheme => ColorScheme.Current;
+        static PowerConsole()
+        {
+            ColorScheme.Default = new ColorScheme(Console.BackgroundColor, Console.ForegroundColor);
+            DefaultSchemeBackup = ColorScheme.Default;
+        }
+
+        private static ColorScheme DefaultSchemeBackup { get; set; }
+        public static ColorScheme CurrentColorScheme => ColorScheme.GetCurrentScheme();
         public static ColorScheme PreviousScheme = new ColorScheme(Console.BackgroundColor, Console.ForegroundColor);
+        
 
         public static void ApplyColor(ConsoleColor color)
         {
             Console.ForegroundColor = color;
-            //if (Console.ForegroundColor != color)
-            //{
-            //    PreviousScheme.Foreground = Console.ForegroundColor;
-            //    Console.ForegroundColor = color;
-            //}
         }
 
         public static void ApplyColorScheme(ColorScheme scheme)
@@ -42,7 +45,7 @@ namespace AVS.CoreLib.PowerConsole
         /// </summary>
         public static void RestoreDefaultColorScheme()
         {
-            ColorScheme.Default = ColorScheme.Classic;
+            ColorScheme.Default = DefaultSchemeBackup;
         }
 
         /// <summary>

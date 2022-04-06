@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using AVS.CoreLib.Trading.Constants;
 
 namespace AVS.CoreLib.Trading.Extensions

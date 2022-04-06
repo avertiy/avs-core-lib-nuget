@@ -18,7 +18,7 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
                 X.FormatProvider.AppendFormatter(new PairStringFormatter());
                 X.FormatProvider.AppendFormatter(new TradingEnumsFormatter());
                 X.FormatProvider.AppendFormatter(new CurrencySymbolFormatter());
-                PowerConsole.Format = X.Format;
+                //PowerConsole.Format = X.Format;
                 //PriceFormatterDemo();
                 OhlcFormatterDemo();
             }

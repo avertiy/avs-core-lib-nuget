@@ -14,7 +14,7 @@ namespace AVS.CoreLib.PowerConsole.Extensions
         [Obsolete("Use ServiceProviderExtensions UsePowerConsoleCustomFormat instead")]
         public static void AddPowerConsoleFormatter(this IServiceCollection services, Func<FormattableString, string> format)
         {
-            PowerConsole.Format = format;
+            PowerConsole.XFormat = format;
         }
     }
 
@@ -26,7 +26,7 @@ namespace AVS.CoreLib.PowerConsole.Extensions
         /// </summary>
         public static IServiceProvider UsePowerConsoleCustomFormat(this IServiceProvider sp, Func<FormattableString, string> format, Encoding encoding)
         {
-            PowerConsole.Format = format;
+            PowerConsole.XFormat = format;
             PowerConsole.InputEncoding = encoding;
             PowerConsole.OutputEncoding = encoding;
             PowerConsole.ApplyColorScheme(ColorScheme.Default);

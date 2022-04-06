@@ -4,10 +4,13 @@ using System.Diagnostics;
 namespace AVS.CoreLib.Text.Formatters
 {
     /// <summary>
-    /// 
+    /// base abstract class for custom format providers
     /// </summary>
     public abstract class CustomFormatter : IFormatProvider, ICustomFormatter
     {
+        /// <summary>
+        /// points to the next formatter when few formatters are combined into one 
+        /// </summary>
         public CustomFormatter Next { get; set; }
 
         /// <summary>
@@ -41,9 +44,20 @@ namespace AVS.CoreLib.Text.Formatters
                 return string.Empty;
 
             if (string.IsNullOrEmpty(format))
-                return arg.ToString();
+                return NoFormat(arg);
 
-            return Match(format) ? CustomFormat(format, arg, formatProvider) : DefaultFormat(format, arg, formatProvider);
+            if (Match(format))
+                return CustomFormat(format, arg, formatProvider);
+
+            return DefaultFormat(format, arg, formatProvider);
+        }
+
+        /// <summary>
+        /// convert arg to string when format symbol is missing i.e. format is null or empty
+        /// </summary>
+        protected virtual string NoFormat(object arg)
+        {
+            return Next == null ? arg.ToString() : Next.NoFormat(arg);
         }
 
         /// <summary>
@@ -63,7 +77,10 @@ namespace AVS.CoreLib.Text.Formatters
         /// when True - CustomFormat(format, arg) is called
         /// when False - DefaultFormat(format, arg) is called
         /// </summary>
-        protected virtual bool Match(string format) => true;
+        protected virtual bool Match(string format)
+        {
+            return true;
+        }
 
         /// <summary>
         /// 
@@ -76,6 +93,9 @@ namespace AVS.CoreLib.Text.Formatters
         {
             if (Next == null)
                 return string.Format("{0:" + format + "}", arg);
+
+            if (string.IsNullOrEmpty(format))
+                return NoFormat(arg);
 
             return Next.Format(format, arg, formatProvider);
         }

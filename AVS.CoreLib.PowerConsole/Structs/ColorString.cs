@@ -10,7 +10,7 @@ namespace AVS.CoreLib.PowerConsole.Structs
         public ColorString(string text)
         {
             Text = text;
-            Color = ColorScheme.Current;
+            Color = ColorScheme.GetCurrentScheme();
         }
 
         public ColorString(string text, ColorScheme color)
@@ -25,29 +25,3 @@ namespace AVS.CoreLib.PowerConsole.Structs
         }
     }
 }
-//    public class ColorText : IColorText
-//    {
-//        private readonly StringBuilder _stringBuilder = new StringBuilder();
-//        public ConsoleColor Color { get; set; }
-//        public string Text => _stringBuilder.ToString();
-
-//        public ColorText()
-//        {
-//        }
-
-//        public ColorText(ConsoleColor color)
-//        {
-//            Color = color;
-//        }
-
-//        public void Append(string text)
-//        {
-//            _stringBuilder.Append(text);
-//        }
-
-//        public static ColorText operator +(ColorText text, string text)
-//        {
-//            text
-//        }
-//    }
-//}
