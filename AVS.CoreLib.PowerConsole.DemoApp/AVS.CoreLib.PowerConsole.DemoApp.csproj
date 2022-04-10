@@ -5,14 +5,14 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 <ItemGroup>
+    <PackageReference Include="AVS.CoreLib" Version="1.0.2" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.20" />
     <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="3.1.20" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="3.1.20" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\AVS.CoreLib.PowerConsole\AVS.CoreLib.PowerConsole.csproj" />
-    <ProjectReference Include="..\AVS.CoreLib.Text\AVS.CoreLib.Text.csproj" />
-    <ProjectReference Include="..\AVS.CoreLib.Trading\AVS.CoreLib.Trading.csproj" />
-  </ItemGroup>
+<ItemGroup>
+  <ProjectReference Include="..\AVS.CoreLib.PowerConsole\AVS.CoreLib.PowerConsole.csproj" />
+  <ProjectReference Include="..\AVS.CoreLib.Trading\AVS.CoreLib.Trading.csproj" />
+</ItemGroup>
 
 </Project>
