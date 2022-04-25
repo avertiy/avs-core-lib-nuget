@@ -1,5 +1,4 @@
 ﻿using System;
-using AVS.CoreLib.Text;
 using AVS.CoreLib.Text.FormatProviders;
 using AVS.CoreLib.Text.Formatters;
 using AVS.CoreLib.Trading.Extensions;
@@ -12,7 +11,7 @@ namespace AVS.CoreLib.Trading.FormatProviders
     /// <see cref="PriceFormatter"/>
     /// <see cref="PairStringFormatter"/>
     /// <see cref="OhlcFormatter"/>
-    /// used by X.Format util <see cref="X.Format"/> <seealso cref="XFormatProvider"/>
+    /// used by X.Format util <seealso cref="XFormatProvider"/>
     /// TradingFormatter is registered by <see cref="ServiceCollectionExtension.AddTradingCore"/>
     /// </summary>
     [Obsolete("User service extensions AddTradingFormatters()")]

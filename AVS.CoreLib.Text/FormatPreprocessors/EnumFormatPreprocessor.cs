@@ -10,8 +10,17 @@ namespace AVS.CoreLib.Text.FormatPreprocessors
     /// </summary>
     public class EnumFormatPreprocessor : IFormatPreprocessor
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public ConsoleColor DefaultColor { get; set; } = ConsoleColor.DarkGray;
+        /// <summary>
+        /// 
+        /// </summary>
         public ConsoleColor Color { get; set; } = ConsoleColor.Cyan;
+        /// <summary>
+        /// 
+        /// </summary>
         protected virtual string GetFormat(Type enumType, int value)
         {
             var values = Enum.GetValues(enumType);

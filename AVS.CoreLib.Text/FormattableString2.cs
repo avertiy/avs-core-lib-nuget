@@ -14,13 +14,13 @@ namespace AVS.CoreLib.Text
     public class FormattableString2 : FormattableString, IEnumerable<(string format, object arg)>
     {
         private readonly string _format;
-        private readonly object?[] _arguments;
+        private readonly object[] _arguments;
         private static readonly Regex _regex = new Regex("{\\d+?:(?<fmt>.*?)?}|{(?<empty>\\d)}");
 
         /// <summary>
         /// C-tor
         /// </summary>
-        public FormattableString2(string format, object?[] arguments)
+        public FormattableString2(string format, object[] arguments)
         {
             _format = format;
             _arguments = arguments;
@@ -58,13 +58,13 @@ namespace AVS.CoreLib.Text
         public override string Format => _format;
 
         /// <inheritdoc />
-        public override object?[] GetArguments() { return _arguments; }
+        public override object[] GetArguments() { return _arguments; }
 
         /// <inheritdoc />
         public override int ArgumentCount => _arguments.Length;
 
         /// <inheritdoc />
-        public override object? GetArgument(int index) { return _arguments[index]; }
+        public override object GetArgument(int index) { return _arguments[index]; }
 
         /// <inheritdoc />
         public override string ToString(IFormatProvider formatProvider)
@@ -120,6 +120,7 @@ namespace AVS.CoreLib.Text
             return textProcessor != null ? textProcessor.Process(text) : text;
         }
 
+        /// <inheritdoc />
         public IEnumerator<(string format, object arg)> GetEnumerator()
         {
             var matches = _regex.Matches(_format);

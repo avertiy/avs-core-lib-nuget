@@ -290,7 +290,7 @@
             <see cref="T:AVS.CoreLib.Trading.FormatProviders.PriceFormatter"/>
             <see cref="T:AVS.CoreLib.Trading.FormatProviders.PairStringFormatter"/>
             <see cref="T:AVS.CoreLib.Trading.FormatProviders.OhlcFormatter"/>
-            used by X.Format util <see cref="M:AVS.CoreLib.Text.X.Format(System.FormattableString)"/> <seealso cref="T:AVS.CoreLib.Text.FormatProviders.XFormatProvider"/>
+            used by X.Format util <seealso cref="T:AVS.CoreLib.Text.FormatProviders.XFormatProvider"/>
             TradingFormatter is registered by <see cref="M:AVS.CoreLib.Trading.Extensions.ServiceCollectionExtension.AddTradingCore(Microsoft.Extensions.DependencyInjection.IServiceCollection)"/>
             </summary>
         </member>

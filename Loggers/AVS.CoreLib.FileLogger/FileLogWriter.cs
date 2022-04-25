@@ -57,7 +57,7 @@ namespace AVS.CoreLib.FileLogger
         {
             var options = Options.CurrentValue;
             var sb = new StringBuilder();
-            string timestamp = null, eventIdStr= null;
+            string timestamp = null;
             if (options.IncludeTimeStamp)
             {
                 timestamp = DateTimeOffset.Now.ToLocalTime().ToString(options.DateFormat, CultureInfo.InvariantCulture);

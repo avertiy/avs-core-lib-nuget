@@ -4,7 +4,6 @@ using AVS.CoreLib.PowerConsole.DemoApp.Services;
 using AVS.CoreLib.PowerConsole.Utilities;
 using AVS.CoreLib.Trading.Extensions;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace AVS.CoreLib.PowerConsole.DemoApp
 {
@@ -16,9 +15,9 @@ namespace AVS.CoreLib.PowerConsole.DemoApp
             Bootstrap.ConfigureServices(delegate(ServiceCollection services)
                 {
                     services
-                        .AddLogging(x => x.AddConsole())
+                        //.AddLogging(x => x.AddConsoleLogger())
                         .AddTradingCore()
-                        .AddTransient<ITestService, FileLoggerTestService>()
+                        //.AddTransient<ITestService, FileLoggerTestService>()
                         .AddTransient<IDemoService, XFormatDemoService>()
                         .AddTransient<IDemoService, ConsoleFeaturesDemoService>();
                 })

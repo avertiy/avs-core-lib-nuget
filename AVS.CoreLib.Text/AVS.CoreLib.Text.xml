@@ -34,6 +34,16 @@
             Service collection extension methods
             </summary>
         </member>
+        <member name="M:AVS.CoreLib.Text.Extensions.ServiceCollectionExtension.AddCustomFormatters(Microsoft.Extensions.DependencyInjection.IServiceCollection,AVS.CoreLib.Text.Formatters.CustomFormatter[])">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Text.Extensions.ServiceCollectionExtension.AddCustomFormatter``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="M:AVS.CoreLib.Text.Extensions.ServiceCollectionExtension.AddFormatterForType``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.String[],System.Func{System.String,``0,System.String})">
             <summary>
             Register formatter for type
@@ -61,6 +71,21 @@
             That's an example of the idea with format preprocessors
             Enum format preprocessor highlight enum values
             values matches to default enum value will be gray otherwise blue
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Text.FormatPreprocessors.EnumFormatPreprocessor.DefaultColor">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Text.FormatPreprocessors.EnumFormatPreprocessor.Color">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Text.FormatPreprocessors.EnumFormatPreprocessor.GetFormat(System.Type,System.Int32)">
+            <summary>
+            
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Text.FormatPreprocessors.EnumFormatPreprocessor.Process(System.String,System.Object)">
@@ -91,7 +116,6 @@
             i.e. <see cref="M:System.String.Format(System.IFormatProvider,System.String,System.Object)"/> is called
             
             the purpose of the modifier is to add some behavior for adding color formatting to string arguments if color was not specified   
-            <seealso cref="M:AVS.CoreLib.Text.FormattableString2.ToString(System.IFormatProvider)"/>
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Text.FormatPreprocessors.IFormatPreprocessor.Process(System.String,System.Object)">
@@ -175,6 +199,9 @@
             Preprocess format of arguments before formatting string, format string and process the result with text processor 
             </summary>
         </member>
+        <member name="M:AVS.CoreLib.Text.FormattableString2.GetEnumerator">
+            <inheritdoc />
+        </member>
         <member name="M:AVS.CoreLib.Text.FormattableString2.ToString">
             <inheritdoc />
         </member>
@@ -197,6 +224,16 @@
         <member name="M:AVS.CoreLib.Text.FormattableStringBuilder.AppendRaw(System.String)">
             <summary>
             append raw string
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Text.FormattableStringBuilder.Append(System.Object)">
+            <summary>
+            Append argument
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Text.FormattableStringBuilder.Append(System.FormattableString)">
+            <summary>
+            append FormattableString
             </summary>
         </member>
         <member name="T:AVS.CoreLib.Text.Formatters.ColorMarkup.ColorMarkupFormatter">
@@ -354,6 +391,12 @@
             if argument format starts with "!"  than in case argument is empty or (0 for numeric types, MinValue etc.) than returns string.Empty 
             </summary>
         </member>
+        <member name="M:AVS.CoreLib.Text.Formatters.NotEmptyFormatter.CustomFormat(System.String,System.Object,System.IFormatProvider)">
+            <inheritdoc />
+        </member>
+        <member name="M:AVS.CoreLib.Text.Formatters.NotEmptyFormatter.Match(System.String)">
+            <inheritdoc />
+        </member>
         <member name="T:AVS.CoreLib.Text.Formatters.TypeFormatter`1">
             <summary>
             Type formatter
@@ -373,6 +416,18 @@
             <summary>
             Format argument, argument should be convertible to type T 
             </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Text.TextProcessors.ITextProcessor">
+            <summary>
+            interface for text processor that might be used to process input string  
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Text.TextProcessors.ITextProcessor.Process(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="str"></param>
+            <returns></returns>
         </member>
         <member name="T:AVS.CoreLib.Text.TextProcessors.TextExpressionProcessor">
             <summary>

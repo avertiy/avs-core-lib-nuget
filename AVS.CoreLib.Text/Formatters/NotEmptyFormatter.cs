@@ -6,6 +6,7 @@ namespace AVS.CoreLib.Text.Formatters
     /// </summary>
     public class NotEmptyFormatter : CustomFormatter
     {
+        /// <inheritdoc />
         protected override string CustomFormat(string format, object arg, IFormatProvider formatProvider)
         {
             switch (arg)
@@ -25,6 +26,10 @@ namespace AVS.CoreLib.Text.Formatters
             }
         }
 
-        protected override bool Match(string format) => format.StartsWith("!");
+        /// <inheritdoc />
+        protected override bool Match(string format)
+        {
+            return format.StartsWith("!");
+        }
     }
 }

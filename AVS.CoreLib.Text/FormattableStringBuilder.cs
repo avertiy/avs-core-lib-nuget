@@ -46,6 +46,9 @@ namespace AVS.CoreLib.Text
             return this;
         }
 
+        /// <summary>
+        /// Append argument
+        /// </summary>
         public FormattableStringBuilder Append(object value)
         {
             this._buffer.Append("{").Append(this._argumentsOffset).Append("}");
@@ -55,6 +58,9 @@ namespace AVS.CoreLib.Text
             return this;
         }
 
+        /// <summary>
+        /// append FormattableString
+        /// </summary>
         public FormattableStringBuilder Append(FormattableString value)
         {
             this.AppendFormatHelper(value.Format, value.ArgumentCount);

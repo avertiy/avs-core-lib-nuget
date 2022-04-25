@@ -50,7 +50,7 @@ namespace AVS.CoreLib.PowerConsole
 
         /// <summary>
         /// Format string calling <see cref="Format"/> delegate
-        /// than create a <see cref="ColorFormattedString"/> and print it
+        /// than create a <see cref="ColorMarkupString"/> and print it
         /// </summary>
         /// <remarks>
         /// in case you use X.Format

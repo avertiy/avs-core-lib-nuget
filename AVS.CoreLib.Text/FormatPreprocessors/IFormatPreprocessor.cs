@@ -8,7 +8,6 @@ namespace AVS.CoreLib.Text.FormatPreprocessors
     /// i.e. <see cref="string.Format(System.IFormatProvider,string,object)"/> is called
     /// 
     /// the purpose of the modifier is to add some behavior for adding color formatting to string arguments if color was not specified   
-    /// <seealso cref="FormattableString2.ToString"/>
     /// </summary>
     public interface IFormatPreprocessor
     {

@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace AVS.CoreLib.PowerConsole.Printers
 {
-    public class ColorPalette
+    public class ColorPalette : IEnumerable<ConsoleColor>
     {
+        public static ColorPalette GrayRedGreen => new ColorPalette(ConsoleColor.DarkGray, ConsoleColor.DarkGreen, ConsoleColor.DarkRed);
         public static ColorPalette RedGreen => new ColorPalette(ConsoleColor.DarkGreen, ConsoleColor.DarkRed);
         public static ColorPalette BlueGreen => new ColorPalette(ConsoleColor.DarkGreen, ConsoleColor.Blue);
 
@@ -20,7 +23,17 @@ namespace AVS.CoreLib.PowerConsole.Printers
         {
             return new ColorPalette(colors);
         }
-    }
 
-    
+        public int Length => this.Colors.Length;
+
+        public IEnumerator<ConsoleColor> GetEnumerator()
+        {
+            return (IEnumerator<ConsoleColor>)this.Colors.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+    }
 }

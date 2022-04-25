@@ -14,7 +14,7 @@ namespace AVS.CoreLib.PowerConsole
 
     /// <summary>
     /// PowerConsole represents simple extensions over standard .NET Console functionality
-    /// If you need more rich & extensive console frameworks check out links below  
+    /// If you need more rich and extensive console frameworks check out links below  
     /// </summary>
     /// <seealso>https://github.com/Athari/CsConsoleFormat - advanced formatting of console output for .NET</seealso>
     /// <seealso>https://github.com/migueldeicaza/gui.cs - Terminal GUI toolkit for .NET</seealso>
