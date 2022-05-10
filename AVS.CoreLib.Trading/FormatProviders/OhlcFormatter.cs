@@ -58,7 +58,7 @@ namespace AVS.CoreLib.Trading.FormatProviders
                             return ohlc.ToString();
                     }
                 default:
-                    return arg?.ToString();
+                    return this.DefaultFormat(format, arg, formatProvider);
             }
         }
 
