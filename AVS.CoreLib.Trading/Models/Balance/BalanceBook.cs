@@ -158,7 +158,7 @@ namespace AVS.CoreLib.Trading.Models.Balance
         public static BalanceBook Parse(string str)
         {
             var parts = str.Split(';', ' ', StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length % 2 !=0)
+            if (parts.Length % 2 != 0)
                 throw new ArgumentException($"String '{str}' is not recognized as a valid {nameof(BalanceBook)} string (e.g. 0.2 BTC; 10 USD)");
 
             var book = new BalanceBook();
@@ -170,7 +170,7 @@ namespace AVS.CoreLib.Trading.Models.Balance
                     throw new ArgumentException($"{nameof(BalanceBook)} unable to parse amount from '{parts[0]}' of '{str}'");
                 }
 
-                book.Credit(parts[i+1], amount);
+                book.Credit(parts[i + 1], amount);
             }
 
             return book;

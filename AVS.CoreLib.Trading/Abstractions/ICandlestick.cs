@@ -4,6 +4,6 @@ namespace AVS.CoreLib.Trading.Abstractions
 {
     public interface ICandlestick : IOhlc
     {
-        TimeFrame TimeFrame { get; set; } 
+        TimeFrame TimeFrame { get; set; }
     }
 }

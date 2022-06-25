@@ -3,7 +3,6 @@ using System.Reflection;
 using System.Text;
 using AVS.CoreLib.PowerConsole.Extensions;
 using AVS.CoreLib.PowerConsole.Structs;
-using AVS.CoreLib.PowerConsole.Utilities;
 using AVS.CoreLib.Text.Formatters.ColorMarkup;
 
 namespace AVS.CoreLib.PowerConsole.ConsoleTable

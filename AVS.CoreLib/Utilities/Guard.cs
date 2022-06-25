@@ -48,11 +48,28 @@ namespace AVS.CoreLib.Utilities
                 throw new ArgumentOutOfRangeException($"{nameof(value)} is out of range {range}");
         }
 
-        public static void MustBeWithinRange(int value, (int, int) range)
+        public static void MustBeWithinRange(int value, (int from, int to) range)
         {
-            Range<int> r = range;
-            if (!r.Contains(value))
+            if (value < range.from || value > range.to)
                 throw new ArgumentOutOfRangeException($"{nameof(value)} is out of range {range}");
+        }
+
+        public static void MustBeGreaterThan(int value, int number = 0)
+        {
+            if (value <= number)
+                throw new ArgumentException($"{nameof(value)} must be greater than {value}");
+        }
+
+        public static void MustBeGreaterThan(double value, double number = 0)
+        {
+            if (value <= number)
+                throw new ArgumentException($"{nameof(value)} must be greater than {value}");
+        }
+
+        public static void MustBeGreaterThan(decimal value, decimal number = 0)
+        {
+            if (value <= number)
+                throw new ArgumentException($"{nameof(value)} must be greater than {value}");
         }
     }
 }

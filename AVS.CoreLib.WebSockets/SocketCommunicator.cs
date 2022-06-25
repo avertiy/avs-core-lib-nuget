@@ -67,7 +67,7 @@ namespace AVS.CoreLib.WebSockets
 
         public async Task SendAsync(string commandMessage, CancellationToken cancellationToken)
         {
-            if(_disposing)
+            if (_disposing)
                 return;
 
             var bytes = Encoding.UTF8.GetBytes(commandMessage);
@@ -114,11 +114,11 @@ namespace AVS.CoreLib.WebSockets
                         WaitWebSocketConnecting();
                         goto start;
                     case WebSocketState.Open:
-                    {
-                        await ReceiveMessagesLoopAsync(cancellationToken).ConfigureAwait(false);
-                        FireConnectionClosed();
-                        break;
-                    }
+                        {
+                            await ReceiveMessagesLoopAsync(cancellationToken).ConfigureAwait(false);
+                            FireConnectionClosed();
+                            break;
+                        }
                 }
             }
             catch (Exception ex)

@@ -88,7 +88,7 @@ namespace AVS.CoreLib.Text
                     var fmt = match.Groups["fmt"];
                     if (string.IsNullOrEmpty(fmt.Value))
                     {
-                        sb.Append(_format.Substring(pos, match.Index - pos + match.Length-1));
+                        sb.Append(_format.Substring(pos, match.Index - pos + match.Length - 1));
                         var newFormat = preprocessor.Process(string.Empty, _arguments[i]);
                         sb.Append(':');
                         sb.Append(newFormat);
@@ -101,7 +101,7 @@ namespace AVS.CoreLib.Text
                         var newFormat = preprocessor.Process(fmt.Value, _arguments[i]);
                         sb.Append(newFormat);
                         sb.Append('}');
-                        pos = fmt.Index + fmt.Length+1;
+                        pos = fmt.Index + fmt.Length + 1;
                     }
                 }
 
@@ -128,7 +128,7 @@ namespace AVS.CoreLib.Text
             {
                 var match = matches[i];
                 var format = match.Groups["fmt"].Value;
-                yield return (format, arg:_arguments[i]);
+                yield return (format, arg: _arguments[i]);
             }
         }
 

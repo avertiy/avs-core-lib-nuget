@@ -37,10 +37,10 @@ namespace AVS.CoreLib.Trading.Helpers
                 _ => Prices["USDT_" + cp.BaseCurrency]
             };
 
-            if(price <=0)
+            if (price <= 0)
                 throw new ArgumentException($"USDT_{cp.BaseCurrency} price is not known");
 
-            return total* price;
+            return total * price;
         }
 
         private static void AddIndicativePrices(this IPriceContainer prices)
@@ -75,7 +75,7 @@ namespace AVS.CoreLib.Trading.Helpers
             prices.Add("USDT_OCEAN", 1);
             prices.Add("USDT_RIF", 0);
             prices.Add("USDT_REEF", 0);
-            
+
             // BTC prices
             prices.Add("BTC_ADA", 0);
             prices.Add("BTC_ATOM", 0);

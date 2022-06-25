@@ -9,8 +9,8 @@
     <Company>AV Stuido</Company>
     <Product>CoreLib</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>1.0.2.0</AssemblyVersion>
-    <FileVersion>1.0.2.0</FileVersion>
+    <AssemblyVersion>1.0.2.1</AssemblyVersion>
+    <FileVersion>1.0.2.1</FileVersion>
     <Description>contains useful utilities, types and extensions</Description>
     <Copyright>Artem Vertii</Copyright>
     <PackageProjectUrl>https://github.com/avertiy/avs-core-lib-nuget</PackageProjectUrl>

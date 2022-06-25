@@ -49,7 +49,7 @@ namespace AVS.CoreLib.Caching
             //set expiration time for the passed cache key
             var options = new MemoryCacheEntryOptions
             {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(key.CacheTime?? defaultCacheTime)
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(key.CacheTime ?? defaultCacheTime)
             };
 
             //add tokens to clear cache entries
@@ -82,7 +82,7 @@ namespace AVS.CoreLib.Caching
 
             var result = _memoryCache.GetOrCreate(key.Key, entry =>
             {
-                entry.SetOptions(PrepareEntryOptions(key,_options.DefaultCacheTime));
+                entry.SetOptions(PrepareEntryOptions(key, _options.DefaultCacheTime));
 
                 return acquire();
             });
@@ -131,7 +131,7 @@ namespace AVS.CoreLib.Caching
                 var value = await acquire();
                 return value;
             });
-            
+
             return result;
         }
 
@@ -174,7 +174,7 @@ namespace AVS.CoreLib.Caching
             if (key.CacheTime <= 0 || data == null)
                 return;
 
-            _memoryCache.Set(key.Key, data, PrepareEntryOptions(key, shortTerm? _options.ShortTermCacheTime : _options.DefaultCacheTime));
+            _memoryCache.Set(key.Key, data, PrepareEntryOptions(key, shortTerm ? _options.ShortTermCacheTime : _options.DefaultCacheTime));
         }
 
         /// <summary>

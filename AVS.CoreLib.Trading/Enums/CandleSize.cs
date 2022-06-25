@@ -10,6 +10,6 @@
         /// <summary>
         /// a candle with a major price differences
         /// </summary>
-        Big =2,
+        Big = 2,
     }
 }

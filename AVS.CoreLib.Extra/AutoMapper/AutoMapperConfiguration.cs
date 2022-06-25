@@ -1,6 +1,6 @@
-using AutoMapper;
 using System;
 using System.Collections.Generic;
+using AutoMapper;
 
 namespace AVS.CoreLib.AutoMapper
 {

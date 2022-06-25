@@ -13,22 +13,22 @@ namespace AVS.CoreLib.Trading.Extensions
         /// </summary>
         public static CompositeFormatter AddTradeTypeFormatter(this CompositeFormatter formatter)
         {
-            formatter.AddTypeFormatter(new []{ "+", "c", "character", "n", "number"}, (string format, TradeType x) =>
-            {
-                switch (format)
-                {
-                    case "+":
-                        return x == TradeType.Buy ? "+" : "-";
-                    case "c":
-                    case "character":
-                        return x == TradeType.Buy ? "buy" : "sell";
-                    case "n":
-                    case "number":
-                        return ((int)x).ToString();
-                    default:
-                        return x.ToString();
-                }
-            });
+            formatter.AddTypeFormatter(new[] { "+", "c", "character", "n", "number" }, (string format, TradeType x) =>
+             {
+                 switch (format)
+                 {
+                     case "+":
+                         return x == TradeType.Buy ? "+" : "-";
+                     case "c":
+                     case "character":
+                         return x == TradeType.Buy ? "buy" : "sell";
+                     case "n":
+                     case "number":
+                         return ((int)x).ToString();
+                     default:
+                         return x.ToString();
+                 }
+             });
             return formatter;
         }
 

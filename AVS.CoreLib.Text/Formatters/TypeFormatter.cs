@@ -5,7 +5,7 @@ namespace AVS.CoreLib.Text.Formatters
     /// <summary>
     /// Type formatter
     /// </summary>
-    public class TypeFormatter<T>: ITypeFormatter
+    public class TypeFormatter<T> : ITypeFormatter
     {
         private readonly Func<string, T, string> _formatter;
 

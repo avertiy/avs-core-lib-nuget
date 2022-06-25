@@ -7,15 +7,13 @@ namespace AVS.CoreLib.Trading.Structs
 {
     public struct PairCurrencyValue
     {
-        private decimal _quote;
-        private decimal _base;
-        public decimal Quote => _quote;
-        public decimal Base => _base;
-
         public readonly string Pair;
 
-        public string QuoteCurrency => Pair.QuoteCurrency();
-        public string BaseCurrency => Pair.BaseCurrency();
+        private decimal _quote;
+        private decimal _base;
+
+        public decimal Quote => _quote;
+        public decimal Base => _base;
 
         public PairCurrencyValue(string pair)
         {
@@ -96,8 +94,8 @@ namespace AVS.CoreLib.Trading.Structs
         /// </summary>
         public static PairCurrencyValue Parse(string str)
         {
-            var parts = str.Split(';',' ', StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length !=4)
+            var parts = str.Split(';', ' ', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length != 4)
                 throw new ArgumentException($"String '{str}' is not recognized as a valid {nameof(PairCurrencyValue)} string (e.g. 0.2 BTC; 10 USD)");
 
             if (NumericHelper.TryParseDecimal(parts[0], out var quote) && NumericHelper.TryParseDecimal(parts[2], out var @base))
@@ -112,6 +110,11 @@ namespace AVS.CoreLib.Trading.Structs
         public static implicit operator PairCurrencyValue(string str)
         {
             return Parse(str);
+        }
+
+        public static implicit operator string(PairCurrencyValue pairValue)
+        {
+            return pairValue.Pair;
         }
     }
 }

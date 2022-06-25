@@ -38,15 +38,16 @@ namespace AVS.CoreLib.Trading.Extensions
                 else
                     precisionDigits = 0;
             }
-            else if(value > 0)
+            else if (value > 0)
             {
                 if (value > 0.1m)
                     precisionDigits = 4;
                 else if (value > 0.0000003m)
                     precisionDigits = 8;
-                else 
+                else
                     precisionDigits = TradingConstants.PrecisionDigits;
-            }else if (value == 0)
+            }
+            else if (value == 0)
             {
                 precisionDigits = 0;
             }

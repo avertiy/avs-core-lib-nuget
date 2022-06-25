@@ -19,7 +19,7 @@ namespace AVS.CoreLib.Trading.Enums
     public enum Fiat
     {
         Main = 1,
-        All =2
+        All = 2
     }
 
     //public enum Exchange

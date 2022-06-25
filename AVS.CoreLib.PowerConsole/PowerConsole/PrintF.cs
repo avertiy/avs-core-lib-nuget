@@ -59,7 +59,7 @@ namespace AVS.CoreLib.PowerConsole
         public static void PrintF(FormattableString str, bool endLine = true)
         {
             var formattedString = XFormat(str);
-            
+
             Print(new ColorMarkupString(formattedString), endLine);
         }
 

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Runtime.InteropServices;
-using System.Security;
-using System.Text;
-
-namespace AVS.CoreLib.PowerConsole.Utilities
+﻿namespace AVS.CoreLib.PowerConsole.Utilities
 {
     ///// <summary>
     ///// Clipboard provides an interface for getting and setting the contents of the system clipboard.

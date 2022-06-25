@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AVS.CoreLib.Caching
+﻿namespace AVS.CoreLib.Caching
 {
     public class CachingOptions
     {

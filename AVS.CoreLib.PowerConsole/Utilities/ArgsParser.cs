@@ -47,11 +47,11 @@ namespace AVS.CoreLib.PowerConsole.Utilities
                     continue;
                 var ind = arg.IndexOf(':');
 
-                if(ind <= 0)
+                if (ind <= 0)
                     continue;
 
                 var param = arg.Substring(1, ind - 1);
-                var value = arg.Substring(ind+1);
+                var value = arg.Substring(ind + 1);
                 dict.Add(param, value);
             }
 

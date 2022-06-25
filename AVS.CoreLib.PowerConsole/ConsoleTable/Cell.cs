@@ -1,5 +1,4 @@
 ﻿using AVS.CoreLib.PowerConsole.Extensions;
-using AVS.CoreLib.PowerConsole.Structs;
 using AVS.CoreLib.PowerConsole.Utilities;
 
 namespace AVS.CoreLib.PowerConsole.ConsoleTable
@@ -18,7 +17,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
 
         public static Cell Create(string text, Column column, Row row, ColorScheme? scheme = null)
         {
-            return new Cell(){Text = text, Column = column, Row = row, ColorScheme = scheme};
+            return new Cell() { Text = text, Column = column, Row = row, ColorScheme = scheme };
         }
 
         public static Cell Create<T>(T obj, Column column, Row row, ColorScheme? scheme = null)

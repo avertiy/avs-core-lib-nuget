@@ -43,7 +43,7 @@ namespace AVS.CoreLib.Caching
         /// <param name="acquire">Function to load item if it's not in the cache yet</param>
         /// <returns>The cached value associated with the specified key</returns>
         Task<T> GetShortTermAsync<T>(CacheKey key, Func<Task<T>> acquire);
-        
+
         /// <summary>
         /// Removes the value with the specified key from the cache
         /// </summary>

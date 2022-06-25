@@ -8,12 +8,12 @@ using AVS.CoreLib.Dates.Extensions;
 
 namespace AVS.CoreLib.Collections
 {
-   public class TimeKeyedBag<T> : IEnumerable<KeyValuePair<DateTime, StrongBox<T>>>
+    public class TimeKeyedBag<T> : IEnumerable<KeyValuePair<DateTime, StrongBox<T>>>
         where T : class, new()
     {
         private readonly object _lock = new object();
         private readonly Dictionary<DateTime, StrongBox<T>> _items = new Dictionary<DateTime, StrongBox<T>>();
-        
+
         public T this[DateTime time, int roundToSeconds = 60]
         {
             get
@@ -73,7 +73,7 @@ namespace AVS.CoreLib.Collections
                         _items.Add(key, box);
                 }
         }
-        
+
         public IEnumerator<KeyValuePair<DateTime, StrongBox<T>>> GetEnumerator()
         {
             return _items.GetEnumerator();

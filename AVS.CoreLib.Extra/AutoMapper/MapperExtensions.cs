@@ -1,7 +1,7 @@
-using AutoMapper;
-using AVS.CoreLib.AutoMapper;
 using System;
 using System.Reflection;
+using AutoMapper;
+using AVS.CoreLib.AutoMapper;
 
 namespace AVS.CoreLib.Infrastructure.AutoMapper
 {

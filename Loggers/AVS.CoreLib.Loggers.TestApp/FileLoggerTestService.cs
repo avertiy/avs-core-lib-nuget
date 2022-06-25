@@ -14,7 +14,7 @@ namespace AVS.CoreLib.Loggers.TestApp
 
         public void Demo()
         {
-            
+
         }
 
         public void Test()

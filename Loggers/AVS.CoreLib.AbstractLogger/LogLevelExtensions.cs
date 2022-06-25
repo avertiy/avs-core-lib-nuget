@@ -17,7 +17,7 @@ namespace AVS.CoreLib.AbstractLogger
                     text = "dbug";
                     break;
                 case LogLevel.Information:
-                    text ="info";
+                    text = "info";
                     break;
                 case LogLevel.Warning:
                     text = "warn";

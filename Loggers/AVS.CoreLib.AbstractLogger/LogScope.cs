@@ -11,7 +11,7 @@ namespace AVS.CoreLib.AbstractLogger
         public ILogWriter Writer { get; set; }
         private int HashCode { get; set; }
         private string Logger { get; set; }
-        
+
         private void SetLogger(string name)
         {
             if (Logger != name)

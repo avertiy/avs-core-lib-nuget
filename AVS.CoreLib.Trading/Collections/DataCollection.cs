@@ -55,7 +55,7 @@ namespace AVS.CoreLib.Trading.Collections
         public IEnumerable<string> GetAllPairs(string exchange = null)
         {
             var source = Items.AsEnumerable();
-            if(exchange != null)
+            if (exchange != null)
                 source = source.Where(x => x.Exchange == exchange);
 
             return source.Select(x => x.Pair);

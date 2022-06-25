@@ -2,7 +2,7 @@
 {
     public enum MatchType
     {
-        Any =0,
-        All =1
+        Any = 0,
+        All = 1
     }
 }

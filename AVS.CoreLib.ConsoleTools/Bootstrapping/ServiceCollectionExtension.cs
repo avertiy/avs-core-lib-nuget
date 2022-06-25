@@ -18,7 +18,7 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
         public static IServiceCollection AddOptions<TOptions>(this IServiceCollection services,
             IConfiguration configuration,
             string name = null,
-            Action<TOptions> configure = null) 
+            Action<TOptions> configure = null)
             where TOptions : class
         {
             if (services == null)

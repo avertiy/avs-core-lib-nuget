@@ -10,8 +10,8 @@ namespace AVS.CoreLib.Trading.Extensions
     public static class EnumerableDataExtensions
     {
         public static IEnumerable<TData> MatchCurrency<TData>(
-            this IEnumerable<TData> source, 
-            BaseCurrencies currencies) 
+            this IEnumerable<TData> source,
+            BaseCurrencies currencies)
             where TData : IPair
         {
             if (currencies == null || !currencies.Any())
@@ -21,7 +21,7 @@ namespace AVS.CoreLib.Trading.Extensions
 
         public static IEnumerable<TData> MatchCurrency<TData>(
             this IEnumerable<TData> source,
-            Currencies currencies) 
+            Currencies currencies)
             where TData : IPair
         {
             if (currencies == null || !currencies.Any())
@@ -32,13 +32,13 @@ namespace AVS.CoreLib.Trading.Extensions
         public static IEnumerable<TData> MatchQuoteCurrency<TData>(this IEnumerable<TData> source,
             string currency) where TData : IPair
         {
-            return source.Where(x => x.Pair.EndsWith("_"+currency));
+            return source.Where(x => x.Pair.EndsWith("_" + currency));
         }
 
         public static IEnumerable<TData> MatchBaseCurrency<TData>(this IEnumerable<TData> source,
             string currency) where TData : IPair
         {
-            return source.Where(x => x.Pair.StartsWith(currency+ "_"));
+            return source.Where(x => x.Pair.StartsWith(currency + "_"));
         }
 
         public static IEnumerable<TData> MatchAnyExchange<TData>(
@@ -53,13 +53,13 @@ namespace AVS.CoreLib.Trading.Extensions
         public static IEnumerable<TData> MatchExchange<TData>(
             this IEnumerable<TData> source,
             MatchType type,
-            params string[] exchanges) 
+            params string[] exchanges)
             where TData : IExchange, IPair
         {
             if (exchanges == null)
                 throw new ArgumentNullException(nameof(exchanges));
 
-            if(type == MatchType.Any || exchanges.Length == 1)
+            if (type == MatchType.Any || exchanges.Length == 1)
                 return source.Where(x => exchanges.Contains(x.Exchange));
 
             var result = new List<TData>();

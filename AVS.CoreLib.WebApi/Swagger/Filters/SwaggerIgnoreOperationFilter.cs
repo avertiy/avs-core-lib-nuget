@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Text.Json.Serialization;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -23,7 +22,7 @@ namespace AVS.CoreLib.WebApi.Swagger.Filters
 
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
-            if(context.MethodInfo == null)
+            if (context.MethodInfo == null)
                 return;
 
             var ignoredProperties = context.MethodInfo.GetParameters()

@@ -27,7 +27,7 @@ namespace AVS.CoreLib.Text.Formatters.ColorMarkup
             var nextFormat = "";
             if (colors.Length > 1)
             {
-                len += colors[1].Length+1;
+                len += colors[1].Length + 1;
                 colorScheme = format.Substring(0, len);
             }
 

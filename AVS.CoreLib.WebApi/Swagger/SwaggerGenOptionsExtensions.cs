@@ -8,7 +8,7 @@ namespace AVS.CoreLib.WebApi.Swagger
     {
         public static void MapTypeAsString<T>(this SwaggerGenOptions swaggerGenOptions, string description = null)
         {
-            swaggerGenOptions.MapType(typeof(T), () => new OpenApiSchema(){Type = "string", Description = description});
+            swaggerGenOptions.MapType(typeof(T), () => new OpenApiSchema() { Type = "string", Description = description });
         }
     }
 }

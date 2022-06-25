@@ -30,12 +30,12 @@ namespace AVS.CoreLib.PowerConsole.Utilities
             Background = background;
             Foreground = foreground;
         }
-        
+
         public override string ToString()
         {
             return $"-{Foreground} --{Background}";
         }
-        
+
         /// <summary>
         /// converts strings in format -Color or --Color into ColorScheme
         /// </summary>

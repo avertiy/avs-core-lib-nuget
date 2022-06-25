@@ -57,7 +57,7 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
             Console.PrintHeader($" Printer Test");
 
             Console.Print($"some text {TradeType.Buy} some other text {TradeType.Sell}", ColorPalette.RedGreen);
-            Console.Print($"some text {TradeType.Buy} some other text {TradeType.Sell}", new [] {ConsoleColor.DarkYellow, ConsoleColor.Cyan }, true);
+            Console.Print($"some text {TradeType.Buy} some other text {TradeType.Sell}", new[] { ConsoleColor.DarkYellow, ConsoleColor.Cyan }, true);
         }
 
         public void PrintColorString()
@@ -197,15 +197,15 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
             Console.PrintTable(arr, ConsoleColor.DarkCyan);
             Console.WriteLine();
 
-            var table = Table.Create(new []{"Buys","Sells","Column 3", "Column 4"}, new []{ ColorScheme.DarkGreen, ColorScheme.DarkRed });
+            var table = Table.Create(new[] { "Buys", "Sells", "Column 3", "Column 4" }, new[] { ColorScheme.DarkGreen, ColorScheme.DarkRed });
             table.AddRow().AddCell("row 1 colspan = 4", 4);
             table.AddRow().AddCell("row 2 colspan = 3", 3).AddCell("Cell 4");
-            table.AddRow().AddCell("row 3 cell 1").AddCell("Cell 2       -        3",2).AddCell("cell 4");
-            table.AddRow().AddCell("row 4 cell 1").AddCell("Cell 2    -    3",2);
-            table.AddRow(new object[]{"buys trade2","sell trade2", "adasdasd", "sadasd adqw 23 2323" });
-            table.AddRow(new object[]{"cell 3 asdas dasdasd das d","", "adasdasd", "sadasd adqw 23 2323" });
-            table.AddRow(new object[]{"","cell 4 sdfdsf eewewer", "adasdasd", "sadasd adqw 23 2323" });
-            
+            table.AddRow().AddCell("row 3 cell 1").AddCell("Cell 2       -        3", 2).AddCell("cell 4");
+            table.AddRow().AddCell("row 4 cell 1").AddCell("Cell 2    -    3", 2);
+            table.AddRow(new object[] { "buys trade2", "sell trade2", "adasdasd", "sadasd adqw 23 2323" });
+            table.AddRow(new object[] { "cell 3 asdas dasdasd das d", "", "adasdasd", "sadasd adqw 23 2323" });
+            table.AddRow(new object[] { "", "cell 4 sdfdsf eewewer", "adasdasd", "sadasd adqw 23 2323" });
+
             Console.PrintTable(table);
         }
 

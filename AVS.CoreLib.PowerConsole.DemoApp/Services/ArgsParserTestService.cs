@@ -8,7 +8,7 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
     {
         public void Test()
         {
-            var args = new[] {""};
+            var args = new[] { "" };
             PowerConsole.Print("args: ", args, ConsoleColor.DarkGreen);
             var dict = ArgsParser.Parse(args);
             //PowerConsole.PrintDictionary();

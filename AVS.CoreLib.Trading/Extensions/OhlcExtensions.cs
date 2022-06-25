@@ -54,38 +54,38 @@ namespace AVS.CoreLib.Trading.Extensions
             switch (timeFrame)
             {
                 case TimeFrame.H4:
-                {
-                    if (h < 0.025m)
-                        size = CandleSize.Small;
-                    else if (h > 0.06m)
-                        size = CandleSize.Big;
-                    break;
-                }
+                    {
+                        if (h < 0.025m)
+                            size = CandleSize.Small;
+                        else if (h > 0.06m)
+                            size = CandleSize.Big;
+                        break;
+                    }
                 case TimeFrame.H1:
-                {
-                    if (h < 0.015m)
-                        size = CandleSize.Small;
-                    else if (h > 0.05m)
-                        size = CandleSize.Big;
-                    break;
-                }
+                    {
+                        if (h < 0.015m)
+                            size = CandleSize.Small;
+                        else if (h > 0.05m)
+                            size = CandleSize.Big;
+                        break;
+                    }
                 case TimeFrame.D:
-                {
-                    if (h < 0.05m)
-                        size = CandleSize.Small;
-                    else if (h > 0.15m)
-                        size = CandleSize.Big;
-                    break;
+                    {
+                        if (h < 0.05m)
+                            size = CandleSize.Small;
+                        else if (h > 0.15m)
+                            size = CandleSize.Big;
+                        break;
                     }
                 case TimeFrame.M30:
                 default:
-                {
-                    if (h < 0.01m)
-                        size = CandleSize.Small;
-                    else if (h > 0.025m)
-                        size = CandleSize.Big;
-                    break;
-                }
+                    {
+                        if (h < 0.01m)
+                            size = CandleSize.Small;
+                        else if (h > 0.025m)
+                            size = CandleSize.Big;
+                        break;
+                    }
             }
 
             return size;
@@ -119,7 +119,7 @@ namespace AVS.CoreLib.Trading.Extensions
                 if (ohlc.Low == ohlc.Close)
                 {
                     return ohlc.High == ohlc.Close ? CandleType.TrueDoji : CandleType.Gravestone;
-                } 
+                }
 
                 if (ohlc.High == ohlc.Close)
                     return CandleType.Dragonfly;

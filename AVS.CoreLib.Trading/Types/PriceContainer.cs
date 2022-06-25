@@ -42,7 +42,7 @@ namespace AVS.CoreLib.Trading.Types
 
         public void Update(IDictionary<string, decimal> prices)
         {
-            if(prices == null || prices.Count ==0)
+            if (prices == null || prices.Count == 0)
                 return;
 
             foreach (var kp in prices)

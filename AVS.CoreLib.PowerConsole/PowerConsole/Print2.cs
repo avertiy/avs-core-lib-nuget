@@ -26,7 +26,7 @@ namespace AVS.CoreLib.PowerConsole
         /// </summary>
         internal static Func<FormattableString, string> Format { get; set; } = str => str.ToString(CultureInfo.CurrentCulture);
         public static IPrinter DefaultPrinter { get; set; } = new Printer();
-        
+
         /// <summary>
         /// Format string by <see cref="Format"/> delegate and print it
         /// </summary>
@@ -61,7 +61,7 @@ namespace AVS.CoreLib.PowerConsole
             }
         }
 
-        public static void PrintKeyValue<TKey,TValue>(IDictionary<TKey, TValue> dictionary, ConsoleColor color = ConsoleColor.White, string keyValueSeparator = " => ", string separator = "\r\n", bool endLine = true)
+        public static void PrintKeyValue<TKey, TValue>(IDictionary<TKey, TValue> dictionary, ConsoleColor color = ConsoleColor.White, string keyValueSeparator = " => ", string separator = "\r\n", bool endLine = true)
         {
             Write(dictionary.ToKeyValueString(keyValueSeparator, separator), color);
             WriteEndLine(endLine);

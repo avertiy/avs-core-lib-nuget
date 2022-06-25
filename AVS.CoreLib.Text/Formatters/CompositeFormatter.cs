@@ -9,7 +9,7 @@ namespace AVS.CoreLib.Text.Formatters
     /// without the need to implement CustomFormatter 
     /// </summary>
     public class CompositeFormatter : CustomFormatter
-    { 
+    {
         private readonly Dictionary<string, ITypeFormatter> _formatters = new Dictionary<string, ITypeFormatter>();
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace AVS.CoreLib.Text.Formatters
             var key = arg.GetType().Name;
             if (_formatters.ContainsKey(key))
                 return _formatters[key].Format(string.Empty, arg);
-            
+
             return base.NoFormat(arg);
         }
 

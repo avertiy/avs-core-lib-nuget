@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions.Responses;
 using AVS.CoreLib.Collections;
 using AVS.CoreLib.REST.Attributes;
@@ -79,8 +77,8 @@ namespace AVS.CoreLib.REST.Responses
 
         public static implicit operator Response<T>(AggregatedResponse<T> response)
         {
-            if(!response.Success)
-                return new Response<T>(){ Error = response.Error};
+            if (!response.Success)
+                return new Response<T>() { Error = response.Error };
 
             if (response.Count == 1)
                 return response.First().Value;

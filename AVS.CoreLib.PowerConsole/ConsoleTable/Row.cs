@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using AVS.CoreLib.PowerConsole.Utilities;
-using AVS.CoreLib.Text;
 
 namespace AVS.CoreLib.PowerConsole.ConsoleTable
 {
@@ -18,7 +17,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
         {
             var colspan = Cells.Sum(x => x.Colspan);
             var cols = colspan + cell.Colspan;
-            if(cols > Table.Columns.Count)
+            if (cols > Table.Columns.Count)
                 throw new ArgumentOutOfRangeException($"Unable to add another cell. Row colspan #{cols} will exceed the number of columns #{Table.Columns.Count}");
 
             cell.ColorScheme ??= ColorScheme;
@@ -39,5 +38,5 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
         }
     }
 
-   
+
 }

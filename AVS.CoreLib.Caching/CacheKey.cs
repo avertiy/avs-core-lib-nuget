@@ -16,9 +16,9 @@
         /// <summary>
         /// To remove by prefix functionality
         /// </summary>
-        public string Prefix { get;  }
+        public string Prefix { get; }
 
-        public CacheKey(string cacheKey, string prefix = null, int? cacheTime =null)
+        public CacheKey(string cacheKey, string prefix = null, int? cacheTime = null)
         {
             CacheTime = cacheTime;
             Key = cacheKey;

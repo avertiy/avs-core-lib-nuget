@@ -11,9 +11,9 @@ namespace AVS.CoreLib.Tests.Extensions
         [TestMethod]
         public void RownDownTest()
         {
-            var dt1 = new DateTime(2021,1,1, 8, 48, 37);
-            var dt2 = new DateTime(2021,1,1, 12, 16, 37);
-            var dt3 = new DateTime(2021,1,1, 2, 05, 50);
+            var dt1 = new DateTime(2021, 1, 1, 8, 48, 37);
+            var dt2 = new DateTime(2021, 1, 1, 12, 16, 37);
+            var dt3 = new DateTime(2021, 1, 1, 2, 05, 50);
 
             //round down to hour
             var result = dt1.RoundDown(TimeSpan.FromSeconds(60 * 60));

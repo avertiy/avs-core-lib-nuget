@@ -47,12 +47,12 @@ namespace AVS.CoreLib.Trading.FormatProviders
                             return ohlc.GetCandleSize().ToString();
                         case "ohlc":
                         case "OHLC":
-                            return string.Format("{0} {1} {2} {3}", 
+                            return string.Format("{0} {1} {2} {3}",
                                 ohlc.Open.FormatAsPrice(),
-                                ohlc.High.FormatAsPrice(), 
-                                ohlc.Low.FormatAsPrice(), 
+                                ohlc.High.FormatAsPrice(),
+                                ohlc.Low.FormatAsPrice(),
                                 ohlc.Close.FormatAsPrice()
-                                // ohlc.IsGreenCandle() ? "^" : ""
+                            // ohlc.IsGreenCandle() ? "^" : ""
                             );
                         default:
                             return ohlc.ToString();

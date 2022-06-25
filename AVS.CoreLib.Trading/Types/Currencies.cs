@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Trading.Enums;
@@ -70,6 +69,6 @@ namespace AVS.CoreLib.Trading.Types
             return Category.HasValue ? TradingHelper.Instance.GetCurrencies(Category.Value) : this.Items.ToArray();
         }
 
-        internal override string[] AllItems => Array.Empty<string>(); 
+        internal override string[] AllItems => Array.Empty<string>();
     }
 }

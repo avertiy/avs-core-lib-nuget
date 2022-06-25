@@ -17,7 +17,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
 
         public void CalculateWidth(bool force = false)
         {
-            if(TotalWidth > 0 && !force)
+            if (TotalWidth > 0 && !force)
                 return;
 
             TotalWidth = 0;
@@ -37,7 +37,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
                 var column = Columns[i];
                 foreach (var row in Rows)
                 {
-                    if(i >= row.Cells.Count)
+                    if (i >= row.Cells.Count)
                         continue;
 
                     var cell = row[i];
@@ -66,7 +66,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
                 }
             }
 
-            TotalWidth += Columns.Count*2;
+            TotalWidth += Columns.Count * 2;
 
             foreach (var row in Rows)
             {
@@ -83,14 +83,14 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
                     for (var i = 0; i < cell.Colspan; i++)
                     {
                         var ind = index + i;
-                        if(ind >= Columns.Count)
+                        if (ind >= Columns.Count)
                             break;
 
                         cell.Width += Columns[ind].Width;
                     }
-                    cell.Width += cell.Colspan -1;
+                    cell.Width += cell.Colspan - 1;
                     index += cell.Colspan;
-                } 
+                }
             }
 
             //for (var i = 0; i < Columns.Count; i++)
@@ -120,10 +120,10 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
             var minWidth = title.Length + 2;
             var colWidth = minWidth;
 
-            if(width.HasValue && width > minWidth)
+            if (width.HasValue && width > minWidth)
                 colWidth = width.Value;
 
-            Columns.Add(new Column() { Title = title, Width = colWidth, ColorScheme = scheme});
+            Columns.Add(new Column() { Title = title, Width = colWidth, ColorScheme = scheme });
         }
 
         public Row AddRow(ColorScheme? scheme = null)
@@ -135,7 +135,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
 
         public void AddRow(object[] values, ColorScheme? scheme = null)
         {
-            var row = new Row(){ ColorScheme = scheme, Table = this};
+            var row = new Row() { ColorScheme = scheme, Table = this };
             for (var i = 0; i < values.Length && i < Columns.Count; i++)
             {
                 row.AddCellWithValue(values[i]);
@@ -151,8 +151,8 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
             if (props.Length == 0)
                 throw new ArgumentException($"Type {type.Name} does not have public instance properties unable to build columns");
 
-            var table = new Table {Columns = props.Select(pi => new Column() {Title = pi.Name}).ToList()};
-            
+            var table = new Table { Columns = props.Select(pi => new Column() { Title = pi.Name }).ToList() };
+
             foreach (var obj in data)
             {
                 table.AddRow(obj, props);

@@ -85,7 +85,7 @@ namespace AVS.CoreLib.Trading.Types
 
         public override string ToString()
         {
-            return _pair ?? _base +"_" + _quote;
+            return _pair ?? _base + "_" + _quote;
         }
 
         private void InitBaseAndQuote()

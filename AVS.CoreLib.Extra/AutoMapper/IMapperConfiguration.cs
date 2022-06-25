@@ -1,5 +1,5 @@
-using AutoMapper;
 using System;
+using AutoMapper;
 
 namespace AVS.CoreLib.AutoMapper
 {

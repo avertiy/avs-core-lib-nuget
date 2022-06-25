@@ -24,7 +24,7 @@ namespace AVS.CoreLib.Trading.FormatProviders
             _formatter.AppendFormatter(new PriceFormatter());
             _formatter.AppendFormatter(new PairStringFormatter());
             _formatter.AppendFormatter(new OhlcFormatter());
-            
+
         }
 
         public override string Format(string format, object arg, IFormatProvider formatProvider)

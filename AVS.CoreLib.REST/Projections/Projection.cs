@@ -148,7 +148,7 @@ namespace AVS.CoreLib.REST.Projections
                 throw new MapJsonException<TProjection, TItem>(ex);
             }
         }
-        
+
         protected void LoadToken<TToken, TProjection>(Action<TToken> action) where TToken : JContainer
         {
             try

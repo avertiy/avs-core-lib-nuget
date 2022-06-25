@@ -129,7 +129,7 @@ namespace AVS.CoreLib.Trading.Extensions
 
                 var million = 1000000m;
                 if (value < 0.000009m)
-                    return Format(value*million, decimalPlaces ?? 3,"mk");
+                    return Format(value * million, decimalPlaces ?? 3, "mk");
 
                 if (value < 0.01m)
                     return Format(value * 1000, decimalPlaces ?? 3, "m");

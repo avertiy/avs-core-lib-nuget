@@ -90,7 +90,7 @@ namespace AVS.CoreLib.FileLogger
 
         protected void Flush()
         {
-            if(_sb.Length == 0)
+            if (_sb.Length == 0)
                 return;
 
             string content = null;

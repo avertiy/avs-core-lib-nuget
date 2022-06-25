@@ -14,7 +14,7 @@ namespace AVS.CoreLib.PowerConsole
         private static ColorScheme DefaultSchemeBackup { get; set; }
         public static ColorScheme CurrentColorScheme => ColorScheme.GetCurrentScheme();
         public static ColorScheme PreviousScheme = new ColorScheme(Console.BackgroundColor, Console.ForegroundColor);
-        
+
 
         public static void ApplyColor(ConsoleColor color)
         {
@@ -72,7 +72,7 @@ namespace AVS.CoreLib.PowerConsole
             var clearLine = new string(' ', Console.WindowWidth - left);
             for (var i = 0; i < rows; i++)
             {
-                Console.SetCursorPosition(left, top+i);
+                Console.SetCursorPosition(left, top + i);
                 Console.Write(clearLine);
             }
             Console.SetCursorPosition(left, top);

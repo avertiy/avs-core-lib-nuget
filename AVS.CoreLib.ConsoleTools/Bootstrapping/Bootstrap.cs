@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions;
 using AVS.CoreLib.PowerConsole.Utilities;
 using Microsoft.Extensions.Hosting;
-using Console = AVS.CoreLib.PowerConsole.PowerConsole;
 using BootstrapBase = AVS.CoreLib.PowerConsole.Bootstrapping.Bootstrap;
+using Console = AVS.CoreLib.PowerConsole.PowerConsole;
 
 namespace AVS.CoreLib.ConsoleTools.Bootstrapping
 {

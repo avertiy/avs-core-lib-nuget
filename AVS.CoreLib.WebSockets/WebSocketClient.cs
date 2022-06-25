@@ -58,7 +58,7 @@ namespace AVS.CoreLib.WebSockets
             if (State == WebSocketState.Open)
                 return true;
 
-            if(DiagnosticEnabled)
+            if (DiagnosticEnabled)
                 _logger.LogInformation("{class}::{method}: web socket connecting to {uri} [state: {state}]", nameof(WebSocketClient), nameof(EnsureConnected), Uri, State);
 
             try
@@ -107,7 +107,7 @@ namespace AVS.CoreLib.WebSockets
         {
             if (DiagnosticEnabled)
             {
-                _logger.LogTrace("message: " +message);
+                _logger.LogTrace("message: " + message);
             }
         }
 
@@ -126,7 +126,7 @@ namespace AVS.CoreLib.WebSockets
         {
             if (DiagnosticEnabled)
             {
-                _logger.LogError(error, "{class}::{method}: socket connection error [reconnect: {reconnect}]", 
+                _logger.LogError(error, "{class}::{method}: socket connection error [reconnect: {reconnect}]",
                     nameof(WebSocketClient), nameof(OnSocketConnectionError), _lastCommand != null);
             }
 
