@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,24 +9,26 @@ using AVS.CoreLib.REST.Extensions;
 namespace AVS.CoreLib.REST.Clients
 {
     /// <summary>
-    /// RestClient is based on HttpWebRequest
+    /// Utility class to send HttpWebRequest built with <see cref="IRequestBuilder"/>
+    /// and fetch the response
     /// </summary>
+    /// <remarks>
+    /// if endpoint requires Authentication, the authentication delegated to <see cref="RequestBuilder"/>
+    /// </remarks>
     public class RestClient : IRestClient
     {
         protected IRequestBuilder RequestBuilder { get; }
-        public string Name { get; protected set; }
+
         public string LastRequestedUrl { get; protected set; }
         public int RequestsCounter { get; protected set; }
 
-        public RestClient(string name, string publicKey, string privateKey)
-        {
-            Name = name;
-            RequestBuilder = new RequestBuilder(new HMACSHA512Authenticator(publicKey, privateKey));
-        }
+        //public RestClient(string publicKey, string privateKey)
+        //{
+        //    RequestBuilder = new RequestBuilder(new HMACSHA512Authenticator(publicKey, privateKey));
+        //}
 
-        public RestClient(string name, IRequestBuilder requestBuilder)
+        public RestClient(IRequestBuilder requestBuilder)
         {
-            Name = name;
             RequestBuilder = requestBuilder;
         }
 
@@ -78,5 +81,9 @@ namespace AVS.CoreLib.REST.Clients
             }
         }
     }
+
+
+    
+
 
 }

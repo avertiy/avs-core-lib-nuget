@@ -56,7 +56,7 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
         {
             Console.PrintHeader($" Printer Test");
 
-            Console.Print($"some text {TradeType.Buy} some other text {TradeType.Sell}", ColorPalette.RedGreen);
+            Console.Print($"some text {TradeType.Buy} some other text {TradeType.Sell}", ColorPalette.RedGreen, true);
             Console.Print($"some text {TradeType.Buy} some other text {TradeType.Sell}", new[] { ConsoleColor.DarkYellow, ConsoleColor.Cyan }, true);
         }
 

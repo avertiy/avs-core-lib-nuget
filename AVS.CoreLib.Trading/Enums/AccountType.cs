@@ -4,6 +4,7 @@
     {
         Spot = 0,
         Margin = 1,
-        Lending = 2
+        Lending = 2,
+        Futures = 3
     }
 }

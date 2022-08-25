@@ -10,16 +10,21 @@
     <Company>AV Stuido</Company>
     <Product>CoreLib</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>1.0.3.0</AssemblyVersion>
-    <FileVersion>1.0.3.0</FileVersion>
+    <AssemblyVersion>1.0.4.0</AssemblyVersion>
+    <FileVersion>1.0.4.0</FileVersion>
     <Description>CoreLib REST tools, RestClient </Description>
     <Copyright>Artem Vertii</Copyright>
     <PackageProjectUrl>https://github.com/avertiy/avs-core-lib-nuget</PackageProjectUrl>
     <PackageTags>RestClient avs</PackageTags>
     <RepositoryUrl>https://github.com/avertiy/avs-core-lib-nuget</RepositoryUrl>
     <RepositoryType>public</RepositoryType>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Json\Converters\ResponseConverter.cs" />
+    <Compile Remove="Json\Converters\TimestampNanoSecondsConverter.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AVS.CoreLib" Version="1.0.2" />

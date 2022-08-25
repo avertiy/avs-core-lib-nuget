@@ -20,7 +20,7 @@ namespace AVS.CoreLib.REST.Projections
         protected Action<string, TItem> _itemAction;
         protected Func<string, bool> _whereKey = null;
         protected Func<string, TItem, bool> _where = null;
-        protected IKeyedCollectionBuilder<T, TItem> _builder;
+        protected IKeyedCollectionProxy<T, TItem> _proxy;
         public KeyedProjection(string jsonText, string source = null) : base(jsonText, source)
         {
         }
@@ -63,11 +63,23 @@ namespace AVS.CoreLib.REST.Projections
             return this;
         }
 
-        public KeyedProjection<T, TItem> UseBuilder<TBuilder>(Action<TBuilder> initialize = null) where TBuilder : class, IKeyedCollectionBuilder<T, TItem>, new()
+        [Obsolete("use UseProxy instead")]
+        public KeyedProjection<T, TItem> UseBuilder<TBuilder>(Action<TBuilder> initialize = null) where TBuilder : class, IKeyedCollectionProxy<T, TItem>, new()
         {
             var builder = new TBuilder();
             initialize?.Invoke(builder);
-            _builder = builder;
+            _proxy = builder;
+            return this;
+        }
+
+        /// <summary>
+        /// setup deserialization proxy object <see cref="IKeyedCollectionProxy{T,TData}"/>
+        /// </summary>
+        public KeyedProjection<T, TItem> UseProxy<TProxy>(Action<TProxy> initialize = null) where TProxy : class, IKeyedCollectionProxy<T, TItem>, new()
+        {
+            var proxy = new TProxy();
+            initialize?.Invoke(proxy);
+            _proxy = proxy;
             return this;
         }
 
@@ -76,17 +88,16 @@ namespace AVS.CoreLib.REST.Projections
             return MapAsync(Map);
         }
 
-        public Response<T> Map()
+        public virtual Response<T> Map()
         {
-            if (_builder == null)
-                throw new AppException("Builder is not initialized", "You might need to use UseBuilder<TBuilder>() method first");
+            EnsureProxyInitialized();
 
             var response = Response.Create<T>();
             response.Source = Source;
 
             if (IsEmpty)
             {
-                response.Data = _builder.Create();
+                response.Data = _proxy.Create();
             }
             else if (ContainsError(out string err))
             {
@@ -117,11 +128,11 @@ namespace AVS.CoreLib.REST.Projections
                             continue;
 
                         _itemAction?.Invoke(key, value);
-                        _builder.Add(key, value);
+                        _proxy.Add(key, value);
                     }
                 });
 
-                var data = _builder.Create();
+                var data = _proxy.Create();
                 _postProcessAction?.Invoke(data);
                 response.Data = data;
             }
@@ -133,7 +144,7 @@ namespace AVS.CoreLib.REST.Projections
         /// </summary>
         /// <typeparam name="TProjection">The concrete type keyed collection of for example BookTicker</typeparam>
         /// <returns>response with data type of T</returns>
-        public Response<T> Map<TProjection>(Action<TProjection, KeyValuePair<string, TItem>> addItem) where TProjection : T, new()
+        public virtual Response<T> Map<TProjection>(Action<TProjection, KeyValuePair<string, TItem>> addItem) where TProjection : T, new()
         {
             var response = CreateResponse<T, TProjection>();
             if (response.Success)
@@ -172,6 +183,12 @@ namespace AVS.CoreLib.REST.Projections
                 response.Data = projection;
             }
             return response;
+        }
+
+        private void EnsureProxyInitialized()
+        {
+            if (_proxy == null)
+                throw new AppException("Proxy is not initialized", "You might need to use UseProxy<TProxy>() method first");
         }
     }
 }

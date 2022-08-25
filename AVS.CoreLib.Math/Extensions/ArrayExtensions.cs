@@ -15,9 +15,9 @@
 			return sum;
 		}
 
-		public static string AsArrayString(this int[] arr)
+		public static string AsArrayString(this int[] arr, string separator=",")
 		{
-			return $"[{string.Join(",", arr)}]";
+			return $"[{string.Join(separator, arr)}]";
 		}
 	}
 }

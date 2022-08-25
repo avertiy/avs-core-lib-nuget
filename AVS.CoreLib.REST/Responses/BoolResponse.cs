@@ -9,7 +9,7 @@ namespace AVS.CoreLib.REST.Responses
 
         public static implicit operator Response<bool>(BoolResponse r)
         {
-            return Response.Create<bool>(r.Result, r.Error);
+            return Response.Create<bool>(r.Result, r.Source, r.Error);
         }
 
         public override dynamic GetData()

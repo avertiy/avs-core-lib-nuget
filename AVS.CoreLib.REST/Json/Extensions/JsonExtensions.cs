@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using AVS.CoreLib.REST;
+using AVS.CoreLib.REST.Json;
 using Newtonsoft.Json;
 
 namespace AVS.CoreLib.Json.Extensions

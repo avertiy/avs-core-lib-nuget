@@ -73,6 +73,12 @@ namespace AVS.CoreLib.PowerConsole
             WriteEndLine(endLine);
         }
 
+        public static void Dump<T>(T obj, bool indented = false, ConsoleColor color = ConsoleColor.White)
+        {
+            Write(obj.ToJsonString(indented), color);
+            WriteEndLine(true);
+        }
+
         public static void PrintHeader(string header, ConsoleColor color = ConsoleColor.Cyan, string template = "============", string lineIndentation = "\r\n\r\n")
         {
             WriteLine();

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using AVS.CoreLib.Json;
+using AVS.CoreLib.REST.Json;
 using Newtonsoft.Json.Linq;
 
 namespace AVS.CoreLib.REST.Projections
@@ -12,7 +13,7 @@ namespace AVS.CoreLib.REST.Projections
         {
         }
 
-        public MapResult MapResult<TProjection>() where TProjection : TItem, new()
+        public virtual MapResult MapResult<TProjection>() where TProjection : TItem, new()
         {
             var result = CreateMapResult<List<TItem>>();
             if (result.Success)

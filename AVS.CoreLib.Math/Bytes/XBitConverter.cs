@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using AVS.CoreLib.Math.Extensions;
 
 namespace AVS.CoreLib.Math.Bytes
 {
@@ -51,5 +52,24 @@ namespace AVS.CoreLib.Math.Bytes
 
 			return bytes;
 		}
-	}
+
+        public static byte CombineIntoByte(int halfByte1, int halfByte2, bool checkOverflow = true)
+        {
+            //not sure which is faster but the second approach as for me more clear what we do
+            //var high = halfByte1 << 4;
+            //var res = high1 | halfByte2;
+
+            var high = halfByte1 * 16;
+            var low = halfByte2;
+            var res = high + low;
+
+            if (checkOverflow && res > byte.MaxValue)
+            {
+                throw new OverflowException($"Operation contains overflow");
+            }
+
+            var result = Convert.ToByte(res);
+            return result;
+        }
+    }
 }

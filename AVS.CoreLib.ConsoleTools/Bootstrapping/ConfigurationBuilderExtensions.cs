@@ -4,13 +4,10 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
 {
     public static class ConfigurationBuilderExtensions
     {
-        public static void AddCustomUserSecrets(this IConfigurationBuilder builder, bool reloadOnChange = false)
+        public static void AddCustomUserSecrets(this IConfigurationBuilder builder, string appName = null,  bool reloadOnChange = false)
         {
-            if (CustomUserSecrets.Enabled)
-            {
-                CustomUserSecrets.CreateSecretsDirectory();
-                builder.AddJsonFile(CustomUserSecrets.UserSecretsPath, optional: true, reloadOnChange);
-            }
+            var path = CustomUserSecrets.GetUserSecretsPath(appName);
+            builder.AddJsonFile(path, optional: true, reloadOnChange);
         }
 
         public static void AddAppSettings(this IConfigurationBuilder builder, string environment, bool reloadOnChange = false)

@@ -14,6 +14,13 @@ namespace AVS.CoreLib.REST.Extensions
             return response;
         }
 
+        public static Response<T> DeserializeAsResponse<T>(this JsonResult result)
+        {
+            var response = result.Deserialize<Response<T>>();
+            response.Source = result.Source;
+            return response;
+        }
+
         public static ObjectProjection<T> AsObject<T>(this JsonResult result)
         {
             return new ObjectProjection<T>(result.JsonText, result.Source);

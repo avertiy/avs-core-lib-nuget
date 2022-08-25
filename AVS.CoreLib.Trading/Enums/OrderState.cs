@@ -2,6 +2,14 @@
 {
     public enum OrderState
     {
+        New = 0,
+        PartiallyFilled = 1,
+        Filled =2
+    }
+
+    /*
+    public enum OrderState
+    {
         /// <summary>
         /// order has not been posted (not opened)
         /// </summary>
@@ -30,5 +38,5 @@
         /// order is quite old marked as archived
         /// </summary>
         Archived = 50
-    }
+    }*/
 }

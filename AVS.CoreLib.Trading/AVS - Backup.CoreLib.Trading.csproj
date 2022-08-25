@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <RootNamespace>AVS.CoreLib.Trading</RootNamespace>
+    <AssemblyName>AVS.CoreLib.Trading</AssemblyName>    
+    <RootNamespace>AVS.CoreLib.Trading</RootNamespace>
+    <Authors>Artem Vertii</Authors>
+    <Company>AV Stuido</Company>
+    <Product>CoreLib</Product>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <AssemblyVersion>1.0.3.0</AssemblyVersion>
+    <FileVersion>1.0.3.0</FileVersion>
+    <Description>Core lib trading contains primitive types, enums and extensions useful for various trading apps</Description>
+    <Copyright>Artem Vertii</Copyright>
+    <PackageProjectUrl>https://github.com/avertiy/avs-core-lib-nuget</PackageProjectUrl>
+    <PackageTags>avs corelib trading</PackageTags>
+    <RepositoryUrl>https://github.com/avertiy/avs-core-lib-nuget</RepositoryUrl>
+    <RepositoryType>public</RepositoryType>
+    <Version>1.0.3</Version>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;1591</NoWarn>
+    <DocumentationFile>K:\WORK\AVS.NET-CORE\avs-core-lib-nuget\AVS.CoreLib.Trading\AVS.CoreLib.Trading.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Extensions\PriceStepExtensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AVS.CoreLib" Version="1.0.2" />
+    <PackageReference Include="AVS.CoreLib.Text" Version="1.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.20" />
+    <PackageReference Include="System.Text.Json" Version="5.0.2" />
+  </ItemGroup>
+
+</Project>

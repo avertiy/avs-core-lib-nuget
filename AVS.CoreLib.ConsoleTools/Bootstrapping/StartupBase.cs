@@ -13,6 +13,9 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
         protected virtual string AppName => Assembly.GetEntryAssembly()?.GetName().Name;
         protected virtual string ENVIRONMENT => Environment.GetEnvironmentVariable("NETCORE_ENVIRONMENT") ?? "dev";
         protected virtual bool IsDevelopment => ENVIRONMENT == "dev" || ENVIRONMENT == "development";
+
+        protected bool UseCustomUserSecrets = true;
+
         private IConfiguration _configuration;
         protected IConfiguration Configuration => _configuration ??= SetupConfiguration(new ConfigurationBuilder());
 
@@ -29,20 +32,12 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
 
         protected virtual IConfigurationRoot SetupConfiguration(IConfigurationBuilder builder)
         {
-            EnableCustomUserSecrets();
             builder.AddInMemoryCollection();
             builder.AddEnvironmentVariables();
             builder.AddAppSettings(ENVIRONMENT);
-            if (CustomUserSecrets.Enabled)
-            {
+            if (UseCustomUserSecrets)
                 builder.AddCustomUserSecrets();
-            }
             return builder.Build();
-        }
-
-        protected virtual void EnableCustomUserSecrets()
-        {
-            CustomUserSecrets.Enabled = true;
         }
 
         public virtual void ConfigureServices(IServiceProvider services)

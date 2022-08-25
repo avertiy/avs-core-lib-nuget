@@ -1,12 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using AVS.CoreLib.Abstractions.Rest;
 
 namespace AVS.CoreLib.REST.Types
 {
     /// <summary>
-    /// represents $"{BaseAddress}/{Api}/{Version}/{Command}"
-    /// in case you need different url template e.g. https://poloniex.com/public?command=returnOrderBook
-    /// create another struct it is only used to BuildUrl
+    /// todo rename to ApiRequest or something like this
     /// </summary>
     public struct ApiEndpoint : IEndpoint
     {
@@ -14,6 +13,8 @@ namespace AVS.CoreLib.REST.Types
         public string Url { get; }
         public string Method { get; set; }
         public AuthType AuthType { get; set; }
+
+        // public Dictionary<string, object> Data { get; set; }
 
         public ApiEndpoint(string url)
         {

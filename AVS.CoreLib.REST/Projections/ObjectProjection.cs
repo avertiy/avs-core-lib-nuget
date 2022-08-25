@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using AVS.CoreLib.Json;
+using AVS.CoreLib.REST.Json;
 using AVS.CoreLib.REST.Responses;
 using Newtonsoft.Json.Linq;
 
@@ -11,7 +12,14 @@ namespace AVS.CoreLib.REST.Projections
     {
         protected Action<T> _postProcessAction;
         protected Action<T> _preProcessAction;
-        public IObjectBuilder<T> Builder { get; private set; }
+
+        /// <summary>
+        /// in case target object can't be deserialized directly use proxy object `Proxy`
+        /// the json will be deserialized into Proxy object, then the builder will Create the target object
+        /// <see cref="IObjectProxy{T,TData}"/>
+        /// </summary>
+        public IObjectProxy<T> Proxy { get; private set; }
+
         [DebuggerStepThrough]
         public ObjectProjection(string jsonText, string source = null) : base(jsonText, source)
         {
@@ -29,12 +37,25 @@ namespace AVS.CoreLib.REST.Projections
             return this;
         }
 
+        /// <summary>
+        /// setup deserialization proxy object <see cref="IObjectProxy{T,TData}"/>
+        /// </summary>
+        public ObjectProjection<T> UseProxy<TProxy>(Action<TProxy> initialize = null)
+            where TProxy : class, IObjectProxy<T>, new()
+        {
+            var proxy = new TProxy();
+            initialize?.Invoke(proxy);
+            Proxy = proxy;
+            return this;
+        }
+
+        [Obsolete("use UseProxy method instead")]
         public ObjectProjection<T> UseBuilder<TBuilder>(Action<TBuilder> initialize = null)
-            where TBuilder : class, IObjectBuilder<T>, new()
+            where TBuilder : class, IObjectProxy<T>, new()
         {
             var builder = new TBuilder();
             initialize?.Invoke(builder);
-            Builder = builder;
+            Proxy = builder;
             return this;
         }
 
@@ -43,17 +64,49 @@ namespace AVS.CoreLib.REST.Projections
             return MapAsync(Map);
         }
 
-        public Response<T> Map()
+        private void EnsureProxyInitialized()
         {
-            if (Builder == null)
-                throw new AppException("Builder is not initialized", "You might need to use UseBuilder<TBuilder>() method first");
+            if (Proxy == null)
+                throw new AppException("Proxy is not initialized", "You might need to use UseProxy<TProxy>() method first");
+        }
+
+        public object InspectDeserialization(Action<JObject, IObjectProxy<T>> inspect, out Exception err)
+        {
+            EnsureProxyInitialized();
+            try
+            {
+                LoadToken<JObject, T>(jObject =>
+                {
+                    inspect(jObject, Proxy);
+                    JsonHelper.Populate(Proxy, jObject);
+                });
+                var data = Proxy.Create();
+                err = null;
+                return data;
+            }
+            catch (Exception ex)
+            {
+                err = ex;
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Map json into Response`T using <see cref="Proxy"/>
+        /// </summary>
+        /// <remarks>
+        /// if the Map method fails, try inspect deserialization <see cref="InspectDeserialization"/> 
+        /// </remarks>
+        public virtual Response<T> Map()
+        {
+            EnsureProxyInitialized();
 
             var response = Response.Create<T>();
             response.Source = Source;
 
             if (IsEmpty)
             {
-                response.Data = Builder.Create();
+                response.Data = Proxy.Create();
             }
             else if (ContainsError(out string err))
             {
@@ -63,10 +116,10 @@ namespace AVS.CoreLib.REST.Projections
             {
                 LoadToken<JObject, T>(jObject =>
                 {
-                    JsonHelper.Populate(Builder, jObject);
+                    JsonHelper.Populate(Proxy, jObject);
                 });
 
-                var data = Builder.Create();
+                var data = Proxy.Create();
                 _preProcessAction?.Invoke(data);
                 _postProcessAction?.Invoke(data);
                 response.Data = data;
@@ -74,7 +127,7 @@ namespace AVS.CoreLib.REST.Projections
             return response;
         }
 
-        public Response<T> Map<TProjection>(Action<TProjection> action = null)
+        public virtual Response<T> Map<TProjection>(Action<TProjection> action = null)
             where TProjection : T, new()
         {
             var response = CreateResponse<T, TProjection>();
@@ -93,7 +146,7 @@ namespace AVS.CoreLib.REST.Projections
             return response;
         }
 
-        public Response<T> Map<TProjection>(Func<TProjection> createFunc) where TProjection : T, new()
+        public virtual Response<T> Map<TProjection>(Func<TProjection> createFunc) where TProjection : T, new()
         {
             var response = new Response<T>() { Source = Source, Data = createFunc() };
             if (IsEmpty)
@@ -123,7 +176,7 @@ namespace AVS.CoreLib.REST.Projections
         /// </summary>
         /// <typeparam name="TImplementation">implementation of interface T</typeparam>
         /// <typeparam name="TProjection">the type container where json should be deserialized</typeparam>
-        public Response<T> Map<TImplementation, TProjection>(Action<TImplementation, TProjection> action)
+        public virtual Response<T> Map<TImplementation, TProjection>(Action<TImplementation, TProjection> action)
             where TProjection : new()
             where TImplementation : T, new()
         {
@@ -150,7 +203,7 @@ namespace AVS.CoreLib.REST.Projections
     {
         protected Action<TProjection> _preProcessAction;
         protected Action<T> _postProcessAction;
-        protected IObjectBuilder<T, TProjection> _builder;
+        protected IObjectProxy<T, TProjection> _proxy;
 
         [DebuggerStepThrough]
         public ObjectProjection(string jsonText, string source = null) : base(jsonText, source)
@@ -169,12 +222,52 @@ namespace AVS.CoreLib.REST.Projections
             return this;
         }
 
-        public ObjectProjection<T, TProjection> UseBuilder<TBuilder>(Action<TBuilder> initialize = null) where TBuilder : class, IObjectBuilder<T, TProjection>, new()
+        /// <summary>
+        /// setup deserialization proxy object <see cref="IObjectProxy{T,TData}"/>
+        /// </summary>
+        public ObjectProjection<T, TProjection> UseProxy<TProxy>(Action<TProxy> initialize = null)
+            where TProxy : class, IObjectProxy<T, TProjection>, new()
+        {
+            var proxy = new TProxy();
+            initialize?.Invoke(proxy);
+            _proxy = proxy;
+            return this;
+        }
+
+        [Obsolete("use UseProxy instead")]
+        public ObjectProjection<T, TProjection> UseBuilder<TBuilder>(Action<TBuilder> initialize = null) where TBuilder : class, IObjectProxy<T, TProjection>, new()
         {
             var builder = new TBuilder();
             initialize?.Invoke(builder);
-            _builder = builder;
+            _proxy = builder;
             return this;
+        }
+
+        public object InspectDeserialization(Action<JObject, IObjectProxy<T, TProjection>> inspect, out Exception err)
+        {
+            EnsureProxyInitialized();
+            try
+            {
+                LoadToken<JObject, T>(jObject =>
+                {
+                    inspect(jObject, _proxy);
+                    JsonHelper.Populate(_proxy, jObject);
+                });
+                var data = _proxy.Create();
+                err = null;
+                return data;
+            }
+            catch (Exception ex)
+            {
+                err = ex;
+                return null;
+            }
+        }
+
+        private void EnsureProxyInitialized()
+        {
+            if (_proxy == null)
+                throw new AppException("Proxy is not initialized", "You might need to use UseProxy<TProxy>() method first");
         }
 
         public Task<Response<T>> MapAsync()
@@ -182,17 +275,16 @@ namespace AVS.CoreLib.REST.Projections
             return MapAsync(Map);
         }
 
-        public Response<T> Map()
+        public virtual Response<T> Map()
         {
-            if (_builder == null)
-                throw new AppException("Builder is not initialized", "You might need to use UseBuilder<TBuilder>() method first");
+            EnsureProxyInitialized();
 
             var response = Response.Create<T>();
             response.Source = Source;
 
             if (IsEmpty)
             {
-                response.Data = _builder.Create();
+                response.Data = _proxy.Create();
             }
             else if (ContainsError(out string err))
             {
@@ -205,17 +297,17 @@ namespace AVS.CoreLib.REST.Projections
                     var projection = new TProjection();
                     _preProcessAction?.Invoke(projection);
                     JsonHelper.Populate(projection, jObject);
-                    _builder.Add(projection);
+                    _proxy.Add(projection);
                 });
 
-                var data = _builder.Create();
+                var data = _proxy.Create();
                 _postProcessAction?.Invoke(data);
                 response.Data = data;
             }
             return response;
         }
 
-        public Response<T> Map(Func<TProjection, T> map)
+        public virtual Response<T> Map(Func<TProjection, T> map)
         {
             var response = Response.Create<T>();
             response.Source = Source;

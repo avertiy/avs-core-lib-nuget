@@ -1,0 +1,56 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+
+namespace AVS.CoreLib.Text.FormatPreprocessors
+{
+    public class NumberFormatPreprocessor : IFormatPreprocessor
+    {
+        public ConsoleColor DefaultColor { get; set; } = ConsoleColor.Gray;
+        public ConsoleColor Color1 { get; set; } = ConsoleColor.Green;
+        public ConsoleColor Color2 { get; set; } = ConsoleColor.Blue;
+        protected virtual string GetFormat(Type enumType, int value)
+        {
+            var values = Enum.GetValues(enumType);
+            if (value == (int)values.GetValue(0))
+            {
+                return DefaultColor;
+            }
+
+            return "-" + Color;
+        }
+
+        /// <inheritdoc />
+        public string Process(string format, object argument)
+        {
+            if (string.IsNullOrEmpty(format))
+            {
+                var type = argument.GetType();
+                
+                
+                if (TypeHelper.IsNumeric(type))
+                {
+                    return GetFormat(Convert.ToDouble() argument);
+                }
+            }
+
+            return format;
+        }
+    }
+
+    public static class TypeHelper
+    {
+        private static readonly HashSet<Type> NumericTypes = new HashSet<Type>
+        {
+            typeof(int),  typeof(double),  typeof(decimal),
+            typeof(long), typeof(short),   typeof(sbyte),
+            typeof(byte), typeof(ulong),   typeof(ushort),
+            typeof(uint), typeof(float)
+        };
+
+        public static bool IsNumeric(this Type myType)
+        {
+            return NumericTypes.Contains(Nullable.GetUnderlyingType(myType) ?? myType);
+        }
+    }
+}

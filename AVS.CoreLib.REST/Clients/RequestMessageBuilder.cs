@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net.Http;
 using AVS.CoreLib.Abstractions.Rest;
+using AVS.CoreLib.REST.Extensions;
 using AVS.CoreLib.REST.Helpers;
 using AVS.CoreLib.Utilities;
 
@@ -74,7 +75,7 @@ namespace AVS.CoreLib.REST.Clients
 
             content.Headers.Add("Key", Authenticator.PublicKey);
             var signature = Authenticator.Sign(queryString);
-            content.Headers.Add("Sign", signature);
+            content.Headers.Add("Sign", signature.ToBase64String());
         }
     }
 }

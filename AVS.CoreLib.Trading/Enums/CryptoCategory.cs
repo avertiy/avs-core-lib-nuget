@@ -21,23 +21,4 @@ namespace AVS.CoreLib.Trading.Enums
         Main = 1,
         All = 2
     }
-
-    //public enum Exchange
-    //{
-    //    Binance = 0,
-    //    Exmo = 1, 
-    //    HitBtc,
-    //    Kuna,
-    //    Poloniex,
-    //    Bitfinex,
-    //    Bitmex,
-    //    Bitstamp,
-    //    Bittrex,
-    //    Coinbase,
-    //    Huobi,
-    //    Kraken,
-    //    KuCoin,
-    //    Liquid,
-    //    OKEx
-    //}
 }

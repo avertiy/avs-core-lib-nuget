@@ -81,11 +81,10 @@ namespace AVS.CoreLib.REST.Projections
         }
 
         /// <summary>
-        /// 
+        /// Map json into dictionary
         /// </summary>
         /// <typeparam name="TProjection">The projection (concrete) type of values in the dictionary, for example CurrencyInfo</typeparam>
-        /// <returns></returns>
-        public Response<IDictionary<TKey, TValue>> Map<TProjection>() where TProjection : TValue, new()
+        public virtual Response<IDictionary<TKey, TValue>> Map<TProjection>() where TProjection : TValue, new()
         {
             var response = CreateResponse<IDictionary<TKey, TValue>, Dictionary<TKey, TValue>>();
             if (response.Success)
@@ -157,12 +156,94 @@ namespace AVS.CoreLib.REST.Projections
             return response;
         }
 
+        public Dictionary<TKey, TValue> InspectDeserialization<TProjection>(Action<JObject> inspect, Action<string, JToken> inspectItem, out Exception err)
+        {
+            try
+            {
+                Exception error = null;
+                var data = new Dictionary<TKey, TValue>();
+
+                LoadToken<JObject, TProjection, TValue>(jObject =>
+                {
+                    inspect(jObject);
+                    var itemType = typeof(TProjection);
+                    var tValue = typeof(TValue);
+                    var serializer = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore };
+
+                    if (tValue.IsAssignableFrom(itemType))
+                    {
+                        foreach (KeyValuePair<string, JToken> kp in jObject)
+                        {
+                            inspectItem(kp.Key, kp.Value);
+
+                            var key = _preprocessKey == null ? ConvertToTKey(kp.Key) : _preprocessKey(kp.Key);
+                            if (_where != null && !_where(key))
+                                continue;
+
+                            if (kp.Value.Type != JTokenType.Object)
+                                throw new JsonReaderException($"Unexpected JToken type {kp.Value.Type}");
+
+                            var value = (TValue)serializer.Deserialize(kp.Value.CreateReader(), itemType);
+
+
+                            value = _preprocessValue != null ? _preprocessValue(value) : value;
+
+                            _preprocessKeyValue?.Invoke(key, value);
+                            data.Add(key, value);
+                        }
+                    }
+                    else
+                    {
+                        //case when TValue is a collection/array/list of items
+                        var genericType = Match(tValue, itemType);
+                        MethodInfo addMethod = genericType.GetMethod("Add");
+
+                        if (addMethod == null)
+                            throw new Exception($"Add method not found");
+
+                        foreach (KeyValuePair<string, JToken> kp in jObject)
+                        {
+                            inspectItem(kp.Key, kp.Value);
+
+                            var key = _preprocessKey == null ? ConvertToTKey(kp.Key) : _preprocessKey(kp.Key);
+                            if (_where != null && !_where(key))
+                                continue;
+
+                            if (kp.Value.Type != JTokenType.Array)
+                                throw new JsonReaderException($"Unexpected JToken type {kp.Value.Type}");
+
+                            try
+                            {
+                                var list = ParseGenericType<TValue>((JArray)kp.Value, genericType, addMethod, itemType);
+                                list = _preprocessValue != null ? _preprocessValue(list) : list;
+                                _preprocessKeyValue?.Invoke(key, list);
+                                data.Add(key, list);
+                            }
+                            catch (Exception ex)
+                            {
+                                error = ex;
+                                break;
+                            }
+                        }
+                    }
+                });
+
+                err = error;
+                return data;
+            }
+            catch (Exception ex)
+            {
+                err = ex;
+                return null;
+            }
+        }
+
         /// <summary>
         /// Maps json into specified type T
         /// </summary>
         /// <typeparam name="TResponse">Type inherited from Response &lt;IDictionary&lt;TKey, TValue>></typeparam>
         /// <typeparam name="TProjection">implementation of the TValue interface, in case TValue is IList&lt;IEntity> TProjection must be implementation of IEntity</typeparam>
-        public TResponse Map<TResponse, TProjection>()
+        public virtual TResponse Map<TResponse, TProjection>()
             where TResponse : Response<IDictionary<TKey, TValue>>, new()
             where TProjection : new()
         {
@@ -204,7 +285,7 @@ namespace AVS.CoreLib.REST.Projections
             return response;
         }
 
-        public TResponse Map<TResponse, TProjection, TData>(Func<IDictionary<TKey, TValue>, TData> transform)
+        public virtual TResponse Map<TResponse, TProjection, TData>(Func<IDictionary<TKey, TValue>, TData> transform)
             where TResponse : Response<TData>, new()
             where TProjection : new()
         {
@@ -249,7 +330,7 @@ namespace AVS.CoreLib.REST.Projections
         /// Maps json into TProjection 
         /// </summary>
         /// <typeparam name="TProjection">implementation of the TValue interface, in case TValue is IList&lt;IEntity> TProjection must be implementation of IEntity</typeparam>
-        public MapResult<TKey, TValue> MapResult<TProjection>()
+        public virtual MapResult<TKey, TValue> MapResult<TProjection>()
             where TProjection : new()
         {
             var result = new MapResult<TKey, TValue>() { Source = Source };

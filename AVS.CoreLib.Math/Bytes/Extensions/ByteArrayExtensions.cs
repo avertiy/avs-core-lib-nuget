@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
+using AVS.CoreLib.Utilities;
 
 namespace AVS.CoreLib.Math.Bytes.Extensions
 {
@@ -196,6 +198,45 @@ namespace AVS.CoreLib.Math.Bytes.Extensions
             }
 
             return list.ToArray();
+        }
+
+        public static int[] Unpack(this byte[] bytes)
+        {
+            var list = new List<int>();
+            foreach (var b in bytes)
+            {
+                var parts = b.Split();
+                list.Add(parts.Item1);
+                list.Add(parts.Item2);
+            }
+
+            return list.ToArray();
+        }
+
+        public static byte[] Pack(this IList<byte> bytes)
+        {
+            var list = new List<byte>();
+            for (var i = 0; i < bytes.Count; i++)
+            {
+                var @byte = XBitConverter.CombineIntoByte(bytes[i], bytes[i + 1]);
+                list.Add(@byte);
+                i++;
+            }
+
+            return list.ToArray();
+        }
+
+        public static byte[] Swap(this byte[] arr, int index1 = 0, int? index2 = null)
+        {
+            Guard.ArrayIndex(arr, index1);
+            var ind2 = index2.GetValueOrDefault(arr.Length-1); 
+            Guard.ArrayIndex(arr, ind2);
+
+            var b = arr[index1];
+            arr[index1] = arr[ind2];
+            arr[ind2] = b;
+
+            return arr;
         }
     }
 }

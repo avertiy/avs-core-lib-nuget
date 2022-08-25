@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 
 namespace AVS.CoreLib.Json.Converters
 {
+    /*
     public class TimestampNanoSecondsConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
@@ -25,5 +26,5 @@ namespace AVS.CoreLib.Json.Converters
             var ticksPerNanosecond = (TimeSpan.TicksPerMillisecond / 1000m / 1000);
             writer.WriteValue((long)Math.Round(((DateTime)value - new DateTime(1970, 1, 1)).Ticks / ticksPerNanosecond));
         }
-    }
+    }*/
 }

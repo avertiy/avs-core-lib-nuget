@@ -16,13 +16,13 @@ namespace AVS.CoreLib.Math.MathUtils.Factorials
         {
             if (K > 0)
             {
-                return n - N.ComputeFactorial() * (ulong)K;
+                return n - N.ComputeFactorialUL() * (ulong)K;
             }
 
-            return N.ComputeFactorial() - n;
+            return N.ComputeFactorialUL() - n;
         }
 
-        public ulong Value => N.ComputeFactorial();
+        public ulong Value => N.ComputeFactorialUL();
 
         public Factorization Rest { get; private set; }
 
@@ -35,7 +35,7 @@ namespace AVS.CoreLib.Math.MathUtils.Factorials
         public static Factorization From(ulong n)
         {
             var f1 = Factorial.CalcBase(n);
-            var fact1 = (f1.N).ComputeFactorial();
+            var fact1 = (f1.N).ComputeFactorialUL();
             int N = f1.N;
             int K = Convert.ToInt32(n / fact1);
 

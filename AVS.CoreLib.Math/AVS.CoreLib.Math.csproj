@@ -1,11 +1,25 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="TestServices\**" />
+    <EmbeddedResource Remove="TestServices\**" />
+    <None Remove="TestServices\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="MathUtils\PrimeNumbers\LinkedItem.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="TestServices\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AVS.CoreLib" Version="1.0.2" />
   </ItemGroup>
 
 </Project>

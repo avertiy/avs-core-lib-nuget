@@ -10,7 +10,7 @@ namespace AVS.CoreLib.Utilities
         private static BigInteger CurrentHttpPostNonce { get; set; }
         public static string GetNonce()
         {
-            var totalms = DateTime.UtcNow.Subtract(UnixEpoch.DateTimeUnixEpochStart).TotalMilliseconds;
+            var totalms = DateTime.UtcNow.Subtract(UnixEpoch.Start).TotalMilliseconds;
             var newHttpPostNonce = new BigInteger(Math.Round(totalms * 1000, MidpointRounding.AwayFromZero));
             if (newHttpPostNonce > CurrentHttpPostNonce)
             {

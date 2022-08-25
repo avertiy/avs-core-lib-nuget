@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
 using AVS.CoreLib.REST.Responses;
@@ -7,6 +8,7 @@ namespace AVS.CoreLib.REST.Extensions
 {
     public static class Extensions
     {
+        [Obsolete("Use ToHexString")]
         public static string ToStringHex(this byte[] value)
         {
             var output = string.Empty;
@@ -15,6 +17,21 @@ namespace AVS.CoreLib.REST.Extensions
                 output += value[i].ToString("x2", CultureInfo.InvariantCulture);
             }
             return (output);
+        }
+
+        public static string ToHexString(this byte[] value)
+        {
+            var output = string.Empty;
+            for (var i = 0; i < value.Length; i++)
+            {
+                output += value[i].ToString("x2", CultureInfo.InvariantCulture);
+            }
+            return (output);
+        }
+
+        public static string ToBase64String(this byte[] bytes)
+        {
+            return Convert.ToBase64String(bytes);
         }
 
         public static async Task<AggregatedResponse<T>> ToAggregatedResponseAsync<T>(this IDictionary<string, Task<Response<T>>> tasks)

@@ -52,28 +52,63 @@ namespace AVS.CoreLib.Trading.Helpers
 
         public static OrderType ParseOrderKind(string value)
         {
-            switch (value[0])
+            switch (value.ToUpper())
             {
-                case 'm':
-                case 'M':
+                case "M":
+                case "MARKET":
                     return OrderType.Market;
-                case 'l':
-                case 'L':
+                case "L":
+                case "LIMIT":
                     return OrderType.Limit;
-                case 'i':
-                case 'I':
+                case "I":
+                case "IMMEDIATE":
                     return OrderType.Immediate;
-                case 'f':
-                case 'F':
+
+                case "FOK":
+                case "FILL_OR_KILL":
                     return OrderType.FillOrKill;
-                case 'g':
-                case 'G':
+                case "GTC":
+                case "GOOD_TILL_CANCEL":
                     return OrderType.GoodTillCanceled;
-                case 's':
-                case 'S':
+                case "SL":
+                case "STOP_LIMIT":
                     return OrderType.StopLimit;
+                case "S":
+                case "STOP":
+                    return OrderType.Stop;
+                case "OCTO":
+                    return OrderType.OneCancelsTheOther;
             }
-            throw new ArgumentOutOfRangeException($"{value} unknown OrderSide");
+
+            throw new ArgumentOutOfRangeException($"{value} unknown kind of {nameof(OrderType)}");
+        }
+
+        public static AccountType ParseAccountType(string value)
+        {
+            switch (value.ToUpper()[0])
+            {
+                case 'S': return AccountType.Spot;
+                case 'M': return AccountType.Margin;
+                case 'L': return AccountType.Lending;
+                case 'F': return AccountType.Margin;
+                default:
+                    throw new NotSupportedException($"Unknown {nameof(AccountType)} '{value}'");
+            }
+        }
+
+        public static OrderState ParseOrderState(string value)
+        {
+            switch (value.ToUpper()[0])
+            {
+                case 'N':
+                    return OrderState.New;
+                case 'P':
+                    return OrderState.PartiallyFilled;
+                case 'F':
+                    return OrderState.Filled;
+                default:
+                    throw new NotSupportedException($"Unknown {nameof(OrderState)} '{value}'");
+            }
         }
     }
 }

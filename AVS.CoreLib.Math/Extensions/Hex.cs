@@ -74,12 +74,17 @@ namespace AVS.CoreLib.Math.Extensions
 			return Convert.FromHexString(hex);
 		}
 
-		public static string ToHexString(byte[] bytes)
+        public static byte GetByteFromHex(string hex)
+        {
+            return Convert.FromHexString(hex)[0];
+        }
+
+        public static string ToHexString(params byte[] bytes)
 		{
 			return Convert.ToHexString(bytes);
 		}
 
-		public static bool Match(string hex, byte[] bytes)
+        public static bool Match(string hex, byte[] bytes)
 		{
 			return Convert.ToHexString(bytes) == hex;
 		}

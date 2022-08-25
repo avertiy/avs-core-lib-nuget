@@ -14,5 +14,7 @@ namespace AVS.CoreLib.Abstractions.Rest
         IPayload Add(string[] arguments);
         IPayload AddParameter(string input);
         IPayload Join(string queryString);
+
+        byte[] GetBytes();
     }
 }

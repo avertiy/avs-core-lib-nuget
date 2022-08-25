@@ -1,7 +1,6 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 using AVS.CoreLib.Abstractions.Rest;
-using AVS.CoreLib.REST.Extensions;
 
 namespace AVS.CoreLib.REST
 {
@@ -9,7 +8,7 @@ namespace AVS.CoreLib.REST
         where TAlgorithm : KeyedHashAlgorithm, new()
     {
         public string PublicKey { get; private set; }
-        public Encoding Encoding = Encoding.ASCII;
+        public Encoding Encoding { get; set; } = Encoding.ASCII;
         protected TAlgorithm Encryptor { get; }
 
         public Authenticator(string publicKey, string privateKey)
@@ -27,17 +26,21 @@ namespace AVS.CoreLib.REST
             Encryptor.Key = Encoding.GetBytes(privateKey);
         }
 
-        public byte[] GetBytes(string postData, out string signature)
+        public virtual byte[] Sign(byte[] bytes)
         {
-            byte[] postBytes = Encoding.GetBytes(postData);
-            signature = Encryptor.ComputeHash(postBytes).ToStringHex();
-            return postBytes;
+            return Encryptor.ComputeHash(bytes);
         }
 
-        public string Sign(string message)
+        public virtual byte[] Sign(string payload)
         {
-            byte[] postBytes = Encoding.GetBytes(message);
-            return Encryptor.ComputeHash(postBytes).ToStringHex();
+            var postBytes = Encoding.GetBytes(payload);
+            return Encryptor.ComputeHash(postBytes);
+        }
+
+        public virtual byte[] Sign(string payload, out byte[] bytes)
+        {
+            bytes = Encoding.GetBytes(payload);
+            return Encryptor.ComputeHash(bytes);
         }
     }
 

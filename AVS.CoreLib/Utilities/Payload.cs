@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Web;
 using AVS.CoreLib.Abstractions.Rest;
 
 namespace AVS.CoreLib.Utilities
@@ -37,14 +38,14 @@ namespace AVS.CoreLib.Utilities
             {
                 if (kp.Value != null)
                 {
-                    sb.Append($"{kp.Key}={kp.Value}&");
+                    sb.Append($"{HttpUtility.UrlEncode(kp.Key)}={HttpUtility.UrlEncode(kp.Value)}&");
                 }
             }
 
             if (sb.Length > 0)
             {
                 sb.Length--;
-                if (_items.Count == 1 && sb[sb.Length - 1] == '=')
+                if (_items.Count == 1 && sb[^1] == '=')
                     sb.Length--;
             }
 
@@ -60,6 +61,16 @@ namespace AVS.CoreLib.Utilities
         public IPayload Add(string key, object value)
         {
             _items[key] = value?.ToString();
+            return this;
+        }
+
+        public IPayload Add(QueryString queryString)
+        {
+            foreach (var kp in queryString.Params)
+            {
+                _items.Add(kp.Key, kp.Value?.ToString() ?? "");
+            } 
+             
             return this;
         }
 
@@ -142,6 +153,11 @@ namespace AVS.CoreLib.Utilities
             return this;
         }
 
+        public byte[] GetBytes()
+        {
+            return Encoding.ASCII.GetBytes(ToHttpQueryString());
+        }
+
         public override string ToString()
         {
             return ToHttpQueryString();
@@ -180,10 +196,7 @@ namespace AVS.CoreLib.Utilities
 
         public static implicit operator Payload(Dictionary<string, object> dict)
         {
-            var data = new Payload();
-            foreach (var kp in dict)
-                data.Add(kp.Key, kp.Value);
-            return data;
+            return Payload.From(dict);
         }
 
         public static implicit operator Payload(object[] parameters)
@@ -192,7 +205,21 @@ namespace AVS.CoreLib.Utilities
             data.Add(parameters);
             return data;
         }
+
+        public static implicit operator Payload(QueryString qs)
+        {
+            var payload = new Payload();
+            payload.Add(qs);
+            return payload;
+        }
+
         #endregion
+
+        public static Payload Create(string key, object value)
+        {
+            var data = new Payload { { key, value } };
+            return data;
+        }
 
         public static Payload Create(string queryStringParameters)
         {
@@ -210,6 +237,14 @@ namespace AVS.CoreLib.Utilities
         {
             var data = new Payload();
             data.Add(parameters);
+            return data;
+        }
+
+        public static Payload From(IDictionary<string, object> dict)
+        {
+            var data = new Payload();
+            foreach (var kp in dict)
+                data.Add(kp.Key, kp.Value);
             return data;
         }
     }

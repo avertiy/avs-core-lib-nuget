@@ -7,6 +7,17 @@ namespace AVS.CoreLib.Collections.Extensions
 {
     public static class DictionaryExtensions
     {
+	    public static void AddIfNotEmpty(this IDictionary<string, object> dictionary, string key, object value)
+	    {
+			if(value == null)
+                return;
+			var str = value.ToString();
+            if(string.IsNullOrEmpty(str) || str == "0")
+                return;
+
+            dictionary.Add(key, value);
+	    }
+
         [DebuggerStepThrough]
         public static string ToHttpPostString(this IDictionary<string, object> dictionary)
         {

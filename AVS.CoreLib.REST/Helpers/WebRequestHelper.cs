@@ -10,18 +10,18 @@ namespace AVS.CoreLib.REST.Helpers
 {
     public static class WebRequestHelper
     {
-        private static readonly string UserAgent;
+        private static readonly string _userAgent;
         static WebRequestHelper()
         {
             var asm = Assembly.GetExecutingAssembly().GetName();
-            UserAgent = $"{asm.Name} v.{asm.Version.ToString(3)}";
+            _userAgent = $"{asm.Name} v.{asm.Version.ToString(3)}";
         }
 
         public static HttpWebRequest ConstructHttpWebRequest(string method, string url)
         {
-            HttpWebRequest request = WebRequest.CreateHttp(url);
+            var request = WebRequest.CreateHttp(url);
             request.Method = method;
-            request.UserAgent = UserAgent;
+            request.UserAgent = _userAgent;
             request.Timeout = 15000;
             request.AcceptsJson("gzip,deflate");
             request.ContentType = "application/x-www-form-urlencoded";

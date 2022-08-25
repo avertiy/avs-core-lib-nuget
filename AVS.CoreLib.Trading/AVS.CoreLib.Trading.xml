@@ -64,34 +64,19 @@
             например: текущая цена 500$ а мы ждем падения ниже линии до 400$ только тогда открываем шорт
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.OrderState.Pending">
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeInForce.GTC">
             <summary>
-            order has not been posted (not opened)
+            good till cancel
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.OrderState.Open">
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeInForce.IOC">
             <summary>
-            order has been posted (opened) on stock-exchange
+            immediate or cancel
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.OrderState.Processing">
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeInForce.FOK">
             <summary>
-            order is being processing by algorithm
-            </summary>
-        </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.OrderState.Canceled">
-            <summary>
-            order has been canceled (not executed)
-            </summary>
-        </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.OrderState.Executed">
-            <summary>
-            order has been executed 
-            </summary>
-        </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.OrderState.Archived">
-            <summary>
-            order is quite old marked as archived
+            Fill or kill
             </summary>
         </member>
         <member name="T:AVS.CoreLib.Trading.Enums.TimeFrame">

@@ -1,10 +1,22 @@
-﻿namespace AVS.CoreLib.Abstractions.Rest
+﻿using System.Text;
+
+namespace AVS.CoreLib.Abstractions.Rest
 {
     public interface IAuthenticator
     {
+        Encoding Encoding { get; set; }
         string PublicKey { get; }
+        /// <summary>
+        /// switch (update) api keys for example to switch between accounts using the same client
+        /// </summary>
         void SwitchKeys(string publicKey, string privateKey);
-        byte[] GetBytes(string postData, out string signature);
-        string Sign(string message);
+        /// <summary>
+        /// sign data an returns signature hash
+        /// </summary>
+        byte[] Sign(string payload);
+
+        byte[] Sign(string payload, out byte[] bytes);
+
+        byte[] Sign(byte[] payload);
     }
 }

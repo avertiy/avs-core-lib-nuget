@@ -21,10 +21,18 @@
     <Version>1.0.0</Version>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Fixtures\**" />
+    <EmbeddedResource Remove="Fixtures\**" />
+    <None Remove="Fixtures\**" />
+  </ItemGroup>
+
   <ItemGroup>    
+    <PackageReference Include="AVS.CoreLib" Version="1.0.2" />    
     <PackageReference Include="AVS.CoreLib.Abstractions" Version="1.0.1" />    
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />    
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.0" />    
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="3.1.28" />    
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.20" />    
     <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.20" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />

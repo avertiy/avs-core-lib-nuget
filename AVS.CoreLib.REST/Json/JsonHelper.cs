@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace AVS.CoreLib.Json
+namespace AVS.CoreLib.REST.Json
 {
     public static class JsonHelper
     {
@@ -22,6 +22,10 @@ namespace AVS.CoreLib.Json
                    || type == typeof(decimal);
         }
 
+        /// <summary>
+        /// populate the JSON values onto the target object
+        /// by utilizing JsonSerializer.Populate(jObject.CreateReader(), target); 
+        /// </summary>
         public static void Populate(object target, JObject jObject)
         {
             Serializer.Value.Populate(jObject.CreateReader(), target);

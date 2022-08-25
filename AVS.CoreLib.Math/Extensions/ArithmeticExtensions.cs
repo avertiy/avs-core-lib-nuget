@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using AVS.CoreLib.Math.MathUtils.PrimeNumbers;
 
 namespace AVS.CoreLib.Math.Extensions
@@ -96,9 +97,7 @@ namespace AVS.CoreLib.Math.Extensions
             return result.ToArray();
         }
 
-
-
-        public static ulong ComputeFactorial(this int n)
+        public static ulong ComputeFactorialUL(this int n)
         {
             if (n <= 0)
             {
@@ -116,6 +115,66 @@ namespace AVS.CoreLib.Math.Extensions
             return f;
         }
 
+        public static int ComputeFactorial(this int n)
+        {
+            if (n <= 0)
+            {
+                return 0;
+            }
+
+            var f = 1;
+            while (n > 1)
+            {
+                f = f * n;
+                n--;
+            }
+
+            return f;
+        }
+
+        public static int ComputePartialFactorial(this int n, int count)
+        {
+            if(n < count)
+                throw new ArgumentException($"Count {count} should not exceed N {n}");
+
+            if (n <= 0)
+                throw new ArgumentException($"Count {count} should be positive number");
+
+            var f = 1;
+            while (n > 1 && count > 0)
+            {
+                f = f * n;
+                n--;
+                count--;
+            }
+
+            return f;
+        }
+
+        public static int ComputePartialSumFactorial(this int n, int count)
+        {
+            if (count == 0)
+                return 0;
+
+            if (n < count)
+                throw new ArgumentException($"Count {count} should not exceed N {n}");
+
+            if (n <= 0)
+                throw new ArgumentException($"Count {count} should be positive number");
+
+            var f = 0;
+            while (n > 1 && count > 0)
+            {
+                f += n;
+                count--;
+            }
+
+            return f;
+        }
+
+        /// <summary>
+        /// sum factorial N = N +(N-1)+(N-2) .. + 1 = (n*n+n)/2;
+        /// </summary>
         public static int ComputeSumFactorial(this int n)
         {
             return ComputeTriangularNumber(n);
