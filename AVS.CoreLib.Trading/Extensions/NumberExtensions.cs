@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using AVS.CoreLib.Extensions.Numbers;
 using AVS.CoreLib.Trading.Constants;
 
@@ -67,6 +68,44 @@ namespace AVS.CoreLib.Trading.Extensions
         public static string ToStringNormalized(this decimal value)
         {
             return value.ToString("0." + new string('#', TradingConstants.PrecisionDigits), CultureInfo.InvariantCulture);
+        }
+
+        public static int GetDepth(this int? n, int @default, params int[] validValues)
+        {
+            if (n > 0 && validValues.Length > 0)
+            {
+                var depth = validValues[0];
+                foreach (var v in validValues)
+                {
+                    if (v >= n)
+                    {
+                        depth = v;
+                        break;
+                    }
+                }
+
+                return depth;
+            }
+            return @default;
+        }
+
+        public static int GetDepth(this int n, int @default, params int[] validValues)
+        {
+            if (n > 0 && validValues.Length > 0)
+            {
+                var depth = validValues[0];
+                foreach (var v in validValues)
+                {
+                    if (v >= n)
+                    {
+                        depth = v;
+                        break;
+                    }
+                }
+
+                return depth;
+            }
+            return @default;
         }
 
     }

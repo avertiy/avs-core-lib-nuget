@@ -6,6 +6,22 @@ using AVS.CoreLib.Trading.Structs;
 
 namespace AVS.CoreLib.Trading.Extensions
 {
+    /// <summary>
+    /// supposed to deal with a normalized symbol like BTC_USDT (i.e. currencies are upper case, underscore separator)  
+    /// </summary>
+    public static class SymbolExtensions
+    {
+        public static string GetBaseCurrency(this string symbol)
+        {
+            return symbol.Split('_')[0];
+        }
+
+        public static string GetQuoteCurrency(this string symbol)
+        {
+            return symbol.Split('_')[1];
+        }
+    }
+
     public static class PairExtensions
     {
         public static bool IsBtcPair(this string pair)

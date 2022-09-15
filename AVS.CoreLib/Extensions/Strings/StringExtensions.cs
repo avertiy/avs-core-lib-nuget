@@ -8,12 +8,22 @@ namespace AVS.CoreLib.Extensions
 {
     public static class StringExtensions
     {
+        public static string OneOf(this string value, params string[] values)
+        {
+            if (values.Contains(value))
+                return value;
+
+            throw new ArgumentOutOfRangeException(
+                $"{nameof(value)} `{value}` is not one of allowed values: {values.AsString()}");
+        }
+
         public static string ToCamelCase(this string str)
         {
             if (!string.IsNullOrEmpty(str) && str.Length > 1)
             {
                 return Char.ToLowerInvariant(str[0]) + str.Substring(1);
             }
+
             return str;
         }
 
@@ -51,14 +61,39 @@ namespace AVS.CoreLib.Extensions
             return values.Any(value.EndsWith);
         }
 
+        public static bool EndsWith(this string str, out string end, params string[] values)
+        {
+            foreach (var val in values)
+            {
+                if (str.EndsWith(val))
+                {
+                    end = val;
+                    return true;
+                }
+            }
+            end = null;
+            return false;
+        }
+
         /// <summary>
         /// It is supposed separator splits str on 2 parts which are swapped 
         /// </summary>
         public static string Swap(this string str, char separator, char newSeparator = '_')
         {
-            var parts = str.Split(separator);
+            var parts = str.Split(separator, StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length > 2)
-                throw new ArgumentException($"It is supposed separator '{separator}' splits the string '{str}' on 2 parts");
+                throw new ArgumentException(
+                    $"It is supposed separator '{separator}' splits the string '{str}' on 2 parts");
+            var swap = parts[1] + newSeparator + parts[0];
+            return swap;
+        }
+
+        public static string Swap(this string str, string separator = "_", string newSeparator = "_")
+        {
+            var parts = str.Split(separator, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length > 2)
+                throw new ArgumentException(
+                    $"It is supposed separator '{separator}' splits the string '{str}' on 2 parts");
             var swap = parts[1] + newSeparator + parts[0];
             return swap;
         }
@@ -71,6 +106,7 @@ namespace AVS.CoreLib.Extensions
             {
                 matches.Add(match.Groups["value"].Success ? match.Groups["value"].Value : match.Value);
             }
+
             return matches.ToArray();
         }
 
@@ -81,6 +117,7 @@ namespace AVS.CoreLib.Extensions
             {
                 sb.Replace(value, replacement);
             }
+
             return sb.ToString();
         }
     }
@@ -96,6 +133,7 @@ namespace AVS.CoreLib.Extensions
                 matches.Add(match.Groups["value"].Success ? match.Groups["value"].Value : match.Value);
                 sb.Replace(match.Value, replacement);
             }
+
             input = sb.ToString().TrimEnd(' ');
             return matches.ToArray();
         }

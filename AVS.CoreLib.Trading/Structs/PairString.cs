@@ -1,15 +1,19 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json.Serialization;
 using AVS.CoreLib.Abstractions;
+using AVS.CoreLib.Extensions;
 
 namespace AVS.CoreLib.Trading.Structs
 {
     /// <summary>
-    /// by default PairString supposed to be a normalized pair with a base currency in first position and '_' separator e.g. BTC_LTC
+    /// by default PairString supposed to be a normalized pair with a base currency in first position and '_' separator e.g. USDT_BTC
+    /// note here i confused base and quote currency meaning their meaning must be vise-versa 
     /// </summary>
     [TypeConverter(typeof(PairStringTypeConverter))]
+    [DebuggerDisplay("PairString: {Value}")]
     public struct PairString : IHasValue
     {
         public PairString(string pair)
@@ -23,18 +27,28 @@ namespace AVS.CoreLib.Trading.Structs
         [JsonIgnore]
         public bool HasSeparator => Value.Contains("_");
 
+        /// <summary>
+        /// under symbol mean base currency in a 2nd position
+        /// </summary>
+        /// <returns></returns>
+        public string ToSymbol()
+        {
+            return Value.Swap('_');
+        }
+        public override string ToString()
+        {
+            return Value;
+        }
+
+
         public static implicit operator string(PairString s)
         {
             return s.Value;
         }
+
         public static implicit operator PairString(string pair)
         {
             return new PairString(pair);
-        }
-
-        public override string ToString()
-        {
-            return Value;
         }
     }
 

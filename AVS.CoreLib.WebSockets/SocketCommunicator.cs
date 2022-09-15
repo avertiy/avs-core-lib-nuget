@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
@@ -15,6 +16,17 @@ namespace AVS.CoreLib.WebSockets
         private ClientWebSocket _webSocket;
         public WebSocketState State => _webSocket.State;
 
+        /// <summary>
+        /// Default keep alive interval is 30 sec. <see cref="WebSocket.DefaultKeepAliveInterval"/>
+        /// </summary>
+        public TimeSpan KeepAliveInterval
+        {
+            get => _webSocket.Options.KeepAliveInterval;
+            set => _webSocket.Options.KeepAliveInterval = value;
+        }
+
+        public ClientWebSocketOptions Options => _webSocket.Options;
+
         public SocketCommunicator()
         {
             _webSocket = new ClientWebSocket();
@@ -24,6 +36,7 @@ namespace AVS.CoreLib.WebSockets
         {
             if (_disposing)
                 return false;
+
             if (State == WebSocketState.Open)
                 return true;
 
@@ -63,7 +76,6 @@ namespace AVS.CoreLib.WebSockets
         //    _webSocket = new ClientWebSocket();
         //    Console.WriteLine($"New web socket created");
         //}
-
 
         public async Task SendAsync(string commandMessage, CancellationToken cancellationToken)
         {

@@ -10,6 +10,8 @@ namespace AVS.CoreLib.WebSockets.Abstractions
     /// </summary>
     public interface ISocketCommunicator : IDisposable
     {
+        TimeSpan KeepAliveInterval { get; set; }
+        ClientWebSocketOptions Options { get; }
         WebSocketState State { get; }
 
         Task<bool> ConnectAsync(Uri uri, CancellationToken cancellationToken);

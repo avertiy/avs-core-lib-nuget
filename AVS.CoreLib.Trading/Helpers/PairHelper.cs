@@ -51,6 +51,18 @@ namespace AVS.CoreLib.Trading.Helpers
             return pairs.ToArray();
         }
 
+        public static string[] GenerateSymbols(string quoteCurrency, params string[] baseCurrencies)
+        {
+            var pairs = new List<string>();
+            foreach (var baseCurr in baseCurrencies)
+            {
+                if (baseCurr == quoteCurrency)
+                    continue;
+                pairs.Add(baseCurr + "_" + quoteCurrency);
+            }
+            return pairs.ToArray();
+        }
+
         public static PairString[] CreateCombinations(string baseCurrency, bool isBaseCurrencyFirst,
             params string[] currencies)
         {

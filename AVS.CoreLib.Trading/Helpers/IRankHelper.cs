@@ -10,7 +10,7 @@ namespace AVS.CoreLib.Trading.Helpers
         /// was it a micro trade or a large one
         /// the greater rank the larger the trade was
         /// </summary>
-        int GetRank(decimal total, string baseCurrency);
+        int GetRank(decimal total, string quoteCurrency);
 
     }
 
@@ -18,10 +18,10 @@ namespace AVS.CoreLib.Trading.Helpers
     {
         public virtual int MaxRank { get; } = 10;
 
-        public int GetRank(decimal total, string baseCurrency)
+        public int GetRank(decimal total, string quoteCurrency)
         {
             var rank = 0;
-            switch (baseCurrency)
+            switch (quoteCurrency)
             {
                 case "AUD":
                 case "CHF":
@@ -54,7 +54,7 @@ namespace AVS.CoreLib.Trading.Helpers
                         break;
                     }
                 default:
-                    throw new NotSupportedException($"{baseCurrency} not supported");
+                    throw new NotSupportedException($"{quoteCurrency} not supported");
             }
 
             return rank;

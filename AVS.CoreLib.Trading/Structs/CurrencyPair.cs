@@ -1,5 +1,5 @@
 ﻿using System;
-using AVS.CoreLib.Extensions;
+using System.Text.Json.Serialization;
 
 namespace AVS.CoreLib.Trading.Structs
 {
@@ -18,7 +18,7 @@ namespace AVS.CoreLib.Trading.Structs
         {
             var parts = pair.Split('_');
             if (parts.Length != 2)
-                throw new ArgumentException($"Pair string '{pair}' could not be spliced on base and quote currencies");
+                throw new ArgumentException($"`{pair}` invalid currency pair");
 
             if (isBaseCurrencyFirst)
             {
@@ -32,6 +32,7 @@ namespace AVS.CoreLib.Trading.Structs
             }
         }
 
+        [JsonIgnore]
         public bool HasValue => BaseCurrency != null && QuoteCurrency != null;
 
         public static explicit operator CurrencyPair(string pair)
@@ -63,9 +64,14 @@ namespace AVS.CoreLib.Trading.Structs
             return BaseCurrency.GetHashCode() ^ QuoteCurrency.GetHashCode();
         }
 
-        public string ToDisplayString(char separator)
+        public string ToTradingPair()
         {
-            return QuoteCurrency + separator + BaseCurrency;
+            return $"{BaseCurrency}/{QuoteCurrency}";
+        }
+
+        public string ToString(char separator)
+        {
+            return $"{BaseCurrency}{separator}{QuoteCurrency}";
         }
 
         public override string ToString()
@@ -73,27 +79,13 @@ namespace AVS.CoreLib.Trading.Structs
             return $"{BaseCurrency}_{QuoteCurrency}";
         }
 
-        public static CurrencyPair Parse(string pair, bool isBaseCurrencyFirst)
+        public static CurrencyPair Parse(string pair, bool isBaseCurrencyFirst = true)
         {
-            var str = pair.ToUpper();
-            CurrencyPair cp = default;
-            if (str.Contains("_"))
-            {
-                cp = new CurrencyPair(str, isBaseCurrencyFirst);
-            }
-            else
-            {
-                if (str.StartsWith("USDC", "USDT"))
-                {
-                    cp = new CurrencyPair(str.Substring(4, str.Length - 4), str.Substring(0, 4));
-                }
-                else if (str.StartsWith("BTC", "USD", "UAH", "ETH", "EUR", "RUB", "DAI"))
-                {
-                    cp = new CurrencyPair(str.Substring(3, str.Length - 3), str.Substring(0, 3));
-                }
-            }
+            var parts = pair.Split('_');
+            if (parts.Length != 2)
+                throw new ArgumentException($"`{pair}` invalid currency pair");
 
-            return cp;
+            return isBaseCurrencyFirst ? new CurrencyPair(parts[1], parts[0]) : new CurrencyPair(parts[0], parts[1]);
         }
     }
 }

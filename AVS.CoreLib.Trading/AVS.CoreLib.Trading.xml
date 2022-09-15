@@ -156,6 +156,11 @@
             not implemented to classify all candle types but some basic candle classification is possible
             </summary>
         </member>
+        <member name="T:AVS.CoreLib.Trading.Extensions.SymbolExtensions">
+            <summary>
+            supposed to deal with a normalized symbol like BTC_USDT (i.e. currencies are upper case, underscore separator)  
+            </summary>
+        </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.ServiceCollectionExtension.AddTradingCore(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             Add trading formatters core services
@@ -320,8 +325,28 @@
         </member>
         <member name="T:AVS.CoreLib.Trading.Structs.PairString">
             <summary>
-            by default PairString supposed to be a normalized pair with a base currency in first position and '_' separator e.g. BTC_LTC
+            by default PairString supposed to be a normalized pair with a base currency in first position and '_' separator e.g. USDT_BTC
+            note here i confused base and quote currency meaning their meaning must be vise-versa 
             </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Structs.PairString.ToSymbol">
+            <summary>
+            under symbol mean base currency in a 2nd position
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Structs.Symbol">
+            <summary>
+            Symbol represent a trade instrument
+            Symbol convention is [base_currency]_[quote_currency] currencies supposed to be in upper case with underscore separator, e.g. BTC_USDT
+            quote_currency [USDT] is used to determine the value of the base_currency [BTC],
+            so in `BTC_USDT` we buy or sell BTC for USDT)
+            </summary>
+            <remarks>
+            In previous terminology i used terms of base/quote currencies in a wrong way, 
+            it might be opposite to <see cref="T:AVS.CoreLib.Trading.Structs.PairString"/> it might be marked later as obsolete
+            due to many exchanges use symbol terminology i decided to add Symbol struct
+            </remarks>
         </member>
         <member name="T:AVS.CoreLib.Trading.Types.StringCollection">
             <summary>

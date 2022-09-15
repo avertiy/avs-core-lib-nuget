@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using AVS.CoreLib.Abstractions;
+using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Structs;
 
 namespace AVS.CoreLib.Utilities
@@ -135,6 +137,22 @@ namespace AVS.CoreLib.Utilities
         {
             if (value <= number)
                 throw new ArgumentException($"{nameof(value)} must be greater than {value}");
+        }
+
+        public static string MustBeOneOf(string value, params string[] values)
+        {
+            if (values.Contains(value))
+                return value;
+
+            throw new ArgumentOutOfRangeException($"{nameof(value)} `{value}` is not one of allowed values: {values.AsString()}");
+        }
+
+        public static T MustBeOneOf<T>(T value, params T[] values)
+        {
+            if (values.Contains(value))
+                return value;
+
+            throw new ArgumentOutOfRangeException($"{nameof(value)} `{value}` is not one of allowed values: {string.Join(", ", values)}");
         }
     }
 }

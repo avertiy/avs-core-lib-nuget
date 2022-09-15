@@ -31,6 +31,14 @@ namespace AVS.CoreLib.WebSockets
 
         protected WebSocketState State => _communicator.State;
 
+        protected TimeSpan KeepAliveInterval
+        {
+            get => _communicator.KeepAliveInterval;
+            set => _communicator.KeepAliveInterval = value;
+        }
+
+        protected ClientWebSocketOptions Options => _communicator.Options;
+
         protected WebSocketClient(ILogger logger) : this(new SocketCommunicator(), logger)
         {
         }

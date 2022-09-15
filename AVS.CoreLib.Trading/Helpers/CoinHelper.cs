@@ -4,12 +4,23 @@ namespace AVS.CoreLib.Trading.Helpers
 {
     public static class CoinHelper
     {
-        private static readonly Dictionary<string, string> _aliases = new Dictionary<string, string>();
+        private static Dictionary<string, string> _aliases;
 
-        static CoinHelper()
+        public static Dictionary<string, string> Aliases
         {
-            _aliases.Add("STR", "XLM");
-            _aliases.Add("DSH", "DASH");
+            get
+            {
+                if (_aliases == null)
+                {
+                    _aliases = new Dictionary<string, string>
+                    {
+                        { "STR", "XLM" },
+                        { "DSH", "DASH" }
+                    };
+                }
+
+                return _aliases;
+            }
         }
 
         public static bool IsShitCoin(string isoCode)
@@ -26,20 +37,9 @@ namespace AVS.CoreLib.Trading.Helpers
             }
         }
 
-        public static bool IsStableCoin(string iso)
+        public static bool IsStableCoin(string isoCode)
         {
-            switch (iso)
-            {
-                case "USDT":
-                case "USDC":
-                case "BUSD":
-                case "DAI":
-                case "TUSD":
-                case "PAX":
-                    return true;
-                default:
-                    return false;
-            }
+            return Stablecoins.IsStableCoin(isoCode);
         }
 
         public static bool IsFiatCurrency(string iso)
@@ -66,7 +66,7 @@ namespace AVS.CoreLib.Trading.Helpers
 
         public static void RegisterAlias(string alias, string isoCode)
         {
-            _aliases.Add(alias, isoCode);
+            Aliases.Add(alias, isoCode);
         }
 
         public static bool MatchAlias(string pair, out string correctPair)
@@ -76,16 +76,16 @@ namespace AVS.CoreLib.Trading.Helpers
             //var key1 = $"{exchange}:{parts[0]}";
             //var key2 = $"{exchange}:{parts[1]}";
 
-            foreach (var key in _aliases.Keys)
+            foreach (var key in Aliases.Keys)
             {
                 if (key == parts[0])
                 {
-                    correctPair = $"{_aliases[key]}_{parts[1]}";
+                    correctPair = $"{Aliases[key]}_{parts[1]}";
                     return true;
                 }
                 if (key == parts[1])
                 {
-                    correctPair = $"{parts[0]}_{_aliases[key]}";
+                    correctPair = $"{parts[0]}_{Aliases[key]}";
                     return true;
                 }
             }
@@ -102,6 +102,8 @@ namespace AVS.CoreLib.Trading.Helpers
                 case "USDT":
                 case "USDC":
                 case "BUSD":
+                case "TUSD":
+                case "USDX":
                 case "DAI":
                     return "$";
                 case "EUR":
@@ -118,6 +120,40 @@ namespace AVS.CoreLib.Trading.Helpers
                     return "Ɖ";
                 default:
                     return isoCode;
+            }
+        }
+    }
+
+
+    public static class Stablecoins
+    {
+        public static List<string> GetAll()
+        {
+            var list = new List<string>()
+            {
+                "USDT",
+                "USDC",
+                "BUSD",
+                "DAI",
+                "TUSD",
+                "PAX"
+            };
+            return list;
+        }
+
+        public static bool IsStableCoin(string iso)
+        {
+            switch (iso)
+            {
+                case "USDT":
+                case "USDC":
+                case "BUSD":
+                case "TUSD":
+                case "DAI":
+                case "PAX":
+                    return true;
+                default:
+                    return false;
             }
         }
     }
