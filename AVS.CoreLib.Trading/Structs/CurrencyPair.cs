@@ -69,6 +69,11 @@ namespace AVS.CoreLib.Trading.Structs
             return $"{BaseCurrency}/{QuoteCurrency}";
         }
 
+        public string ToSymbol()
+        {
+            return $"{BaseCurrency}_{QuoteCurrency}";
+        }
+
         public string ToString(char separator)
         {
             return $"{BaseCurrency}{separator}{QuoteCurrency}";

@@ -325,8 +325,9 @@
         </member>
         <member name="T:AVS.CoreLib.Trading.Structs.PairString">
             <summary>
-            by default PairString supposed to be a normalized pair with a base currency in first position and '_' separator e.g. USDT_BTC
-            note here i confused base and quote currency meaning their meaning must be vise-versa 
+            by default PairString supposed to be a "normalized pair" e.g. USDT_BTC, which is opposite to symbol format BTC_USDT
+            this is historical issue, <see cref="T:AVS.CoreLib.Trading.Structs.Symbol"/> was introduced recently
+            <see cref="T:AVS.CoreLib.Trading.Structs.Symbol"/> is less confusing due to many exchanges upgraded their api and operate with symbols
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Trading.Structs.PairString.ToSymbol">
@@ -337,15 +338,11 @@
         </member>
         <member name="T:AVS.CoreLib.Trading.Structs.Symbol">
             <summary>
-            Symbol represent a trade instrument
-            Symbol convention is [base_currency]_[quote_currency] currencies supposed to be in upper case with underscore separator, e.g. BTC_USDT
-            quote_currency [USDT] is used to determine the value of the base_currency [BTC],
-            so in `BTC_USDT` we buy or sell BTC for USDT)
+            Symbol represent a trade instrument, most exchanges operate symbols 
+            <see cref="T:AVS.CoreLib.Trading.Structs.Symbol"/> format convention is [base_currency]_[quote_currency] e.g. BTC_USDT
             </summary>
             <remarks>
-            In previous terminology i used terms of base/quote currencies in a wrong way, 
-            it might be opposite to <see cref="T:AVS.CoreLib.Trading.Structs.PairString"/> it might be marked later as obsolete
-            due to many exchanges use symbol terminology i decided to add Symbol struct
+            this type replace <see cref="T:AVS.CoreLib.Trading.Structs.PairString"/>  pair `USDT_BTC` pair is a `BTC_USDT` symbol, i.e. swap quote and base currencies 
             </remarks>
         </member>
         <member name="T:AVS.CoreLib.Trading.Types.StringCollection">
@@ -356,6 +353,11 @@
         <member name="M:AVS.CoreLib.Trading.Types.StringCollection.System#Collections#Generic#ICollection{System#String}#Add(System.String)">
             <summary>
             the Add method implemented explicitly due to model binding mechanics 
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Types.Symbols">
+            <summary>
+            type to deal with a collection of symbols (trading instrument) <see cref="T:AVS.CoreLib.Trading.Structs.Symbol"/>   
             </summary>
         </member>
     </members>

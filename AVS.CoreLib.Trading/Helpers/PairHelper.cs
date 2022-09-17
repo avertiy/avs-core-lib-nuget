@@ -8,6 +8,7 @@ namespace AVS.CoreLib.Trading.Helpers
 {
     public static class PairHelper
     {
+        [Obsolete("this method might be deleted")]
         public static PairString[] CreateCombinations(string baseCurrencies, string quoteCurrencies, bool isBaseCurrencyFirst = true)
         {
             var pairs = new List<PairString>();
@@ -23,6 +24,27 @@ namespace AVS.CoreLib.Trading.Helpers
             }
             return pairs.ToArray();
         }
+
+        [Obsolete("this method might be deleted")]
+        public static PairString[] CreateCombinations(string baseCurrency, bool isBaseCurrencyFirst,
+            params string[] currencies)
+        {
+            var pairs = new List<PairString>();
+
+            foreach (var quoteCur in currencies)
+            {
+                if (quoteCur == baseCurrency)
+                    continue;
+                if (isBaseCurrencyFirst)
+                    pairs.Add(baseCurrency + "_" + quoteCur);
+                else
+                    pairs.Add(quoteCur + "_" + baseCurrency);
+            }
+
+            return pairs.ToArray();
+
+        }
+
 
         public static string[] GeneratePairs(string[] baseCurrencies, string[] quoteCurrencies)
         {
@@ -63,24 +85,7 @@ namespace AVS.CoreLib.Trading.Helpers
             return pairs.ToArray();
         }
 
-        public static PairString[] CreateCombinations(string baseCurrency, bool isBaseCurrencyFirst,
-            params string[] currencies)
-        {
-            var pairs = new List<PairString>();
-
-            foreach (var quoteCur in currencies)
-            {
-                if (quoteCur == baseCurrency)
-                    continue;
-                if (isBaseCurrencyFirst)
-                    pairs.Add(baseCurrency + "_" + quoteCur);
-                else
-                    pairs.Add(quoteCur + "_" + baseCurrency);
-            }
-
-            return pairs.ToArray();
-
-        }
+        
 
         public static string Normalize(string pair, bool isBaseCurrencyFirst)
         {

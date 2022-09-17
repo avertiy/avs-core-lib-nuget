@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace AVS.CoreLib.Abstractions.Messaging.PubSub
 {
@@ -9,18 +10,34 @@ namespace AVS.CoreLib.Abstractions.Messaging.PubSub
     public interface IEventPublisher
     {
         /// <summary>
-        /// Publish <see cref="IEvent"/>
+        /// Publish an <see cref="IEvent"/>
+        /// consumers need to implement <see cref="IEventConsumer"/>
+        /// </summary>
+        /// <remarks>
         /// does not require the event to be consumed
         /// does not throw an exception if the event isn't consumed.
-        /// </summary>
+        /// </remarks>
         void Publish(IEvent @event);
 
         /// <summary>
-        /// Publish <see cref="IEvent"/>
+        /// Publish an <see cref="IEvent"/> with context argument
+        /// consumers need to implement <see cref="IEventConsumer"/>
+        /// </summary>
+        /// <remarks>
         /// does not require the event to be consumed
         /// does not throw an exception if the event isn't consumed.
-        /// </summary>
+        /// </remarks>
         void Publish(IEvent @event, IPublishContext context);
+
+        /// <summary>
+        /// Publish an <see cref="IEvent"/> with context argument
+        /// consumers need to implement <see cref="IEventConsumer"/>
+        /// </summary>
+        /// <remarks>
+        /// does not require the event to be consumed
+        /// does not throw an exception if the event isn't consumed.
+        /// </remarks>
+        Task PublishAsync(IEvent @event, IPublishContext context);
     }
 
     public interface IEventConsumer
@@ -34,7 +51,7 @@ namespace AVS.CoreLib.Abstractions.Messaging.PubSub
     {
         void Handle(TEvent @event, TContext context);
     }
-
+    
     public interface IPublishContext
     {
         /// <summary>

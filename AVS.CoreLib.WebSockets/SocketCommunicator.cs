@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.WebSockets;
@@ -15,6 +16,11 @@ namespace AVS.CoreLib.WebSockets
         private bool _disposing = false;
         private ClientWebSocket _webSocket;
         public WebSocketState State => _webSocket.State;
+
+        /// <summary>
+        /// timeout in milliseconds
+        /// </summary>
+        public int ConnectionTimeout { get; set; } = 180000;
 
         /// <summary>
         /// Default keep alive interval is 30 sec. <see cref="WebSocket.DefaultKeepAliveInterval"/>
@@ -34,18 +40,26 @@ namespace AVS.CoreLib.WebSockets
 
         public async Task<bool> ConnectAsync(Uri uri, CancellationToken cancellationToken)
         {
+            start:
             if (_disposing)
                 return false;
 
             if (State == WebSocketState.Open)
                 return true;
 
+            // parallel connection has been started  
+            if (State == WebSocketState.Connecting)
+            {
+                WaitWebSocketConnecting();
+                goto start;
+            }
+
             await _webSocket.ConnectAsync(uri, cancellationToken)
                 .ConfigureAwait(false);
 
             _ = RunReceiveMessages(cancellationToken);
 
-            WaitWebSocketConnecting();
+            
             return State == WebSocketState.Open;
         }
 
@@ -104,8 +118,13 @@ namespace AVS.CoreLib.WebSockets
 
         private void WaitWebSocketConnecting()
         {
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             while (State == WebSocketState.Connecting)
             {
+                if (stopwatch.ElapsedMilliseconds > ConnectionTimeout)
+                    throw new SocketCommunicatorException($"WebSocket connection timeout [web socket state: {State}]");
+
                 Thread.Sleep(10);
             }
         }
@@ -205,6 +224,7 @@ namespace AVS.CoreLib.WebSockets
         #region events 
 
         public event Action<string> MessageArrived;
+        public event Action<string> MessageArrivedAsync;
         public event Action ConnectionClosed;
         public event Action<Exception> ConnectionError;
 
@@ -213,7 +233,14 @@ namespace AVS.CoreLib.WebSockets
         /// </summary>
         protected virtual void FireMessageArrived(string message)
         {
-            MessageArrived?.Invoke(message);
+            if (MessageArrivedAsync != null)
+            {
+                Task.Run(() => MessageArrivedAsync.Invoke(message));
+            }
+            else
+            {
+                MessageArrived?.Invoke(message);
+            }
         }
 
         /// <summary>

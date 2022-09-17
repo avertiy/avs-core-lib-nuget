@@ -5,6 +5,7 @@ using AVS.CoreLib.Trading.Helpers;
 
 namespace AVS.CoreLib.Trading.Types
 {
+    [Obsolete("Use Symbols instead")]
     public class Pairs : StringCollection
     {
         public Pairs()

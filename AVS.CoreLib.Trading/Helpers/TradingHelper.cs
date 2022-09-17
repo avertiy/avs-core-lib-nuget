@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AVS.CoreLib.Trading.Enums;
 
@@ -9,7 +10,9 @@ namespace AVS.CoreLib.Trading.Helpers
         string[] GetAllExchanges();
         string[] GetBaseCurrencies(bool all = true);
         string[] GetFiatCurrencies(CryptoCategory currencies = CryptoCategory.Fiat);
+        [Obsolete("use GetTopSymbols")]
         string[] GetTopPairs(params string[] baseCurrencies);
+        string[] GetTopSymbols(params string[] quoteCurrencies);
         string[] GetCurrencies(CryptoCategory currencies = CryptoCategory.AllCrypto);
     }
 
@@ -115,6 +118,55 @@ namespace AVS.CoreLib.Trading.Helpers
                     case "UAH":
                         {
                             res.AddRange(PairHelper.GeneratePairs("UAH", "BTC", "BCH", "DASH", "ETH", "LTC", "XEM", "XLM",
+                                "XRP", "USDT", "ZEC"));
+                            break;
+                        }
+                }
+            }
+
+            return res.ToArray();
+        }
+
+        public string[] GetTopSymbols(params string[] quoteCurrencies)
+        {
+            var res = new List<string>();
+
+            foreach (var quote in quoteCurrencies)
+            {
+                switch (quote)
+                {
+                    case "BTC":
+                        {
+                            res.AddRange(PairHelper.GenerateSymbols("BTC", GetCurrencies(CryptoCategory.Top)));
+                            break;
+                        }
+                    case "USDT":
+                        {
+                            res.AddRange(PairHelper.GenerateSymbols("USDT",
+                                GetCurrencies(CryptoCategory.AllCrypto)));
+                            break;
+                        }
+                    case "BUSD":
+                        {
+                            res.AddRange(PairHelper.GenerateSymbols("BUSD",
+                                GetCurrencies(CryptoCategory.Top & CryptoCategory.StableCoin)));
+                            break;
+                        }
+                    case "USDC":
+                        {
+                            res.AddRange(PairHelper.GenerateSymbols("USDC", "BTC", "BCH", "DASH", "DOGE", "ETH", "LTC", "XEM",
+                                "XLM", "XMR", "XRP"));
+                            break;
+                        }
+                    case "USD":
+                        {
+                            res.AddRange(PairHelper.GenerateSymbols("USD", "BTC", "BCH", "DASH", "DOGE", "ETH", "LTC", "XEM",
+                                "XLM", "XMR", "XRP", "USDT", "USDC", "ZEC"));
+                            break;
+                        }
+                    case "UAH":
+                        {
+                            res.AddRange(PairHelper.GenerateSymbols("UAH", "BTC", "BCH", "DASH", "ETH", "LTC", "XEM", "XLM",
                                 "XRP", "USDT", "ZEC"));
                             break;
                         }

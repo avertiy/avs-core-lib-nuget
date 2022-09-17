@@ -8,23 +8,20 @@ using AVS.CoreLib.Abstractions;
 namespace AVS.CoreLib.Trading.Structs
 {
     /// <summary>
-    /// Symbol represent a trade instrument
-    /// Symbol convention is [base_currency]_[quote_currency] currencies supposed to be in upper case with underscore separator, e.g. BTC_USDT
-    /// quote_currency [USDT] is used to determine the value of the base_currency [BTC],
-    /// so in `BTC_USDT` we buy or sell BTC for USDT)
+    /// Symbol represent a trade instrument, most exchanges operate symbols 
+    /// <see cref="Symbol"/> format convention is [base_currency]_[quote_currency] e.g. BTC_USDT
     /// </summary>
     /// <remarks>
-    /// In previous terminology i used terms of base/quote currencies in a wrong way, 
-    /// it might be opposite to <see cref="AVS.CoreLib.Trading.Structs.PairString"/> it might be marked later as obsolete
-    /// due to many exchanges use symbol terminology i decided to add Symbol struct
+    /// this type replace <see cref="PairString"/>  pair `USDT_BTC` pair is a `BTC_USDT` symbol, i.e. swap quote and base currencies 
     /// </remarks>
     [TypeConverter(typeof(SymbolTypeConverter))]
     [DebuggerDisplay("Symbol: {Value}")]
     public struct Symbol : IHasValue
     {
-        public Symbol(string pair)
+        [DebuggerStepThrough]
+        public Symbol(string value)
         {
-            Value = pair;
+            Value = value;
         }
 
         public string Value;
@@ -73,7 +70,14 @@ namespace AVS.CoreLib.Trading.Structs
         {
             return Value.Replace('_', '/');
         }
+    }
 
+    public static class SymbolExtensions
+    {
+        public static XSymbol ToXSymbol(this Symbol symbol, string exchange)
+        {
+            return new XSymbol(symbol.Value, exchange);
+        }
     }
 
     public class SymbolTypeConverter : TypeConverter

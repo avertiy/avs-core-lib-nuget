@@ -22,7 +22,22 @@ namespace AVS.CoreLib.WebSockets
         private string _lastCommand;
         public bool IsConnected => State == WebSocketState.Open;
         public bool DiagnosticEnabled { get; set; }
+
+        /// <summary>
+        /// when true
+        /// incoming messages will be processed in sync mode, by default an async non-blocking mode is enabled, messages are received  
+        /// </summary>
+        public bool IsDebug { get; set; }
+
+        private readonly object _lock = new object();
+
         public event Action<Exception> ConnectionClosed;
+
+        /// <summary>
+        /// use MessageArrived event if WebSocketClient is used directly, if it is inherited override ProcessMessage
+        /// </summary>
+        public event Action<string> MessageArrived;
+
         public Uri Uri
         {
             get => _uri == null ? throw new InvalidOperationException("Uri was not initialized") : _uri;
@@ -117,6 +132,27 @@ namespace AVS.CoreLib.WebSockets
             {
                 _logger.LogTrace("message: " + message);
             }
+
+            ProcessMessage(message);
+            MessageArrived?.Invoke(message);
+
+            if (IsDebug)
+            {
+                ProcessMessageAsync(message);
+            }
+            else
+            {
+                Task.Run(() => ProcessMessageAsync(message), CancellationToken.None);
+            }
+        }
+
+        protected virtual void ProcessMessage(string message)
+        {
+        }
+
+        protected virtual Task ProcessMessageAsync(string message)
+        {
+            return Task.CompletedTask;
         }
 
         protected virtual void OnSocketConnectionClosed()

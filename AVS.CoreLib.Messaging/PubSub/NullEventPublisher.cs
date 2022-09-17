@@ -1,4 +1,5 @@
-﻿using AVS.CoreLib.Abstractions.Messaging;
+﻿using System.Threading.Tasks;
+using AVS.CoreLib.Abstractions.Messaging;
 using AVS.CoreLib.Abstractions.Messaging.PubSub;
 
 namespace AVS.CoreLib.Messaging.PubSub
@@ -7,6 +8,11 @@ namespace AVS.CoreLib.Messaging.PubSub
     {
         public void Publish(IEvent @event, IPublishContext context)
         {
+        }
+
+        public Task PublishAsync(IEvent @event, IPublishContext context)
+        {
+            return Task.CompletedTask;
         }
 
         public void Publish(IEvent @event)

@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions.Messaging;
 using AVS.CoreLib.Abstractions.Messaging.PubSub;
 using AVS.CoreLib.Extensions;
@@ -46,6 +49,36 @@ namespace AVS.CoreLib.Messaging.PubSub
                     break;
                 }
             }
+        }
+
+        public async Task PublishAsync(IEvent @event, IPublishContext context)
+        {
+            //get all event consumers
+            var type = typeof(IEventConsumer<,>);
+            var genericType = type.MakeGenericType(@event.GetType(), context.GetType());
+            var consumers = _factory.ResolveAll(genericType);
+
+            if (consumers.Length == 0 && context.Mandatory)
+                throw new PublishEventException($"No IEventConsumer(s) registered for {genericType.ToStringNotation()}");
+
+            var tasks = new List<Task>();
+            foreach (var consumer in consumers)
+            {
+                try
+                {
+                    var task = Task.Run(() => consumer.Handle(@event, context), CancellationToken.None);
+                    tasks.Add(task);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(EventCodes.HandleEvent, ex, $"Event consumer {@consumer.GetType().Name} failed to handle {@event.GetType().Name}");
+                    if (context.Isolated)
+                        continue;
+                    break;
+                }
+            }
+
+            await Task.WhenAll(tasks);
         }
     }
 }

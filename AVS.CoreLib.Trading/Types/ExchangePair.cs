@@ -1,9 +1,11 @@
-﻿using AVS.CoreLib.Abstractions;
+﻿using System;
+using AVS.CoreLib.Abstractions;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Trading.Structs;
 
 namespace AVS.CoreLib.Trading.Types
 {
+    [Obsolete("type will be deleted later, use XSymbol")]
     public class ExchangePair : IHasValue
     {
         public ExchangePair(string pair, string exchange, bool isBaseCurrencyFirst = true)

@@ -21,9 +21,8 @@ namespace AVS.CoreLib.WebSockets.Abstractions
         void ResetWebSocket();
 
         event Action<string> MessageArrived;
-
+        event Action<string> MessageArrivedAsync;
         event Action ConnectionClosed;
-
         event Action<Exception> ConnectionError;
     }
 }

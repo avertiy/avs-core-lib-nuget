@@ -9,11 +9,13 @@ using AVS.CoreLib.Extensions;
 namespace AVS.CoreLib.Trading.Structs
 {
     /// <summary>
-    /// by default PairString supposed to be a normalized pair with a base currency in first position and '_' separator e.g. USDT_BTC
-    /// note here i confused base and quote currency meaning their meaning must be vise-versa 
+    /// by default PairString supposed to be a "normalized pair" e.g. USDT_BTC, which is opposite to symbol format BTC_USDT
+    /// this is historical issue, <see cref="Symbol"/> was introduced recently
+    /// <see cref="Symbol"/> is less confusing due to many exchanges upgraded their api and operate with symbols
     /// </summary>
     [TypeConverter(typeof(PairStringTypeConverter))]
     [DebuggerDisplay("PairString: {Value}")]
+    [Obsolete("use Symbol struct instead, don't forget the difference pair format is USDT_BTC, while symbol format is BTC_USDT")]
     public struct PairString : IHasValue
     {
         public PairString(string pair)
@@ -35,6 +37,12 @@ namespace AVS.CoreLib.Trading.Structs
         {
             return Value.Swap('_');
         }
+
+        public string ToTradingPair()
+        {
+            return Value.Swap('_','/');
+        }
+
         public override string ToString()
         {
             return Value;

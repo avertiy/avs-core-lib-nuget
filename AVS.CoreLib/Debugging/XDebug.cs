@@ -16,15 +16,18 @@ namespace AVS.CoreLib.Debugging
             var dump = ObjectDumper.Dump(obj);
             sb.AppendLine(dump);
 
-            //string json = JsonConvert.SerializeObject(obj, Formatting.Indented);
-            //sb.AppendLine(json);
-
             var text = sb.ToString();
             if (printToConsole)
                 Console.WriteLine(text);
 
             Debug.WriteLine(text);
             return text;
+        }
+
+        [DebuggerStepThrough]
+        public static void RunSync(Action action)
+        {
+            SyncUtil.RunSync(action);
         }
     }
 }
