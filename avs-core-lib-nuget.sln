@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29025.244
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32516.85
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.PowerConsole", "AVS.CoreLib.PowerConsole\AVS.CoreLib.PowerConsole.csproj", "{433672CA-EEC5-44CB-85A0-7790B8A18856}"
 EndProject
@@ -45,7 +45,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.ConsoleLogger",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.Loggers.TestApp", "Loggers\AVS.CoreLib.Loggers.TestApp\AVS.CoreLib.Loggers.TestApp.csproj", "{C1847F96-5FFE-4247-A670-28746348E5BF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AVS.CoreLib.Math", "AVS.CoreLib.Math\AVS.CoreLib.Math.csproj", "{71EC56DA-7845-43F8-9BFB-FB0B6E8A002E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.Math", "AVS.CoreLib.Math\AVS.CoreLib.Math.csproj", "{71EC56DA-7845-43F8-9BFB-FB0B6E8A002E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.Logging.ColorFormatter", "Loggers\AVS.CoreLib.Logging.ColorFormatter\AVS.CoreLib.Logging.ColorFormatter.csproj", "{CFB721A8-CFD9-4155-9C61-E4C619BC3458}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -133,6 +135,10 @@ Global
 		{71EC56DA-7845-43F8-9BFB-FB0B6E8A002E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71EC56DA-7845-43F8-9BFB-FB0B6E8A002E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71EC56DA-7845-43F8-9BFB-FB0B6E8A002E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CFB721A8-CFD9-4155-9C61-E4C619BC3458}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CFB721A8-CFD9-4155-9C61-E4C619BC3458}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CFB721A8-CFD9-4155-9C61-E4C619BC3458}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CFB721A8-CFD9-4155-9C61-E4C619BC3458}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -143,6 +149,7 @@ Global
 		{059B25AB-3410-4E60-B024-F27B43B6943B} = {F58648D7-219E-4D6D-AA3B-D11DDD534A73}
 		{BC9259B6-D032-45D5-9D1C-CB8F74001106} = {F58648D7-219E-4D6D-AA3B-D11DDD534A73}
 		{C1847F96-5FFE-4247-A670-28746348E5BF} = {F58648D7-219E-4D6D-AA3B-D11DDD534A73}
+		{CFB721A8-CFD9-4155-9C61-E4C619BC3458} = {F58648D7-219E-4D6D-AA3B-D11DDD534A73}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F0BC5348-2A0B-4051-BFD7-86F74D429B5D}

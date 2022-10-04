@@ -1,9 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Description>color console formatter for console logger</Description>
-    <PackageTags>ConsoleLogger avs</PackageTags>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Description>ColorFormatter for ConsoleLogger</Description>
+    <PackageTags>ConsoleLogger ColorFormatter avs</PackageTags>
     <RepositoryUrl>https://github.com/avertiy/avs-core-lib-nuget</RepositoryUrl>
     <RepositoryType>public</RepositoryType>
     <PackageProjectUrl>https://github.com/avertiy/avs-core-lib-nuget</PackageProjectUrl>
@@ -17,18 +18,15 @@
     <FileVersion>6.0.0</FileVersion>
     <Version>6.0.0-alpha</Version>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="AVS.CoreLib.PowerConsole" Version="1.0.12" />
+ <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\AVS.CoreLib.AbstractLogger\AVS.CoreLib.AbstractLogger.csproj" />
-  </ItemGroup>
+ <ItemGroup>
+   <ProjectReference Include="..\..\AVS.CoreLib.Text\AVS.CoreLib.Text.csproj" />
+ </ItemGroup>
 
 </Project>

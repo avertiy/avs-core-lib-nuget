@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace AVS.CoreLib.Extensions
@@ -6,6 +7,11 @@ namespace AVS.CoreLib.Extensions
     public static class SystemExtensions
     {
         public static string AsString(this string[] arr, string separator = ", ")
+        {
+            return string.Join(separator, arr);
+        }
+
+        public static string AsString(this IEnumerable<string> arr, string separator = ", ")
         {
             return string.Join(separator, arr);
         }

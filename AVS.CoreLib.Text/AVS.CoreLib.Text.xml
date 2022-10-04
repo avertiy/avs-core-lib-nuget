@@ -66,6 +66,12 @@
             Append X.Format(str)
             </summary>
         </member>
+        <member name="M:AVS.CoreLib.Text.Extensions.StringBuilderExtensions.EnsureWhitespace(System.Text.StringBuilder)">
+            <summary>
+            If StringBuilder content is not empty and the last character is neither a whitespace ' ', neither '\t' or '\n'
+            append a whitespace ' '
+            </summary>
+        </member>
         <member name="T:AVS.CoreLib.Text.FormatPreprocessors.EnumFormatPreprocessor">
             <summary>
             That's an example of the idea with format preprocessors
@@ -248,16 +254,73 @@
         <member name="M:AVS.CoreLib.Text.Formatters.ColorMarkup.ColorMarkupFormatter.Match(System.String)">
             <inheritdoc />
         </member>
+        <member name="T:AVS.CoreLib.Text.Formatters.ColorMarkup.ColorMarkupHelper">
+            <summary>
+            provides color markup text utilities
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Text.Formatters.ColorMarkup.ColorMarkupHelper.HasAnyColorMarkup(System.String)">
+            <summary>
+            match text with any color markup (i) text {arg:-Red}  (ii) some text@:Color
+            returns true if match success, false otherwise
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Text.Formatters.ColorMarkup.ColorMarkupHelper.HasColorMarkup(System.String)">
+            <summary>
+            match text with color markup regex e.g. text {arg:-Red --Blue}
+            returns true if match success, false otherwise
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Text.Formatters.ColorMarkup.ColorMarkupHelper.HasColorMarkup2(System.String,System.String@,System.Int32@)">
+            <summary>
+            match text with color markup2 regex e.g. some text@:-Red
+            returns true if match success, false otherwise
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Text.Formatters.ColorMarkup.ColorMarkupHelper.StripColorMarkup(System.String)">
+            <summary>
+            remove color markup from the text
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Text.Formatters.ColorMarkup.ColorMarkupHelper.StripColorMarkup2(System.String)">
+            <summary>
+            remove color markup2 from the text e.g. "text@:Red" => "text"
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Text.Formatters.ColorMarkup.ColorMarkupHelper.FormatWithColor(System.String,System.ConsoleColor)">
+            <summary>
+            format plain text into color markup text e.g. FormatColor("str", Green) => {"str":-Green}; 
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Text.Formatters.ColorMarkup.ColorMarkupHelper.ColorizePlainText(System.String,System.Nullable{System.ConsoleColor})">
+            <summary>
+            Colorize plain text within a text that might contain color markup
+            </summary>
+            <remarks>
+            if text does not contain a color markup, use <see cref="M:AVS.CoreLib.Text.Formatters.ColorMarkup.ColorMarkupHelper.FormatWithColor(System.String,System.ConsoleColor)"/>
+            </remarks>
+            <returns></returns>
+        </member>
+        <member name="M:AVS.CoreLib.Text.Formatters.ColorMarkup.ColorMarkupHelper.TryParse(System.String,System.Nullable{System.ConsoleColor}@,System.Nullable{System.ConsoleColor}@)">
+            <summary>
+            Parse color markup e.g. "{arg:-Reg --Black}", also short representation "{arg:-Reg}" or "{arg:--Reg}" 
+            </summary>
+        </member>
         <member name="T:AVS.CoreLib.Text.Formatters.ColorMarkup.ColorMarkupString">
             <summary>
             ColorMarkupString is a string wrapper allows to iterate string through markup blocks in tuples (string plainText, string color scheme, string coloredText)
             color markup string looks similar to format string "some plain text {text:-ForegroundColor} some other plain text {text:--BackgroundColor}"
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Text.Formatters.ColorMarkup.ColorMarkupString._regex">
+        <member name="F:AVS.CoreLib.Text.Formatters.ColorMarkup.ColorMarkupString.regex">
             <summary>
-            parses text and color scheme $$text:-Color -- Color$
+            parses text and color scheme {text:-ForegroundColor --BackgroundColor}
             regex is not strict 
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Text.Formatters.ColorMarkup.ColorMarkupString.regex2">
+            <summary>
+            match colorized string like @:Color e.g. "some text@:Red"
             </summary>
         </member>
         <member name="P:AVS.CoreLib.Text.Formatters.ColorMarkup.ColorMarkupString.Value">
@@ -280,6 +343,12 @@
         </member>
         <member name="M:AVS.CoreLib.Text.Formatters.ColorMarkup.ColorMarkupString.ToString">
             <inheritdoc />
+        </member>
+        <member name="P:AVS.CoreLib.Text.Formatters.ColorMarkup.ColorMarkupString.HasMarkup">
+            <summary>
+            match <see cref="P:AVS.CoreLib.Text.Formatters.ColorMarkup.ColorMarkupString.Value"/> with color markup regex
+            returns true if match success, false otherwise
+            </summary>
         </member>
         <member name="T:AVS.CoreLib.Text.Formatters.CompositeFormatter">
             <summary>

@@ -41,7 +41,7 @@ namespace AVS.CoreLib.PowerConsole.Utilities
         /// </summary>
         public static explicit operator ColorScheme(string str)
         {
-            if (ColorHelper.TryParse(str, out ColorScheme scheme))
+            if (ColorSchemeHelper.TryParse(str, out ColorScheme scheme))
                 return scheme;
             throw new ArgumentException($"Invalid color scheme: {str}");
         }
@@ -74,7 +74,7 @@ namespace AVS.CoreLib.PowerConsole.Utilities
 
         public static ColorScheme Error { get; set; } = new ColorScheme(ConsoleColor.Red);
         public static ColorScheme Warning { get; set; } = new ColorScheme(ConsoleColor.DarkYellow);
-        public static ColorScheme Info { get; set; } = new ColorScheme(ConsoleColor.Magenta);
+        public static ColorScheme Info { get; set; } = new ColorScheme(ConsoleColor.Green);
         public static ColorScheme Debug { get; set; } = new ColorScheme(ConsoleColor.DarkGray);
 
         /// <summary>

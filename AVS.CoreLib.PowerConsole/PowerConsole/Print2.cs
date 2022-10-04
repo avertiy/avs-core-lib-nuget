@@ -152,24 +152,24 @@ namespace AVS.CoreLib.PowerConsole
         {
             var currentScheme = ColorScheme.GetCurrentScheme();
 
-            foreach ((string plainText, string scheme, string coloredText) tuple in str)
+            foreach (var (plainText, colorScheme, coloredText) in str)
             {
                 // write plain text
-                if (!string.IsNullOrEmpty(tuple.plainText))
+                if (!string.IsNullOrEmpty(plainText))
                 {
                     ColorScheme.ApplyScheme(currentScheme);
-                    Write(tuple.Item1);
+                    Write(plainText);
                 }
 
                 // if scheme valid apply it
-                if (ColorHelper.TryParse(tuple.scheme, out var scheme))
+                if (ColorSchemeHelper.TryParse(colorScheme, out var scheme))
                 {
                     ColorScheme.ApplyScheme(scheme);
                 }
 
-                if (!string.IsNullOrEmpty(tuple.coloredText))
+                if (!string.IsNullOrEmpty(coloredText))
                 {
-                    Write(tuple.coloredText);
+                    Write(coloredText);
                 }
             }
 

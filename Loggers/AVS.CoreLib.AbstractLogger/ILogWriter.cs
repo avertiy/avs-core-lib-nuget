@@ -8,5 +8,7 @@ namespace AVS.CoreLib.AbstractLogger
         void WriteLine(bool combineEmptyLines = true);
         void Write(string str, bool endLine = true);
         void Write(string logger, EventId eventId, LogLevel logLevel, string message, Exception exception = null);
+        void BeginScope(object scope, bool addCurlyBraces);
+        void EndScope(bool addCurlyBraces);
     }
 }

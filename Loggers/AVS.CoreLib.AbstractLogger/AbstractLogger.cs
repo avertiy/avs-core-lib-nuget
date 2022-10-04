@@ -3,11 +3,12 @@ using Microsoft.Extensions.Logging;
 
 namespace AVS.CoreLib.AbstractLogger
 {
+    //todo rename to ScopeLogger
     public class AbstractLogger : ILogger
     {
         private LogScope Scope { get; }
-
         public string Name { get; }
+
         public AbstractLogger(string name, LogScope scope)
         {
             Scope = scope;
@@ -16,6 +17,7 @@ namespace AVS.CoreLib.AbstractLogger
 
         /// <summary>Begins a logical operation scope.</summary>
         /// <param name="state">The identifier for the scope.</param>
+        /// <typeparam name="TState">The type of the object to be written.</typeparam>
         public IDisposable BeginScope<TState>(TState state)
         {
             //this method is called by only when ScopeLogger.ExternalScopeProvider is null
@@ -26,12 +28,12 @@ namespace AVS.CoreLib.AbstractLogger
         /// <summary>
         /// Checks if the given <paramref name="logLevel" /> is enabled.
         /// </summary>
-        public bool IsEnabled(LogLevel logLevel)
+        public virtual bool IsEnabled(LogLevel logLevel)
         {
             return logLevel != LogLevel.None;
         }
 
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
+        public virtual void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
             Func<TState, Exception, string> formatter)
         {
             if (!IsEnabled(logLevel))
@@ -41,8 +43,11 @@ namespace AVS.CoreLib.AbstractLogger
                 throw new ArgumentNullException(nameof(formatter));
 
             var message = FormatState(state, exception, formatter);
+
             Scope.OpenScope(Name, state);
-            Scope.Writer.Write(Name, eventId, logLevel, message, exception);
+            var writer = Scope.Writer;
+
+            writer.Write(Name, eventId, logLevel, message, exception);
         }
 
         protected virtual string FormatState<TState>(TState state, Exception exception,

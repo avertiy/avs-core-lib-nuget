@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Text.RegularExpressions;
-using AVS.CoreLib.PowerConsole.Extensions;
+
 namespace AVS.CoreLib.PowerConsole.Utilities
 {
-    public class ColorHelper
+    public class ColorSchemeHelper
     {
         /// <summary>
         /// Parse <see cref="ColorScheme"/> by its
-        /// short representation: `-ForegroundColor` or `--BackgroundColor`
+        /// short representation: `-ForegroundColor` or `--BackgroundColor` e.g. '-Red' or '--Black'
         /// or
-        /// full representation: `-ForegroundColor --BackgroundColor`
+        /// full representation: `-ForegroundColor --BackgroundColor`, e.g. '-Red --Black'
         /// </summary>
         public static bool TryParse(string str, out ColorScheme scheme)
         {
@@ -82,13 +81,13 @@ namespace AVS.CoreLib.PowerConsole.Utilities
             return false;
         }
 
-        public static ConsoleColor ExtractColor(ref string input, ConsoleColor defaultColor)
-        {
-            var re = new Regex("@(?<value>\\w+)");
-            var matches = re.Replace(ref input, "");
-            if (matches.Length == 1 && Enum.TryParse(matches[0], out ConsoleColor color))
-                return color;
-            return defaultColor;
-        }
+        //public static ConsoleColor ExtractColor(ref string input, ConsoleColor defaultColor)
+        //{
+        //    var re = new Regex("@(?<value>\\w+)");
+        //    var matches = re.Replace(ref input, "");
+        //    if (matches.Length == 1 && Enum.TryParse(matches[0], out ConsoleColor color))
+        //        return color;
+        //    return defaultColor;
+        //}
     }
 }

@@ -3,6 +3,17 @@ using Microsoft.Extensions.Logging;
 
 namespace AVS.CoreLib.AbstractLogger
 {
+    public interface ILogScope : IDisposable
+    {
+        bool UseCurlyBrackets { get; set; }
+        bool PrintLoggerName { get; set; }
+        IExternalScopeProvider ScopeProvider { get; set; }
+
+        //ILogWriter Writer { get; set; }
+
+        ILogWriter OpenScope<TState>(string loggerName, TState state);
+    }
+
     public class LogScope : IDisposable
     {
         public bool UseCurlyBrackets { get; set; }
@@ -11,20 +22,6 @@ namespace AVS.CoreLib.AbstractLogger
         public ILogWriter Writer { get; set; }
         private int HashCode { get; set; }
         private string Logger { get; set; }
-
-        private void SetLogger(string name)
-        {
-            if (Logger != name)
-            {
-                Close();
-                Logger = name;
-                if (PrintLoggerName && Logger != null)
-                {
-                    Writer.WriteLine(false);
-                    Writer.Write(Logger);
-                }
-            }
-        }
 
         public void OpenScope<TState>(string loggerName, TState state)
         {
@@ -46,34 +43,43 @@ namespace AVS.CoreLib.AbstractLogger
             }
         }
 
-        protected void Begin(object scope)
+        private void SetLogger(string name)
+        {
+            if (Logger != name)
+            {
+                Close();
+                Logger = name;
+                if (PrintLoggerName && Logger != null)
+                {
+                    Writer.WriteLine(false);
+                    Writer.Write(Logger);
+                }
+            }
+        }
+
+        private void Begin(object scope)
         {
             var hashCode = scope.GetHashCode();
             if (HashCode == hashCode)
                 return;
 
             Close();
-            Writer.WriteLine(false);
-            Writer.Write(UseCurlyBrackets ? $"\t{scope}\r\n {{" : $"\t{scope}");
+            Writer.BeginScope(scope, UseCurlyBrackets);
             HashCode = hashCode;
-        }
-
-        protected void Close()
-        {
-            if (HashCode != 0)
-            {
-                if (UseCurlyBrackets)
-                    Writer.Write(" }");
-                else
-                    Writer.WriteLine();
-
-                HashCode = 0;
-            }
         }
 
         public void Dispose()
         {
             Close();
+        }
+
+        public void Close()
+        {
+            if (HashCode != 0)
+            {
+                Writer.EndScope(UseCurlyBrackets);
+                HashCode = 0;
+            }
         }
     }
 }

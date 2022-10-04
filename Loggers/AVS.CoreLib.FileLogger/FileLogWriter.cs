@@ -88,6 +88,34 @@ namespace AVS.CoreLib.FileLogger
             Task.Run(Flush);
         }
 
+        public void BeginScope(object scope, bool addCurlyBraces)
+        {
+            WriteLine(false);
+            if (addCurlyBraces)
+            {
+                Write($"{scope}\r\n {{");
+            }
+            else
+            {
+                Write($" ====== scope: {scope} ======\r\n");
+            }
+            WriteLine(false);
+        }
+
+        public void EndScope(bool addCurlyBraces)
+        {
+            WriteLine(false);
+            if (addCurlyBraces)
+            {
+                Write(" }");
+            }
+            else
+            {
+                Write($" ====== end scope ======\r\n");
+            }
+            WriteLine(false);
+        }
+
         protected void Flush()
         {
             if (_sb.Length == 0)

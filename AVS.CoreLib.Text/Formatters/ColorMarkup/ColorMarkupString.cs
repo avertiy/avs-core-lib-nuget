@@ -8,15 +8,17 @@ namespace AVS.CoreLib.Text.Formatters.ColorMarkup
     /// ColorMarkupString is a string wrapper allows to iterate string through markup blocks in tuples (string plainText, string color scheme, string coloredText)
     /// color markup string looks similar to format string "some plain text {text:-ForegroundColor} some other plain text {text:--BackgroundColor}"
     /// </summary>
-    // color markup string looks like "some plain text $$text:-ForegroundColor$ some other plain text $$text:--BackgroundColor$"
     public class ColorMarkupString : IEnumerable<(string text, string colorScheme, string coloredText)>
     {
         /// <summary>
-        /// parses text and color scheme $$text:-Color -- Color$
+        /// parses text and color scheme {text:-ForegroundColor --BackgroundColor}
         /// regex is not strict 
         /// </summary>
-        //private static readonly Regex _regex = new Regex(@"\$\$(?<text>.*?):(?<scheme>-.*?)\$");
-        private static readonly Regex _regex = new Regex("{(?<text>.*?):(?<scheme>-.*?)}");
+        internal static readonly Regex regex = new Regex("{(?<text>.*?):(?<scheme>-.*?)}");
+        /// <summary>
+        /// match colorized string like @:Color e.g. "some text@:Red"
+        /// </summary>
+        internal static readonly Regex regex2 = new Regex("@:(?<color>(.{3,12}))$");
         /// <summary>
         /// initial string
         /// </summary>
@@ -32,7 +34,7 @@ namespace AVS.CoreLib.Text.Formatters.ColorMarkup
 
         private IEnumerable<(string plainText, string colorScheme, string coloredText)> Iterate()
         {
-            var match = _regex.Match(Value);
+            var match = regex.Match(Value);
             var pos = 0;
 
             while (match.Success)
@@ -76,6 +78,19 @@ namespace AVS.CoreLib.Text.Formatters.ColorMarkup
         public override string ToString()
         {
             return Value;
+        }
+
+        /// <summary>
+        /// match <see cref="Value"/> with color markup regex
+        /// returns true if match success, false otherwise
+        /// </summary>
+        public bool HasMarkup
+        {
+            get
+            {
+                var match = regex.Match(Value);
+                return match.Success;
+            }
         }
     }
 }

@@ -29,10 +29,10 @@ namespace AVS.CoreLib.PowerConsole
             var formattedString = XFormat(str);
             var scheme = new ColorScheme(color);
             ApplyColorScheme(scheme);
-            //1. x-formatted string might contain color formatting: $$text:--Color$
+            //1. x-formatted string might contain color formatting: {text:-Color --BackgroundColor}
             //Table/Square/Header tag formatters are not implemented yet
             //but the idea is to parse tags: 
-            //<table><header>Column1|Col2|EmptyColumn</header><body><cell>$$text:-Red$</cell>... </table> - prints table
+            //<table><header>Column1|Col2|EmptyColumn</header><body><cell>{text:-Red}</cell>... </table> - prints table
             //<square size='5x5'>abc</square>  - prints text inside of square 5x5
             //<h1>title</h1>  - prints title with corresponding to h1 font-size and font-weight default setup
             //<h2>title</h2>  - prints title with corresponding to h2 font-size and font-weight default setup

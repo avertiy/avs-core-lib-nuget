@@ -28,18 +28,6 @@ namespace AVS.CoreLib.Messaging.PubSub
             }
         }
 
-        //public void Handle(TEvent @event, TContext context)
-        //{
-        //    try
-        //    {
-        //        this.Handle(@event, context);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        HandleError(ex, @event, context);
-        //    }
-        //}
-
         public void Handle(IEvent @event, IPublishContext context)
         {
             try
