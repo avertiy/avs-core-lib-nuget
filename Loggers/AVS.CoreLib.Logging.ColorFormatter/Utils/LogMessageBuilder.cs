@@ -1,14 +1,11 @@
-﻿using System.Drawing;
-using System.Text;
+﻿using System.Text;
 using System.Text.RegularExpressions;
 using AVS.CoreLib.Logging.ColorFormatter.Extensions;
-using AVS.CoreLib.Text.Extensions;
-using AVS.CoreLib.Text.Formatters.ColorMarkup;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging.Console;
 
-namespace AVS.CoreLib.Logging.ColorFormatter;
+namespace AVS.CoreLib.Logging.ColorFormatter.Utils;
 
 public class LogMessageBuilder
 {
@@ -18,6 +15,8 @@ public class LogMessageBuilder
     private readonly StringBuilder _sb = new StringBuilder();
     public LoggerColorBehavior ColorBehavior { get; set; }
     public ScopeBehavior ScopeBehavior { get; set; }
+    public CategoryFormat CategoryFormat { get; set; }
+    public ArgsColorFormat ArgsColorFormat { get; set; }
     public bool SingleLine { get; set; }
     public bool IncludeScopes { get; set; }
     public bool IncludeLogLevel { get; set; }
@@ -50,17 +49,27 @@ public class LogMessageBuilder
         _sb.EnsureWhitespace();
     }
 
-    public void AddCategory<TState>(bool includeCategory, in LogEntry<TState> logEntry)
+    public void AddCategory<TState>(in LogEntry<TState> logEntry)
     {
-        if (!includeCategory) 
+        if (CategoryFormat == CategoryFormat.None || string.IsNullOrEmpty(logEntry.Category))
             return;
 
+        var eventId = logEntry.EventId.Id;
         // Example:
         // 12:05:00 info: ConsoleApp.Program[10]
 
-        var eventId = logEntry.EventId.Id;
-        var str = $"{logEntry.Category}[{eventId}]";
-        Append(str, ConsoleColors.DarkGray);
+        var category = logEntry.Category;
+        if (CategoryFormat == CategoryFormat.Name)
+        {
+            var ind = logEntry.Category.LastIndexOf('.');
+            if (ind + 1 < logEntry.Category.Length)
+                category = logEntry.Category.Substring(ind + 1);
+        }
+
+        if (eventId > 0)
+            category = $"{category}[{eventId}]";
+
+        Append(category, ConsoleColors.Category);
         _sb.EnsureWhitespace();
     }
 
@@ -74,11 +83,11 @@ public class LogMessageBuilder
             return;
 
         var json = scopes.ToJsonString();
-        Append(json, ConsoleColors.Cyan);
+        Append(json, ConsoleColors.Scope);
         _sb.Append(SingleLine ? " " : Environment.NewLine);
     }
 
-    public void AddMessageText(string message, LogLevel logLevel)
+    public void AddMessageText<T>(string message, LogEntry<T> logEntry, Func<ArgumentType, ConsoleColors> colorizeArgument)
     {
         if (string.IsNullOrEmpty(message))
             return;
@@ -87,15 +96,28 @@ public class LogMessageBuilder
             ? message.Replace(Environment.NewLine, " ")
             : $"{_messagePadding}{message.Replace(Environment.NewLine, _newLineWithMessagePadding)}{Environment.NewLine}";
 
-        var colors = logLevel == LogLevel.Debug
-                ? ConsoleColors.DarkGray
-                : ConsoleColors.Gray;
 
-        if (SingleLine)
-            Append2(text, colors);
-        else
-            Append2(text, colors);
+        var colors = logEntry.LogLevel == LogLevel.Debug
+            ? ConsoleColors.DarkGray
+            : ConsoleColors.Gray;
+
+        var colorMarkup2 = ColorMarkup2Helper.HasEndLineColorMarkup(text, out var colors2, out var index);
+        if (colorMarkup2)
+        {
+            text = text.Substring(0, index);
+            colors = ConsoleColors.Parse(colors2);
+        }
+        else if (ArgsColorFormat == ArgsColorFormat.Auto && logEntry.State is IReadOnlyList<KeyValuePair<string, object>> { Count: > 1 } list)
+        {
+            var keys = list.Select(x => "{" + x.Key + "}").ToArray();
+            var format = (string)list[^1].Value;
+            text = ColorMarkup2Helper.AddColorMarkup(text, format, keys, colorizeArgument);
+        }
+
+        Append2(text, colors);
     }
+
+
 
     public void AddError(Exception error)
     {
@@ -106,38 +128,36 @@ public class LogMessageBuilder
         Append(text, ConsoleColors.Error);
     }
 
+
+    private void Append(string text, ConsoleColor foreground)
+    {
+        if (ColorBehavior == LoggerColorBehavior.Disabled)
+            _sb.Append(text);
+        else
+            _sb.Append(text.FormatWithColorMarkup(foreground));
+    }
+
     private void Append(string text, ConsoleColors colors)
     {
         if (ColorBehavior == LoggerColorBehavior.Disabled)
             _sb.Append(text);
         else
-            _sb.Append(colors.FormatWithColors(text));
+            _sb.Append(colors.FormatWithColorMarkup(text));
     }
 
     private void Append2(string text, ConsoleColors colors)
     {
-        var colorMarkup2 = text.HasColorMarkup2(out var colors2, out var index);
-        var colorMarkup = text.HasColorMarkup();
-
+        var colorMarkup = ColorMarkup2Helper.HasColorMarkup(text);
 
         if (ColorBehavior == LoggerColorBehavior.Disabled)
         {
             text = colorMarkup ? text.StripColorMarkup() : text;
-            text = colorMarkup2 ? text.StripColorMarkup2() : text;
             _sb.Append(text);
             return;
         }
 
-        if (colorMarkup2)
-        {
-            text = text.Substring(0, index);
-            colors = ConsoleColors.Parse(colors2);
-        }
-
         if (colorMarkup)
-        {
-            _sb.Append(ColorMarkupHelper.ColorizePlainText(text, colors.Foreground));
-        }
+            _sb.Append(ColorMarkup2Helper.ColorizePlainText(text, colors.Foreground));
         else
         {
             // highlight in green json like text 
@@ -150,11 +170,11 @@ public class LogMessageBuilder
                 var json = match.Groups["json"].Value;
                 var restText = text.Substring(match.Index + json.Length);
 
-                text = $"{colors.FormatWithColors(plainText)}{ConsoleColors.Cyan.FormatWithColors(json)}{restText}";
+                text = $"{colors.FormatWithColorMarkup(plainText)}{ConsoleColors.Cyan.FormatWithColorMarkup(json)}{restText}";
                 _sb.Append(text);
             }
             else
-                _sb.Append(colors.FormatWithColors(text));
+                _sb.Append(colors.FormatWithColorMarkup(text));
         }
     }
 

@@ -28,16 +28,13 @@ public readonly struct ConsoleColors
 
     public bool HasValue => Foreground.HasValue || Background.HasValue;
 
-    public string FormatWithColors(string text)
-    {
-        return HasValue && !string.IsNullOrEmpty(text) ? $"{{{text}:{ToString()}}}" : text;
-    }
-
-    public static ConsoleColors Gray => new ConsoleColors(ConsoleColor.Gray, ConsoleColor.Black);
-    public static ConsoleColors DarkGray => new ConsoleColors(ConsoleColor.DarkGray, ConsoleColor.Black);
-    public static ConsoleColors Cyan => new ConsoleColors(ConsoleColor.Cyan, ConsoleColor.Black);
-    public static ConsoleColors Error => new ConsoleColors(ConsoleColor.DarkRed, ConsoleColor.Black);
-    public static ConsoleColors Current => new ConsoleColors(System.Console.ForegroundColor, System.Console.BackgroundColor);
+    public static ConsoleColors Gray => new ConsoleColors(ConsoleColor.Gray, null);
+    public static ConsoleColors DarkGray => new ConsoleColors(ConsoleColor.DarkGray, null);
+    public static ConsoleColors Cyan => new ConsoleColors(ConsoleColor.Cyan, null);
+    public static ConsoleColors Error = new ConsoleColors(ConsoleColor.DarkRed, null);
+    public static ConsoleColors Category = new ConsoleColors(ConsoleColor.DarkYellow, null);
+    public static ConsoleColors Scope = new ConsoleColors(ConsoleColor.Cyan, null);
+    public static ConsoleColors Args = new ConsoleColors(ConsoleColor.Blue, null);
 
     public static ConsoleColors Parse(string str)
     {

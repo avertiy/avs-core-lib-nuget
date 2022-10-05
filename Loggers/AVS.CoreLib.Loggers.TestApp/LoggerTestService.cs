@@ -28,7 +28,7 @@ namespace AVS.CoreLib.Loggers.TestApp
         {
            Console.ForegroundColor = ConsoleColor.DarkGray;
             //AnsiCodesHelper.PrintAnsiColors();
-            //AnsiCodesHelper.PrintPalete(false);
+            //AnsiCodesHelper.PrintPalete();
 
             var obj = new
             {
@@ -38,9 +38,17 @@ namespace AVS.CoreLib.Loggers.TestApp
                 Prop3 = "prop value"
             };
 
+            _logger.LogInformation("simple info log");
+            _logger.LogInformation("info log with simple argument: #{arg}", 15);
+            _logger.LogInformation("info log with simple argument: {arg}", 1.ToString("C"));
+            _logger.LogInformation("info log with simple arg1: {arg} arg2: {arg2}", 1.25, (-22).ToString());
+            _logger.LogInformation("info log with arguments: {arg1} some text {arg2}{arg3}", 1.ToString("P"), obj, "argument long text asdad asd asd asdasdadadsd");
+            _logger.LogInformation($"info log with json text: {obj.ToJsonString()}");
+
+
             using (var scope = _logger.BeginScope($"test logger scope"))
             {
-                //_logger.LogInformation("test info log {colored message:-Cyan} {100500:-Red}");
+                _logger.LogInformation("test info log $colored message:-Cyan$ $100500:-Red$");
                 //_logger.LogInformation("\u001b[31mtest ANSI colors output\u001b[0m");
                
                 _logger.LogWarning("test warning log {obj}",obj);
@@ -65,8 +73,8 @@ namespace AVS.CoreLib.Loggers.TestApp
 
         public void Print()
         {
-            _logger.LogInformation($"{nameof(NestedService)} info log  {{colored message:-Blue}} {{100500:-Green}}");
-            _logger.LogWarning($"{nameof(NestedService)} warning log {{colored message:-Yellow}}");
+            _logger.LogInformation($"{nameof(NestedService)} info log  $colored message:-Blue$ $100500:-Green$");
+            _logger.LogWarning($"{nameof(NestedService)} warning log $colored message:-Yellow$");
             _logger.LogError($"{nameof(NestedService)} error log");
 
             using (var scope = _logger.BeginScope($"{nameof(NestedService)} scope"))

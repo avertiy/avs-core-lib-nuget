@@ -1,24 +1,22 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace AVS.CoreLib.Text.Formatters.ColorMarkup
+namespace AVS.CoreLib.Logging.ColorFormatter.ColorMakup
 {
     /// <summary>
-    /// ColorMarkupString is a string wrapper allows to iterate string through markup blocks in tuples (string plainText, string color scheme, string coloredText)
-    /// color markup string looks similar to format string "some plain text {text:-ForegroundColor} some other plain text {text:--BackgroundColor}"
+    /// ColorMarkupString2 is a string wrapper allows to iterate string through color markup blocks $arg:color scheme$
+    /// w.g. $plain text $red text:-Red$ $blue background:--Blue$"
+    /// 
     /// </summary>
-    public class ColorMarkupString : IEnumerable<(string text, string colorScheme, string coloredText)>
+    /// <remarks>ColorMarkupString2 uses $ signs instead of curly brackets used by ColorMarkupString, this allows to avoid conflicts with string format arguments</remarks>
+    public class ColorMarkupString2 : IEnumerable<(string text, string colorScheme, string coloredText)>
     {
         /// <summary>
-        /// parses text and color scheme {text:-ForegroundColor --BackgroundColor}
+        /// parses text and color scheme $text:-ForegroundColor --BackgroundColor$
         /// regex is not strict 
         /// </summary>
-        internal static readonly Regex regex = new Regex("{(?<text>.*?):(?<scheme>-.*?)}");
-        /// <summary>
-        /// match colorized string like @:Color e.g. "some text@:Red"
-        /// </summary>
-        internal static readonly Regex regex2 = new Regex("@:(?<color>(.{3,12}))$");
+        internal static readonly Regex regex = new Regex("\\$(?<text>.*?):(?<scheme>-.*?)\\$");
+        
         /// <summary>
         /// initial string
         /// </summary>
@@ -27,7 +25,7 @@ namespace AVS.CoreLib.Text.Formatters.ColorMarkup
         /// <summary>
         /// C-tor 
         /// </summary>
-        public ColorMarkupString(string str)
+        public ColorMarkupString2(string str)
         {
             Value = str;
         }
@@ -43,8 +41,8 @@ namespace AVS.CoreLib.Text.Formatters.ColorMarkup
                 pos = match.Index + match.Length;
 
                 var colorScheme = match.Groups["scheme"].Value;
-
-                if (colorScheme.StartsWith(":"))
+                
+                if(colorScheme.StartsWith(":"))
                     colorScheme = colorScheme.Substring(1);
 
                 var coloredText = match.Groups["text"].Value;
@@ -73,9 +71,9 @@ namespace AVS.CoreLib.Text.Formatters.ColorMarkup
         /// <summary>
         /// creates ColorMarkupString from str
         /// </summary>
-        public static explicit operator ColorMarkupString(string str)
+        public static explicit operator ColorMarkupString2(string str)
         {
-            return new ColorMarkupString(str);
+            return new ColorMarkupString2(str);
         }
 
         /// <inheritdoc />

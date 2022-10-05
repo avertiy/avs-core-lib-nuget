@@ -1,5 +1,5 @@
-﻿using AVS.CoreLib.Logging.ColorFormatter.Utils;
-using AVS.CoreLib.Text.Formatters.ColorMarkup;
+﻿using AVS.CoreLib.Logging.ColorFormatter.ColorMakup;
+using AVS.CoreLib.Logging.ColorFormatter.Utils;
 
 namespace AVS.CoreLib.Logging.ColorFormatter.Extensions
 {
@@ -38,7 +38,7 @@ namespace AVS.CoreLib.Logging.ColorFormatter.Extensions
             writer.Write(AnsiCodesHelper.GetForegroundColorEscapeCode(Console.ForegroundColor));
         }
 
-        public static void WriteColorMarkupString(this TextWriter writer, ColorMarkupString str)
+        public static void WriteColorMarkupString(this TextWriter writer, ColorMarkupString2 str)
         {
             foreach (var (plainText, colorScheme, coloredText) in str)
             {
@@ -57,7 +57,7 @@ namespace AVS.CoreLib.Logging.ColorFormatter.Extensions
 
         private static void WriteColored(this TextWriter writer, string text, string colorScheme)
         {
-            if (ColorMarkupHelper.TryParse(colorScheme, out var foreground, out var background))
+            if (ColorMarkup2Helper.TryParse(colorScheme, out var foreground, out var background))
             {   
                 writer.WriteColored(text, background, foreground);
             }
