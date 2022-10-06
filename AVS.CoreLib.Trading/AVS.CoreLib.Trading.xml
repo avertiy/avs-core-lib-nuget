@@ -4,6 +4,16 @@
         <name>AVS.CoreLib.Trading</name>
     </assembly>
     <members>
+        <member name="T:AVS.CoreLib.Trading.Collections.StringCollection">
+            <summary>
+            base type to make bind-able string[] parameter type <see cref="T:AVS.CoreLib.Trading.Collections.Exchanges"/>
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Collections.StringCollection.System#Collections#Generic#ICollection{System#String}#Add(System.String)">
+            <summary>
+            the Add method implemented explicitly due to model binding mechanics 
+            </summary>
+        </member>
         <member name="F:AVS.CoreLib.Trading.Enums.CandleSize.Small">
             <summary>
             a short candle with a little price differences
@@ -301,63 +311,71 @@
             Can parse BalanceBook from strings like "0.2 BTC;10 USD; 25 TRX;0.05 ETH" 
             </summary>
         </member>
-        <member name="M:AVS.CoreLib.Trading.Structs.CurrencyBalance.Parse(System.String)">
+        <member name="P:AVS.CoreLib.Trading.Prices.PriceHelper.Prices">
             <summary>
-            parses values like 10.00 UAH, 2.2 XRP into currency balance 
+            these are indicative prices for purposes like ranking coins by value relative to other coins
+            indicative means for example BTC is ~10 times bigger than ETH or ~100 times bigger than BCH, LTC etc. 
             </summary>
-            <param name="str">"100.00 UAH"</param>
         </member>
-        <member name="T:AVS.CoreLib.Trading.Structs.CurrencyValue">
+        <member name="T:AVS.CoreLib.Trading.Types.CurrencyPair">
+            <summary>
+            in `BTC_USDT`, BTC is a base currency, USDT is a quote currency
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Types.CurrencyPair.Parse(System.String,System.Boolean)">
+            <summary>
+            Parse <see cref="T:AVS.CoreLib.Trading.Types.CurrencyPair"/> instance from symbol/pair string
+            </summary>
+            <param name="value">symbols like `BTC_USDT` or pairs like 'BTC/USDT' </param>
+            <param name="isBaseCurrencyFirst">base currency in `BTC_USDT` is BTC</param>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Types.CurrencyValue">
             <summary>
             Represents values like 10.00 UAH, 2.2 XRP etc.
             </summary>
         </member>
-        <member name="M:AVS.CoreLib.Trading.Structs.CurrencyValue.Parse(System.String)">
+        <member name="M:AVS.CoreLib.Trading.Types.CurrencyValue.Parse(System.String)">
             <summary>
             parses string for the value
             </summary>
             <param name="str">"100.00 UAH"</param>
         </member>
-        <member name="M:AVS.CoreLib.Trading.Structs.PairCurrencyValue.Parse(System.String)">
+        <member name="M:AVS.CoreLib.Trading.Types.CurrencyBalance.Parse(System.String)">
+            <summary>
+            parses values like 10.00 UAH, 2.2 XRP into currency balance 
+            </summary>
+            <param name="str">"100.00 UAH"</param>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Types.PairCurrencyValue.Parse(System.String)">
             <summary>
             parses values like 0.2 BTC;10 USD into corresponding PairAmount value 
             </summary>
         </member>
-        <member name="T:AVS.CoreLib.Trading.Structs.PairString">
+        <member name="T:AVS.CoreLib.Trading.Types.PairString">
             <summary>
             by default PairString supposed to be a "normalized pair" e.g. USDT_BTC, which is opposite to symbol format BTC_USDT
-            this is historical issue, <see cref="T:AVS.CoreLib.Trading.Structs.Symbol"/> was introduced recently
-            <see cref="T:AVS.CoreLib.Trading.Structs.Symbol"/> is less confusing due to many exchanges upgraded their api and operate with symbols
+            this is historical issue, <see cref="T:AVS.CoreLib.Trading.Types.Symbol"/> was introduced recently
+            <see cref="T:AVS.CoreLib.Trading.Types.Symbol"/> is less confusing due to many exchanges upgraded their api and operate with symbols
             </summary>
         </member>
-        <member name="M:AVS.CoreLib.Trading.Structs.PairString.ToSymbol">
+        <member name="M:AVS.CoreLib.Trading.Types.PairString.ToSymbol">
             <summary>
             under symbol mean base currency in a 2nd position
             </summary>
             <returns></returns>
         </member>
-        <member name="T:AVS.CoreLib.Trading.Structs.Symbol">
+        <member name="T:AVS.CoreLib.Trading.Types.Symbol">
             <summary>
             Symbol represent a trade instrument, most exchanges operate symbols 
-            <see cref="T:AVS.CoreLib.Trading.Structs.Symbol"/> format convention is [base_currency]_[quote_currency] e.g. BTC_USDT
+            <see cref="T:AVS.CoreLib.Trading.Types.Symbol"/> format convention is [base_currency]_[quote_currency] e.g. BTC_USDT
             </summary>
             <remarks>
-            this type replace <see cref="T:AVS.CoreLib.Trading.Structs.PairString"/>  pair `USDT_BTC` pair is a `BTC_USDT` symbol, i.e. swap quote and base currencies 
+            this type replace <see cref="T:AVS.CoreLib.Trading.Types.PairString"/>  pair `USDT_BTC` pair is a `BTC_USDT` symbol, i.e. swap quote and base currencies 
             </remarks>
-        </member>
-        <member name="T:AVS.CoreLib.Trading.Types.StringCollection">
-            <summary>
-            base type to make bind-able string[] parameter type <see cref="T:AVS.CoreLib.Trading.Types.Exchanges"/>
-            </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Trading.Types.StringCollection.System#Collections#Generic#ICollection{System#String}#Add(System.String)">
-            <summary>
-            the Add method implemented explicitly due to model binding mechanics 
-            </summary>
         </member>
         <member name="T:AVS.CoreLib.Trading.Types.Symbols">
             <summary>
-            type to deal with a collection of symbols (trading instrument) <see cref="T:AVS.CoreLib.Trading.Structs.Symbol"/>   
+            type to deal with a collection of symbols (trading instrument) <see cref="T:AVS.CoreLib.Trading.Types.Symbol"/>   
             </summary>
         </member>
     </members>

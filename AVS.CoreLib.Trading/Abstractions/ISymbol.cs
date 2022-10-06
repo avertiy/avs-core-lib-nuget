@@ -1,7 +1,7 @@
 ﻿namespace AVS.CoreLib.Trading.Abstractions
 {
-    public interface IPair
+    public interface ISymbol
     {
-        string Pair { get; }
+        string Symbol { get; }
     }
 }

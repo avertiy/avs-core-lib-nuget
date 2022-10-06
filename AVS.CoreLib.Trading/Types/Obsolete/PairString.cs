@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 using AVS.CoreLib.Abstractions;
 using AVS.CoreLib.Extensions;
 
-namespace AVS.CoreLib.Trading.Structs
+namespace AVS.CoreLib.Trading.Types
 {
     /// <summary>
     /// by default PairString supposed to be a "normalized pair" e.g. USDT_BTC, which is opposite to symbol format BTC_USDT
@@ -15,8 +15,8 @@ namespace AVS.CoreLib.Trading.Structs
     /// </summary>
     [TypeConverter(typeof(PairStringTypeConverter))]
     [DebuggerDisplay("PairString: {Value}")]
-    [Obsolete("use Symbol struct instead, don't forget the difference pair format is USDT_BTC, while symbol format is BTC_USDT")]
-    public struct PairString : IHasValue
+    [Obsolete("use Symbol instead, don't forget the difference pair format is USDT_BTC, while symbol format is BTC_USDT")]
+    public class PairString : IHasValue
     {
         public PairString(string pair)
         {
@@ -40,7 +40,7 @@ namespace AVS.CoreLib.Trading.Structs
 
         public string ToTradingPair()
         {
-            return Value.Swap('_','/');
+            return Value.Swap('_', '/');
         }
 
         public override string ToString()
@@ -84,9 +84,7 @@ namespace AVS.CoreLib.Trading.Structs
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {
             if (sourceType == typeof(string))
-            {
                 return true;
-            }
             return base.CanConvertFrom(context, sourceType);
         }
 
@@ -94,9 +92,7 @@ namespace AVS.CoreLib.Trading.Structs
             CultureInfo culture, object value)
         {
             if (value is string)
-            {
                 return new PairString(value.ToString().ToUpper());
-            }
             return base.ConvertFrom(context, culture, value);
         }
     }

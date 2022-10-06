@@ -2,7 +2,7 @@
 using System.Linq;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Trading.Abstractions;
-using AVS.CoreLib.Trading.Structs;
+using AVS.CoreLib.Trading.Types;
 
 namespace AVS.CoreLib.Trading.Extensions
 {
@@ -19,6 +19,12 @@ namespace AVS.CoreLib.Trading.Extensions
         public static string GetQuoteCurrency(this string symbol)
         {
             return symbol.Split('_')[1];
+        }
+
+        public static bool IsUsdPeggedPair(this string symbol)
+        {
+            var cp = CurrencyPair.Parse(symbol, true);
+            return cp.BaseCurrency.Contains("USD") || cp.BaseCurrency.Either("DAI", "PAX");
         }
     }
 
@@ -50,11 +56,7 @@ namespace AVS.CoreLib.Trading.Extensions
             return cp.BaseCurrency.Contains("USD");
         }
 
-        public static bool IsUsdPeggedPair(this string pair)
-        {
-            var cp = CurrencyPair.Parse(pair, true);
-            return cp.BaseCurrency.Contains("USD") || cp.BaseCurrency.Either("DAI", "PAX");
-        }
+        
 
         public static bool MatchBaseCurrency(this string pair, string currency)
         {
@@ -76,17 +78,17 @@ namespace AVS.CoreLib.Trading.Extensions
             return symbols.Any(x => pair.StartsWith(x + "_"));
         }
 
-        public static CurrencyPair GetCurrencyPair(this IPair obj)
+        public static CurrencyPair GetCurrencyPair(this ISymbol obj)
         {
-            return new CurrencyPair(obj.Pair, true);
+            return new CurrencyPair(obj.Symbol, true);
         }
 
-        public static string QuoteCurrency(this IPair obj)
+        public static string QuoteCurrency(this ISymbol obj)
         {
             return obj.GetCurrencyPair().QuoteCurrency;
         }
 
-        public static string BaseCurrency(this IPair obj)
+        public static string BaseCurrency(this ISymbol obj)
         {
             return obj.GetCurrencyPair().BaseCurrency;
         }

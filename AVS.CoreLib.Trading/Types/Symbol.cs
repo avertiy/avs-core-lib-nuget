@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Text.Json.Serialization;
 using AVS.CoreLib.Abstractions;
 
-namespace AVS.CoreLib.Trading.Structs
+namespace AVS.CoreLib.Trading.Types
 {
     /// <summary>
     /// Symbol represent a trade instrument, most exchanges operate symbols 
@@ -16,7 +16,7 @@ namespace AVS.CoreLib.Trading.Structs
     /// </remarks>
     [TypeConverter(typeof(SymbolTypeConverter))]
     [DebuggerDisplay("Symbol: {Value}")]
-    public struct Symbol : IHasValue
+    public class Symbol : IHasValue
     {
         [DebuggerStepThrough]
         public Symbol(string value)
@@ -24,7 +24,7 @@ namespace AVS.CoreLib.Trading.Structs
             Value = value;
         }
 
-        public string Value;
+        public string Value { get; }
 
         [JsonIgnore]
         public bool HasValue => !string.IsNullOrEmpty(Value);
@@ -39,7 +39,7 @@ namespace AVS.CoreLib.Trading.Structs
         {
             return Value;
         }
-       
+
         public static implicit operator string(Symbol s)
         {
             return s.Value;
@@ -85,9 +85,7 @@ namespace AVS.CoreLib.Trading.Structs
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {
             if (sourceType == typeof(string))
-            {
                 return true;
-            }
             return base.CanConvertFrom(context, sourceType);
         }
 
@@ -95,9 +93,7 @@ namespace AVS.CoreLib.Trading.Structs
             CultureInfo culture, object value)
         {
             if (value is string)
-            {
                 return new Symbol(value.ToString().ToUpper());
-            }
             return base.ConvertFrom(context, culture, value);
         }
     }

@@ -2,10 +2,10 @@
 using AVS.CoreLib.Trading.Exceptions;
 using AVS.CoreLib.Trading.Helpers;
 
-namespace AVS.CoreLib.Trading.Structs
+namespace AVS.CoreLib.Trading.Types
 {
-    [Obsolete("Use CurrencyValue instead")]
-    public struct CurrencyBalance
+    [Obsolete("Consider using CurrencyValue")]
+    public class CurrencyBalance
     {
         public string Currency;
         public decimal Balance;
@@ -50,9 +50,7 @@ namespace AVS.CoreLib.Trading.Structs
                 throw new ArgumentException($"String '{str}' is not recognized as a valid currency value");
 
             if (NumericHelper.TryParseDecimal(parts[0], out var value))
-            {
                 return new CurrencyValue(parts[1], value);
-            }
 
             throw new ArgumentException($"Unable to parse '{str}' into currency value");
         }

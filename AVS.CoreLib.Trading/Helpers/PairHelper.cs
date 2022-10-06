@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AVS.CoreLib.Extensions;
-using AVS.CoreLib.Trading.Structs;
+using AVS.CoreLib.Trading.Types;
 
 namespace AVS.CoreLib.Trading.Helpers
 {

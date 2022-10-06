@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using TimeFrameEnum = AVS.CoreLib.Trading.Enums.TimeFrame;
-namespace AVS.CoreLib.Trading.Types
+namespace AVS.CoreLib.Trading.Structs
 {
     [TypeConverter(typeof(TimeFrameTypeConverter))]
     public readonly struct TimeFrame
@@ -36,10 +36,8 @@ namespace AVS.CoreLib.Trading.Types
         public override string ToString()
         {
             foreach (var kp in Literals)
-            {
                 if (kp.Value == Value)
                     return kp.Key;
-            }
             return Value.ToString();
         }
 
@@ -78,9 +76,7 @@ namespace AVS.CoreLib.Trading.Types
         public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
         {
             if (sourceType == typeof(string))
-            {
                 return true;
-            }
             return base.CanConvertFrom(context, sourceType);
         }
 
@@ -88,12 +84,8 @@ namespace AVS.CoreLib.Trading.Types
             CultureInfo culture, object value)
         {
             if (value is string)
-            {
-                if (TimeFrame.TryParse((string)value, out TimeFrame timeFrame))
-                {
+                if (TimeFrame.TryParse((string)value, out var timeFrame))
                     return timeFrame;
-                }
-            }
             return base.ConvertFrom(context, culture, value);
         }
     }

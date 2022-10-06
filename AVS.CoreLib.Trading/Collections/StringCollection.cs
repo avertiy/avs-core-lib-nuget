@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using AVS.CoreLib.Extensions;
 
-namespace AVS.CoreLib.Trading.Types
+namespace AVS.CoreLib.Trading.Collections
 {
     /// <summary>
     /// base type to make bind-able string[] parameter type <see cref="Exchanges"/>
@@ -33,23 +33,17 @@ namespace AVS.CoreLib.Trading.Types
         /// </summary>
         void ICollection<string>.Add(string str)
         {
-            if (String.IsNullOrEmpty(str))
+            if (string.IsNullOrEmpty(str))
                 return;
 
             if (str.Either("all", "*") && AllItems.Length > 0)
-            {
                 foreach (var exchange in AllItems)
                     base.Add(exchange);
-            }
             else if (str.Contains(","))
-            {
                 foreach (var exchange in str.Split(',', StringSplitOptions.RemoveEmptyEntries))
                     base.Add(exchange);
-            }
             else
-            {
                 base.Add(str);
-            }
         }
 
         public override string ToString()

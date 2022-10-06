@@ -6,7 +6,7 @@ using AVS.CoreLib.Trading.Abstractions;
 namespace AVS.CoreLib.Trading.Collections
 {
     public interface IDataCollection<TData> : ICollection<TData>
-        where TData : IExchange, IPair
+        where TData : IExchange, ISymbol
     {
         IEnumerable<TData> GetByExchange(string exchange);
         IEnumerable<TData> GetByPair(string pair);
@@ -18,7 +18,7 @@ namespace AVS.CoreLib.Trading.Collections
         IEnumerable<string> GetAllExchanges();
     }
 
-    public class DataCollection<TData> : KeyedCollection<string, TData> where TData : IExchange, IPair
+    public class DataCollection<TData> : KeyedCollection<string, TData> where TData : IExchange, ISymbol
     {
         public IEnumerable<TData> GetByExchange(string exchange)
         {
@@ -27,23 +27,23 @@ namespace AVS.CoreLib.Trading.Collections
 
         public IEnumerable<TData> GetByPair(string pair)
         {
-            return Items.Where(x => x.Pair == pair);
+            return Items.Where(x => x.Symbol == pair);
         }
 
         public bool Contains(string exchange, string pair)
         {
-            return Items.Any(x => x.Exchange == exchange && x.Pair == pair);
+            return Items.Any(x => x.Exchange == exchange && x.Symbol == pair);
         }
 
         public TData this[string exchange, string pair]
         {
             get
             {
-                return Items.FirstOrDefault(x => x.Exchange == exchange && x.Pair == pair);
+                return Items.FirstOrDefault(x => x.Exchange == exchange && x.Symbol == pair);
             }
             set
             {
-                var item = Items.FirstOrDefault(x => x.Exchange == exchange && x.Pair == pair);
+                var item = Items.FirstOrDefault(x => x.Exchange == exchange && x.Symbol == pair);
                 if (item != null)
                 {
                     Items.Remove(item);
@@ -58,7 +58,7 @@ namespace AVS.CoreLib.Trading.Collections
             if (exchange != null)
                 source = source.Where(x => x.Exchange == exchange);
 
-            return source.Select(x => x.Pair);
+            return source.Select(x => x.Symbol);
         }
 
         public IEnumerable<string> GetAllExchanges()
@@ -68,7 +68,7 @@ namespace AVS.CoreLib.Trading.Collections
 
         protected override string GetKeyForItem(TData item)
         {
-            return $"{item.Exchange}-{item.Pair}";
+            return $"{item.Exchange}-{item.Symbol}";
         }
     }
 }

@@ -118,7 +118,7 @@ public static class ColorMarkup2Helper
             else if (type == ArgumentType.Numeric && parts[i].EndsWith("#"))
             {
                 var colors = getColors(type);
-                var markup = $"{parts[i].Substring(0, parts[i].Length-2)}$#{values[i]}:{colors.ToString()}$";
+                var markup = $"{parts[i].Substring(0, parts[i].Length-1)}$#{values[i]}:{colors.ToString()}$";
                 sb.Append(markup);
             }
             else
@@ -143,7 +143,7 @@ public static class ColorMarkup2Helper
             else if (type == ArgumentType.Numeric && parts[i].EndsWith("#"))
             {
                 var colors = getColors(type);
-                var markup = $"{parts[i].Substring(0, parts[i].Length - 2)}$#{values[i]}:{colors.ToString()}$";
+                var markup = $"{parts[i].Substring(0, parts[i].Length - 1)}$#{values[i]}:{colors.ToString()}$";
                 sb.Append(markup);
             }
             else

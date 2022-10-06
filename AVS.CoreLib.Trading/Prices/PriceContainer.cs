@@ -1,16 +1,14 @@
 ﻿using System.Collections.Generic;
 
-namespace AVS.CoreLib.Trading.Types
+namespace AVS.CoreLib.Trading.Prices
 {
     public interface IPriceContainer
     {
         //decimal BtcUsd { get; set; }
-        decimal this[string pair] { get; set; }
-
-        void Add(string pair, decimal price);
+        decimal this[string symbol] { get; set; }
+        void Add(string symbol, decimal price);
         void Update(IDictionary<string, decimal> prices);
-
-        bool Contains(string pair);
+        bool Contains(string symbol);
     }
 
     public class PriceContainer : IPriceContainer
@@ -25,19 +23,19 @@ namespace AVS.CoreLib.Trading.Types
 
         public decimal BtcUsd
         {
-            get => this["USDT_BTC"];
-            set => this["USDT_BTC"] = value;
+            get => this["BTC_USDT"];
+            set => this["BTC_USDT"] = value;
         }
 
-        public decimal this[string pair]
+        public decimal this[string symbol]
         {
-            get => Items.ContainsKey(pair) ? Items[pair] : 0;
-            set => Items[pair] = value;
+            get => Items.ContainsKey(symbol) ? Items[symbol] : 0;
+            set => Items[symbol] = value;
         }
 
-        public void Add(string pair, decimal price)
+        public void Add(string symbol, decimal price)
         {
-            Items.Add(pair, price);
+            Items.Add(symbol, price);
         }
 
         public void Update(IDictionary<string, decimal> prices)
@@ -49,9 +47,9 @@ namespace AVS.CoreLib.Trading.Types
                 Items[kp.Key] = kp.Value;
         }
 
-        public bool Contains(string pair)
+        public bool Contains(string symbol)
         {
-            return Items.ContainsKey(pair);
+            return Items.ContainsKey(symbol);
         }
     }
 }

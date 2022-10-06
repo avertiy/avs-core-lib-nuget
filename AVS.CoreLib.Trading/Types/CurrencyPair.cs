@@ -1,24 +1,27 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 
-namespace AVS.CoreLib.Trading.Structs
+namespace AVS.CoreLib.Trading.Types
 {
-    public readonly struct CurrencyPair
+    /// <summary>
+    /// in `BTC_USDT`, BTC is a base currency, USDT is a quote currency
+    /// </summary>
+    public class CurrencyPair
     {
         public string QuoteCurrency { get; }
         public string BaseCurrency { get; }
 
-        public CurrencyPair(string quoteCurrency, string baseCurrency)
+        public CurrencyPair(string baseCurrency, string quoteCurrency)
         {
-            QuoteCurrency = quoteCurrency;
             BaseCurrency = baseCurrency;
+            QuoteCurrency = quoteCurrency;
         }
 
-        public CurrencyPair(string pair, bool isBaseCurrencyFirst = true)
+        public CurrencyPair(string value, bool isBaseCurrencyFirst = true)
         {
-            var parts = pair.Split('_');
+            var parts = value.Split('_', '/');
             if (parts.Length != 2)
-                throw new ArgumentException($"`{pair}` invalid currency pair");
+                throw new ArgumentException($"`{value}` invalid {nameof(CurrencyPair)}");
 
             if (isBaseCurrencyFirst)
             {
@@ -56,7 +59,7 @@ namespace AVS.CoreLib.Trading.Structs
                 return false;
 
             var p2 = (CurrencyPair)obj;
-            return (BaseCurrency == p2.BaseCurrency && QuoteCurrency == p2.QuoteCurrency);
+            return BaseCurrency == p2.BaseCurrency && QuoteCurrency == p2.QuoteCurrency;
         }
 
         public override int GetHashCode()
@@ -71,6 +74,7 @@ namespace AVS.CoreLib.Trading.Structs
 
         public string ToSymbol()
         {
+            // BTC_USDT
             return $"{BaseCurrency}_{QuoteCurrency}";
         }
 
@@ -84,13 +88,19 @@ namespace AVS.CoreLib.Trading.Structs
             return $"{BaseCurrency}_{QuoteCurrency}";
         }
 
-        public static CurrencyPair Parse(string pair, bool isBaseCurrencyFirst = true)
+        /// <summary>
+        /// Parse <see cref="CurrencyPair"/> instance from symbol/pair string
+        /// </summary>
+        /// <param name="value">symbols like `BTC_USDT` or pairs like 'BTC/USDT' </param>
+        /// <param name="isBaseCurrencyFirst">base currency in `BTC_USDT` is BTC</param>
+        public static CurrencyPair Parse(string value, bool isBaseCurrencyFirst = true)
         {
-            var parts = pair.Split('_');
+            //BTC_USDT or BTC/USDT
+            var parts = value.Split('_','/');
             if (parts.Length != 2)
-                throw new ArgumentException($"`{pair}` invalid currency pair");
+                throw new ArgumentException($"`{value}` invalid currency pair");
 
-            return isBaseCurrencyFirst ? new CurrencyPair(parts[1], parts[0]) : new CurrencyPair(parts[0], parts[1]);
+            return isBaseCurrencyFirst ? new CurrencyPair(parts[0], parts[1]) : new CurrencyPair(parts[1], parts[0]);
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using AVS.CoreLib.Abstractions;
 using AVS.CoreLib.Extensions;
-using AVS.CoreLib.Trading.Structs;
 
 namespace AVS.CoreLib.Trading.Types
 {

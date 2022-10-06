@@ -2,18 +2,19 @@
 using System.Linq;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Trading.Enums;
+using AVS.CoreLib.Trading.Extensions;
 using AVS.CoreLib.Trading.Helpers;
-using AVS.CoreLib.Trading.Structs;
+using AVS.CoreLib.Trading.Types;
 
-namespace AVS.CoreLib.Trading.Types
+namespace AVS.CoreLib.Trading.Collections
 {
-    public class Currencies : StringCollection
+    public class CurrencyCollection : StringCollection
     {
-        public Currencies()
+        public CurrencyCollection()
         {
         }
 
-        public Currencies(params string[] items) : base(items)
+        public CurrencyCollection(params string[] items) : base(items)
         {
         }
 
@@ -26,18 +27,26 @@ namespace AVS.CoreLib.Trading.Types
             return Any || Category.HasValue && Category.Value == CryptoCategory.All;
         }
 
-        public bool MatchPair(string pair)
+        public bool MatchQuoteCurrency(string symbol)
         {
             if (IsAllOrAny())
                 return true;
-            var cp = new CurrencyPair(pair);
-            return Contains(cp.QuoteCurrency);
+
+            return Contains(symbol.GetQuoteCurrency());
+        }
+
+        public bool MatchBaseCurrency(string symbol)
+        {
+            if (IsAllOrAny())
+                return true;
+
+            return Contains(symbol.GetBaseCurrency());
         }
 
         //[DebuggerStepThrough]
-        public static implicit operator Currencies(string currencies)
+        public static implicit operator CurrencyCollection(string currencies)
         {
-            var res = new Currencies();
+            var res = new CurrencyCollection();
 
             if (string.IsNullOrEmpty(currencies))
                 return res;
@@ -66,7 +75,7 @@ namespace AVS.CoreLib.Trading.Types
 
         public string[] ToArray()
         {
-            return Category.HasValue ? TradingHelper.Instance.GetCurrencies(Category.Value) : this.Items.ToArray();
+            return Category.HasValue ? TradingHelper.Instance.GetCurrencies(Category.Value) : Items.ToArray();
         }
 
         internal override string[] AllItems => Array.Empty<string>();

@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using AVS.CoreLib.Trading.Helpers;
 
-namespace AVS.CoreLib.Trading.Types
+namespace AVS.CoreLib.Trading.Collections
 {
     public class Exchanges : StringCollection
     {

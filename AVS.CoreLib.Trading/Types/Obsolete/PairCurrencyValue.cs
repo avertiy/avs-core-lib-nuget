@@ -3,11 +3,12 @@ using AVS.CoreLib.Trading.Exceptions;
 using AVS.CoreLib.Trading.Extensions;
 using AVS.CoreLib.Trading.Helpers;
 
-namespace AVS.CoreLib.Trading.Structs
+namespace AVS.CoreLib.Trading.Types
 {
-    public struct PairCurrencyValue
+    [Obsolete("looks not much usable type..")]
+    public class PairCurrencyValue
     {
-        public readonly string Pair;
+        public string Pair { get; }
 
         private decimal _quote;
         private decimal _base;
@@ -62,14 +63,10 @@ namespace AVS.CoreLib.Trading.Structs
         public static CurrencyValue operator +(PairCurrencyValue pb, CurrencyValue balance)
         {
             if (pb.Pair.QuoteCurrency() == balance.Currency)
-            {
                 pb.CreditQuote(balance.Value);
-            }
 
             if (pb.Pair.BaseCurrency() == balance.Currency)
-            {
                 pb.CreditBase(balance.Value);
-            }
 
             throw new ArgumentException($"Unable to do operation on {pb.Pair} with {balance.Currency}");
         }
@@ -77,14 +74,10 @@ namespace AVS.CoreLib.Trading.Structs
         public static CurrencyValue operator -(PairCurrencyValue pb, CurrencyValue balance)
         {
             if (pb.Pair.QuoteCurrency() == balance.Currency)
-            {
                 pb.DebitQuote(balance.Value);
-            }
 
             if (pb.Pair.BaseCurrency() == balance.Currency)
-            {
                 pb.DebitBase(balance.Value);
-            }
 
             throw new ArgumentException($"Unable to do operation on {pb.Pair} with {balance.Currency}");
         }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using AVS.CoreLib.Trading.Extensions;
 using AVS.CoreLib.Trading.Helpers;
-using AVS.CoreLib.Trading.Structs;
+using AVS.CoreLib.Trading.Types;
 
 namespace AVS.CoreLib.Trading.Models.Balance
 {

@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using AVS.CoreLib.Trading.Collections;
 using AVS.CoreLib.Trading.Helpers;
 using AVS.CoreLib.Trading.Structs;
 
 namespace AVS.CoreLib.Trading.Types
 {
+    [Obsolete("Use CurrencyCollection instead")]
     public class BaseCurrencies : StringCollection
     {
         public BaseCurrencies()
@@ -21,10 +24,10 @@ namespace AVS.CoreLib.Trading.Types
             return Parse<BaseCurrencies>(exchanges);
         }
 
-        public bool MatchPair(string pair)
+        public bool MatchQuote(string symbol)
         {
-            var cp = new CurrencyPair(pair);
-            return Contains(cp.BaseCurrency);
+            var cp = new CurrencyPair(symbol);
+            return Contains(cp.QuoteCurrency);
         }
 
         internal override string[] AllItems => TradingHelper.Instance.GetBaseCurrencies();

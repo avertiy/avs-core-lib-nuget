@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using AVS.CoreLib.Extensions;
+using AVS.CoreLib.Trading.Collections;
 using AVS.CoreLib.Trading.Helpers;
-using AVS.CoreLib.Trading.Structs;
 
 namespace AVS.CoreLib.Trading.Types
 {

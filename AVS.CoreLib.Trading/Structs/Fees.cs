@@ -1,8 +1,8 @@
 ﻿namespace AVS.CoreLib.Trading.Structs
 {
-    public readonly struct ExchangeFees
+    public readonly struct Fees
     {
-        public ExchangeFees(decimal makerFee, decimal takerFee)
+        public Fees(decimal makerFee, decimal takerFee)
         {
             MakerFee = makerFee;
             TakerFee = takerFee;

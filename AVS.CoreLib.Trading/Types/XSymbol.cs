@@ -1,6 +1,6 @@
 ﻿using AVS.CoreLib.Abstractions;
 
-namespace AVS.CoreLib.Trading.Structs
+namespace AVS.CoreLib.Trading.Types
 {
     public struct XSymbol : IHasValue
     {
