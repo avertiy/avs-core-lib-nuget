@@ -7,6 +7,17 @@ namespace AVS.CoreLib.Collections.Extensions
 {
     public static class ListExtensions
     {
+        public static void AddRange<T>(this IList<T> source, params T[] items)
+        {
+            foreach (var item in items) 
+                source.Add(item);
+        }
+        public static void AddRange<T>(this IList<T> source, IEnumerable<T> items)
+        {
+            foreach (var item in items)
+                source.Add(item);
+        }
+
         public static bool ContainsAll<T>(this IList<T> source, params T[] items)
         {
             if (source.Count < items.Length)

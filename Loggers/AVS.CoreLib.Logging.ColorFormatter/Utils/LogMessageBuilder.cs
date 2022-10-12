@@ -44,7 +44,7 @@ public class LogMessageBuilder
             return;
 
         var logLevelString = logLevel.GetLogLevelText() + LOGLEVEL_PADDING;
-        var colors = logLevel.GetConsoleColors(ColorBehavior);
+        var colors = logLevel.GetLogLevelConsoleColors(ColorBehavior);
         Append(logLevelString, colors);
         _sb.EnsureWhitespace();
     }
@@ -89,17 +89,15 @@ public class LogMessageBuilder
 
     public void AddMessageText<T>(string message, LogEntry<T> logEntry, Func<ArgumentType, ConsoleColors> colorizeArgument)
     {
-        if (string.IsNullOrEmpty(message))
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            _sb.Append(message);
             return;
+        }
 
-        var text = SingleLine
-            ? message.Replace(Environment.NewLine, " ")
-            : $"{_messagePadding}{message.Replace(Environment.NewLine, _newLineWithMessagePadding)}{Environment.NewLine}";
-
-
-        var colors = logEntry.LogLevel == LogLevel.Debug
-            ? ConsoleColors.DarkGray
-            : ConsoleColors.Gray;
+        var text = message;
+        
+        var colors = logEntry.LogLevel.GetMessageConsoleColors(ColorBehavior);
 
         var colorMarkup2 = ColorMarkup2Helper.HasEndLineColorMarkup(text, out var colors2, out var index);
         if (colorMarkup2)
@@ -107,17 +105,24 @@ public class LogMessageBuilder
             text = text.Substring(0, index);
             colors = ConsoleColors.Parse(colors2);
         }
-        else if (ArgsColorFormat == ArgsColorFormat.Auto && logEntry.State is IReadOnlyList<KeyValuePair<string, object>> { Count: > 1 } list)
+        else if (ArgsColorFormat == ArgsColorFormat.Auto && 
+                 ColorBehavior != LoggerColorBehavior.Disabled && 
+                 logEntry.State is IReadOnlyList<KeyValuePair<string, object>> { Count: > 1 } list)
         {
-            var keys = list.Select(x => "{" + x.Key + "}").ToArray();
+            var keys = list.Select(x => "{" + x.Key + "}").Take(list.Count-1).ToArray();
             var format = (string)list[^1].Value;
-            text = ColorMarkup2Helper.AddColorMarkup(text, format, keys, colorizeArgument);
+            format = format.TrimStart('\r', '\n');
+            var textWithMarkup = ColorMarkup2Helper.AddColorMarkup(text, format, keys, colorizeArgument);
+            text = textWithMarkup;
         }
+
+        text = SingleLine
+            ? text.Replace(Environment.NewLine, " ")
+            : $"{_messagePadding}{text.Replace(Environment.NewLine, _newLineWithMessagePadding)}{Environment.NewLine}";
+
 
         Append2(text, colors);
     }
-
-
 
     public void AddError(Exception error)
     {

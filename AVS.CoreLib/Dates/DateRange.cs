@@ -11,14 +11,12 @@ namespace AVS.CoreLib.Dates
     [TypeConverter(typeof(DateRangeTypeConverter))]
     public readonly struct DateRange
     {
-        //[JsonProperty("from")]
         public DateTime From { get; }
 
-        //[JsonProperty("to")]
         public DateTime To { get; }
 
-        //[JsonProperty("days")]
-        public int Days => (To - From).Days;
+        public double TotalDays => (To - From).TotalDays;
+        public double TotalSeconds => (To - From).TotalSeconds;
 
         public DateRange(DateRange other)
         {
@@ -56,6 +54,40 @@ namespace AVS.CoreLib.Dates
 
             throw new Exception($"String '{value}' is not valid DateRange value");
         }
+
+        #region Compare operators overloading
+        public static bool operator ==(DateRange dateRange, DateRange compare)
+        {
+            return Math.Abs(dateRange.TotalSeconds - compare.TotalSeconds) < 0.1;
+        }
+
+        public static bool operator !=(DateRange dateRange, DateRange compare)
+        {
+            return Math.Abs(dateRange.TotalSeconds - compare.TotalSeconds) > 0.1;
+        }
+
+        public static bool operator >=(DateRange dateRange, DateRange compare)
+        {
+            return dateRange.TotalSeconds >= compare.TotalSeconds;
+        }
+
+        public static bool operator <=(DateRange dateRange, DateRange compare)
+        {
+            return dateRange.TotalSeconds <= compare.TotalSeconds;
+        }
+
+        public static bool operator >=(DateRange dateRange, int periodInSeconds)
+        {
+            return dateRange.TotalSeconds >= periodInSeconds;
+        }
+
+        public static bool operator <=(DateRange dateRange, int periodInSeconds)
+        {
+            return dateRange.TotalSeconds <= periodInSeconds;
+        }
+
+       
+        #endregion
 
         public override string ToString()
         {

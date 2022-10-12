@@ -31,6 +31,36 @@ namespace AVS.CoreLib.Logging.ColorFormatter.Utils
             };
         }
 
+        public static string GetColorAnsiCode(ConsoleColor color, bool foreground = true)
+        {
+            return foreground
+                ? GetForegroundColorEscapeCode(color)
+                : GetBackgroundColorEscapeCode(color);
+        }
+
+        public static string Colorize(string text, string colorScheme)
+        {
+            var cc = ConsoleColors.Parse(colorScheme);
+            var sb = new StringBuilder();
+
+            if (cc.Background.HasValue)
+                sb.Append(AnsiCodesHelper.GetBackgroundColorEscapeCode(cc.Background.Value));
+
+            if (cc.Foreground.HasValue)
+                sb.Append(AnsiCodesHelper.GetForegroundColorEscapeCode(cc.Foreground.Value));
+
+            sb.Append(text);
+
+            // restore console colors
+            if (cc.Background.HasValue)
+                sb.Append(AnsiCodesHelper.GetBackgroundColorEscapeCode(Console.BackgroundColor));
+
+            if (cc.Foreground.HasValue)
+                sb.Append(AnsiCodesHelper.GetForegroundColorEscapeCode(Console.ForegroundColor));
+
+            return sb.ToString();
+        }
+
         public static string GetBackgroundColorEscapeCode(ConsoleColor color)
         {
             return color switch

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace AVS.CoreLib.Extensions.DependencyInjection
 {
@@ -11,6 +13,67 @@ namespace AVS.CoreLib.Extensions.DependencyInjection
             where TOptions : class, new()
         {
             services.Configure<TOptions>(section.Bind);
+        }
+
+        /// <summary>
+        /// register singleton TOptions type 
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
+        /// <param name="configuration">The <see cref="IConfiguration"/> to get config section.</param>
+        /// <param name="name">The Name to register named options (leave blank to register as a default) [optional]</param>
+        /// <param name="configure">The configure options action [optional]</param>
+        /// <returns></returns>
+        public static IServiceCollection AddOptions<TOptions>(this IServiceCollection services,
+            IConfiguration configuration,
+            string name = null,
+            Action<TOptions> configure = null)
+            where TOptions : class
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            var optionsType = typeof(TOptions);
+            var sectionKey = name == null ? optionsType.Name : $"{optionsType.Name}:{name}";
+            var section = configuration.GetSection(sectionKey);
+            var options = new ConfigureNamedOptions<TOptions>(name ?? string.Empty, o =>
+            {
+                section.Bind(o);
+                configure?.Invoke(o);
+            });
+
+            services.AddSingleton<IConfigureOptions<TOptions>>(options);
+            return services;
+        }
+
+        public static IServiceCollection AddOptions<TOptions>(this IServiceCollection services, Action<TOptions> configureOptions, string name = null)
+            where TOptions : class
+        {
+            if (services == null)
+            {
+                throw new ArgumentNullException(nameof(services));
+            }
+
+            if (configureOptions == null)
+            {
+                throw new ArgumentNullException(nameof(configureOptions));
+            }
+
+            services.AddSingleton<IConfigureOptions<TOptions>>(new ConfigureNamedOptions<TOptions>(name ?? string.Empty, configureOptions));
+            return services;
+        }
+
+        /// <summary>
+        /// Add service factory to register/resolve services of type <typeparamref name="TService"/> by string key
+        /// e.g. services.AddServiceFactory&lt;IMyService&gt;((x, sp) => x == "key1" ? sp.GetService&lt;MyServiceA&gt;() : sp.GetService&lt;MyServiceB&gt;()); 
+        /// </summary>
+        /// <typeparam name="TService">an interface/abstraction</typeparam>
+        /// <param name="services">IServiceCollection</param>
+        /// <param name="func">factory to resolve TService</param>
+        public static IServiceCollection AddServiceFactory<TService>(this IServiceCollection services, Func<string, IServiceProvider, TService> func)
+        {
+            return services.AddSingleton<Func<string, TService>>(sp => x => func(x, sp));
         }
 
         /// <summary>

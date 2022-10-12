@@ -43,9 +43,9 @@ public class ColorsProvider : IColorsProvider
         return kind switch
         {
             ArgumentType.Array => new ConsoleColors(ConsoleColor.Cyan, null),
-            ArgumentType.Numeric => new ConsoleColors(ConsoleColor.Blue, null),
+            ArgumentType.Numeric => new ConsoleColors(ConsoleColor.DarkYellow, null),
             ArgumentType.NumericNegative => new ConsoleColors(ConsoleColor.Red, null),
-            ArgumentType.Date => new ConsoleColors(ConsoleColor.DarkCyan, null),
+            ArgumentType.Date => new ConsoleColors(ConsoleColor.Yellow, null),
             ArgumentType.Percentage => new ConsoleColors(ConsoleColor.Magenta, null),
             ArgumentType.Cash => new ConsoleColors(ConsoleColor.DarkGreen, null),
             ArgumentType.Text => new ConsoleColors(ConsoleColor.DarkGray, null),

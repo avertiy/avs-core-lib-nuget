@@ -15,7 +15,8 @@ namespace AVS.CoreLib.Logging.ColorFormatter.ColorMakup
         /// parses text and color scheme $text:-ForegroundColor --BackgroundColor$
         /// regex is not strict 
         /// </summary>
-        internal static readonly Regex regex = new Regex("\\$(?<text>.*?):(?<scheme>-.*?)\\$");
+        internal static readonly Regex regex = new Regex("\\$(?<text>.*?):(?<scheme>-.*?)\\$", RegexOptions.Multiline);
+        //internal static readonly Regex regex = new Regex("\\$(?<text>[^$]*?):(?<scheme>-.*?)\\$");
         
         /// <summary>
         /// initial string

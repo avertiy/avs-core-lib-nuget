@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using AVS.CoreLib.Utilities;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,52 +40,24 @@ namespace AVS.CoreLib.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// register singleton TOptions type 
+        /// Get <typeparamref name="TService"/> by name/key 
         /// </summary>
-        /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
-        /// <param name="configuration">The <see cref="IConfiguration"/> to get config section.</param>
-        /// <param name="name">The Name to register named options (leave blank to register as a default) [optional]</param>
-        /// <param name="configure">The configure options action [optional]</param>
+        /// <typeparam name="TService">an interface/abstraction</typeparam>
+        /// <param name="serviceProvider">IServiceProvider</param>
+        /// <param name="name">is a string argument used as a key to get a certain service instance/implementation of the <typeparamref name="TService"/></param>
         /// <returns></returns>
-        public static IServiceCollection AddOptions<TOptions>(this IServiceCollection services,
-            IConfiguration configuration,
-            string name = null,
-            Action<TOptions> configure = null)
-            where TOptions : class
+        public static TService GetNamedService<TService>(this IServiceProvider serviceProvider, string name)
         {
-            if (services == null)
+            var func = serviceProvider.GetService<Func<string, TService>>();
+            if (func == null)
             {
-                throw new ArgumentNullException(nameof(services));
+                throw new InvalidOperationException(
+                    $"Service factory Func<string,{nameof(TService)}> not found, use AddServiceFactory to register the service factory");
             }
 
-            var optionsType = typeof(TOptions);
-            var sectionKey = name == null ? optionsType.Name : $"{optionsType.Name}:{name}";
-            var section = configuration.GetSection(sectionKey);
-            var options = new ConfigureNamedOptions<TOptions>(name ?? string.Empty, o =>
-            {
-                section.Bind(o);
-                configure?.Invoke(o);
-            });
-
-            services.AddSingleton<IConfigureOptions<TOptions>>(options);
-            return services;
-        }
-
-        public static IServiceCollection AddOptions<TOptions>(this IServiceCollection services, Action<TOptions> configureOptions, string name = null)
-            where TOptions : class
-        {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            if (configureOptions == null)
-            {
-                throw new ArgumentNullException(nameof(configureOptions));
-            }
-
-            services.AddSingleton<IConfigureOptions<TOptions>>(new ConfigureNamedOptions<TOptions>(name ?? string.Empty, configureOptions));
-            return services;
+            return func(name);
         }
     }
+
+    
 }

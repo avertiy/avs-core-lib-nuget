@@ -100,6 +100,14 @@ public static class ColorMarkup2Helper
         //output: "some text $1:color$ text $0.123456789:-color$"
         var parts = format.Split(keys, StringSplitOptions.None);
 
+        if (parts.Any(x => x.EndsWith('$') && x.Contains(":-")))
+        {
+            // most likely text already contains color formatting and due to we don't use here regex
+            // it might break existing color formatting
+            // so do nothing
+            return formattedMessage;
+        }
+
         //parts2: [] {"1", "0.123456789"}
         var values = formattedMessage.Split(parts.Where(x => x.Length > 0).ToArray(), StringSplitOptions.RemoveEmptyEntries);
 
@@ -108,6 +116,15 @@ public static class ColorMarkup2Helper
         var i = 0;
         for (; i < parts.Length && i < values.Length; i++)
         {
+            var isColoredArg = i + 1 < parts.Length && parts[i + 1].StartsWith(':') && parts[i + 1].EndsWith('$');
+
+            if (isColoredArg)
+            {
+                sb.Append(parts[i]);
+                sb.Append(values[i]);
+                continue;
+            }
+
             var type = GetArgumentType(values[i]);
             // if string do nothing
             if (type == ArgumentType.String)

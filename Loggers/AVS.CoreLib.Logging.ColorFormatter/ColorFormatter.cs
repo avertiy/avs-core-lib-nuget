@@ -45,7 +45,18 @@ public class ColorFormatter : ConsoleFormatter, IDisposable
         var message = FormatMessage(logEntry);
 
         if (string.IsNullOrEmpty(message))
+        {
+            textWriter.WriteLine(message);
             return;
+        }
+
+        NewLineCheck:
+        if (message.StartsWith(Environment.NewLine))
+        {
+            message = message.Remove(0, Environment.NewLine.Length);
+            textWriter.WriteLine();
+            goto NewLineCheck;
+        }
 
         var messageBuilder = new LogMessageBuilder()
         {
@@ -59,8 +70,23 @@ public class ColorFormatter : ConsoleFormatter, IDisposable
         };
 
         messageBuilder.AddPrefix(_formatterFormatterOptions.CustomPrefix);
+        var timeStampFormat = _formatterFormatterOptions.TimestampFormat;
         messageBuilder.AddTimestamp(GetCurrentDateTime(), _formatterFormatterOptions.TimestampFormat);
+
+        if (AnyTimeTags(message, messageBuilder))
+        {
+            WriteLogMessage(textWriter, messageBuilder.ToString());
+            return;
+        }
+
         messageBuilder.AddLogLevel(logEntry.LogLevel);
+        
+        if (message == "[level]")
+        {
+            WriteLogMessage(textWriter, messageBuilder.ToString());
+            return;
+        }
+
         messageBuilder.AddCategory(logEntry);
 
         messageBuilder.AddScopeInformation(scopeProvider);
@@ -71,11 +97,62 @@ public class ColorFormatter : ConsoleFormatter, IDisposable
 
         var logMessage = messageBuilder.ToString();
 
+        WriteLogMessage(textWriter, logMessage);
+    }
+
+    private bool AnyTimeTags(string message, LogMessageBuilder messageBuilder)
+    {
+        if (message == "<time/>" || message == "[time]")
+        {
+            messageBuilder.AddTimestamp(GetCurrentDateTime(), "T");
+            return true;
+        }
+
+        if (message == "<timestamp/>" || message == "[timestamp]")
+        {
+            messageBuilder.AddTimestamp(GetCurrentDateTime(), "G");
+            return true;
+        }
+
+        if (message == "<date/>" || message == "[date]")
+        {
+            messageBuilder.AddTimestamp(GetCurrentDateTime(), "d");
+            return true;
+        }
+
+        return false;
+    }
+
+    //private bool AnyTags(string message, LogMessageBuilder messageBuilder)
+    //{
+    //    if (message == "<header>" || message == "[time]")
+    //    {
+    //        messageBuilder.AddTimestamp(GetCurrentDateTime(), "T");
+    //        return true;
+    //    }
+
+    //    if (message == "<timestamp/>" || message == "[timestamp]")
+    //    {
+    //        messageBuilder.AddTimestamp(GetCurrentDateTime(), "G");
+    //        return true;
+    //    }
+
+    //    if (message == "<date/>" || message == "[date]")
+    //    {
+    //        messageBuilder.AddTimestamp(GetCurrentDateTime(), "d");
+    //        return true;
+    //    }
+
+    //    return false;
+    //}
+
+    private void WriteLogMessage(TextWriter textWriter, string message)
+    {
         if (_formatterFormatterOptions.ColorBehavior == LoggerColorBehavior.Disabled)
-            textWriter.WriteLine(logMessage);
+            textWriter.WriteLine(message);
         else
         {
-            var colorMarkupString = new ColorMarkupString2(logMessage);
+            var colorMarkupString = new ColorMarkupString2(message);
             textWriter.WriteColorMarkupString(colorMarkupString);
             textWriter.WriteLine();
         }

@@ -39,8 +39,14 @@ namespace AVS.CoreLib.Loggers.TestApp
             };
 
             _logger.LogInformation("simple info log");
-            _logger.LogInformation("info log with simple argument: #{arg}", 15);
-            _logger.LogInformation("info log with simple argument: {arg}", 1.ToString("C"));
+            _logger.LogInformation("\r\n\r\nTesting {strategy}, timeframe: {timeframe}; parameters: {parameters}",
+                "name", "H1", "Pool Fees: 10%");
+            _logger.LogInformation("");
+            _logger.LogCritical("simple critical log\r\n");
+            _logger.LogInformation("[time]");
+            _logger.LogWarning("simple argument: #{arg}", 15);
+            _logger.LogInformation("simple $colored argument: {arg}:--Yellow$", (-5).ToString("C"));
+            _logger.LogInformation(" - processed $bars #{bars}; trades count #{trades};:--Yellow$", 100, 25);
             _logger.LogInformation("info log with simple arg1: {arg} arg2: {arg2}", 1.25, (-22).ToString());
             _logger.LogInformation("info log with arguments: {arg1} some text {arg2}{arg3}", 1.ToString("P"), obj, "argument long text asdad asd asd asdasdadadsd");
             _logger.LogInformation($"info log with json text: {obj.ToJsonString()}");
@@ -48,7 +54,8 @@ namespace AVS.CoreLib.Loggers.TestApp
 
             using (var scope = _logger.BeginScope($"test logger scope"))
             {
-                _logger.LogInformation("test info log $colored message:-Cyan$ $100500:-Red$");
+                _logger.LogInformation("test info log $colored message:-Cyan$ ${arg}:-Red$", 500.ToString("C"));
+                _logger.LogInformation("test info {arg1} log ${arg2}:-Cyan$ ${arg3}:-Red$", 150.ToString("C"), 500.ToString("C"), 1500.ToString("C"));
                 //_logger.LogInformation("\u001b[31mtest ANSI colors output\u001b[0m");
                
                 _logger.LogWarning("test warning log {obj}",obj);

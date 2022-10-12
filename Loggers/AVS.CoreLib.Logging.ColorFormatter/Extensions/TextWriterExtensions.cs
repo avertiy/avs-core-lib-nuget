@@ -16,18 +16,12 @@ namespace AVS.CoreLib.Logging.ColorFormatter.Extensions
 
             writer.Write(message);
 
-            if (background.HasValue)
-            {
-                writer.Write(AnsiCodesHelper.GetBackgroundColorEscapeCode(Console.BackgroundColor));
-                //writer.Write(AnsiCodesHelper.DEFAULT_BACKGROUND_COLOR); // reset to the background color
-            }
-
             // restore console colors
+            if (background.HasValue)
+                writer.Write(AnsiCodesHelper.GetBackgroundColorEscapeCode(Console.BackgroundColor));
+            
             if (foreground.HasValue)
-            {
                 writer.Write(AnsiCodesHelper.GetForegroundColorEscapeCode(Console.ForegroundColor));
-                //writer.Write(AnsiCodesHelper.DEFAULT_FOREGROUND_COLOR); // reset to default foreground color
-            }
         }
 
         public static void WriteColored(this TextWriter writer, string message, ConsoleColor foreground)
