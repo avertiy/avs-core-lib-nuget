@@ -15,6 +15,7 @@ public enum ArgumentType
     Numeric,
     NumericNegative,
     Cash,
+    CashNegative,
     Percentage,
     /// <summary>
     /// short string
@@ -45,9 +46,10 @@ public class ColorsProvider : IColorsProvider
             ArgumentType.Array => new ConsoleColors(ConsoleColor.Cyan, null),
             ArgumentType.Numeric => new ConsoleColors(ConsoleColor.DarkYellow, null),
             ArgumentType.NumericNegative => new ConsoleColors(ConsoleColor.Red, null),
-            ArgumentType.Date => new ConsoleColors(ConsoleColor.Yellow, null),
+            ArgumentType.Date => new ConsoleColors(ConsoleColor.Cyan, null),
             ArgumentType.Percentage => new ConsoleColors(ConsoleColor.Magenta, null),
             ArgumentType.Cash => new ConsoleColors(ConsoleColor.DarkGreen, null),
+            ArgumentType.CashNegative => new ConsoleColors(ConsoleColor.DarkRed, null),
             ArgumentType.Text => new ConsoleColors(ConsoleColor.DarkGray, null),
             ArgumentType.TextJson => new ConsoleColors(ConsoleColor.Cyan, null),
             ArgumentType.Default => new ConsoleColors(ConsoleColor.Gray, null),

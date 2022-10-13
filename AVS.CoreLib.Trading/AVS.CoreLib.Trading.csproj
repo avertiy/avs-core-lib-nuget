@@ -19,6 +19,7 @@
     <RepositoryType>public</RepositoryType>
     <Version>1.0.6</Version>
     <UserSecretsId>7040a559-541c-40da-82ff-e202b1bf095f</UserSecretsId>
+    <LangVersion>9</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

@@ -72,7 +72,7 @@ public static class ColorMarkup2Helper
 
         if (arg.Contains("$") || arg.Contains("USD") || arg.Contains("EUR") || arg.Contains("UAH"))
         {
-            return ArgumentType.Cash;
+            return arg[0] == '(' && arg[^1] == ')' ? ArgumentType.CashNegative : ArgumentType.Cash;
         }
 
         if (double.TryParse(arg, out var d))
@@ -109,7 +109,7 @@ public static class ColorMarkup2Helper
         }
 
         //parts2: [] {"1", "0.123456789"}
-        var values = formattedMessage.Split(parts.Where(x => x.Length > 0).ToArray(), StringSplitOptions.RemoveEmptyEntries);
+        var values = formattedMessage.Split(parts.Where(x => x.Length > 1).ToArray(), StringSplitOptions.RemoveEmptyEntries);
 
         var sb = new StringBuilder();
 

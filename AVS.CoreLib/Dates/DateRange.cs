@@ -288,6 +288,23 @@ namespace AVS.CoreLib.Dates
             }
         }
 
+        public static DateRange FromNow(int seconds, bool useUtcTime = false)
+        {
+            var now = useUtcTime ? DateTime.UtcNow : DateTime.Now;
+            var from = now.AddSeconds(-seconds);
+            return new DateRange(from, now);
+        }
+
+        public static DateRange FromNow(DateTime from, bool useUtcTime = false)
+        {
+            var now = useUtcTime ? DateTime.UtcNow : DateTime.Now;
+            return new DateRange(from, now);
+        }
+
+        public static DateRange FromToday(DateTime from)
+        {
+            return new DateRange(from, DateTime.Today);
+        }
     }
 
     public class DateRangeTypeConverter : TypeConverter

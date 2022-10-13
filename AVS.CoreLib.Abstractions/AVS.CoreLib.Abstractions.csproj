@@ -19,6 +19,7 @@
     <RepositoryUrl>https://github.com/avertiy/avs-core-lib-nuget</RepositoryUrl>
     <RepositoryType>public</RepositoryType>
     <Version>1.0.1</Version>
+    <LangVersion>9</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

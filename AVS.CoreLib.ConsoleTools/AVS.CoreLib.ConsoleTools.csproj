@@ -18,6 +18,7 @@
     <Version>1.0.4</Version>
     <Description>contains console bootstrap utitlities and ConsoleLogger</Description>
     <UserSecretsId>91a53b9d-7d12-4825-9877-5c9dc5583994</UserSecretsId>
+    <LangVersion>9</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

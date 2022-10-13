@@ -20,6 +20,7 @@ e.g. ColorFormatter, NotEmptyFormatter, PriceFormatter, EnumFormatter etc.</Desc
     <RepositoryUrl>https://github.com/avertiy/avs-core-lib-nuget</RepositoryUrl>
     <RepositoryType>public</RepositoryType>
     <Version>1.0.4</Version>
+    <LangVersion>9</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

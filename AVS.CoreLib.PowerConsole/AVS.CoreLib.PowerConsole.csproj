@@ -20,6 +20,7 @@
     <Authors>Artem Vertii</Authors>
     <Company>AV Studio</Company>
     <Product>PowerConsole</Product>
+    <LangVersion>9</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
