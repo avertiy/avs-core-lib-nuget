@@ -30,6 +30,12 @@ namespace AVS.CoreLib.Extensions.Numbers
             return value;
         }
 
+        public static bool IsEqual(this double value, double valueToCompare, double tolerance)
+        {
+            var equal = Math.Abs(value - valueToCompare) <= tolerance;
+            return equal;
+        }
+
         #endregion
 
         #region deciamls
@@ -62,12 +68,17 @@ namespace AVS.CoreLib.Extensions.Numbers
             return Math.Floor((value * k)) / k;
         }
 
-
         public static decimal Abs(this decimal value)
         {
             if (value < 0)
                 value = value * -1;
             return value;
+        }
+
+        public static bool IsEqual(this decimal value, decimal valueToCompare, decimal tolerance)
+        {
+            var equal = Math.Abs(value - valueToCompare) <= tolerance;
+            return equal;
         }
 
         #endregion

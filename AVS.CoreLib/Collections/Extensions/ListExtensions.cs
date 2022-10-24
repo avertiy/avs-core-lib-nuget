@@ -2,16 +2,33 @@
 using System.Collections.Generic;
 using System.Linq;
 using AVS.CoreLib.Abstractions.Rest;
+using AVS.CoreLib.Utilities;
 
 namespace AVS.CoreLib.Collections.Extensions
 {
     public static class ListExtensions
     {
+        public static IList<T> Slice<T>(this IList<T> source, int startIndex, int endIndex)
+        {
+            Guard.MustBeWithinRange(startIndex, 0, endIndex);
+            Guard.MustBeWithinRange(endIndex, startIndex, source.Count);
+
+            var list = new List<T>(endIndex - startIndex);
+            for (var i = startIndex; i < endIndex; i++)
+            {
+                list.Add(source[i]);
+            }
+
+            return list;
+        }
+
+
         public static void AddRange<T>(this IList<T> source, params T[] items)
         {
-            foreach (var item in items) 
+            foreach (var item in items)
                 source.Add(item);
         }
+
         public static void AddRange<T>(this IList<T> source, IEnumerable<T> items)
         {
             foreach (var item in items)
@@ -33,10 +50,12 @@ namespace AVS.CoreLib.Collections.Extensions
                     break;
                 }
             }
+
             return result;
         }
 
-        public static void Merge<T, TKey>(this IList<T> target, IList<T> source, Func<T, TKey> selector, Func<T, bool> predicate)
+        public static void Merge<T, TKey>(this IList<T> target, IList<T> source, Func<T, TKey> selector,
+            Func<T, bool> predicate)
         {
             var knownKeys = new HashSet<TKey>(target.Select(selector));
 

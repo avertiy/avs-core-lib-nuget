@@ -99,7 +99,29 @@ namespace AVS.CoreLib.Utilities
                     throw new ArgumentException($"Must contain key {key}");
                 }
             }
-        } 
+        }
+        #endregion
+
+        #region IList
+
+        public static void ListMustHaveAtLeast<T>(IList<T> list, int itemsCount, string name = "list")
+        {
+            if (list == null)
+                throw new ArgumentNullException($"{name} must be not null");
+
+            if (list.Count < itemsCount)
+                throw new ArgumentOutOfRangeException($"{name} must have at least #{itemsCount} items");
+        }
+
+        public static void ListIndex<T>(IList<T> list, int index, string name = "index")
+        {
+            if (index < 0)
+                throw new ArgumentOutOfRangeException($"{name} [{index}] must be positive number");
+
+            if (index > list.Count)
+                throw new ArgumentOutOfRangeException($"{name} [{index}] must not exceed {list.Count}");
+        }
+
         #endregion
 
         public static void AgainstNullOrEmpty(string param, string name = "argument")
@@ -142,10 +164,10 @@ namespace AVS.CoreLib.Utilities
             }
         }
 
-        public static void MustBeEqual(string str1, string str2)
+        public static void MustBeEqual(string str1, string str2, string message = null)
         {
             if (!str1.Equals(str2))
-                throw new ArgumentException($"'{str1}' expected to be equal '{str2}'");
+                throw new ArgumentException(message ?? $"'{str1}' expected to be equal '{str2}'");
         }
 
         public static void MustHaveValue(IHasValue obj)
@@ -154,34 +176,71 @@ namespace AVS.CoreLib.Utilities
                 throw new ArgumentNullException(nameof(obj));
         }
 
-        public static void MustBeWithinRange(int value, Range<int> range)
+        public static void MustBeWithinRange(int value, int from, int to, bool inclusiveRange = true, string name = "argument")
         {
-            if (!range.Contains(value))
-                throw new ArgumentOutOfRangeException($"{nameof(value)} is out of range {range}");
+            if (inclusiveRange)
+            {
+                if (value < from || value > to)
+                    throw new ArgumentOutOfRangeException($"{name} is out of range [{from};{to}]");
+            }
+            else
+            {
+                if (value <= from || value >= to)
+                    throw new ArgumentOutOfRangeException($"{name} is out of range ({from};{to})");
+            }
         }
 
-        public static void MustBeWithinRange(int value, (int from, int to) range)
+        public static void MustBeWithinRange(double value, double from, double to, bool inclusiveRange = true, string name = "argument")
         {
-            if (value < range.from || value > range.to)
-                throw new ArgumentOutOfRangeException($"{nameof(value)} is out of range {range}");
+	        if (inclusiveRange)
+	        {
+		        if (value < from || value > to)
+			        throw new ArgumentOutOfRangeException($"{name} is out of range [{from};{to}]");
+	        }
+	        else
+	        {
+		        if (value <= from || value >= to)
+			        throw new ArgumentOutOfRangeException($"{name} is out of range ({from};{to})");
+	        }
         }
 
-        public static void MustBeGreaterThan(int value, int number = 0)
+        public static void MustBeWithinRange(int value, Range<int> range, bool inclusiveRange = true, string name = "argument")
+        {
+            if (!range.Contains(value, inclusiveRange))
+                throw new ArgumentOutOfRangeException($"{name} is out of range {range}");
+        }
+
+        public static void MustBeWithinRange(int value, (int from, int to) range, bool inclusiveRange = true, string name = "argument")
+        {
+            if (inclusiveRange)
+            {
+                if (value < range.from || value > range.to)
+                    throw new ArgumentOutOfRangeException($"{name} is out of range [{range.from};{range.to}]");
+            }
+            else
+            {
+                if (value <= range.from || value >= range.to)
+                    throw new ArgumentOutOfRangeException($"{name} is out of range ({range.from};{range.to})");
+            }
+                
+        }
+
+        public static void MustBeGreaterThan(int value, int number = 0, string name = "argument")
         {
             if (value <= number)
-                throw new ArgumentException($"{nameof(value)} must be greater than {value}");
+                throw new ArgumentException($"{name} must be greater than {value}");
         }
 
-        public static void MustBeGreaterThan(double value, double number = 0)
+        public static void MustBeGreaterThan(double value, double number = 0, string name = "argument")
         {
             if (value <= number)
-                throw new ArgumentException($"{nameof(value)} must be greater than {value}");
+                throw new ArgumentException($"{name} must be greater than {value}");
         }
 
-        public static void MustBeGreaterThan(decimal value, decimal number = 0)
+        public static void MustBeGreaterThan(decimal value, decimal number = 0, string name = "argument")
         {
             if (value <= number)
-                throw new ArgumentException($"{nameof(value)} must be greater than {value}");
+                throw new ArgumentException($"{name} must be greater than {value}");
         }
 
         public static string MustBeOneOf(string value, params string[] values)

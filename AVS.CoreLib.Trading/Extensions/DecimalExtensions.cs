@@ -24,6 +24,7 @@ namespace AVS.CoreLib.Trading.Extensions
             return Math.Abs(value1 - value2) < TradingConstants.OneSatoshi;
         }
 
+        [Obsolete("User PriceRound or VolumeRound extensions instead")]
         public static decimal Normalize(this decimal value, int? decimalPlaces = null)
         {
             int precisionDigits;

@@ -1,4 +1,6 @@
-﻿namespace AVS.CoreLib.Trading.Abstractions
+﻿using System;
+
+namespace AVS.CoreLib.Trading.Abstractions
 {
     public interface IOhlc
     {
@@ -8,6 +10,7 @@
         decimal Close { get; set; }
     }
 
+    [Obsolete("I think this interface better to remove, use IBar if you need volume")]
     public interface IOhlcv : IOhlc
     {
         decimal Volume { get; set; }

@@ -6,6 +6,7 @@ namespace AVS.CoreLib.Trading.Extensions
 {
     public static class OhlcExtensions
     {
+        [Obsolete("Method does not look as common/generic purpose, so it will be removed")]
         public static void UpdateOhlc(this IOhlc ohlc, decimal price)
         {
             if (ohlc.Open <= 0)
@@ -19,19 +20,7 @@ namespace AVS.CoreLib.Trading.Extensions
                 ohlc.Low = price;
         }
 
-        /// <summary>
-        /// OHLC height in percentage
-        /// </summary>
-        public static decimal CandleHeight(this IOhlc ohlc)
-        {
-            return (ohlc.High - ohlc.Low) / ohlc.Low;
-        }
-
-        public static decimal CandleAvgPrice(this IOhlc ohlc)
-        {
-            return (ohlc.Open + ohlc.Close) / 2;
-        }
-
+        #region color extensions for Japanese green/red candles
         public static ConsoleColor GetCandleColor(this IOhlc ohlc)
         {
             return ohlc.Close >= ohlc.Open ? ConsoleColor.Green : ConsoleColor.Red;
@@ -47,43 +36,64 @@ namespace AVS.CoreLib.Trading.Extensions
             return ohlc.Close < ohlc.Open;
         }
 
-        public static CandleSize GetCandleSize(this IOhlc ohlc, TimeFrame timeFrame = TimeFrame.M30)
+        #endregion
+
+        #region classifications by size / type etc.
+
+        public static BarSize GetBarSize(this IOhlc ohlc, TimeFrame timeFrame)
         {
-            var h = ohlc.CandleHeight();
-            var size = CandleSize.Normal;
+            var h = ohlc.GetLength();
+            var size = BarSize.Normal; 
             switch (timeFrame)
             {
+                case TimeFrame.M5:
+                {
+                    if (h < 0.3m)
+                        size = BarSize.Small;
+                    else if (h > 0.9m)
+                        size = BarSize.Paranormal;
+                    break;
+                }
+                case TimeFrame.M30:
+                {
+                    if (h < 1m)
+                        size = BarSize.Small;
+                    else if (h > 2.5m)
+                        size = BarSize.Paranormal;
+                    break;
+                }
+                case TimeFrame.H1:
+                {
+                    if (h < 1.5m)
+                        size = BarSize.Small;
+                    else if (h > 5m)
+                        size = BarSize.Paranormal;
+                    break;
+                }
                 case TimeFrame.H4:
                     {
-                        if (h < 0.025m)
-                            size = CandleSize.Small;
-                        else if (h > 0.06m)
-                            size = CandleSize.Big;
+                        if (h < 2.5m)
+                            size = BarSize.Small;
+                        else if (h > 6m)
+                            size = BarSize.Paranormal;
                         break;
                     }
-                case TimeFrame.H1:
-                    {
-                        if (h < 0.015m)
-                            size = CandleSize.Small;
-                        else if (h > 0.05m)
-                            size = CandleSize.Big;
-                        break;
-                    }
+                
                 case TimeFrame.D:
                     {
-                        if (h < 0.05m)
-                            size = CandleSize.Small;
-                        else if (h > 0.15m)
-                            size = CandleSize.Big;
+                        if (h < 5m)
+                            size = BarSize.Small;
+                        else if (h > 15m)
+                            size = BarSize.Paranormal;
                         break;
                     }
-                case TimeFrame.M30:
+               
                 default:
                     {
-                        if (h < 0.01m)
-                            size = CandleSize.Small;
-                        else if (h > 0.025m)
-                            size = CandleSize.Big;
+                        if (h < 1m)
+                            size = BarSize.Small;
+                        else if (h > 2.5m)
+                            size = BarSize.Paranormal;
                         break;
                     }
             }
@@ -143,6 +153,69 @@ namespace AVS.CoreLib.Trading.Extensions
                 return CandleType.Whirligig;
 
             return CandleType.None;
+        }
+        #endregion
+
+        [Obsolete("Use GetLength")]
+        public static decimal CandleHeight(this IOhlc ohlc)
+        {
+            return (ohlc.High - ohlc.Low) / ohlc.Low;
+        }
+
+        /// <summary>
+        /// Get candle length in % formula: (High - Low)/Low * 100
+        /// </summary>
+        public static decimal GetLength(this IOhlc candle)
+        {
+            return Math.Round((candle.High - candle.Low) / candle.Low * 100, 2);
+        }
+
+        public static decimal GetBodyLength(this IOhlc candle)
+        {
+            return Math.Round((candle.Open > candle.Close
+                ? (candle.Open - candle.Close) / candle.Close
+                : (candle.Close - candle.Open) / candle.Open) * 100, 2);
+        }
+
+
+        public static decimal GetAvgPrice(this IOhlc ohlc)
+        {
+            return ((ohlc.Open + ohlc.Close) / 2).PriceRound();
+        }
+
+        public static decimal GetMediana(this IOhlc candle)
+        {
+            return ((candle.High + candle.Low) / 2).PriceRound();
+        }
+
+        public static bool HasLongShadow(this IOhlc candle)
+        {
+            return candle.GetLength() / candle.GetBodyLength() > 2;
+        }
+
+        public static bool IsGrowing(this IOhlc candle)
+        {
+            return candle.Open < candle.Close;
+        }
+
+        /// <summary>
+        /// determines whether price is within (Low, High) range;
+        /// </summary>
+        public static bool Contains(this IOhlc candle, decimal price, bool inclusive = false)
+        {
+            if(inclusive)
+                return candle.Low <= price && price <= candle.High;
+            return candle.Low < price && price < candle.High;
+        }
+
+        public static bool IsClosedAbove(this IOhlc bar, decimal priceLevel)
+        {
+            return bar.Close > priceLevel;
+        }
+
+        public static bool IsClosedBelow(this IOhlc bar, decimal priceLevel)
+        {
+            return bar.Close > priceLevel;
         }
     }
 }

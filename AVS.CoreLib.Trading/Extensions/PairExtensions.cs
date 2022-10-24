@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Trading.Abstractions;
+using AVS.CoreLib.Trading.FormatProviders;
+using AVS.CoreLib.Trading.Helpers;
 using AVS.CoreLib.Trading.Types;
 
 namespace AVS.CoreLib.Trading.Extensions
@@ -19,6 +22,23 @@ namespace AVS.CoreLib.Trading.Extensions
         public static string GetQuoteCurrency(this string symbol)
         {
             return symbol.Split('_')[1];
+        }
+
+        /// <summary>
+        /// returns quote currency, when possible replace currency iso code with symbol e.g. USDT => $
+        /// <seealso cref="CoinHelper.GetCurrencySymbol"/>
+        /// </summary>
+        public static string Q(this string symbol, bool replaceIsoCodeWithCurrencySymbol = true)
+        {
+            return CoinHelper.GetCurrencySymbol(GetQuoteCurrency(symbol));
+        }
+
+        /// <summary>
+        /// returns base currency
+        /// </summary>
+        public static string B(this string symbol)
+        {
+            return GetBaseCurrency(symbol);
         }
 
         public static bool IsUsdPeggedPair(this string symbol)

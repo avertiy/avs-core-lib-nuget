@@ -4,6 +4,21 @@
         <name>AVS.CoreLib.Trading</name>
     </assembly>
     <members>
+        <member name="T:AVS.CoreLib.Trading.Abstractions.IBar">
+            <summary>
+            represent a bar chart unit (synonym candle or simply bar)  
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Abstractions.IBar.Volume">
+            <summary>
+            volume is an amount of base currency
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Abstractions.IBar.Total">
+            <summary>
+            total is an amount of quote currency
+            </summary>
+        </member>
         <member name="T:AVS.CoreLib.Trading.Collections.StringCollection">
             <summary>
             base type to make bind-able string[] parameter type <see cref="T:AVS.CoreLib.Trading.Collections.Exchanges"/>
@@ -14,14 +29,14 @@
             the Add method implemented explicitly due to model binding mechanics 
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.CandleSize.Small">
+        <member name="F:AVS.CoreLib.Trading.Enums.BarSize.Small">
             <summary>
-            a short candle with a little price differences
+            short bar is a bar with a little price difference between Low and High
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.CandleSize.Big">
+        <member name="F:AVS.CoreLib.Trading.Enums.BarSize.Paranormal">
             <summary>
-            a candle with a major price differences
+            Big or paranormal bar is a bar with a significant length several times bigger than average bar
             </summary>
         </member>
         <member name="F:AVS.CoreLib.Trading.Enums.CandleType.Doji">
@@ -156,19 +171,48 @@
             Rounds value to 8 digits AwayFromZero
             </summary>
         </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.OhlcExtensions.CandleHeight(AVS.CoreLib.Trading.Abstractions.IOhlc)">
-            <summary>
-            OHLC height in percentage
-            </summary>
-        </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.OhlcExtensions.GetCandleType(AVS.CoreLib.Trading.Abstractions.IOhlc)">
             <summary>
             not implemented to classify all candle types but some basic candle classification is possible
             </summary>
         </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.OhlcExtensions.GetLength(AVS.CoreLib.Trading.Abstractions.IOhlc)">
+            <summary>
+            Get candle length in % formula: (High - Low)/Low * 100
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.OhlcExtensions.Contains(AVS.CoreLib.Trading.Abstractions.IOhlc,System.Decimal,System.Boolean)">
+            <summary>
+            determines whether price is within (Low, High) range;
+            </summary>
+        </member>
         <member name="T:AVS.CoreLib.Trading.Extensions.SymbolExtensions">
             <summary>
             supposed to deal with a normalized symbol like BTC_USDT (i.e. currencies are upper case, underscore separator)  
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolExtensions.Q(System.String,System.Boolean)">
+            <summary>
+            returns quote currency, when possible replace currency iso code with symbol e.g. USDT => $
+            <seealso cref="M:AVS.CoreLib.Trading.Helpers.CoinHelper.GetCurrencySymbol(System.String)"/>
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolExtensions.B(System.String)">
+            <summary>
+            returns base currency
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.PriceExtensions.GetRoundDecimals(System.Decimal)">
+            <summary>
+            determines number of meaningful digits based on price value
+            </summary>
+            <param name="price"></param>
+            <returns></returns>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.PriceExtensions.IsAboutTheSame(System.Decimal,System.Decimal,System.Nullable{System.Decimal})">
+            <summary>
+            compare prices if price difference is tiny returns true (about the same), otherwise false
+            when tolerance is not provided, comparison relies on price meaningful digits see <see cref="M:AVS.CoreLib.Trading.Extensions.PriceExtensions.GetRoundDecimals(System.Decimal)"/> 
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.ServiceCollectionExtension.AddTradingCore(Microsoft.Extensions.DependencyInjection.IServiceCollection)">

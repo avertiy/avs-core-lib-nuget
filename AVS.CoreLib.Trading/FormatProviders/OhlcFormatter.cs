@@ -13,7 +13,7 @@ namespace AVS.CoreLib.Trading.FormatProviders
         /// <summary>
         /// qualifiers: "q|quote; b|base; p|pair; Q|B|symbol"
         /// </summary>
-        public static string GetQualifiers => "c|color;s|size; h|height; t|type; H|high; L|low; O|open; C:close";
+        public static string GetQualifiers => "c|color; h|height; t|type; H|high; L|low; O|open; C:close";
         protected override string CustomFormat(string format, object arg, IFormatProvider formatProvider)
         {
             switch (arg)
@@ -42,9 +42,6 @@ namespace AVS.CoreLib.Trading.FormatProviders
                         case "c":
                         case "color":
                             return ohlc.GetCandleColor().ToString();
-                        case "s":
-                        case "size":
-                            return ohlc.GetCandleSize().ToString();
                         case "ohlc":
                         case "OHLC":
                             return string.Format("{0} {1} {2} {3}",
@@ -80,8 +77,6 @@ namespace AVS.CoreLib.Trading.FormatProviders
                 case "height":
                 case "t":
                 case "type":
-                case "s":
-                case "size":
                 case "c":
                 case "color":
                     return true;

@@ -49,6 +49,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.Math", "AVS.Cor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.Logging.ColorFormatter", "Loggers\AVS.CoreLib.Logging.ColorFormatter\AVS.CoreLib.Logging.ColorFormatter.csproj", "{CFB721A8-CFD9-4155-9C61-E4C619BC3458}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "C:\Users\verti\OneDrive\Документы\TestApp\WebApplication1\WebApplication1.csproj", "{D416F936-D640-49ED-8B21-28FDDF1DB5EC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -139,6 +141,10 @@ Global
 		{CFB721A8-CFD9-4155-9C61-E4C619BC3458}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CFB721A8-CFD9-4155-9C61-E4C619BC3458}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CFB721A8-CFD9-4155-9C61-E4C619BC3458}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D416F936-D640-49ED-8B21-28FDDF1DB5EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D416F936-D640-49ED-8B21-28FDDF1DB5EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D416F936-D640-49ED-8B21-28FDDF1DB5EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D416F936-D640-49ED-8B21-28FDDF1DB5EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

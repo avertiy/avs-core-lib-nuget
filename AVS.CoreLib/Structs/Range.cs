@@ -27,14 +27,20 @@ namespace AVS.CoreLib.Structs
             this = other;
         }
 
-        public bool Contains(T value)
+        public bool Contains(T value, bool inclusiveRange = true)
         {
-            return Min.CompareTo(value) <= 0 && Max.CompareTo(value) >= 0;
+            if(inclusiveRange)
+                return Min.CompareTo(value) <= 0 && Max.CompareTo(value) >= 0;
+            else
+                return Min.CompareTo(value) < 0 && Max.CompareTo(value) > 0;
         }
 
-        public bool Contains(Range<T> range)
+        public bool Contains(Range<T> range, bool inclusiveRange = true)
         {
-            return Min.CompareTo(range.Min) <= 0 && Max.CompareTo(range.Max) >= 0;
+            if (inclusiveRange)
+                return Min.CompareTo(range.Min) <= 0 && Max.CompareTo(range.Max) >= 0;
+            else
+                return Min.CompareTo(range.Min) < 0 && Max.CompareTo(range.Max) > 0;
         }
 
         public override string ToString()
