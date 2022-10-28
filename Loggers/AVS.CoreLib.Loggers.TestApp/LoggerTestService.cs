@@ -27,7 +27,7 @@ namespace AVS.CoreLib.Loggers.TestApp
         public void Test()
         {
 
-            _logger.LogInformation("\r\nmultiline test {arg1:C}\r\n some text new line\r\n {arg2}{arg3}\r\n", 2, "string value", 4.444);
+            _logger.LogInformation("<H1>multiline test {arg1:C}\r\n some text new line\r\n {arg2}{arg3}</H1>", 2, "string value", 4.444);
             _logger.LogInformation("normal text");
 
 

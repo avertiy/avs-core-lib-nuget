@@ -103,7 +103,7 @@ public class ColorOutputBuilder : OutputBuilder
             return;
         }
 
-        var tagProcessor = new TagProcessor(Output);
+        var tagProcessor = new TagProcessor(Output, Message);
         tagProcessor.ProcessHeaderTags(Options.HeaderPadding);
         tagProcessor.ProcessColorTags();
         tagProcessor.ProcessRgbTags();

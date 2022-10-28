@@ -7,69 +7,72 @@ namespace AVS.CoreLib.Logging.ColorFormatter;
 
 public class TagProcessor
 {
-    private readonly StringBuilder sb;
-    public TagProcessor(StringBuilder sb)
+    private readonly StringBuilder _sb;
+    private string _message;
+    public TagProcessor(StringBuilder sb, string message)
     {
-        this.sb = sb;
+        this._sb = sb;
+        _message = message;
     }
 
     public void ProcessColorTags()
     {
-        if (!TagHelper.HasTags(sb))
+        if (!TagHelper.HasTags(_sb))
             return;
 
         var colors = Enum.GetValues<ConsoleColor>();
         foreach (var color in colors)
         {
-            if (sb.IndexOf($"</{color}>", 5, false) > 0)
+            if (_sb.IndexOf($"</{color}>", 5, false) > 0)
             {
-                sb.Replace($"<{color}>", AnsiCodes.Color(color));
-                sb.Replace($"</{color}>", AnsiCodes.RESET);
+                _sb.Replace($"<{color}>", AnsiCodes.Color(color));
+                _sb.Replace($"</{color}>", AnsiCodes.RESET);
             }
 
-            if (sb.IndexOf($"</bg{color}>", 7, false) > 0)
+            if (_sb.IndexOf($"</bg{color}>", 7, false) > 0)
             {
-                sb.Replace($"<bg{color}>", AnsiCodes.BgColor(color));
-                sb.Replace($"</bg{color}>", AnsiCodes.RESET);
+                _sb.Replace($"<bg{color}>", AnsiCodes.BgColor(color));
+                _sb.Replace($"</bg{color}>", AnsiCodes.RESET);
             }
         }
     }
 
     public void ProcessRgbTags()
     {
-        var closingRbgTagInd = sb.IndexOf("</RGB>", 10, false);
+        var closingRbgTagInd = _sb.IndexOf("</RGB>", 10, false);
         if (closingRbgTagInd > 0)
         {
             var rgbTagsCount = 0;
 
             label1:
-            if (RgbHelper.TryParse(sb, out var rgb, out var rgbText))
+            if (RgbHelper.TryParse(_sb, out var rgb, out var rgbText))
             {
                 rgbTagsCount++;
-                sb.Replace(rgbText, AnsiCodes.Rgb(rgb));
-                sb.Replace("</RGB>", AnsiCodes.RESET);
+                _sb.Replace(rgbText, AnsiCodes.Rgb(rgb));
+                _sb.Replace("</RGB>", AnsiCodes.RESET);
                 //check whether there any other RGB tags
                 goto label1;
             }
 
             if (rgbTagsCount > 1)
-                sb.Append(AnsiCodes.RESET);
+                _sb.Append(AnsiCodes.RESET);
 
         }
     }
 
-    public void ProcessHeaderTags(string headerPadding = " ===== ")
+    public void ProcessHeaderTags(string headerPadding)
     {
         //<H1>
-        var tag = sb.ToString(0, 4);
-        var closingTag = sb.ToString(sb.Length - 5, 5);
+        var tag = _message.Substring(0, 4);
+        var closingTag = _message.Substring(_message.Length - 5, 5);
 
         if (tag == "<H1>" && closingTag == "</H1>")
         {
-            sb.Remove(0, 4);
-            sb.Remove(sb.Length - 5, 5);
-            sb.Replace(tag, "\r\n" + headerPadding);
-            sb.Replace(closingTag, headerPadding);
+            if (!_sb.StartsWith(Environment.NewLine))
+                _sb.Insert(0, Environment.NewLine);
+
+            _sb.Replace("<H1>", headerPadding ?? " ===== ");
+            _sb.Replace("</H1>", headerPadding ?? " ===== ");
         }
     }
 

@@ -1,5 +1,4 @@
-﻿using System.Text;
-using AVS.CoreLib.Logging.ColorFormatter.ColorMakup;
+﻿using AVS.CoreLib.Logging.ColorFormatter.ColorMakup;
 using AVS.CoreLib.Logging.ColorFormatter.Extensions;
 using AVS.CoreLib.Logging.ColorFormatter.Utils;
 using Microsoft.Extensions.Logging;
@@ -28,6 +27,7 @@ public class ColorFormatter : ConsoleFormatter, IDisposable
         var outputBuilder = GetOutputBuilder();
         outputBuilder.Init(logEntry, scopeProvider);
         var message = outputBuilder.Build();
+        ConsoleLogProfiler.Write(message);
         textWriter.WriteLine(message);
         return;
     }

@@ -35,7 +35,7 @@ internal class Program
                 builder.AddConsoleLogger(x =>
                 {
                     x.TimestampFormat = "T";
-                    x.SingleLine = false;
+                    x.SingleLine = true;
                     //x.PrintLoggerName = false;
                     x.UseCurlyBracketsForScope = true;
                 });
@@ -51,7 +51,7 @@ internal class Program
                     .AddConsoleWithColorFormatter(x =>
                     {
                         x.IncludeScopes = true;
-                        x.SingleLine = false;
+                        x.SingleLine = true;
                         x.TimestampFormat = "T";
                         x.UseUtcTimestamp = true;
                     });
