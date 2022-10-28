@@ -72,6 +72,16 @@
             append a whitespace ' '
             </summary>
         </member>
+        <member name="M:AVS.CoreLib.Text.Extensions.StringBuilderExtensions.IndexOf(System.Text.StringBuilder,System.String,System.Int32,System.Boolean)">
+            <summary>
+            Returns the index of the start of the contents in a StringBuilder
+            </summary>
+            <param name="sb">StringBuilder</param>
+            <param name="value">The string to find</param>
+            <param name="startIndex">The starting index.</param>
+            <param name="ignoreCase">if set to <c>true</c> it will ignore case</param>
+            <returns></returns>
+        </member>
         <member name="T:AVS.CoreLib.Text.FormatPreprocessors.EnumFormatPreprocessor">
             <summary>
             That's an example of the idea with format preprocessors

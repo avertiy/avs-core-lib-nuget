@@ -42,8 +42,16 @@ public class ColorOutputBuilder : OutputBuilder
 
         var logLevel = LogLevel.GetLogLevelText() + LOGLEVEL_PADDING;
         PadLength += logLevel.Length;
-        var colors = LogLevel.GetLogLevelColors();
-        Output.Append(colors.Format(logLevel));
+
+        if (Options.TagsBehavior == TagsBehavior.Enabled)
+        {
+            var colors = LogLevel.GetLogLevelColors();
+            Output.Append(colors.Format(logLevel));
+        }
+        else
+        {
+            Output.Append(logLevel);
+        }
     }
 
     protected override void AddCategory()
@@ -52,8 +60,7 @@ public class ColorOutputBuilder : OutputBuilder
             return;
 
         PadLength += Category.Length;
-        var colors = ColorsProvider.GetColorsFor(LogParts.Category);
-        var category = colors.Format(Category);
+        var category = Format(LogParts.Category, Category);
         Output.Append(category);
         Output.EnsureWhitespace();
     }
@@ -63,8 +70,7 @@ public class ColorOutputBuilder : OutputBuilder
         if (string.IsNullOrEmpty(Scopes))
             return;
 
-        var colors = ColorsProvider.GetColorsFor(LogParts.Scope);
-        var scope = colors.Format(Scopes);
+        var scope = Format(LogParts.Scope, Scopes);
         Output.Append(scope);
         Output.Append(Options.SingleLine ? " " : Environment.NewLine);
     }
@@ -75,11 +81,7 @@ public class ColorOutputBuilder : OutputBuilder
             return;
 
         var text = FormatLines();
-
-
-        var colors = ColorsProvider.GetColorsFor(LogParts.Message);
-        colors.Format(text);    
-
+        text = Format(LogParts.Message, text);    
         //var colorMarkup2 = ColorMarkup2Helper.HasEndLineColorMarkup(text, out var colors2, out var index);
         //if (colorMarkup2)
         //{
@@ -105,5 +107,14 @@ public class ColorOutputBuilder : OutputBuilder
         tagProcessor.ProcessHeaderTags(Options.HeaderPadding);
         tagProcessor.ProcessColorTags();
         tagProcessor.ProcessRgbTags();
+    }
+
+    private string Format(LogParts part, string text)
+    {
+        if (Options.TagsBehavior != TagsBehavior.Enabled)
+            return text;
+
+        var colors = ColorsProvider.GetColorsFor(part);
+        return colors.Format(text);
     }
 }
