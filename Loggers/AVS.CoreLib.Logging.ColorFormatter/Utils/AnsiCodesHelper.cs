@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Text.RegularExpressions;
 
 namespace AVS.CoreLib.Logging.ColorFormatter.Utils
 {
@@ -19,6 +20,7 @@ namespace AVS.CoreLib.Logging.ColorFormatter.Utils
                 ConsoleColor.DarkMagenta => "\x1B[35m",
                 ConsoleColor.DarkCyan => "\x1B[36m",
                 ConsoleColor.Gray => "\x1B[37m",
+
                 ConsoleColor.DarkGray => "\x1B[1m\x1B[30m",
                 ConsoleColor.Red => "\x1B[1m\x1B[31m",
                 ConsoleColor.Green => "\x1B[1m\x1B[32m",

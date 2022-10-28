@@ -4,7 +4,6 @@ using AVS.CoreLib.Logging.ColorFormatter.ColorMakup;
 
 namespace AVS.CoreLib.Logging.ColorFormatter.Utils;
 
-
 /// <summary>
 /// text utilities for color markup on $:color$ pattern 
 /// </summary>
@@ -176,7 +175,7 @@ public static class ColorMarkup2Helper
     }
 
     /// <summary>
-    /// remove color markup from the text
+    /// remove color markup from the text e.g. $text:-Red --DarkYellow$
     /// </summary>
     public static string StripColorMarkup(this string text)
     {

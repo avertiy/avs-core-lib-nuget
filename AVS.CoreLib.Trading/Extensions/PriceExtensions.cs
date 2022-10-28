@@ -176,6 +176,12 @@ namespace AVS.CoreLib.Trading.Extensions
             return volume.RoundUp(dec);
         }
 
+        public static double VolumeRound(this double volume, double price, int? roundDecimals = null)
+        {
+            var dec = roundDecimals ?? GetVolumeRoundDecimals(price);
+            return volume.Round(dec);
+        }
+
         public static double VolumeRoundDown(this double volume, double price, int? roundDecimals = null)
         {
             var dec = roundDecimals ?? GetVolumeRoundDecimals(price);
@@ -207,6 +213,12 @@ namespace AVS.CoreLib.Trading.Extensions
         {
             var dec = roundDecimals ?? GetVolumeRoundDecimals(price);
             return volume.RoundUp(dec);
+        }
+
+        public static decimal VolumeRound(this decimal volume, decimal price, int? roundDecimals = null)
+        {
+            var dec = roundDecimals ?? GetVolumeRoundDecimals(price);
+            return volume.Round(dec);
         }
 
         public static decimal VolumeRoundDown(this decimal volume, decimal price, int? roundDecimals = null)

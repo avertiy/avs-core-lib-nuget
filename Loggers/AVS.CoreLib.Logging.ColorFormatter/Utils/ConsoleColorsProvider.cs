@@ -32,6 +32,7 @@ public enum ArgumentType
 public enum LogParts
 {
     Message = 0,
+    Timestamp,
     Error,
     Scope,
     Category
@@ -61,8 +62,9 @@ public class ColorsProvider : IColorsProvider
     {
         return part switch
         {
-            LogParts.Error => new ConsoleColors(ConsoleColor.DarkRed, null),
+            LogParts.Error => new ConsoleColors(ConsoleColor.Red, null),
             LogParts.Scope => new ConsoleColors(ConsoleColor.Cyan, null),
+            LogParts.Timestamp => new ConsoleColors(ConsoleColor.DarkGray, null),
             LogParts.Category => new ConsoleColors(ConsoleColor.DarkYellow, null),
             _ => new ConsoleColors(ConsoleColor.Gray, null)
         };

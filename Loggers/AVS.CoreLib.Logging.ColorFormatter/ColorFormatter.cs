@@ -1,4 +1,5 @@
-﻿using AVS.CoreLib.Logging.ColorFormatter.ColorMakup;
+﻿using System.Text;
+using AVS.CoreLib.Logging.ColorFormatter.ColorMakup;
 using AVS.CoreLib.Logging.ColorFormatter.Extensions;
 using AVS.CoreLib.Logging.ColorFormatter.Utils;
 using Microsoft.Extensions.Logging;
@@ -11,30 +12,12 @@ namespace AVS.CoreLib.Logging.ColorFormatter;
 public class ColorFormatter : ConsoleFormatter, IDisposable
 {
     private readonly IDisposable _optionsReloadToken;
-    protected ColorFormatterOptions _formatterFormatterOptions;
+    protected ColorFormatterOptions _options;
     public static IColorsProvider ColorsProvider = new ColorsProvider();
     public ColorFormatter(IOptionsMonitor<ColorFormatterOptions> options)
-        // case insensitive
         : base(nameof(ColorFormatter))
     {
-        (_optionsReloadToken, _formatterFormatterOptions) = (options.OnChange(ReloadLoggerOptions), options.CurrentValue);
-    }
-
-    private void ReloadLoggerOptions(ColorFormatterOptions formatterOptions)
-    {
-        _formatterFormatterOptions = formatterOptions;
-    }
-
-    protected virtual string FormatMessage<T>(in LogEntry<T> logEntry)
-    {
-        var message = logEntry.Formatter?.Invoke(logEntry.State, logEntry.Exception);
-        if (_formatterFormatterOptions.ColorBehavior == LoggerColorBehavior.Disabled)
-        {
-            message = message.StripColorMarkup().StripEndLineColorMarkup();
-            return message;
-        }
-
-        return message;
+        (_optionsReloadToken, _options) = (options.OnChange(ReloadLoggerOptions), options.CurrentValue);
     }
 
     public override void Write<T>(
@@ -42,125 +25,28 @@ public class ColorFormatter : ConsoleFormatter, IDisposable
         IExternalScopeProvider scopeProvider,
         TextWriter textWriter)
     {
-        var message = FormatMessage(logEntry);
-
-        if (string.IsNullOrEmpty(message))
-        {
-            textWriter.WriteLine(message);
-            return;
-        }
-
-        NewLineCheck:
-        if (message.StartsWith(Environment.NewLine))
-        {
-            message = message.Remove(0, Environment.NewLine.Length);
-            textWriter.WriteLine();
-            goto NewLineCheck;
-        }
-
-        var messageBuilder = new LogMessageBuilder()
-        {
-            IncludeScopes = _formatterFormatterOptions.IncludeScopes,
-            CategoryFormat = _formatterFormatterOptions.CategoryFormat,
-            ArgsColorFormat = _formatterFormatterOptions.ArgsColorFormat,
-            ScopeBehavior = _formatterFormatterOptions.ScopeBehavior,
-            ColorBehavior = _formatterFormatterOptions.ColorBehavior,
-            SingleLine = _formatterFormatterOptions.SingleLine,
-            IncludeLogLevel = _formatterFormatterOptions.IncludeLogLevel
-        };
-
-        messageBuilder.AddPrefix(_formatterFormatterOptions.CustomPrefix);
-        var timeStampFormat = _formatterFormatterOptions.TimestampFormat;
-        messageBuilder.AddTimestamp(GetCurrentDateTime(), _formatterFormatterOptions.TimestampFormat);
-
-        if (AnyTimeTags(message, messageBuilder))
-        {
-            WriteLogMessage(textWriter, messageBuilder.ToString());
-            return;
-        }
-
-        messageBuilder.AddLogLevel(logEntry.LogLevel);
-        
-        if (message == "[level]")
-        {
-            WriteLogMessage(textWriter, messageBuilder.ToString());
-            return;
-        }
-
-        messageBuilder.AddCategory(logEntry);
-
-        messageBuilder.AddScopeInformation(scopeProvider);
-
-        messageBuilder.AddMessageText(message, logEntry, x => ColorsProvider.GetColorsForArgument(x));
-
-        messageBuilder.AddError(logEntry.Exception);
-
-        var logMessage = messageBuilder.ToString();
-
-        WriteLogMessage(textWriter, logMessage);
+        var outputBuilder = GetOutputBuilder();
+        outputBuilder.Init(logEntry, scopeProvider);
+        var message = outputBuilder.Build();
+        textWriter.WriteLine(message);
+        return;
     }
-
-    private bool AnyTimeTags(string message, LogMessageBuilder messageBuilder)
+    private void ReloadLoggerOptions(ColorFormatterOptions formatterOptions)
     {
-        if (message == "<time/>" || message == "[time]")
-        {
-            messageBuilder.AddTimestamp(GetCurrentDateTime(), "T");
-            return true;
-        }
-
-        if (message == "<timestamp/>" || message == "[timestamp]")
-        {
-            messageBuilder.AddTimestamp(GetCurrentDateTime(), "G");
-            return true;
-        }
-
-        if (message == "<date/>" || message == "[date]")
-        {
-            messageBuilder.AddTimestamp(GetCurrentDateTime(), "d");
-            return true;
-        }
-
-        return false;
+        _options = formatterOptions;
     }
-
-    //private bool AnyTags(string message, LogMessageBuilder messageBuilder)
-    //{
-    //    if (message == "<header>" || message == "[time]")
-    //    {
-    //        messageBuilder.AddTimestamp(GetCurrentDateTime(), "T");
-    //        return true;
-    //    }
-
-    //    if (message == "<timestamp/>" || message == "[timestamp]")
-    //    {
-    //        messageBuilder.AddTimestamp(GetCurrentDateTime(), "G");
-    //        return true;
-    //    }
-
-    //    if (message == "<date/>" || message == "[date]")
-    //    {
-    //        messageBuilder.AddTimestamp(GetCurrentDateTime(), "d");
-    //        return true;
-    //    }
-
-    //    return false;
-    //}
-
-    private void WriteLogMessage(TextWriter textWriter, string message)
+    private IOutputBuilder GetOutputBuilder()
     {
-        if (_formatterFormatterOptions.ColorBehavior == LoggerColorBehavior.Disabled)
-            textWriter.WriteLine(message);
+        IOutputBuilder builder;
+        if (_options.ColorBehavior == LoggerColorBehavior.Disabled)
+        {
+            builder = new OutputBuilder() { Options = _options };
+        }
         else
         {
-            var colorMarkupString = new ColorMarkupString2(message);
-            textWriter.WriteColorMarkupString(colorMarkupString);
-            textWriter.WriteLine();
+            builder = new ColorOutputBuilder() { ColorsProvider = ColorsProvider, Options = _options };
         }
-    }
-
-    private DateTimeOffset GetCurrentDateTime()
-    {
-        return _formatterFormatterOptions.UseUtcTimestamp ? DateTimeOffset.UtcNow : DateTimeOffset.Now;
+        return builder;
     }
 
     public void Dispose()
@@ -168,3 +54,4 @@ public class ColorFormatter : ConsoleFormatter, IDisposable
         _optionsReloadToken?.Dispose();
     }
 }
+

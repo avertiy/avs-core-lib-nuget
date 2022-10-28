@@ -12,6 +12,31 @@ namespace AVS.CoreLib.Extensions.Numbers
             return Math.Round(value, decimals, MidpointRounding.AwayFromZero);
         }
 
+        /// <summary>
+        /// determines number of meaningful digits based on price value
+        /// </summary>
+        public static int GetRoundDecimals(this double value)
+        {
+            return value switch
+            {
+                > 10000 => 0,
+                > 1000 => 1,
+                > 100 => 2,
+                > 10 => 3,
+                > 1 => 4,
+                > 0.1 => 5,
+                > 0.01 => 6,
+                > 0.001 => 7,
+                _ => 8
+            };
+        }
+
+        public static double Round(this double value, int? roundDecimals = null)
+        {
+            var dec = roundDecimals ?? GetRoundDecimals(value);
+            return Math.Round(value, dec, MidpointRounding.AwayFromZero);
+        }
+
         public static double RoundUp(this double value, int decimals)
         {
             var k = Math.Pow(10, decimals);
@@ -42,6 +67,31 @@ namespace AVS.CoreLib.Extensions.Numbers
         public static decimal Round(this decimal value, int decimals)
         {
             return Math.Round(value, decimals, MidpointRounding.AwayFromZero);
+        }
+
+        /// <summary>
+        /// determines number of meaningful digits based on price value
+        /// </summary>
+        public static int GetRoundDecimals(this decimal value)
+        {
+            return value switch
+            {
+                > 10000 => 0,
+                > 1000 => 1,
+                > 100 => 2,
+                > 10 => 3,
+                > 1 => 4,
+                > 0.1m => 5,
+                > 0.01m => 6,
+                > 0.001m => 7,
+                _ => 8
+            };
+        }
+
+        public static decimal Round(this decimal value, int? roundDecimals = null)
+        {
+            var dec = roundDecimals ?? GetRoundDecimals(value);
+            return Math.Round(value, dec, MidpointRounding.AwayFromZero);
         }
 
         public static decimal RoundUp(this decimal value, int decimals)

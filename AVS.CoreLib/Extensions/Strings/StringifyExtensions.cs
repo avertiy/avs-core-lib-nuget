@@ -23,11 +23,11 @@ namespace AVS.CoreLib.Extensions
         {
             return wrapInSquareBrackets ? $"[{string.Join(separator, enumerable)}]" : string.Join(separator, enumerable);
         }
-
+/*
         public static string Stringify<TKey,TValue>(this IDictionary<TKey,TValue> dict,
             string separator = ", ",
             string keyValueSeparator = ":",
-            bool singleLine = true, 
+            bool inlineFormatting = true, 
             bool wrapInSquareBrackets = true,
             int maxStrLength = 0,
             bool addLength = true)
@@ -42,7 +42,7 @@ namespace AVS.CoreLib.Extensions
                 var key = kp.Key.ToString();
                 var value = kp.Value?.ToString() ?? "null";
 
-                if (singleLine)
+                if (inlineFormatting)
                 {
                     if (sb.Length > 2)
                     {
@@ -84,46 +84,183 @@ namespace AVS.CoreLib.Extensions
 
             return sb.ToString();
         }
-
-        public static string Stringify<T>(this IEnumerable<T> enumerable, Func<T, string> formatter = null, bool wrapInSquareBrackets = true, bool addLength = true)
+*/
+        public static string Stringify<TKey, TValue>(this IDictionary<TKey, TValue> dict,
+            StringifyFormat format = StringifyFormat.Default,
+            string separator = ", ",
+            string keyValueSeparator = ":",
+            Func<TKey,TValue, string> formatter = null,
+            int maxLength = 256
+            )
         {
+            var brackets = format.HasFlag(StringifyFormat.Brackets);
+            var displayCount = format.HasFlag(StringifyFormat.Count);
+            var multiLine = format.HasFlag(StringifyFormat.MultiLine);
+            var limit = format.HasFlag(StringifyFormat.Limit);
+            var padding = " ";
             var sb = new StringBuilder();
-            if (wrapInSquareBrackets)
+            if (brackets)
                 sb.Append('[');
 
             var count = 0;
-            var inRow = false;
-            foreach (var element in enumerable)
+            var l = "..".Length + separator.Length + (brackets ? 1 : 0);
+            var reachedLimit = false;
+            foreach (var kp in dict)
             {
-                var str = formatter == null ? element.ToString() : formatter(element);
-                if (inRow || (count == 0 && str.Length > 10))
+                if (reachedLimit)
                 {
-                    inRow = true;
-                    sb.AppendLine();
-                    sb.Append(str);
-                    sb.Append(",");
+                    // break if no need to count items  
+                    if (!displayCount)
+                        break;
+
+                    count++;
+                    continue;
+                }
+
+                string str = null;
+                if (formatter == null)
+                {
+                    var key = kp.Key.ToString();
+                    var value = kp.Value?.ToString() ?? "null";
+                    str = key + keyValueSeparator + value;
                 }
                 else
                 {
-                    if (count > 0)
-                    {
-                        sb.Append(" ");
-                    }
-                    sb.Append(str);
-                    sb.Append(",");
+                    str = formatter(kp.Key, kp.Value);
                 }
+
+                if (count == 0 && (multiLine || str.Length > 10))
+                    multiLine = true;
+
+                if (multiLine)
+                    sb.AppendLine();
+
+                if (padding.Length > 0)
+                    sb.Append(padding);
+
+                sb.Append(str);
+                sb.Append(separator);
+                count++;
+
+                if (limit && (multiLine && count > 20 || sb.Length + l + padding.Length > maxLength))
+                {
+                    if (multiLine)
+                        sb.AppendLine();
+                    else
+                        sb.Length = maxLength - l - padding.Length;
+
+                    if (padding.Length > 0)
+                        sb.Append(padding);
+
+                    sb.Append("..");
+                    sb.Append(separator);
+                    reachedLimit = true;
+                }
+
                 count++;
             }
 
-            sb.Length -= 1;
-            
-            if(wrapInSquareBrackets)
+            if (count > 0 && separator.Length > 0)
+                sb.Length -= separator.Length;
+
+            if (multiLine)
+                sb.AppendLine();
+
+            if (brackets)
                 sb.Append(']');
 
-            if (addLength && count > 5)
-                sb.Append($"(#{count})");
+            if (displayCount && (count > 4 || reachedLimit))
+                sb.Append($" (#{count})");
 
             return sb.ToString();
         }
+
+        public static string Stringify<T>(this IEnumerable<T> enumerable, StringifyFormat format = StringifyFormat.Default,
+            string separator = ",",
+            Func<T, string> formatter = null,
+            int maxLength = 256)
+        {
+            var brackets = format.HasFlag(StringifyFormat.Brackets);
+            var displayCount = format.HasFlag(StringifyFormat.Count);
+            var multiLine = format.HasFlag(StringifyFormat.MultiLine);
+            var limit = format.HasFlag(StringifyFormat.Limit);
+            var padding = " ";
+
+            var sb = new StringBuilder();
+            
+            if (brackets)
+                sb.Append('[');
+
+            var count = 0;
+            var l = "..".Length + separator.Length + (brackets ?  1 : 0);
+            var reachedLimit = false;
+            foreach (var item in enumerable)
+            {
+                if (reachedLimit)
+                {
+                    // break if no need to count items  
+                    if (!displayCount)
+                        break;
+
+                    count++;
+                    continue;
+                }
+
+                var str = formatter == null ? item.ToString() : formatter(item);
+
+                if (count == 0 && (multiLine || str.Length > 10))
+                    multiLine = true;
+
+                if (multiLine)
+                    sb.AppendLine();
+
+                if (padding.Length > 0)
+                    sb.Append(padding);
+
+                sb.Append(str);
+                sb.Append(separator);
+                count++;
+
+                if (limit && (multiLine && count > 20 || sb.Length + l + padding.Length > maxLength))
+                {
+                    if (multiLine)
+                        sb.AppendLine();
+                    else
+                        sb.Length = maxLength - l - padding.Length;
+
+                    if (padding.Length > 0)
+                        sb.Append(padding);
+
+                    sb.Append("..");
+                    sb.Append(separator);
+                    reachedLimit = true;
+                }
+            }
+
+            if(count > 0 && separator.Length > 0)
+                sb.Length -= separator.Length;
+
+            if (multiLine)
+                sb.AppendLine();
+
+            if (brackets)
+                sb.Append(']');
+
+            if (displayCount && (count > 4 || reachedLimit))
+                sb.Append($" (#{count})");
+
+            return sb.ToString();
+        }
+    }
+
+    [Flags]
+    public enum StringifyFormat
+    {
+        None = 0,
+        Brackets = 1,
+        Count =2,
+        MultiLine = 4,
+        Limit = 8,
+        Default =  Brackets | Count | Limit
     }
 }

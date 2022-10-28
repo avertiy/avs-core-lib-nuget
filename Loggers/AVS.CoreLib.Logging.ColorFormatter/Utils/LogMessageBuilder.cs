@@ -6,41 +6,45 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging.Console;
 
 namespace AVS.CoreLib.Logging.ColorFormatter.Utils;
-
+/*
 public class LogMessageBuilder
 {
     private const string LOGLEVEL_PADDING = ": ";
     private static readonly string _messagePadding = new string(' ', LogLevel.Information.GetLogLevelText().Length + LOGLEVEL_PADDING.Length);
     private static readonly string _newLineWithMessagePadding = Environment.NewLine + _messagePadding;
     private readonly StringBuilder _sb = new StringBuilder();
-    public LoggerColorBehavior ColorBehavior { get; set; }
-    public ScopeBehavior ScopeBehavior { get; set; }
-    public CategoryFormat CategoryFormat { get; set; }
-    public ArgsColorFormat ArgsColorFormat { get; set; }
-    public bool SingleLine { get; set; }
-    public bool IncludeScopes { get; set; }
-    public bool IncludeLogLevel { get; set; }
+    private readonly TagProcessor _tagProcessor = new TagProcessor();
+    private ColorFormatterOptions _options;
 
-    public void AddPrefix(string prefix)
+    private LoggerColorBehavior ColorBehavior => _options.ColorBehavior;
+
+    public void AddPrefix()
     {
-        if (prefix == null)
+        if (string.IsNullOrEmpty(_options.CustomPrefix))
             return;
-        _sb.Append(prefix);
+
+        _sb.Append(_options.CustomPrefix);
         _sb.EnsureWhitespace();
     }
 
-    public void AddTimestamp(DateTimeOffset dateTimeOffset, string format = null)
+    public void AddTimestamp()
     {
-        if (string.IsNullOrEmpty(format))
+        if (string.IsNullOrEmpty(_options.TimestampFormat))
             return;
-        var timestamp = dateTimeOffset.ToString(format);
+
+        var timestamp = GetCurrentDateTime().ToString(_options.TimestampFormat);
         _sb.Append(timestamp);
         _sb.EnsureWhitespace();
     }
 
+    private DateTimeOffset GetCurrentDateTime()
+    {
+        return _options.UseUtcTimestamp ? DateTimeOffset.UtcNow : DateTimeOffset.Now;
+    }
+
     public void AddLogLevel(LogLevel logLevel)
     {
-        if (!IncludeLogLevel && logLevel < LogLevel.Error)
+        if (!_options.IncludeLogLevel && logLevel < LogLevel.Error)
             return;
 
         var logLevelString = logLevel.GetLogLevelText() + LOGLEVEL_PADDING;
@@ -51,7 +55,7 @@ public class LogMessageBuilder
 
     public void AddCategory<TState>(in LogEntry<TState> logEntry)
     {
-        if (CategoryFormat == CategoryFormat.None || string.IsNullOrEmpty(logEntry.Category))
+        if (_options.CategoryFormat == CategoryFormat.None || string.IsNullOrEmpty(logEntry.Category))
             return;
 
         var eventId = logEntry.EventId.Id;
@@ -59,7 +63,7 @@ public class LogMessageBuilder
         // 12:05:00 info: ConsoleApp.Program[10]
 
         var category = logEntry.Category;
-        if (CategoryFormat == CategoryFormat.Name)
+        if (_options.CategoryFormat == CategoryFormat.Name)
         {
             var ind = logEntry.Category.LastIndexOf('.');
             if (ind + 1 < logEntry.Category.Length)
@@ -75,7 +79,7 @@ public class LogMessageBuilder
 
     public void AddScopeInformation(IExternalScopeProvider scopeProvider)
     {
-        if (!IncludeScopes || scopeProvider == null)
+        if (!_options.IncludeScopes || scopeProvider == null)
             return;
 
         var scopes = scopeProvider.GetAllScopes();
@@ -84,7 +88,7 @@ public class LogMessageBuilder
 
         var json = scopes.ToJsonString();
         Append(json, ConsoleColors.Scope);
-        _sb.Append(SingleLine ? " " : Environment.NewLine);
+        _sb.Append(_options.SingleLine ? " " : Environment.NewLine);
     }
 
     public void AddMessageText<T>(string message, LogEntry<T> logEntry, Func<ArgumentType, ConsoleColors> colorizeArgument)
@@ -96,7 +100,7 @@ public class LogMessageBuilder
         }
 
         var text = message;
-        
+
         var colors = logEntry.LogLevel.GetMessageConsoleColors(ColorBehavior);
 
         var colorMarkup2 = ColorMarkup2Helper.HasEndLineColorMarkup(text, out var colors2, out var index);
@@ -105,7 +109,7 @@ public class LogMessageBuilder
             text = text.Substring(0, index);
             colors = ConsoleColors.Parse(colors2);
         }
-        else if (ArgsColorFormat == ArgsColorFormat.Auto && 
+        else if (_options.ArgsColorFormat == ArgsColorFormat.Auto && 
                  ColorBehavior != LoggerColorBehavior.Disabled && 
                  logEntry.State is IReadOnlyList<KeyValuePair<string, object>> { Count: > 1 } list)
         {
@@ -116,9 +120,12 @@ public class LogMessageBuilder
             text = textWithMarkup;
         }
 
-        text = SingleLine
+        text = _options.SingleLine
             ? text.Replace(Environment.NewLine, " ")
             : $"{_messagePadding}{text.Replace(Environment.NewLine, _newLineWithMessagePadding)}{Environment.NewLine}";
+
+        
+        message = _tagProcessor.Process(message, TagFormat.All);
 
 
         Append2(text, colors);
@@ -187,4 +194,23 @@ public class LogMessageBuilder
     {
         return _sb.ToString();
     }
+
+    
+
+    public void Init(ColorFormatterOptions options)
+    {
+        _options = options;
+        _tagProcessor.UseUtcTimestamp = _options.UseUtcTimestamp;
+        _tagProcessor.HeaderPadding = _options.HeaderPadding;
+
+        //IncludeScopes = options.IncludeScopes,
+        //CategoryFormat = options.CategoryFormat,
+        //ArgsColorFormat = options.ArgsColorFormat,
+        //ScopeBehavior = options.ScopeBehavior,
+        //ColorBehavior = options.ColorBehavior,
+        //SingleLine = options.SingleLine,
+        //IncludeLogLevel = options.IncludeLogLevel
+    }
 }
+
+*/

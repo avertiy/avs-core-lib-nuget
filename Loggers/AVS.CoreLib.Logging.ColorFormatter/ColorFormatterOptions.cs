@@ -19,7 +19,17 @@ public class ColorFormatterOptions : ConsoleFormatterOptions
     public CategoryFormat CategoryFormat { get; set; } = CategoryFormat.Name;
     public ArgsColorFormat ArgsColorFormat { get; set; } = ArgsColorFormat.Auto;
     public bool IncludeLogLevel { get; set; } = true;
+    public TagsBehavior TagsBehavior { get; set; }
+
+    public string HeaderPadding { get; set; }
     
+}
+
+public enum TagsBehavior
+{
+    Enabled = 0,
+    Disabled = 1,
+    StripTags = 2,
 }
 
 public enum ScopeBehavior

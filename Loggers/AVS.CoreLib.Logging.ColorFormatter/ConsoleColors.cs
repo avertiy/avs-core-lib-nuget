@@ -26,6 +26,20 @@ public readonly struct ConsoleColors
         return string.Empty;
     }
 
+    public string Format(string text)
+    {
+        if (Foreground.HasValue && Background.HasValue)
+            return $"<{Foreground}><bg{Background}>{text}</bg{Background}></{Foreground}>";
+
+        if (Foreground.HasValue)
+            return $"<{Foreground}>{text}</{Foreground}>";
+
+        if (Background.HasValue)
+            return $"<bg{Background}>{text}</bg{Background}>";
+
+        return text;
+    }
+
     public bool HasValue => Foreground.HasValue || Background.HasValue;
 
     public static ConsoleColors Gray => new ConsoleColors(ConsoleColor.Gray, null);

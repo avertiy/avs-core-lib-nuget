@@ -26,7 +26,14 @@ namespace AVS.CoreLib.Loggers.TestApp
 
         public void Test()
         {
-           Console.ForegroundColor = ConsoleColor.DarkGray;
+
+            _logger.LogInformation("\r\nmultiline test {arg1:C}\r\n some text new line\r\n {arg2}{arg3}\r\n", 2, "string value", 4.444);
+            _logger.LogInformation("normal text");
+
+
+            _logger.LogInformation("text with tags <Red>red text here </Red><Green>green<bgBlue>blue</bgBlue></Green><RGB:120,100,200>rgb text here </RGB>");
+
+            Console.ForegroundColor = ConsoleColor.DarkGray;
             //AnsiCodesHelper.PrintAnsiColors();
             //AnsiCodesHelper.PrintPalete();
 
@@ -38,7 +45,9 @@ namespace AVS.CoreLib.Loggers.TestApp
                 Prop3 = "prop value"
             };
 
-            _logger.LogInformation("simple info log");
+            _logger.LogInformation("<Red>red text <Green>green</Green>continue red</Red> <RGB:120,100,200> {obj} </RGB>", obj);
+            _logger.LogInformation("test {arg1:C} some text {arg2}{arg3:N2}", 1, "string value", 3.3333);
+            
             _logger.LogInformation("\r\n\r\nTesting {strategy}, timeframe: {timeframe}; parameters: {parameters}",
                 "name", "H1", "Pool Fees: 10%");
             _logger.LogInformation("");

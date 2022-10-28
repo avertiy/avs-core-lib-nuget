@@ -2,9 +2,12 @@
 using AVS.CoreLib.Abstractions;
 using AVS.CoreLib.ConsoleLogger;
 using AVS.CoreLib.ConsoleTools.Bootstrapping;
+using AVS.CoreLib.Logging.ColorFormatter;
 using AVS.CoreLib.Logging.ColorFormatter.Extensions;
+using AVS.CoreLib.Logging.ColorFormatter.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace AVS.CoreLib.Loggers.TestApp;
 
@@ -12,7 +15,6 @@ internal class Program
 {
     private static void Main()
     {
-        //DefaultConsoleLoggerTest();
         Bootstrap.ConfigureServices(services =>
             {
                 AddConsoleFormatter(services)
@@ -32,7 +34,8 @@ internal class Program
             {
                 builder.AddConsoleLogger(x =>
                 {
-                    x.TimestampFormat = "G";
+                    x.TimestampFormat = "T";
+                    x.SingleLine = false;
                     //x.PrintLoggerName = false;
                     x.UseCurlyBracketsForScope = true;
                 });
@@ -48,8 +51,8 @@ internal class Program
                     .AddConsoleWithColorFormatter(x =>
                     {
                         x.IncludeScopes = true;
-                        x.SingleLine = true;
-                        x.TimestampFormat = "G";
+                        x.SingleLine = false;
+                        x.TimestampFormat = "T";
                         x.UseUtcTimestamp = true;
                     });
             });
