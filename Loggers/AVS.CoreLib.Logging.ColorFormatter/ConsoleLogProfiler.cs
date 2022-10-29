@@ -12,7 +12,7 @@ public static class ConsoleLogProfiler
         if (Enabled)
         {
             _sb.AppendLine(message);
-            if (_sb.Length > 2000)
+            if (_sb.Length > 5000)
                 _sb.Remove(0, 1000);
         }
     }

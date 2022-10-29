@@ -11,11 +11,11 @@ namespace AVS.CoreLib.Logging.ColorFormatter.Extensions
             // since just setting one can look bad on the users console.
             return logLevel switch
             {
-                LogLevel.Trace => new ConsoleColors(ConsoleColor.DarkGray, ConsoleColor.Black),
-                LogLevel.Debug => new ConsoleColors(ConsoleColor.Gray, ConsoleColor.Black),
-                LogLevel.Information => new ConsoleColors(ConsoleColor.DarkGreen, ConsoleColor.Black),
-                LogLevel.Warning => new ConsoleColors(ConsoleColor.Yellow, ConsoleColor.Black),
-                LogLevel.Error => new ConsoleColors(ConsoleColor.DarkRed, ConsoleColor.Black),
+                LogLevel.Trace => new ConsoleColors(ConsoleColor.DarkGray, null),
+                LogLevel.Debug => new ConsoleColors(ConsoleColor.Gray, null),
+                LogLevel.Information => new ConsoleColors(ConsoleColor.DarkGreen, null),
+                LogLevel.Warning => new ConsoleColors(ConsoleColor.Yellow, null),
+                LogLevel.Error => new ConsoleColors(ConsoleColor.DarkRed, null),
                 LogLevel.Critical => new ConsoleColors(ConsoleColor.White, ConsoleColor.DarkRed),
                 _ => new ConsoleColors(null, null)
             };

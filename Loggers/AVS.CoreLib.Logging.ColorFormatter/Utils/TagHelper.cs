@@ -6,8 +6,34 @@ namespace AVS.CoreLib.Logging.ColorFormatter.Utils;
 
 public static class TagHelper
 {
-    public const int TagMaxLength = 20;
+    public const int TAG_MAX_LENGTH = 20;
     //private static Regex _regex = new Regex("<(\\w*)\b[^>]*>(.*?)</\\1>");
+
+    public static bool MatchTag(this StringBuilder sb, int index, out string tagName, out int closingTagIndex)
+    {
+        closingTagIndex = -1;
+        tagName = null;
+        if (sb[index] != '<')
+            return false;
+
+        var ind = sb.IndexOf('>', index + 1, TAG_MAX_LENGTH);
+        if (ind == -1)
+            return false;
+
+        var tag = sb.ToString(index + 1, ind - index - 1);
+
+        var closingTag = $"</{tag}>";
+
+        var ind2 = sb.IndexOf(closingTag, index+tag.Length+1);
+        
+        if (ind2 == -1)
+            return false;
+
+        closingTagIndex = ind2;
+        tagName = tag;
+
+        return true;
+    }
 
     public static string[] GetColorTags()
     {

@@ -108,7 +108,13 @@ public static class AnsiCodes
         };
     }
 
-    
+
+    public static string FromTag(Tag tag)
+    {
+        var val = (int)tag;
+        var ansiCode = val > 1000 ? Bright(val - 1000) : Code(val);
+        return ansiCode;
+    }
 }
 
 public enum AnsiCode
@@ -132,7 +138,6 @@ public enum AnsiCode
     /// Returns foreground/background to normal
     /// </summary>
     NoReversed = 27,
-
     Black = 30,
     Red = 31,
     Green = 32,

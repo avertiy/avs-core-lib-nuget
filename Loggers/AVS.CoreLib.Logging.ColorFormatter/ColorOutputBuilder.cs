@@ -30,8 +30,8 @@ public class ColorOutputBuilder : OutputBuilder
 
         var timestamp = GetCurrentDateTime().ToString(Options.TimestampFormat);
         PadLength += timestamp.Length+1;
-        var colors = ColorsProvider.GetColorsFor(LogParts.Timestamp);
-        Output.Append(colors.Format(timestamp));
+        var str = Format(LogParts.Timestamp, timestamp);
+        Output.Append(str);
         Output.EnsureWhitespace();
     }
 
@@ -43,15 +43,8 @@ public class ColorOutputBuilder : OutputBuilder
         var logLevel = LogLevel.GetLogLevelText() + LOGLEVEL_PADDING;
         PadLength += logLevel.Length;
 
-        if (Options.TagsBehavior == TagsBehavior.Enabled)
-        {
-            var colors = LogLevel.GetLogLevelColors();
-            Output.Append(colors.Format(logLevel));
-        }
-        else
-        {
-            Output.Append(logLevel);
-        }
+        var str = Format(LogParts.LogLevel, logLevel);
+        Output.Append(str);
     }
 
     protected override void AddCategory()
@@ -82,14 +75,17 @@ public class ColorOutputBuilder : OutputBuilder
 
         var text = FormatLines();
         text = Format(LogParts.Message, text);    
-        //var colorMarkup2 = ColorMarkup2Helper.HasEndLineColorMarkup(text, out var colors2, out var index);
-        //if (colorMarkup2)
-        //{
-        //    text = text.Substring(0, index);
-        //    colors = ConsoleColors.Parse(colors2);
-        //}
        
-        Output.Append(text);
+        Output.AppendLine(text);
+    }
+
+    protected override void AddError()
+    {
+        if (Error == null)
+            return;
+
+        var error = Format(LogParts.Error, Error.ToString());
+        Output.AppendLine(error);
     }
 
     protected override void ProcessTags()
@@ -114,7 +110,7 @@ public class ColorOutputBuilder : OutputBuilder
         if (Options.TagsBehavior != TagsBehavior.Enabled)
             return text;
 
-        var colors = ColorsProvider.GetColorsFor(part);
+        var colors = ColorsProvider.GetColorsFor(part, LogLevel);
         return colors.Format(text);
     }
 }

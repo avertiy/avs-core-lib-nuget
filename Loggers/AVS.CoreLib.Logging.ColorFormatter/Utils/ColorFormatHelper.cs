@@ -82,7 +82,7 @@ public class ArgsColorFormatter
             var type = GetArgumentType(value);
             var colors = colorProvider.GetColorsForArgument(type);
 
-            if (type == ArgumentType.Numeric)
+            if (type == ArgType.Numeric)
             {
                 var ind = sb.IndexOf(key) - 2;
                 //highlight # symbol as well
@@ -101,39 +101,39 @@ public class ArgsColorFormatter
         return Output;
     }
 
-    public static ArgumentType GetArgumentType(string arg)
+    public static ArgType GetArgumentType(string arg)
     {
         if (arg == null)
             throw new ArgumentNullException();
 
         if (arg.StartsWith("[") && arg.EndsWith("]"))
         {
-            return ArgumentType.Array;
+            return ArgType.Array;
         }
 
         if (arg.StartsWith("{") && arg.EndsWith("}"))
-            return ArgumentType.TextJson;
+            return ArgType.TextJson;
 
         if (arg.Contains("%"))
-            return ArgumentType.Percentage;
+            return ArgType.Percentage;
 
         if (arg.Contains("$") || arg.Contains("USD") || arg.Contains("EUR") || arg.Contains("UAH"))
         {
-            return arg[0] == '(' && arg[^1] == ')' ? ArgumentType.CashNegative : ArgumentType.Cash;
+            return arg[0] == '(' && arg[^1] == ')' ? ArgType.CashNegative : ArgType.Cash;
         }
 
         if (double.TryParse(arg, out var d))
         {
-            return d >= 0 ? ArgumentType.Numeric : ArgumentType.NumericNegative;
+            return d >= 0 ? ArgType.Numeric : ArgType.NumericNegative;
         }
 
         if (DateTime.TryParse(arg, out var date))
-            return ArgumentType.Date;
+            return ArgType.Date;
 
         if (arg.Length < 25)
-            return ArgumentType.String;
+            return ArgType.String;
 
-        return ArgumentType.Text;
+        return ArgType.Text;
     }
 }
 

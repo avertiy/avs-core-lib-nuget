@@ -42,13 +42,7 @@ public readonly struct ConsoleColors
 
     public bool HasValue => Foreground.HasValue || Background.HasValue;
 
-    public static ConsoleColors Gray => new ConsoleColors(ConsoleColor.Gray, null);
-    public static ConsoleColors DarkGray => new ConsoleColors(ConsoleColor.DarkGray, null);
-    public static ConsoleColors Cyan => new ConsoleColors(ConsoleColor.Cyan, null);
-    public static ConsoleColors Error = new ConsoleColors(ConsoleColor.DarkRed, null);
-    public static ConsoleColors Category = new ConsoleColors(ConsoleColor.DarkYellow, null);
-    public static ConsoleColors Scope = new ConsoleColors(ConsoleColor.Cyan, null);
-    public static ConsoleColors Args = new ConsoleColors(ConsoleColor.Blue, null);
+    public static ConsoleColors Empty => new ConsoleColors(null, null);
 
     public static ConsoleColors Parse(string str)
     {

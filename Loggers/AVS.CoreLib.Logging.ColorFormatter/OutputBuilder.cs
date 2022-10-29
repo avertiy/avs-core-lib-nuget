@@ -95,7 +95,7 @@ public class OutputBuilder : IOutputBuilder
             return;
 
         var text = FormatLines();
-        Output.Append(text);
+        Output.AppendLine(text);
     }
 
     protected virtual string FormatLines()
@@ -157,7 +157,7 @@ public class OutputBuilder : IOutputBuilder
     {
         if (StampHelper.MatchTimeStamp(Message, GetCurrentDateTime(), out var stamp))
         {
-            Output.Append(stamp);
+            Output.AppendLine(stamp);
             return true;
         }
         return false;

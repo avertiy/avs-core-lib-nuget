@@ -20,20 +20,29 @@ public class TagProcessor
         if (!TagHelper.HasTags(_sb))
             return;
 
-        var colors = Enum.GetValues<ConsoleColor>();
-        foreach (var color in colors)
+        for (var i = 0; i < _sb.Length - 3; i++)
         {
-            if (_sb.IndexOf($"</{color}>", 5, false) > 0)
-            {
-                _sb.Replace($"<{color}>", AnsiCodes.Color(color));
-                _sb.Replace($"</{color}>", AnsiCodes.RESET);
-            }
+            if (!_sb.MatchTag(i, out var tagName, out var closingTagIndex) || !Enum.TryParse(tagName, out Tag tag))
+                continue;
+            
+            var length = tagName.Length + 2;
+            var end = closingTagIndex + length + 1;
 
-            if (_sb.IndexOf($"</bg{color}>", 7, false) > 0)
-            {
-                _sb.Replace($"<bg{color}>", AnsiCodes.BgColor(color));
-                _sb.Replace($"</bg{color}>", AnsiCodes.RESET);
-            }
+            if(tagName.StartsWith("bg"))
+                _sb.FixBgColorLineEnding(end);
+
+            // fix bg color at the end of line 
+            if (end == _sb.Length - 1 || end == _sb.Length)
+                _sb.Append(' ');
+
+            _sb.Replace($"</{tagName}>", AnsiCodes.RESET, closingTagIndex, length + 1);
+            var ansiCode = AnsiCodes.FromTag(tag);
+            _sb.Replace($"<{tagName}>", ansiCode, i, length);
+
+            i += ansiCode.Length;
+            //return back cursor position
+            if(i > length)
+                i -= (length - ansiCode.Length);
         }
     }
 

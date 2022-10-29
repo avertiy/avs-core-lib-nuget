@@ -53,46 +53,46 @@ public static class ColorMarkup2Helper
         return match.Success;
     }
 
-    public static ArgumentType GetArgumentType(string arg)
+    public static ArgType GetArgumentType(string arg)
     {
         if (arg == null)
             throw new ArgumentNullException();
 
         if (arg.StartsWith("[") && arg.EndsWith("]"))
         {
-            return ArgumentType.Array;
+            return ArgType.Array;
         }
 
         if (arg.StartsWith("{") && arg.EndsWith("}"))
-            return ArgumentType.TextJson;
+            return ArgType.TextJson;
 
         if (arg.Contains("%"))
-            return ArgumentType.Percentage;
+            return ArgType.Percentage;
 
         if (arg.Contains("$") || arg.Contains("USD") || arg.Contains("EUR") || arg.Contains("UAH"))
         {
-            return arg[0] == '(' && arg[^1] == ')' ? ArgumentType.CashNegative : ArgumentType.Cash;
+            return arg[0] == '(' && arg[^1] == ')' ? ArgType.CashNegative : ArgType.Cash;
         }
 
         if (double.TryParse(arg, out var d))
         {
-            return d >= 0 ? ArgumentType.Numeric : ArgumentType.NumericNegative;
+            return d >= 0 ? ArgType.Numeric : ArgType.NumericNegative;
         }
 
         if (DateTime.TryParse(arg, out var date))
-            return ArgumentType.Date;
+            return ArgType.Date;
 
         if (arg.Length < 25)
-            return ArgumentType.String;
+            return ArgType.String;
 
-        return ArgumentType.Text;
+        return ArgType.Text;
     }
 
 
     /// <summary>
     /// colorize arguments within the formatted message
     /// </summary>
-    internal static string AddColorMarkup(string formattedMessage, string format, string[] keys, Func<ArgumentType, ConsoleColors> getColors)
+    internal static string AddColorMarkup(string formattedMessage, string format, string[] keys, Func<ArgType, ConsoleColors> getColors)
     {
         //format:  "some text {arg1} text {arg2}{arg3}"
         //message: "some text 1 text 0.123456789"
@@ -126,12 +126,12 @@ public static class ColorMarkup2Helper
 
             var type = GetArgumentType(values[i]);
             // if string do nothing
-            if (type == ArgumentType.String)
+            if (type == ArgType.String)
             {
                 sb.Append(parts[i]);
                 sb.Append(values[i]);
             }
-            else if (type == ArgumentType.Numeric && parts[i].EndsWith("#"))
+            else if (type == ArgType.Numeric && parts[i].EndsWith("#"))
             {
                 var colors = getColors(type);
                 var markup = $"{parts[i].Substring(0, parts[i].Length-1)}$#{values[i]}:{colors.ToString()}$";
@@ -152,11 +152,11 @@ public static class ColorMarkup2Helper
         for (; i < values.Length; i++)
         {
             var type = GetArgumentType(values[i]);
-            if (type == ArgumentType.String)
+            if (type == ArgType.String)
             {
                 sb.Append(values[i]);
             }
-            else if (type == ArgumentType.Numeric && parts[i].EndsWith("#"))
+            else if (type == ArgType.Numeric && parts[i].EndsWith("#"))
             {
                 var colors = getColors(type);
                 var markup = $"{parts[i].Substring(0, parts[i].Length - 1)}$#{values[i]}:{colors.ToString()}$";

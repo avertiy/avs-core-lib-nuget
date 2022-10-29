@@ -11,6 +11,30 @@ namespace AVS.CoreLib.Logging.ColorFormatter.Extensions;
 public static partial class StringBuilderExtensions
 {
     /// <summary>
+    /// when console is resized when line ends with bgcolor the bg color will be stretched with the window that seems background color console issue. 
+    /// </summary>
+    public static StringBuilder FixBgColorLineEnding(this StringBuilder sb, int index, string lineEnd = ".")
+    {
+        var rest = sb.Length - index;
+
+        if (rest < 0 || rest > 10)
+            return sb;
+
+        if (sb.Length <= index || sb.IndexOf(Environment.NewLine, index) == index)
+        {
+            sb.Insert(index, lineEnd);
+            return sb;
+        }
+
+        var restStr = sb.ToString(index, rest);
+        restStr = restStr.Replace(AnsiCodes.RESET,"").Replace(Environment.NewLine,"");
+
+        if (restStr.Length == 0)
+            sb.Insert(index, lineEnd);
+
+        return sb;
+    }
+    /// <summary>
     /// If StringBuilder content is not empty and the last character is neither a whitespace ' ', neither '\t' or '\n'
     /// append a whitespace ' '
     /// </summary>
@@ -94,12 +118,12 @@ public static partial class StringBuilderExtensions
     public static int IndexOf(this StringBuilder sb, string value, int startIndex = 0, bool ignoreCase = false)
     {
         int index;
-        int length = value.Length;
-        int maxSearchLength = (sb.Length - length) + 1;
+        var length = value.Length;
+        var maxSearchLength = (sb.Length - length) + 1;
 
         if (ignoreCase)
         {
-            for (int i = startIndex; i < maxSearchLength; ++i)
+            for (var i = startIndex; i < maxSearchLength; ++i)
             {
                 if (char.ToLower(sb[i]) == char.ToLower(value[0]))
                 {
@@ -115,7 +139,7 @@ public static partial class StringBuilderExtensions
             return -1;
         }
 
-        for (int i = startIndex; i < maxSearchLength; ++i)
+        for (var i = startIndex; i < maxSearchLength; ++i)
         {
             if (sb[i] == value[0])
             {
@@ -130,6 +154,58 @@ public static partial class StringBuilderExtensions
 
         return -1;
     }
+
+    public static IEnumerable<(string value, int i)> IndexOf(this StringBuilder sb, string[] values, int startIndex = 0,
+        bool ignoreCase = false)
+    {
+        int index;
+        var length = values.Min(x=> x.Length);
+        var maxSearchLength = (sb.Length - length) + 1;
+
+        if (ignoreCase)
+        {
+            for (var i = startIndex; i < maxSearchLength; i++)
+            {
+                var current = char.ToLower(sb[i]);
+                foreach (var value in values)
+                {
+                    if (current == char.ToLower(value[0]))
+                    {
+                        length = value.Length;
+                        index = 1;
+                        while ((index < length) && (char.ToLower(sb[i + index]) == char.ToLower(value[index])))
+                            ++index;
+
+                        if (index == length)
+                            yield return (value, i);
+                    }
+                } 
+            }
+
+            yield break;
+        }
+
+        for (var i = startIndex; i < maxSearchLength; i++)
+        {
+            foreach (var value in values)
+            {
+                if (sb[i] == value[0])
+                {
+                    length = value.Length;
+                    index = 1;
+                    while ((index < length) && (sb[i + index] == value[index]))
+                        ++index;
+
+                    if (index == length)
+                        yield return (value, i);
+                }
+            }
+                
+        }
+    }
+
+
+    
 
     /// <summary>
     /// Reports the zero-based index position of the first occurrence of the specified Unicode

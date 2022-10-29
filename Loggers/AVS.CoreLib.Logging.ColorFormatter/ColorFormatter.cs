@@ -28,7 +28,7 @@ public class ColorFormatter : ConsoleFormatter, IDisposable
         outputBuilder.Init(logEntry, scopeProvider);
         var message = outputBuilder.Build();
         ConsoleLogProfiler.Write(message);
-        textWriter.WriteLine(message);
+        textWriter.Write(message);
         return;
     }
     private void ReloadLoggerOptions(ColorFormatterOptions formatterOptions)
