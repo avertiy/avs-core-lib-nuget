@@ -1,4 +1,6 @@
-﻿namespace AVS.CoreLib.Logging.ColorFormatter.Utils;
+﻿using AVS.CoreLib.Logging.ColorFormatter.Enums;
+
+namespace AVS.CoreLib.Logging.ColorFormatter.Utils;
 
 /// <summary>
 /// https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
@@ -50,35 +52,25 @@ public static class AnsiCodes
         return $"\u001b[48;2;{r};{g};{b}m";
     }
 
-    /// <summary>
-    /// Returns a new string in which all occurrences of a <see cref="RESET"/> escape code are replaced with RESET+format.
-    /// this needed when nesting formatting e.g. [red] text in red [bold]bold text[/bold] continue red text[/red]  
-    /// </summary>
-    public static string? ReformatAfterReset(this string? input, string format)
-    {
-        var text = input?.Replace(RESET, $"{RESET}{format}");
-        return text;
-    }
-
     public static string Color(ConsoleColor color)
     {
         return color switch
         {
             ConsoleColor.Black => Code(AnsiCode.Black),
-            ConsoleColor.DarkRed => Code(AnsiCode.Red),
-            ConsoleColor.DarkGreen => Code(AnsiCode.Green),
-            ConsoleColor.DarkYellow => Code(AnsiCode.Yellow),
-            ConsoleColor.DarkBlue => Code(AnsiCode.Blue),
-            ConsoleColor.DarkMagenta => Code(AnsiCode.Magenta),
-            ConsoleColor.DarkCyan => Code(AnsiCode.Cyan),
-            ConsoleColor.Gray => Code(AnsiCode.White),
-            ConsoleColor.DarkGray => Bright(AnsiCode.Black),
-            ConsoleColor.Red => Bright(AnsiCode.Red),
-            ConsoleColor.Green => Bright(AnsiCode.Green),
-            ConsoleColor.Yellow => Bright(AnsiCode.Yellow),
-            ConsoleColor.Blue => Bright(AnsiCode.Blue),
-            ConsoleColor.Magenta => Bright(AnsiCode.Magenta),
-            ConsoleColor.Cyan => Bright(AnsiCode.Cyan),
+            ConsoleColor.DarkRed => Code(AnsiCode.DarkRed),
+            ConsoleColor.DarkGreen => Code(AnsiCode.DarkGreen),
+            ConsoleColor.DarkYellow => Code(AnsiCode.DarkYellow),
+            ConsoleColor.DarkBlue => Code(AnsiCode.DarkBlue),
+            ConsoleColor.DarkMagenta => Code(AnsiCode.DarkMagenta),
+            ConsoleColor.DarkCyan => Code(AnsiCode.DarkCyan),
+            ConsoleColor.Gray => Code(AnsiCode.Gray),
+            ConsoleColor.DarkGray => Code(AnsiCode.DarkGray),
+            ConsoleColor.Red => Code(AnsiCode.Red),
+            ConsoleColor.Green => Code(AnsiCode.Green),
+            ConsoleColor.Yellow => Code(AnsiCode.Yellow),
+            ConsoleColor.Blue => Code(AnsiCode.Blue),
+            ConsoleColor.Magenta => Code(AnsiCode.Magenta),
+            ConsoleColor.Cyan => Code(AnsiCode.Cyan),
             ConsoleColor.White => Code(AnsiCode.White),
             _ => RESET
         };
@@ -89,13 +81,13 @@ public static class AnsiCodes
         return color switch
         {
             ConsoleColor.Black => Code(AnsiCode.Black +10),
-            ConsoleColor.DarkRed => Code(AnsiCode.Red +10),
-            ConsoleColor.DarkGreen => Code(AnsiCode.Green+10),
-            ConsoleColor.DarkYellow => Code(AnsiCode.Yellow + 10),
-            ConsoleColor.DarkBlue => Code(AnsiCode.Blue + 10),
-            ConsoleColor.DarkMagenta => Code(AnsiCode.Magenta + 10),
-            ConsoleColor.DarkCyan => Code(AnsiCode.Cyan + 10),
-            ConsoleColor.Gray => Code(AnsiCode.White + 10),
+            ConsoleColor.DarkRed => Code(AnsiCode.DarkRed +10),
+            ConsoleColor.DarkGreen => Code(AnsiCode.DarkGreen+10),
+            ConsoleColor.DarkYellow => Code(AnsiCode.DarkYellow + 10),
+            ConsoleColor.DarkBlue => Code(AnsiCode.DarkBlue + 10),
+            ConsoleColor.DarkMagenta => Code(AnsiCode.DarkMagenta + 10),
+            ConsoleColor.DarkCyan => Code(AnsiCode.DarkCyan + 10),
+            ConsoleColor.Gray => Code(AnsiCode.Gray + 10),
             ConsoleColor.DarkGray => "\x1B[100m",
             ConsoleColor.Red => "\x1B[101m",
             ConsoleColor.Green => "\x1B[102m",
@@ -108,42 +100,10 @@ public static class AnsiCodes
         };
     }
 
-
     public static string FromTag(Tag tag)
     {
         var val = (int)tag;
         var ansiCode = val > 1000 ? Bright(val - 1000) : Code(val);
         return ansiCode;
     }
-}
-
-public enum AnsiCode
-{
-    Reset = 0,
-    /// <summary>
-    /// Applies brightness/intensity flag to foreground color
-    /// </summary>
-    Bold = 1,
-    Dim = 2,
-    Underline = 4,
-    /// <summary>
-    /// Removes underline
-    /// </summary>
-    NoUnderline = 24,
-    /// <summary>
-    /// Swaps foreground and background colors
-    /// </summary>
-    Reversed = 7,
-    /// <summary>
-    /// Returns foreground/background to normal
-    /// </summary>
-    NoReversed = 27,
-    Black = 30,
-    Red = 31,
-    Green = 32,
-    Yellow = 33,
-    Blue = 34,
-    Magenta = 35,
-    Cyan = 36,
-    White = 37,
 }

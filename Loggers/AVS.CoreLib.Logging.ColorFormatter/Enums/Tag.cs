@@ -1,4 +1,6 @@
-﻿namespace AVS.CoreLib.Logging.ColorFormatter.Utils;
+﻿using AVS.CoreLib.Logging.ColorFormatter.Utils;
+
+namespace AVS.CoreLib.Logging.ColorFormatter.Enums;
 /// <summary>
 /// tags to control console color behaviour by means of using ansi codes,
 /// tag values are convertible to ansi codes <see cref="AnsiCodes.FromTag"/>
@@ -8,27 +10,27 @@ public enum Tag
     /// <summary>
     /// Bold/bright
     /// </summary>
-    B =1,
+    B = 1,
     /// <summary>
     /// Dim
     /// </summary>
-    D =2,
+    D = 2,
     /// <summary>
     /// underline
     /// </summary>
-    U =4,
+    U = 4,
     /// <summary>
     /// Reversed
     /// </summary>
     R = 7,
-    
-    Black =30,
-    DarkRed =31,
-    DarkGreen =32,
+
+    Black = 30,
+    DarkRed = 31,
+    DarkGreen = 32,
     DarkYellow = 33,
     DarkBlue = 34,
     DarkMagenta = 35,
-    DarkCyan =36,
+    DarkCyan = 36,
     Gray = 37,
     DarkGray = 90,
     Red = 91,
@@ -55,7 +57,7 @@ public enum Tag
     bgBlack = 40,
     bgDarkBlue = 44,
     bgDarkGreen = 42,
-    bgDarkCyan =46,
+    bgDarkCyan = 46,
     bgDarkRed = 41,
     bgDarkMagenta = 45,
     bgDarkYellow = 43,
@@ -63,7 +65,7 @@ public enum Tag
     bgDarkGray = 100,
     bgBlue = 104,
     bgGreen = 1102,
-    bgCyan= 1106,
+    bgCyan = 1106,
     bgRed = 1101,
     bgMagenta = 1105,
     bgYellow = 103,

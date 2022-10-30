@@ -235,12 +235,3 @@ public static class TagHelper
         return str.Substring(start, len);
     }
 }
-
-public static class StringExtensions
-{
-    public static bool ExactMatch(this string str, params string[] args)
-    {
-        return args.Any(x => x == str);
-    }
-
-}

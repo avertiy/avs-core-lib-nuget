@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using AVS.CoreLib.Logging.ColorFormatter.Enums;
 using AVS.CoreLib.Logging.ColorFormatter.Extensions;
 using AVS.CoreLib.Logging.ColorFormatter.Utils;
 using Microsoft.Extensions.Logging;
@@ -16,6 +17,8 @@ public class ColorOutputBuilder : OutputBuilder
         
         if (Options.ArgsColorFormat == ArgsColorFormat.Auto)
         {
+            // formatter not only adds color tags to highlight arguments but also makes extended args formatting:  
+            // e.g. LogInformation("{arg:C}", 1.022); => <Green>$1.02</Green>
             var formatter = new ArgsColorFormatter(message, logEntry.State) { ColorsProvider = ColorsProvider };
             message = formatter.FormatMessage();
         }
@@ -30,7 +33,7 @@ public class ColorOutputBuilder : OutputBuilder
 
         var timestamp = GetCurrentDateTime().ToString(Options.TimestampFormat);
         PadLength += timestamp.Length+1;
-        var str = Format(LogParts.Timestamp, timestamp);
+        var str = Format(LogPart.Timestamp, timestamp);
         Output.Append(str);
         Output.EnsureWhitespace();
     }
@@ -43,7 +46,7 @@ public class ColorOutputBuilder : OutputBuilder
         var logLevel = LogLevel.GetLogLevelText() + LOGLEVEL_PADDING;
         PadLength += logLevel.Length;
 
-        var str = Format(LogParts.LogLevel, logLevel);
+        var str = Format(LogPart.LogLevel, logLevel);
         Output.Append(str);
     }
 
@@ -53,7 +56,7 @@ public class ColorOutputBuilder : OutputBuilder
             return;
 
         PadLength += Category.Length;
-        var category = Format(LogParts.Category, Category);
+        var category = Format(LogPart.Category, Category);
         Output.Append(category);
         Output.EnsureWhitespace();
     }
@@ -63,7 +66,7 @@ public class ColorOutputBuilder : OutputBuilder
         if (string.IsNullOrEmpty(Scopes))
             return;
 
-        var scope = Format(LogParts.Scope, Scopes);
+        var scope = Format(LogPart.Scope, Scopes);
         Output.Append(scope);
         Output.Append(Options.SingleLine ? " " : Environment.NewLine);
     }
@@ -74,7 +77,7 @@ public class ColorOutputBuilder : OutputBuilder
             return;
 
         var text = FormatLines();
-        text = Format(LogParts.Message, text);    
+        text = Format(LogPart.Message, text);    
        
         Output.AppendLine(text);
     }
@@ -84,7 +87,7 @@ public class ColorOutputBuilder : OutputBuilder
         if (Error == null)
             return;
 
-        var error = Format(LogParts.Error, Error.ToString());
+        var error = Format(LogPart.Error, Error.ToString());
         Output.AppendLine(error);
     }
 
@@ -105,12 +108,12 @@ public class ColorOutputBuilder : OutputBuilder
         tagProcessor.ProcessRgbTags();
     }
 
-    private string Format(LogParts part, string text)
+    private string Format(LogPart part, string text)
     {
         if (Options.TagsBehavior != TagsBehavior.Enabled)
             return text;
 
         var colors = ColorsProvider.GetColorsFor(part, LogLevel);
-        return colors.Format(text);
+        return colors.FormatWithTags(text);
     }
 }

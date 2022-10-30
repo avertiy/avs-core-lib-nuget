@@ -41,7 +41,7 @@ public static partial class StringBuilderExtensions
     public static StringBuilder EnsureWhitespace(this StringBuilder sb)
     {
         var last = sb[^1];
-        if (sb.Length == 0 || last == ' ' || last == '\t' || last == '\n')
+        if (sb.Length == 0 || last is ' ' or '\t' or '\n')
         {
             return sb;
         }

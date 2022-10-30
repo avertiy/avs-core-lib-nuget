@@ -1,7 +1,6 @@
-﻿using AVS.CoreLib.Logging.ColorFormatter.ColorMakup;
-using AVS.CoreLib.Logging.ColorFormatter.Utils;
+﻿using AVS.CoreLib.Logging.ColorFormatter.Utils;
 
-namespace AVS.CoreLib.Logging.ColorFormatter.Extensions
+namespace AVS.CoreLib.Logging.ColorFormatter.ColorMakup
 {
     internal static class TextWriterExtensions
     {
@@ -10,7 +9,7 @@ namespace AVS.CoreLib.Logging.ColorFormatter.Extensions
             // Order: backgroundcolor, foregroundcolor, Message, reset foregroundcolor, reset backgroundcolor
             if (background.HasValue)
                 writer.Write(AnsiCodesHelper.GetBackgroundColorEscapeCode(background.Value));
-            
+
             if (foreground.HasValue)
                 writer.Write(AnsiCodesHelper.GetForegroundColorEscapeCode(foreground.Value));
 
@@ -19,7 +18,7 @@ namespace AVS.CoreLib.Logging.ColorFormatter.Extensions
             // restore console colors
             if (background.HasValue)
                 writer.Write(AnsiCodesHelper.GetBackgroundColorEscapeCode(Console.BackgroundColor));
-            
+
             if (foreground.HasValue)
                 writer.Write(AnsiCodesHelper.GetForegroundColorEscapeCode(Console.ForegroundColor));
         }
@@ -38,27 +37,19 @@ namespace AVS.CoreLib.Logging.ColorFormatter.Extensions
             {
                 // write plain text
                 if (!string.IsNullOrEmpty(plainText))
-                {
                     writer.Write(plainText);
-                }
 
                 if (!string.IsNullOrEmpty(coloredText))
-                {
                     writer.WriteColored(coloredText, colorScheme);
-                }
             }
         }
 
         private static void WriteColored(this TextWriter writer, string text, string colorScheme)
         {
             if (ColorMarkup2Helper.TryParse(colorScheme, out var foreground, out var background))
-            {   
                 writer.WriteColored(text, background, foreground);
-            }
             else
-            {
                 writer.Write(text);
-            }
         }
     }
 }

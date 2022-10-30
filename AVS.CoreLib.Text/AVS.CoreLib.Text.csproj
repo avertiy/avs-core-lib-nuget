@@ -32,6 +32,12 @@ e.g. ColorFormatter, NotEmptyFormatter, PriceFormatter, EnumFormatter etc.</Desc
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Formatters\ColorMakup2\**" />
+    <EmbeddedResource Remove="Formatters\ColorMakup2\**" />
+    <None Remove="Formatters\ColorMakup2\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="FormatPreprocessors\NumberFormatPreprocessor.cs0" />
   </ItemGroup>
 

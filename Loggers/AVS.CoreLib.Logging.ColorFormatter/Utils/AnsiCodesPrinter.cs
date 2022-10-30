@@ -50,6 +50,47 @@ public static class AnsiCodesPrinter
         Console.WriteLine(AnsiCodes.RESET);
     }
 
+
+
+    //public static void PrintPalete(bool foregroundColors = true, bool backgroundColors = true)
+    //{
+    //    Console.WriteLine("Ansi color palete");
+    //    var colors = Enum.GetValues<ConsoleColor>();
+
+    //    if (foregroundColors)
+    //    {
+    //        Console.WriteLine("Foreground colors:\r\n");
+    //        foreach (var color in colors)
+    //        {
+    //            var foreground = GetForegroundColorEscapeCode(color);
+    //            var suffix = foreground == DEFAULT_FOREGROUND_COLOR ? "[DEFAULT_FOREGROUND_COLOR]" : "";
+
+    //            Console.Write("Color: ");
+    //            Write(color.ToString(), color);
+    //            Console.Write($" => {foreground.Replace("\x1B", "\\x1B")}");
+    //            Console.Write(suffix + $" {foreground}test color" + DEFAULT_FOREGROUND_COLOR);
+    //            Console.WriteLine();
+    //        }
+    //    }
+
+    //    if (backgroundColors)
+    //    {
+    //        Console.WriteLine("Background colors:\r\n");
+    //        foreach (var color in colors)
+    //        {
+                
+    //            var background = GetBackgroundColorEscapeCode(color);
+    //            var suffix = background == DEFAULT_BACKGROUND_COLOR ? "[DEFAULT_FOREGROUND_COLOR]" : "";
+
+    //            Console.Write("Color: ");
+    //            WriteB(color.ToString(), color);
+    //            Console.Write($" => {background.Replace("\x1B", "\\x1B")}");
+    //            Console.Write(suffix + $" {background}test color" + DEFAULT_BACKGROUND_COLOR);
+    //            Console.WriteLine();
+    //        }
+    //    }
+    //}
+
     public static IEnumerable<(byte R, byte G, byte B)> GetRgbColors(int redStep, int greenStep, int blueStep)
     {
         for (var r = 0; r <= 255; r++)

@@ -1,45 +1,12 @@
-﻿using AVS.CoreLib.Logging.ColorFormatter.Extensions;
+﻿using AVS.CoreLib.Logging.ColorFormatter.Enums;
+using AVS.CoreLib.Logging.ColorFormatter.Extensions;
 using Microsoft.Extensions.Logging;
 
 namespace AVS.CoreLib.Logging.ColorFormatter.Utils;
 public interface IColorsProvider
 {
     ConsoleColors GetColorsForArgument(ArgType kind);
-    ConsoleColors GetColorsFor(LogParts part, LogLevel logLevel = LogLevel.None);
-}
-
-/// <summary>
-/// bad naming i know think on better name...
-/// </summary>
-public enum ArgType
-{
-    Default = 0,
-    Array,
-    Numeric,
-    NumericNegative,
-    Cash,
-    CashNegative,
-    Percentage,
-    /// <summary>
-    /// short string
-    /// </summary>
-    String,
-    /// <summary>
-    /// long string
-    /// </summary>
-    Text,
-    Date,
-    TextJson
-}
-
-public enum LogParts
-{
-    Timestamp,
-    LogLevel,
-    Scope,
-    Category,
-    Message,
-    Error
+    ConsoleColors GetColorsFor(LogPart part, LogLevel logLevel = LogLevel.None);
 }
 
 public class ColorsProvider : IColorsProvider
@@ -66,27 +33,27 @@ public class ColorsProvider : IColorsProvider
         };
     }
 
-    public ConsoleColors GetColorsFor(LogParts part, LogLevel logLevel)
+    public ConsoleColors GetColorsFor(LogPart part, LogLevel logLevel)
     {
         var colors = ConsoleColors.Empty;
         switch (part)
         {
-            case LogParts.Error:
+            case LogPart.Error:
                 colors = new ConsoleColors(ConsoleColor.Red, null);
                 break;
-            case LogParts.Scope:
+            case LogPart.Scope:
                 colors = new ConsoleColors(ConsoleColor.Cyan, null);
                 break;
-            case LogParts.Timestamp:
+            case LogPart.Timestamp:
                 colors = new ConsoleColors(ConsoleColor.DarkGray, null);
                 break;
-            case LogParts.Category:
+            case LogPart.Category:
                 colors = new ConsoleColors(ConsoleColor.DarkYellow, null);
                 break;
-            case LogParts.LogLevel:
+            case LogPart.LogLevel:
                 colors = logLevel.GetLogLevelColors();
                 break;
-            case LogParts.Message:
+            case LogPart.Message:
             {
                 switch (logLevel)
                 {

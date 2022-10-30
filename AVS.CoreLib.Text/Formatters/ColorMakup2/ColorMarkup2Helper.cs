@@ -1,8 +1,8 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
-using AVS.CoreLib.Logging.ColorFormatter.ColorMakup;
+using AVS.CoreLib.Logging.ColorFormatter.Utils;
 
-namespace AVS.CoreLib.Logging.ColorFormatter.Utils;
+namespace AVS.CoreLib.Logging.ColorFormatter.ColorMakup;
 
 /// <summary>
 /// text utilities for color markup on $:color$ pattern 
@@ -59,9 +59,7 @@ public static class ColorMarkup2Helper
             throw new ArgumentNullException();
 
         if (arg.StartsWith("[") && arg.EndsWith("]"))
-        {
             return ArgType.Array;
-        }
 
         if (arg.StartsWith("{") && arg.EndsWith("}"))
             return ArgType.TextJson;
@@ -70,14 +68,10 @@ public static class ColorMarkup2Helper
             return ArgType.Percentage;
 
         if (arg.Contains("$") || arg.Contains("USD") || arg.Contains("EUR") || arg.Contains("UAH"))
-        {
             return arg[0] == '(' && arg[^1] == ')' ? ArgType.CashNegative : ArgType.Cash;
-        }
 
         if (double.TryParse(arg, out var d))
-        {
             return d >= 0 ? ArgType.Numeric : ArgType.NumericNegative;
-        }
 
         if (DateTime.TryParse(arg, out var date))
             return ArgType.Date;
@@ -100,12 +94,10 @@ public static class ColorMarkup2Helper
         var parts = format.Split(keys, StringSplitOptions.None);
 
         if (parts.Any(x => x.EndsWith('$') && x.Contains(":-")))
-        {
             // most likely text already contains color formatting and due to we don't use here regex
             // it might break existing color formatting
             // so do nothing
             return formattedMessage;
-        }
 
         //parts2: [] {"1", "0.123456789"}
         var values = formattedMessage.Split(parts.Where(x => x.Length > 1).ToArray(), StringSplitOptions.RemoveEmptyEntries);
@@ -134,7 +126,7 @@ public static class ColorMarkup2Helper
             else if (type == ArgType.Numeric && parts[i].EndsWith("#"))
             {
                 var colors = getColors(type);
-                var markup = $"{parts[i].Substring(0, parts[i].Length-1)}$#{values[i]}:{colors.ToString()}$";
+                var markup = $"{parts[i].Substring(0, parts[i].Length - 1)}$#{values[i]}:{colors.ToString()}$";
                 sb.Append(markup);
             }
             else
@@ -143,7 +135,7 @@ public static class ColorMarkup2Helper
                 var markup = $"{parts[i]}${values[i]}:{colors.ToString()}$";
                 sb.Append(markup);
             }
-            
+
         }
 
         if (parts.Length > i)
@@ -153,9 +145,7 @@ public static class ColorMarkup2Helper
         {
             var type = GetArgumentType(values[i]);
             if (type == ArgType.String)
-            {
                 sb.Append(values[i]);
-            }
             else if (type == ArgType.Numeric && parts[i].EndsWith("#"))
             {
                 var colors = getColors(type);
@@ -191,10 +181,8 @@ public static class ColorMarkup2Helper
         {
             var pos2 = match.Index - pos;
             if (pos2 > 0)
-            {
                 //plain text
                 sb.Append(text.Substring(pos, pos2));
-            }
 
             var coloredText = match.Groups["text"].Value;
             sb.Append(coloredText);
@@ -212,7 +200,7 @@ public static class ColorMarkup2Helper
         return sb.ToString();
     }
 
-    
+
 
     /// <summary>
     /// format plain text into color markup text e.g. FormatColor("str", Green) => {"str":-Green}; 
@@ -270,9 +258,7 @@ public static class ColorMarkup2Helper
         foreground = null;
         background = null;
         if (string.IsNullOrEmpty(str))
-        {
             return false;
-        }
 
         ConsoleColor color;
         var ind = str.LastIndexOf('-');
@@ -289,14 +275,10 @@ public static class ColorMarkup2Helper
 
         //foreground color: -Color e.g. -Red
         if (ind == 0 && TryParseConsoleColor(str.Substring(1), out color))
-        {
             foreground = color;
-        }
         //background color: --Color e.g. --Red  
         else if (ind == 1 && TryParseConsoleColor(str.Substring(2), out color))
-        {
             background = color;
-        }
         else
         {
             //e.g. -Red --Gray
@@ -305,15 +287,15 @@ public static class ColorMarkup2Helper
                 return false;
 
             // most likely invalid format
-            if(parts[0].Length < 3 || parts[1].Length < 3)
+            if (parts[0].Length < 3 || parts[1].Length < 3)
                 return false;
 
             foreground = TryParseConsoleColor(parts[0], out color)
                 ? color
-                : (ConsoleColor?)null;
+                : null;
             background = TryParseConsoleColor(parts[1], out color)
                 ? color
-                : (ConsoleColor?)null;
+                : null;
         }
 
         return true;
@@ -322,9 +304,7 @@ public static class ColorMarkup2Helper
     private static bool TryParseConsoleColor(string value, out ConsoleColor color)
     {
         if (Enum.TryParse(value, out color))
-        {
             return true;
-        }
         color = ConsoleColor.Black;
         return false;
     }

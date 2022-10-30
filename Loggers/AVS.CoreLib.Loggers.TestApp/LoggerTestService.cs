@@ -23,7 +23,7 @@ namespace AVS.CoreLib.Loggers.TestApp
         public void Test()
         {
             ConsoleLogProfiler.Enabled = true;
-            _logger.LogCritical("simple critical log");
+            ArgsFormatTests();
 
             //Console.ForegroundColor = ConsoleColor.DarkGray;
             //AnsiCodesHelper.PrintAnsiColors();
@@ -100,11 +100,19 @@ namespace AVS.CoreLib.Loggers.TestApp
             _logger.LogInformation("test {arg1:C} some text {arg2}{arg3:N2}", 1, "string value", 3.3333);
             _logger.LogInformation("\r\n\r\nTesting {strategy}, timeframe: {timeframe}; parameters: {parameters}", "name", "H1", "Pool Fees: 10%");
             _logger.LogWarning("simple argument: #{arg}", 15);
-            _logger.LogInformation("simple $colored argument: {arg}:--Yellow$", (-5).ToString("C"));
-            _logger.LogInformation(" - processed $bars #{bars}; trades count #{trades};:--Yellow$", 100, 25);
             _logger.LogInformation("info log with simple arg1: {arg} arg2: {arg2}", 1.25, (-22).ToString());
             _logger.LogInformation("info log with arguments: {arg1} some text {arg2}{arg3}", 1.ToString("P"), obj, "argument long text asdad asd asd asdasdadadsd");
             _logger.LogInformation($"info log with json text: {obj.ToJsonString()}");
+        }
+
+        private void ArgsFormatTests()
+        {
+            //allow to format like in string format ("{arg:C -Red --Blue}", 10.12)
+            //thus there is no need in tags in your code like ("<Red>{arg}</Red>", 10.12) 
+            _logger.LogInformation("test colored argument: {arg:-Yellow}", (-5).ToString("C"));
+            _logger.LogInformation("test colored argument: {arg:C -Red --DarkYellow}", 10.125);
+            _logger.LogInformation("test colored argument: {arg:C Yellow bgBlue}", 10.123);
+            _logger.LogInformation("test colored argument: {arg:C -Cyan --Yellow}", 22.55);
         }
     }
 

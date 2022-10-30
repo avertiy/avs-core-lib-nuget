@@ -1,5 +1,4 @@
-﻿using AVS.CoreLib.Logging.ColorFormatter.ColorMakup;
-using AVS.CoreLib.Logging.ColorFormatter.Extensions;
+﻿using AVS.CoreLib.Logging.ColorFormatter.Extensions;
 using AVS.CoreLib.Logging.ColorFormatter.Utils;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;

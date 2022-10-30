@@ -20,6 +20,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ColorMakup\**" />
+    <EmbeddedResource Remove="ColorMakup\**" />
+    <None Remove="ColorMakup\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Utils\LogMessageBuilder.cs" />
     <Compile Remove="Utils\LogValuesFormatter.cs" />
   </ItemGroup>
  <ItemGroup>
@@ -30,5 +37,8 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
     <PackageReference Include="System.Text.Json" Version="6.0.6" />
   </ItemGroup>
+ <ItemGroup>
+   <Folder Include="ColorMakup\" />
+ </ItemGroup>
 
 </Project>

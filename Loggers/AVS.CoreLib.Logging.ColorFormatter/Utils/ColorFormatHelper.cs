@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using AVS.CoreLib.Logging.ColorFormatter.Enums;
 using AVS.CoreLib.Logging.ColorFormatter.Extensions;
 
 namespace AVS.CoreLib.Logging.ColorFormatter.Utils;
@@ -11,7 +12,6 @@ public class ArgsColorFormatter
     public string Format { get; set; }
     public string[] Keys { get; set; }
     public string[] Values { get; set; }
-
     public string Output { get; set; }
 
     public ArgsColorFormatter(string message, object state)
@@ -27,6 +27,7 @@ public class ArgsColorFormatter
         Format = (string)state[^1].Value;
         var startInd = 0;
         var i = 0;
+
         foreach (var kp in state.Take(state.Count - 1))
         {
             var key = kp.Key;
@@ -44,10 +45,11 @@ public class ArgsColorFormatter
             }
             else
             {
+                // allows to use with logger string format approach {arg:C} or {arg:C -Yellow} would be OK as well! 
                 argFormat = Format.Substring(ind, closeArgInd - ind);
                 var ii = ind + key.Length + 1;
                 var frmt = Format.Substring(ii, closeArgInd - ii);
-                valueStr = string.Format($"{{0:{frmt}}}", val);
+                valueStr = CustomFormat(val, frmt);
             }
 
             Keys[i] = argFormat;
@@ -55,24 +57,23 @@ public class ArgsColorFormatter
             i++;
             startInd = closeArgInd;
         }
+    }
 
-        //Keys = state.Select(x => "{" + x.Key + "}").Take(state.Count - 1).ToArray();
+    private string CustomFormat(object val, string format)
+    {
+        if (val is string str)
+            return str;
         
-        //var parts = Format.Split(Keys, StringSplitOptions.None);
-        //Values = message.Split(parts.Where(x => x.Length > 1).ToArray(), StringSplitOptions.RemoveEmptyEntries);
-        
-        //if (Values.Length < Keys.Length)
-        //{
-        //    var k = state[0].Key;
-        //    var v = state[1].Value;
-        //}
+        str = string.Format($"{{0:{format}}}", val);
+        if (str != format)
+            return str;
 
-       
+        var parts = format.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return string.Format($"{{0:{parts[0]}}}", val);
     }
 
     public string FormatMessage()
     {
-        var colorProvider = ColorsProvider ?? new ColorsProvider();
         var sb = new StringBuilder(Format);
 
         for (var i = 0; i < Keys.Length; i++)
@@ -80,7 +81,8 @@ public class ArgsColorFormatter
             var key = Keys[i];
             var value = Values[i];
             var type = GetArgumentType(value);
-            var colors = colorProvider.GetColorsForArgument(type);
+
+            
 
             if (type == ArgType.Numeric)
             {
@@ -93,12 +95,27 @@ public class ArgsColorFormatter
                 }
             }
 
-            var coloredStr = colors.Format(value);
+            var colors = GetColors(key, type);
+            var coloredStr = colors.FormatWithTags(value);
             sb.Replace($"{{{key}}}", coloredStr);
         }
 
         Output = sb.ToString();
         return Output;
+    }
+
+    private ConsoleColors GetColors(string key, ArgType type)
+    {
+        var colonInd = key.IndexOf(':');
+
+        if (colonInd > 0 && ConsoleColors.TryParse(key.Substring(colonInd), out var markupColors))
+        {
+            return markupColors;
+        }
+
+        var colorProvider = ColorsProvider ?? new ColorsProvider();
+        var colors = colorProvider.GetColorsForArgument(type);
+        return colors;
     }
 
     public static ArgType GetArgumentType(string arg)
@@ -136,57 +153,3 @@ public class ArgsColorFormatter
         return ArgType.Text;
     }
 }
-
-/*
-public static class ColorFormatHelper
-{
-    /// <summary>
-    /// colorize arguments within the formatted message
-    /// </summary>
-    public static string Format(string message, string originalFormat, string[] keys, Func<ArgumentType, ConsoleColors> getColors)
-    {
-        //message: "<Red>red text #1 text 0.123456789</Red>"
-        //originalFormat:  "<Red>some text #{arg1} text {arg2}</Red>"
-        //expected output: "<Red>some text <Blue>1</Blue> text <Green>0.123456789</Green></Red>"
-        var parts = originalFormat.Split(keys, StringSplitOptions.None);
-
-        //parts[0]: "<Red>some text "
-        //parts[1]: " text "
-        //parts[2]: 
-        //parts[3]: "</Red>"
-
-        var values = message.Split(parts.Where(x => x.Length > 1).ToArray(), StringSplitOptions.RemoveEmptyEntries);
-        //values: [] {"1", "0.123456789"}
-        if (keys.Length != values.Length)
-            throw new Exception("keys.Length != values.Length");
-
-        var sb = new StringBuilder(originalFormat);
-
-        for (var i = 0; i < keys.Length; i++)
-        {
-            var key = keys[i];
-            var value = values[i];
-            var type = GetArgumentType(value);
-            var colors = getColors(type);
-
-            if (type == ArgumentType.Numeric)
-            {
-                var ind = sb.IndexOf(key) - 2;
-                //highlight # symbol as well
-                if (sb[ind] == '#')
-                {
-                    sb.Remove(ind, 1);
-                    value = "#" + value;
-                }
-            }
-
-            var coloredStr = colors.Format(value);
-            sb.Replace($"{{{key}}}", coloredStr);
-        }
-
-        return sb.ToString();
-    }
-
-    
-}
-*/

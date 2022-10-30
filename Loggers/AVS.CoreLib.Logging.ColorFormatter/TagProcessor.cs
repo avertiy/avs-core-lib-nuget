@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using AVS.CoreLib.Logging.ColorFormatter.Enums;
 using AVS.CoreLib.Logging.ColorFormatter.Extensions;
 using AVS.CoreLib.Logging.ColorFormatter.Utils;
 using Microsoft.Extensions.Options;
@@ -42,7 +43,7 @@ public class TagProcessor
             i += ansiCode.Length;
             //return back cursor position
             if(i > length)
-                i -= (length - ansiCode.Length);
+                i -= (length - ansiCode.Length+1);
         }
     }
 
