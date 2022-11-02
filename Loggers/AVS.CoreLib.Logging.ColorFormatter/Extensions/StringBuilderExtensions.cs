@@ -481,7 +481,7 @@ public static partial class StringBuilderExtensions
         if (sb.Length == 0 || count == 0)
             return -1;
 
-        for (int i = startIndex; i < startIndex + count; i++)
+        for (int i = startIndex; i < sb.Length && i < startIndex + count; i++)
         {
             if (sb[i] == value)
             {

@@ -3,6 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
+    <StartupObject>AVS.CoreLib.Loggers.TestApp.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,13 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\AVS.CoreLib.ConsoleTools\AVS.CoreLib.ConsoleTools.csproj" />
+    <ProjectReference Include="..\..\AVS.CoreLib\AVS.CoreLib.csproj" />
     <ProjectReference Include="..\AVS.CoreLib.ConsoleLogger\AVS.CoreLib.ConsoleLogger.csproj" />
     <ProjectReference Include="..\AVS.CoreLib.FileLogger\AVS.CoreLib.FileLogger.csproj" />
     <ProjectReference Include="..\AVS.CoreLib.Logging.ColorFormatter\AVS.CoreLib.Logging.ColorFormatter.csproj" />

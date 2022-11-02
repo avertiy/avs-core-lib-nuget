@@ -9,15 +9,15 @@
     <Company>AV Stuido</Company>
     <Product>CoreLib</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>1.0.2.1</AssemblyVersion>
-    <FileVersion>1.0.2.1</FileVersion>
+    <AssemblyVersion>6.0.0</AssemblyVersion>
+    <FileVersion>6.0.0</FileVersion>
     <Description>contains useful utilities, types and extensions</Description>
     <Copyright>Artem Vertii</Copyright>
     <PackageProjectUrl>https://github.com/avertiy/avs-core-lib-nuget</PackageProjectUrl>
     <PackageTags>Text FormatProvider avs</PackageTags>
     <RepositoryUrl>https://github.com/avertiy/avs-core-lib-nuget</RepositoryUrl>
     <RepositoryType>public</RepositoryType>
-    <Version>1.0.2</Version>
+    <Version>6.0.0-rc</Version>
     <LangVersion>9</LangVersion>
   </PropertyGroup>
 
@@ -27,10 +27,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.20" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.20" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.20" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="3.1.20" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>

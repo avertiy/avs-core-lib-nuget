@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using AVS.CoreLib.Logging.ColorFormatter.Enums;
 using AVS.CoreLib.Logging.ColorFormatter.Extensions;
+using Microsoft.VisualBasic.CompilerServices;
 
 namespace AVS.CoreLib.Logging.ColorFormatter.Utils;
 
@@ -22,6 +23,7 @@ public class ArgsColorFormatter
     private void Init(string message, IReadOnlyList<KeyValuePair<string, object>> state)
     {
         Message = message;
+        State = state;
         Keys = new string[state.Count - 1];
         Values = new string[state.Count - 1];
         Format = (string)state[^1].Value;
@@ -41,7 +43,7 @@ public class ArgsColorFormatter
             string valueStr;
             if (key.Length == len)
             {
-                valueStr = val.ToString();
+                valueStr = val?.ToString();
             }
             else
             {
@@ -79,77 +81,47 @@ public class ArgsColorFormatter
         for (var i = 0; i < Keys.Length; i++)
         {
             var key = Keys[i];
+            var keyInBrackets = '{' + key + '}';
             var value = Values[i];
-            var type = GetArgumentType(value);
 
-            
-
-            if (type == ArgType.Numeric)
+            if (string.IsNullOrEmpty(value))
             {
-                var ind = sb.IndexOf(key) - 2;
-                //highlight # symbol as well
-                if (sb[ind] == '#')
-                {
-                    sb.Remove(ind, 1);
-                    value = "#" + value;
-                }
+                sb.Replace(keyInBrackets, value);
+                continue;
             }
 
-            var colors = GetColors(key, type);
+            var colonInd = key.IndexOf(':');
+            if (colonInd <= 0 || !ConsoleColors.TryParse(key.Substring(colonInd), out var colors))
+            {
+                var obj = State[i].Value;
+                var (type, flags) = obj.GetTypeAndFlags(value);
+                colors = GetColors(key, type, flags);
+
+                if (type == ObjType.Integer)
+                {
+                    var ind = sb.IndexOf(keyInBrackets) - 1;
+                    //highlight # symbol as well
+                    if (sb[ind] == '#' || (ind > 1 && sb[ind - 1] == '#'))
+                    {
+                        sb.Remove(ind, 1);
+                        value = "#" + value;
+                    }
+                }
+            }
+            
             var coloredStr = colors.FormatWithTags(value);
-            sb.Replace($"{{{key}}}", coloredStr);
+            sb.Replace(keyInBrackets, coloredStr);
         }
 
         Output = sb.ToString();
         return Output;
     }
 
-    private ConsoleColors GetColors(string key, ArgType type)
+
+    private ConsoleColors GetColors(string argKey, ObjType type, FormatFlags flags)
     {
-        var colonInd = key.IndexOf(':');
-
-        if (colonInd > 0 && ConsoleColors.TryParse(key.Substring(colonInd), out var markupColors))
-        {
-            return markupColors;
-        }
-
         var colorProvider = ColorsProvider ?? new ColorsProvider();
-        var colors = colorProvider.GetColorsForArgument(type);
+        var colors = colorProvider.GetColorsForArgument(type, flags);
         return colors;
-    }
-
-    public static ArgType GetArgumentType(string arg)
-    {
-        if (arg == null)
-            throw new ArgumentNullException();
-
-        if (arg.StartsWith("[") && arg.EndsWith("]"))
-        {
-            return ArgType.Array;
-        }
-
-        if (arg.StartsWith("{") && arg.EndsWith("}"))
-            return ArgType.TextJson;
-
-        if (arg.Contains("%"))
-            return ArgType.Percentage;
-
-        if (arg.Contains("$") || arg.Contains("USD") || arg.Contains("EUR") || arg.Contains("UAH"))
-        {
-            return arg[0] == '(' && arg[^1] == ')' ? ArgType.CashNegative : ArgType.Cash;
-        }
-
-        if (double.TryParse(arg, out var d))
-        {
-            return d >= 0 ? ArgType.Numeric : ArgType.NumericNegative;
-        }
-
-        if (DateTime.TryParse(arg, out var date))
-            return ArgType.Date;
-
-        if (arg.Length < 25)
-            return ArgType.String;
-
-        return ArgType.Text;
     }
 }

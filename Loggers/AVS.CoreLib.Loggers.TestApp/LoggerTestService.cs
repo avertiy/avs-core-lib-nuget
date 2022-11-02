@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using AVS.CoreLib.Abstractions;
+using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Logging.ColorFormatter;
 using AVS.CoreLib.Logging.ColorFormatter.Utils;
 using AVS.CoreLib.Text.Extensions;
@@ -44,6 +45,8 @@ namespace AVS.CoreLib.Loggers.TestApp
             _logger.LogInformation("\r\n<H1>new lines header test arg:{arg1}</H1>\r\n", 1.12345);
             _logger.LogInformation("<H1>multiline header test: {arg1:C}\r\n some text\r\n</H1>", 1.12345);
             _logger.LogInformation("<H1>header test double args: {arg1:C}{arg2:N3}\r\n some text\r\n</H1>", 99.123, 1.12345);
+
+            _logger.LogInformation("<H2>header2 test double args: {arg1:C}{arg2:N3}\r\n some text\r\n</H2>", 99.123, 1.12345);
 
             //color tags
             _logger.LogInformation("<Green>simple color tag test arg:{arg1}</Green>", "string value");
@@ -89,6 +92,26 @@ namespace AVS.CoreLib.Loggers.TestApp
 
         private void ArgHighlightTests()
         {
+            _logger.LogInformation("\r\n\r\nArgument auto highlight tests:");
+
+            _logger.LogInformation("string:{arg1}; bool:{arg2}/{arg3}; null: {arg4}; empty:{arg5}", "string value", true, false, null,"");
+            _logger.LogInformation("integers and count:  short {arg1}/{arg2}; int #{arg3}/{arg4}; long {arg5}/{arg6}",
+                (short)10, (short)-1,
+                100,-10, 
+                500L,-2000L);
+            _logger.LogInformation("integers/percentage: {arg1:P}; {arg2:P}; {arg3:P}", 2, -1, 0);
+            _logger.LogInformation("floating: double {arg1}/{arg2}; decimal {arg3}/{arg4}; float {arg5}/{arg6}",
+                1.01, -1.22, 
+                100.01m, -10.22m, 
+                (float)1.33, (float)-2.50);
+            _logger.LogInformation("float/currency:  {arg1:C}; {arg2:C}; {arg3:C};{arg4:C}", 501.01, -10.22m, (float)-1.33, 0.00);
+            _logger.LogInformation("float/percentage:  {arg1:P}/{arg2:P}; {arg3:P}/{arg4:P}; {arg5:P}",0.25,-0.33, 0.22m, (float)-1.33, 0.00);
+            _logger.LogInformation("date: {arg1:g}; time {arg2:t}; timespan {arg3}", DateTime.Now, DateTime.Now, (DateTime.Now-DateTime.Today));
+            _logger.LogInformation("array: {arg1}; arr2: {arg2}", new []{1,2,3}, new[] { 1.11, 2.1, -3.333 });
+            _logger.LogInformation("array: {arg1}; arr2: {arg2}", (new []{1,2,3}).Stringify(), (new[] { 1.11, 2.1, -3.333 }).Stringify());
+            _logger.LogInformation("array: {arg1}; arr2: {arg2}", new []{"a", "bb","blah-blah"}, new object[] { DateTime.Now, 250,"abc"});
+
+
             var obj = new
             {
                 List = new List<object>() { new { A = 1 }, new { B = "abc" } },
@@ -96,19 +119,17 @@ namespace AVS.CoreLib.Loggers.TestApp
                 Prop2 = 0.001m,
                 Prop3 = "prop value"
             };
-
-            _logger.LogInformation("test {arg1:C} some text {arg2}{arg3:N2}", 1, "string value", 3.3333);
+            _logger.LogInformation("object: {arg1}; json: {arg2}", obj, obj.ToJsonString());
             _logger.LogInformation("\r\n\r\nTesting {strategy}, timeframe: {timeframe}; parameters: {parameters}", "name", "H1", "Pool Fees: 10%");
-            _logger.LogWarning("simple argument: #{arg}", 15);
-            _logger.LogInformation("info log with simple arg1: {arg} arg2: {arg2}", 1.25, (-22).ToString());
+            _logger.LogInformation("test argument count: #{arg}", 150);
+            _logger.LogInformation("test negative values arg1:{arg}; arg2:{arg2:C}", -1.25, -22);
             _logger.LogInformation("info log with arguments: {arg1} some text {arg2}{arg3}", 1.ToString("P"), obj, "argument long text asdad asd asd asdasdadadsd");
             _logger.LogInformation($"info log with json text: {obj.ToJsonString()}");
         }
 
         private void ArgsFormatTests()
         {
-            //allow to format like in string format ("{arg:C -Red --Blue}", 10.12)
-            //thus there is no need in tags in your code like ("<Red>{arg}</Red>", 10.12) 
+            _logger.LogInformation("\r\n\r\nArgument color format tests:");
             _logger.LogInformation("test colored argument: {arg:-Yellow}", (-5).ToString("C"));
             _logger.LogInformation("test colored argument: {arg:C -Red --DarkYellow}", 10.125);
             _logger.LogInformation("test colored argument: {arg:C Yellow bgBlue}", 10.123);
@@ -127,9 +148,9 @@ namespace AVS.CoreLib.Loggers.TestApp
 
         public void Print()
         {
-            _logger.LogInformation($"{nameof(NestedService)} info log  $colored message:-Blue$ $100500:-Green$");
-            _logger.LogWarning($"{nameof(NestedService)} warning log $colored message:-Yellow$");
-            _logger.LogError($"{nameof(NestedService)} error log");
+            _logger.LogInformation($"{nameof(NestedService)} nested info log {{arg}}", "string argument");
+            _logger.LogWarning($"{nameof(NestedService)} nested warning log {{arg:C}}", 1);
+            _logger.LogError($"{nameof(NestedService)} error log {{arg123:C --Gray}}",123);
 
             using (var scope = _logger.BeginScope($"{nameof(NestedService)} scope"))
             {

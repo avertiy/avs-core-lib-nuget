@@ -20,7 +20,87 @@ public static class StringExtensions
 
         return i == value.Length;
     }
-    
+
+    public static bool ContainsAny(this string str, params char[] symbols)
+    {
+        return str.Any(t => symbols.Any(x => t == x));
+    }
+
+    public static bool ContainsAny(this string str, params string[] values)
+    {
+        for (var i = 0; i < str.Length; i++)
+        {
+            var current = char.ToLower(str[i]);
+            foreach (var value in values)
+            {
+                if(i + value.Length >=str.Length)
+                    continue;
+
+                if (current == char.ToLower(value[0]))
+                {
+                    var length = value.Length;
+                    var ii = 1;
+                    while ((ii < length) && (char.ToLower(str[i + ii]) == char.ToLower(value[ii])))
+                        ii++;
+
+                    if (ii == length)
+                        return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public static bool ContainsAll(this string str, params string[] values)
+    {
+        var flags = new List<string>();
+        for (var i = 0; i < str.Length; i++)
+        {
+            var current = char.ToLower(str[i]);
+            foreach (var value in values)
+            {
+                if(flags.Contains(value))
+                    continue;
+
+                if (i + value.Length >= str.Length)
+                    continue;
+
+                if (current == char.ToLower(value[0]))
+                {
+                    var length = value.Length;
+                    var ii = 1;
+                    while ((ii < length) && (char.ToLower(str[i + ii]) == char.ToLower(value[ii])))
+                        ii++;
+
+                    if (ii == length)
+                        flags.Add(value);
+                    if(flags.Count == values.Length)
+                        return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public static bool ContainsAll(this string str, params char[] values)
+    {
+        var flags = new List<char>();
+        for (var i = 0; i < str.Length; i++)
+        {
+            foreach (var value in values)
+            {
+                if (str[i] != value) continue;
+                flags.Add(value);
+                if (flags.Count == values.Length)
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
     public static int IndexOfEndOfWord(this string str, int fromIndex = 0)
     {
         if (str.Length <= fromIndex)

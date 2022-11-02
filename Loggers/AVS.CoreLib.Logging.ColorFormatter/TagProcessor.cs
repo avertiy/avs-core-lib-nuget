@@ -81,8 +81,17 @@ public class TagProcessor
             if (!_sb.StartsWith(Environment.NewLine))
                 _sb.Insert(0, Environment.NewLine);
 
-            _sb.Replace("<H1>", headerPadding ?? " ===== ");
-            _sb.Replace("</H1>", headerPadding ?? " ===== ");
+            _sb.Replace("<H1>", headerPadding ?? "<B> ======= ");
+            _sb.Replace("</H1>", headerPadding ?? " ======= </B>");
+            return;
+        }
+
+        if (tag == "<H2>" && closingTag == "</H2>")
+        {
+            if (!_sb.StartsWith(Environment.NewLine))
+                _sb.Insert(0, Environment.NewLine);
+            _sb.Replace("<H2>", "<B> >>>> ");
+            _sb.Replace("</H2>", "</B>");
         }
     }
 

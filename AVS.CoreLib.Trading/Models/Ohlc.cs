@@ -10,5 +10,10 @@ namespace AVS.CoreLib.Trading.Models
         public decimal High { get; set; }
         public decimal Low { get; set; }
         public decimal Close { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Open:C};{High:C};{Low:C};{Close:C}";
+        }
     }
 }

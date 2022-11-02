@@ -23,68 +23,7 @@ namespace AVS.CoreLib.Extensions
         {
             return wrapInSquareBrackets ? $"[{string.Join(separator, enumerable)}]" : string.Join(separator, enumerable);
         }
-/*
-        public static string Stringify<TKey,TValue>(this IDictionary<TKey,TValue> dict,
-            string separator = ", ",
-            string keyValueSeparator = ":",
-            bool inlineFormatting = true, 
-            bool wrapInSquareBrackets = true,
-            int maxStrLength = 0,
-            bool addLength = true)
-        {
-            var sb = new StringBuilder();
-            if (wrapInSquareBrackets)
-                sb.Append('[');
 
-            var count = 0;
-            foreach (var kp in dict)
-            {
-                var key = kp.Key.ToString();
-                var value = kp.Value?.ToString() ?? "null";
-
-                if (inlineFormatting)
-                {
-                    if (sb.Length > 2)
-                    {
-                        sb.Append(" ");
-                    }
-
-                    sb.Append(key);
-                    sb.Append(keyValueSeparator);
-                    sb.Append(value);
-                    sb.Append(separator);
-                }
-                else
-                {
-                    sb.AppendLine();
-                    sb.Append(key);
-                    sb.Append(keyValueSeparator);
-                    sb.Append(value);
-                    sb.Append(separator);
-                }
-
-                if (maxStrLength > 0 && sb.Length +3 >= maxStrLength)
-                {
-                    sb.Length = maxStrLength-3;
-                    sb.Append("..");
-                    break;
-                }
-
-                count++;
-            }
-
-            if(separator.Length > 0 && sb[^1] == separator.Last())
-                sb.Length -= separator.Length;
-
-            if (wrapInSquareBrackets)
-                sb.Append(']');
-
-            if (addLength && count > 5)
-                sb.Append($"(#{count})");
-
-            return sb.ToString();
-        }
-*/
         public static string Stringify<TKey, TValue>(this IDictionary<TKey, TValue> dict,
             StringifyFormat format = StringifyFormat.Default,
             string separator = ", ",
@@ -140,7 +79,6 @@ namespace AVS.CoreLib.Extensions
 
                 sb.Append(str);
                 sb.Append(separator);
-                count++;
 
                 if (limit && (multiLine && count > 20 || sb.Length + l + padding.Length > maxLength))
                 {
@@ -219,7 +157,6 @@ namespace AVS.CoreLib.Extensions
 
                 sb.Append(str);
                 sb.Append(separator);
-                count++;
 
                 if (limit && (multiLine && count > 20 || sb.Length + l + padding.Length > maxLength))
                 {
@@ -235,6 +172,7 @@ namespace AVS.CoreLib.Extensions
                     sb.Append(separator);
                     reachedLimit = true;
                 }
+                count++;
             }
 
             if(count > 0 && separator.Length > 0)

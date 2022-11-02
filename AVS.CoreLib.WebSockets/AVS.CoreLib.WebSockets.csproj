@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
@@ -9,15 +9,15 @@
     <Company>AV Stuido</Company>
     <Product>CoreLib</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
+    <AssemblyVersion>6.0.0</AssemblyVersion>
+    <FileVersion>6.0.0</FileVersion>
     <Description>Contains WebSocketClient and communicator that utilizes subscription on socket channels</Description>
     <Copyright>Artem Vertii</Copyright>
     <PackageProjectUrl>https://github.com/avertiy/avs-core-lib-nuget</PackageProjectUrl>
     <PackageTags>websocketclient avs websockets</PackageTags>
     <RepositoryUrl>https://github.com/avertiy/avs-core-lib-nuget</RepositoryUrl>
     <RepositoryType>public</RepositoryType>
-    <Version>1.0.1</Version>
+    <Version>6.0.0-rc</Version>
     <LangVersion>9</LangVersion>
   </PropertyGroup>
 
@@ -27,8 +27,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AVS.CoreLib" Version="1.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.20" />
+    <PackageReference Include="AVS.CoreLib" Version="6.0.0-rc" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 

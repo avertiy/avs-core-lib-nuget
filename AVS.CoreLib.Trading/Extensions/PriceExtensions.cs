@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using AVS.CoreLib.Extensions.Numbers;
 using AVS.CoreLib.Trading.Abstractions;
+using AVS.CoreLib.Trading.Helpers;
 
 namespace AVS.CoreLib.Trading.Extensions
 {
@@ -41,6 +43,18 @@ namespace AVS.CoreLib.Trading.Extensions
             var dec = roundDecimals ?? GetRoundDecimals(price);
             return price.RoundDown(dec);
         }
+
+        public static string PriceFormat(this double price, string symbol)
+        {
+            var quote = symbol.GetQuoteCurrency();
+            var s = CoinHelper.GetCurrencySymbol(quote);
+
+            if (s == "$")
+                return price.ToString("C");
+
+            return PriceRound(price) + s;
+        }
+
         #endregion
 
         #region decimal
@@ -146,6 +160,17 @@ namespace AVS.CoreLib.Trading.Extensions
             return bar.Contains(priceLevel);
         }
         #endregion
+
+        public static string PriceFormat(this decimal price, string symbol)
+        {
+            var quote = symbol.GetQuoteCurrency();
+            var s = CoinHelper.GetCurrencySymbol(quote);
+
+            if (s == "$")
+                return price.ToString("C");
+
+            return PriceRound(price) + s;
+        }
     }
 
     public static class VolumeExtensions

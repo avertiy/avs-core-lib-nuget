@@ -217,5 +217,17 @@ namespace AVS.CoreLib.Trading.Extensions
         {
             return bar.Close > priceLevel;
         }
+
+        public static string ToString(this IOhlc ohlc, string format)
+        {
+            return format switch
+            {
+                "o" => $"{ohlc.Open.PriceRound()}",
+                "h" => $"{ohlc.High.PriceRound()}",
+                "l" => $"{ohlc.Low.PriceRound()}",
+                "c" => $"{ohlc.Close.PriceRound()}",
+                _ => ohlc.ToString()
+            };
+        }
     }
 }

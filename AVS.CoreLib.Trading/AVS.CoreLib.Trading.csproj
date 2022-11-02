@@ -9,15 +9,15 @@
     <Company>AV Stuido</Company>
     <Product>CoreLib</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>1.0.6.0</AssemblyVersion>
-    <FileVersion>1.0.0.0</FileVersion>
+    <AssemblyVersion>6.0.0</AssemblyVersion>
+    <FileVersion>6.0.0</FileVersion>
     <Description>Core lib trading contains primitive types, enums, models and extensions useful for various trading apps</Description>
     <Copyright>Artem Vertii</Copyright>
     <PackageProjectUrl>https://github.com/avertiy/avs-core-lib-nuget</PackageProjectUrl>
     <PackageTags>avs corelib trading</PackageTags>
     <RepositoryUrl>https://github.com/avertiy/avs-core-lib-nuget</RepositoryUrl>
     <RepositoryType>public</RepositoryType>
-    <Version>1.0.6</Version>
+    <Version>6.0.0-rc</Version>
     <UserSecretsId>7040a559-541c-40da-82ff-e202b1bf095f</UserSecretsId>
     <LangVersion>9</LangVersion>
   </PropertyGroup>
@@ -39,7 +39,7 @@
   <ItemGroup>
     <PackageReference Include="AVS.CoreLib" Version="1.0.2" />
     <PackageReference Include="AVS.CoreLib.Text" Version="1.0.4" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.20" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     <PackageReference Include="System.Text.Json" Version="5.0.2" />
   </ItemGroup>
 
