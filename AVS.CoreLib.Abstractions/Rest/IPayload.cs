@@ -5,6 +5,7 @@ namespace AVS.CoreLib.Abstractions.Rest
     public interface IPayload : IEnumerable<KeyValuePair<string, string>>
     {
         string RelativeUrl { get; set; }
+        Dictionary<string, string> Items { get; }
         bool ContainsKey(string key);
         bool Remove(string key);
         string ToHttpQueryString();
@@ -14,7 +15,6 @@ namespace AVS.CoreLib.Abstractions.Rest
         IPayload Add(string[] arguments);
         IPayload AddParameter(string input);
         IPayload Join(string queryString);
-
         byte[] GetBytes();
     }
 }

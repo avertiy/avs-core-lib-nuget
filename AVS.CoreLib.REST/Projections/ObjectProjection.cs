@@ -101,29 +101,26 @@ namespace AVS.CoreLib.REST.Projections
         {
             EnsureProxyInitialized();
 
-            var response = Response.Create<T>();
-            response.Source = Source;
-
-            if (IsEmpty)
+            var response = MapInternal<T>(response =>
             {
-                response.Data = Proxy.Create();
-            }
-            else if (ContainsError(out string err))
-            {
-                response.Error = err;
-            }
-            else
-            {
-                LoadToken<JObject, T>(jObject =>
+                if (IsEmpty)
                 {
-                    JsonHelper.Populate(Proxy, jObject);
-                });
+                    response.Data = Proxy.Create();
+                }
+                else
+                {
+                    LoadToken<JObject, T>(jObject =>
+                    {
+                        JsonHelper.Populate(Proxy, jObject);
+                    });
 
-                var data = Proxy.Create();
-                _preProcessAction?.Invoke(data);
-                _postProcessAction?.Invoke(data);
-                response.Data = data;
-            }
+                    var data = Proxy.Create();
+                    _preProcessAction?.Invoke(data);
+                    _postProcessAction?.Invoke(data);
+                    response.Data = data;
+                }
+            });
+            
             return response;
         }
 
@@ -279,31 +276,29 @@ namespace AVS.CoreLib.REST.Projections
         {
             EnsureProxyInitialized();
 
-            var response = Response.Create<T>();
-            response.Source = Source;
-
-            if (IsEmpty)
+            var response = MapInternal<T>(response =>
             {
-                response.Data = _proxy.Create();
-            }
-            else if (ContainsError(out string err))
-            {
-                response.Error = err;
-            }
-            else
-            {
-                LoadToken<JObject, TProjection>(jObject =>
+                if (IsEmpty)
                 {
-                    var projection = new TProjection();
-                    _preProcessAction?.Invoke(projection);
-                    JsonHelper.Populate(projection, jObject);
-                    _proxy.Add(projection);
-                });
+                    response.Data = _proxy.Create();
+                }
 
-                var data = _proxy.Create();
-                _postProcessAction?.Invoke(data);
-                response.Data = data;
-            }
+                else
+                {
+                    LoadToken<JObject, TProjection>(jObject =>
+                    {
+                        var projection = new TProjection();
+                        _preProcessAction?.Invoke(projection);
+                        JsonHelper.Populate(projection, jObject);
+                        _proxy.Add(projection);
+                    });
+
+                    var data = _proxy.Create();
+                    _postProcessAction?.Invoke(data);
+                    response.Data = data;
+                }
+            });
+            
             return response;
         }
 

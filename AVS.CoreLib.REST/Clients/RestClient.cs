@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
-using System.Threading;
+﻿using System.Net;
 using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.REST.Extensions;
@@ -9,38 +6,48 @@ using AVS.CoreLib.REST.Extensions;
 namespace AVS.CoreLib.REST.Clients
 {
     /// <summary>
-    /// Utility class to send HttpWebRequest built with <see cref="IRequestBuilder"/>
+    /// Utility class to send HttpWebRequest built with <see cref="IHttpRequestBuilder"/>
     /// and fetch the response
     /// </summary>
     /// <remarks>
-    /// if endpoint requires Authentication, the authentication delegated to <see cref="RequestBuilder"/>
+    /// if endpoint requires Authentication, the authentication delegated to <see cref="HttpRequestBuilder"/>
     /// </remarks>
     public class RestClient : IRestClient
     {
-        protected IRequestBuilder RequestBuilder { get; }
+        protected IHttpRequestBuilder HttpRequestBuilder { get; }
 
         public string LastRequestedUrl { get; protected set; }
         public int RequestsCounter { get; protected set; }
 
-        //public RestClient(string publicKey, string privateKey)
-        //{
-        //    RequestBuilder = new RequestBuilder(new HMACSHA512Authenticator(publicKey, privateKey));
-        //}
-
-        public RestClient(IRequestBuilder requestBuilder)
+        public RestClient(IHttpRequestBuilder httpRequestBuilder)
         {
-            RequestBuilder = requestBuilder;
+            HttpRequestBuilder = httpRequestBuilder;
         }
 
-        public Task<string> QueryAsync(IEndpoint endpoint, IPayload data = null)
+        public Task<HttpWebResponse> SendRequestAsync(IRequest request)
         {
-            var request = RequestBuilder.Build(endpoint, data);
-            return FetchResponse(request);
+            var httpRequest = HttpRequestBuilder.Build(request);
+            return httpRequest.FetchHttpResponseAsync();
+        }
+
+        public Task<HttpWebResponse> SendRequestAsync(IEndpoint endpoint, IPayload data = null)
+        {
+            var request = HttpRequestBuilder.Build(endpoint, data);
+            return request.FetchHttpResponseAsync();
         }
 
         public void SwitchKeys(string publicKey, string privateKey)
         {
-            RequestBuilder.Authenticator.SwitchKeys(publicKey, privateKey);
+            HttpRequestBuilder.Authenticator.SwitchKeys(publicKey, privateKey);
+        }
+
+
+        
+
+        public Task<string> QueryAsync(IEndpoint endpoint, IPayload data = null)
+        {
+            var request = HttpRequestBuilder.Build(endpoint, data);
+            return FetchResponse(request);
         }
 
         protected async Task<string> FetchResponse(HttpWebRequest request, int attempts = 2)
@@ -62,28 +69,4 @@ namespace AVS.CoreLib.REST.Clients
             return jsonText;
         }
     }
-
-    public static class HttpClientExtensions
-    {
-        public static async Task<string> ExecuteStringAsync(this HttpClient client, HttpRequestMessage request,
-            CancellationToken cancellationToken, int attempts = 2)
-        {
-            start:
-            attempts--;
-            using (var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
-                .ConfigureAwait(false))
-            {
-                response.EnsureSuccessStatusCode();
-                var text = await response.Content.ReadAsStringAsync();
-                if (text != null && text.Contains("The remote server returned an error: (422).") && attempts > 0)
-                    goto start;
-                return text;
-            }
-        }
-    }
-
-
-    
-
-
 }

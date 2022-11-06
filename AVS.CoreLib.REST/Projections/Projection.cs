@@ -28,8 +28,11 @@ namespace AVS.CoreLib.REST.Projections
 
         protected bool ContainsError(out string error)
         {
-            var match = ErrorRegex.Match(JsonText);
             error = null;
+            if (IsEmpty)
+                return false;
+
+            var match = ErrorRegex.Match(JsonText);
             if (match.Success)
             {
                 error = match.Groups["error"].Value;
@@ -132,7 +135,7 @@ namespace AVS.CoreLib.REST.Projections
             }
             catch (Exception ex)
             {
-                throw new MapException("LoadToken failed", ex);
+                throw new MapException("LoadToken failed", ex) {JsonText = JsonText };
             }
         }
 
@@ -159,6 +162,26 @@ namespace AVS.CoreLib.REST.Projections
             catch (Exception ex)
             {
                 throw new MapJsonException<TProjection>(ex);
+            }
+        }
+
+        protected Response<T> MapInternal<T>(Action<Response<T>> map)
+        {
+            var response = Response.Create<T>();
+            response.Source = Source;
+            try
+            {
+                if (ContainsError(out var err))
+                    response.Error = err;
+                else
+                    map(response);
+
+                return response;
+            }
+            catch (MapException) { throw; }
+            catch (Exception ex)
+            {
+                throw new MapException("Projection map failed", ex) { JsonText = JsonText };
             }
         }
 

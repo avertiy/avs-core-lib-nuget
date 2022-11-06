@@ -14,7 +14,8 @@ namespace AVS.CoreLib.UnitTesting.xUnit
         private IConfigurationRoot _configuration;
 
         /// <summary>
-        /// use <see cref="ConfigurationAttribute"/> to set app name otherwise the AppName will be defined by entry assembly ReSharperTestRunner or whatever  
+        /// use <see cref="ConfigurationAttribute"/> to set app name otherwise the AppName will be defined by entry assembly
+        /// ReSharperTestRunner or whatever  
         /// </summary>
         protected IConfigurationRoot Configuration
         {

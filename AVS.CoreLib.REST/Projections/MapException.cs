@@ -5,6 +5,7 @@ namespace AVS.CoreLib.REST.Projections
 {
     public class MapException : AppException
     {
+        public string JsonText { get; set; }
         public MapException(string message) : base(message)
         {
         }
@@ -15,6 +16,11 @@ namespace AVS.CoreLib.REST.Projections
 
         public MapException(string message, Exception innerException) : base(message, innerException)
         {
+        }
+
+        public override string ToString()
+        {
+            return $"{base.ToString()}{Environment.NewLine}{Environment.NewLine}JsonText:{Environment.NewLine}{JsonText}";
         }
     }
 

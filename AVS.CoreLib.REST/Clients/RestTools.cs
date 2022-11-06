@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions.Rest;
+using AVS.CoreLib.REST.Extensions;
 using AVS.CoreLib.REST.Types;
 
 namespace AVS.CoreLib.REST.Clients

@@ -13,7 +13,7 @@ namespace AVS.CoreLib.REST.Extensions
         /// <param name="services"></param>
         public static void AddRestClient(this IServiceCollection services)
         {
-            services.TryAddScoped<IRequestBuilder, RequestBuilder>();
+            services.TryAddScoped<IHttpRequestBuilder, HttpRequestBuilder>();
             services.TryAddScoped<IRestClient, RestClient>();
         }
 

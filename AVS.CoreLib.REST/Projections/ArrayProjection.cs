@@ -6,6 +6,7 @@ using AVS.CoreLib.Json;
 using AVS.CoreLib.REST.Json;
 using AVS.CoreLib.REST.Responses;
 using Newtonsoft.Json.Linq;
+using Exception = System.Exception;
 
 namespace AVS.CoreLib.REST.Projections
 {
@@ -71,38 +72,35 @@ namespace AVS.CoreLib.REST.Projections
         public virtual Response<T> Map()
         {
             if (_proxy == null)
-                throw new AppException("Proxy is not initialized", "You might need to use UseProxy<TBuilder>() method first");
+                throw new MapException("Proxy is not initialized", "You might need to use UseProxy<TBuilder>() method first") { JsonText = JsonText};
 
-            var response = Response.Create<T>();
-            response.Source = Source;
-
-            if (IsEmpty)
+            var response = MapInternal<T>(response =>
             {
-                response.Data = _proxy.Create();
-            }
-            else if (ContainsError(out string err))
-            {
-                response.Error = err;
-            }
-            else
-            {
-                LoadToken<JArray, T>(jArray =>
+                if (IsEmpty)
                 {
-                    foreach (JToken itemToken in jArray)
+                    response.Data = _proxy.Create();
+                }
+                else
+                {
+                    LoadToken<JArray, T>(jArray =>
                     {
-                        var item = JsonHelper.Deserialize<TItem>(itemToken, typeof(TItem));
+                        foreach (var jToken in jArray)
+                        {
+                            var item = JsonHelper.Deserialize<TItem>(jToken, typeof(TItem));
 
-                        _itemAction?.Invoke(item);
+                            _itemAction?.Invoke(item);
 
-                        if (_where == null || _where(item))
-                            _proxy.Add(item);
-                    }
-                });
+                            if (_where == null || _where(item))
+                                _proxy.Add(item);
+                        }
+                    });
 
-                var data = _proxy.Create();
-                _postProcessAction?.Invoke(data);
-                response.Data = data;
-            }
+                    var data = _proxy.Create();
+                    _postProcessAction?.Invoke(data);
+                    response.Data = data;
+                }
+            });
+
             return response;
         }
 
@@ -167,7 +165,7 @@ namespace AVS.CoreLib.REST.Projections
                     }
                     else
                     {
-                        throw new MapException($"Unexpected token type: {token.Type}");
+                        throw new MapException($"Unexpected token type: {token.Type}") { JsonText = JsonText };
                     }
                 });
             }
@@ -201,7 +199,7 @@ namespace AVS.CoreLib.REST.Projections
                     }
                     else
                     {
-                        throw new MapException($"Unexpected token type: {token.Type}");
+                        throw new MapException($"Unexpected token type: {token.Type}") { JsonText = JsonText };
                     }
                 });
             }

@@ -58,7 +58,8 @@ namespace AVS.CoreLib.Utilities
         #endregion
 
         #region IDictionary
-        public static void MustContainKey<TKey, TValue>(IDictionary<TKey, TValue> dict, TKey key, string name = "argument")
+
+        public static void MustContainKey<TKey, TValue>(IDictionary<TKey, TValue> dict, TKey key, string name = "dictionary")
         {
             if (!dict.ContainsKey(key))
             {
@@ -69,7 +70,7 @@ namespace AVS.CoreLib.Utilities
         /// <summary>
         /// validates dictionary contains only specified (valid/supported) keys 
         /// </summary>
-        public static void ValidKeys<TKey, TValue>(IDictionary<TKey, TValue> dict, TKey[] validKeys, string name = "argument")
+        public static void ValidKeys<TKey, TValue>(IDictionary<TKey, TValue> dict, TKey[] validKeys, string name = "dictionary")
         {
             foreach (var key in dict.Keys)
             {
@@ -81,7 +82,7 @@ namespace AVS.CoreLib.Utilities
         /// <summary>
         /// validates dictionary contains only specified (supported) keys 
         /// </summary>
-        public static void SupportedKeys<TKey, TValue>(IDictionary<TKey, TValue> dict, TKey[] supportedKeys, string name = "argument")
+        public static void SupportedKeys<TKey, TValue>(IDictionary<TKey, TValue> dict, TKey[] supportedKeys, string name = "dictionary")
         {
             foreach (var key in dict.Keys)
             {

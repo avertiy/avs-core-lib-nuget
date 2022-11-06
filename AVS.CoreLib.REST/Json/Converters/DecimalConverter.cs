@@ -7,8 +7,10 @@ namespace AVS.CoreLib.Json.Converters
 {
     public class DecimalConverter : JsonConverter
     {
-        public override bool CanConvert(Type objectType) =>
-            objectType == typeof(decimal) || objectType == typeof(decimal?);
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType == typeof(decimal) || objectType == typeof(decimal?);
+        }
 
         public override object ReadJson(JsonReader reader,
             Type objectType,
@@ -18,10 +20,16 @@ namespace AVS.CoreLib.Json.Converters
             var token = JToken.Load(reader);
 
             if (token.Type == JTokenType.Float || token.Type == JTokenType.Integer)
-                return token.ToObject<decimal>();
+                return objectType == typeof(decimal) ? token.ToObject<decimal>() : token.ToObject<decimal?>();
 
             if (token.Type == JTokenType.String)
-                return decimal.Parse(token.ToString(), NumberStyles.Number | NumberStyles.AllowExponent);
+            {
+                var str = token.ToString();
+                if (string.IsNullOrEmpty(str))
+                    return 0.0m;
+
+                return decimal.Parse(str, NumberStyles.Number | NumberStyles.AllowExponent);
+            }
 
             if (token.Type == JTokenType.Null && objectType == typeof(decimal?))
                 return null;

@@ -92,50 +92,51 @@ namespace AVS.CoreLib.REST.Projections
         {
             EnsureProxyInitialized();
 
-            var response = Response.Create<T>();
-            response.Source = Source;
-
-            if (IsEmpty)
+            var response = MapInternal<T>(response =>
             {
-                response.Data = _proxy.Create();
-            }
-            else if (ContainsError(out string err))
-            {
-                response.Error = err;
-            }
-            else
-            {
-
-                LoadToken<JObject, T, TItem>(jObject =>
+                if (IsEmpty)
                 {
-                    if (!jObject.HasValues)
-                        return;
+                    response.Data = _proxy.Create();
+                }
 
-                    var serializer = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore };
-                    var itemType = typeof(TItem);
-                    foreach (KeyValuePair<string, JToken> kp in jObject)
+                else
+                {
+
+                    LoadToken<JObject, T, TItem>(jObject =>
                     {
-                        var key = kp.Key;
+                        if (!jObject.HasValues)
+                            return;
 
-                        if (_preprocessKey != null)
-                            key = _preprocessKey.Invoke(kp.Key);
+                        var serializer = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore };
+                        var itemType = typeof(TItem);
+                        foreach (var kp in jObject)
+                        {
+                            var key = kp.Key;
 
-                        if (_whereKey != null && !_whereKey(key))
-                            continue;
+                            if (_preprocessKey != null)
+                                key = _preprocessKey.Invoke(kp.Key);
 
-                        var value = (TItem)serializer.Deserialize(kp.Value.CreateReader(), itemType);
-                        if (_where != null && !_where(key, value))
-                            continue;
+                            if (_whereKey != null && !_whereKey(key))
+                                continue;
 
-                        _itemAction?.Invoke(key, value);
-                        _proxy.Add(key, value);
-                    }
-                });
+                            if (kp.Value != null)
+                            {
+                                var value = (TItem)serializer.Deserialize(kp.Value.CreateReader(), itemType);
+                                if (_where != null && !_where(key, value))
+                                    continue;
 
-                var data = _proxy.Create();
-                _postProcessAction?.Invoke(data);
-                response.Data = data;
-            }
+                                _itemAction?.Invoke(key, value);
+                                _proxy.Add(key, value);
+                            }
+                        }
+                    });
+
+                    var data = _proxy.Create();
+                    _postProcessAction?.Invoke(data);
+                    response.Data = data;
+                }
+            });
+            
             return response;
         }
 

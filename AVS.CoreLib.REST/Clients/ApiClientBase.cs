@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Net;
+using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions.Rest;
+using AVS.CoreLib.REST.Extensions;
 using AVS.CoreLib.REST.Types;
 
 namespace AVS.CoreLib.REST.Clients
@@ -24,6 +26,13 @@ namespace AVS.CoreLib.REST.Clients
         {
             var text = await Client.QueryAsync(endpoint, data).ConfigureAwait(false);
             return new JsonResult() { JsonText = text, Source = Name };
+        }
+
+        protected virtual async Task<JsonResult> SendRequest(IEndpoint endpoint, IPayload data)
+        {
+            var response = await Client.SendRequestAsync(endpoint, data).ConfigureAwait(false);
+            var result = JsonResult.FromResponse(response);
+            return result;
         }
 
         protected async Task<JsonResult> Query(string url, string method = "GET")

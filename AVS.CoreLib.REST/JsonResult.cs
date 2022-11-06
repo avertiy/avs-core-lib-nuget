@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 using System.Text.RegularExpressions;
+using AVS.CoreLib.REST.Extensions;
+using AVS.CoreLib.Utilities;
 
 namespace AVS.CoreLib.REST
 {
@@ -15,10 +18,10 @@ namespace AVS.CoreLib.REST
         {
         }
 
-        public JsonResult(string jsonText)
-        {
-            JsonText = jsonText;
-        }
+        //public JsonResult(string jsonText)
+        //{
+        //    JsonText = jsonText;
+        //}
 
         /// <summary>
         /// Match JsonText to regex pattern and cut it to match data group
@@ -88,6 +91,18 @@ namespace AVS.CoreLib.REST
         public override string ToString()
         {
             return $"JsonResult: {Source} => {JsonText}";
+        }
+
+        public static JsonResult FromResponse(HttpWebResponse response, string source = null)
+        {
+            var json = response.GetContent();
+            var result = new JsonResult() { JsonText = json, Source = source };
+            
+            if (response.StatusCode == HttpStatusCode.OK)
+                return result;
+
+            result.Error = response.StatusDescription;
+            return result;
         }
     }
 }

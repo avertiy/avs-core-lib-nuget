@@ -12,7 +12,8 @@ namespace AVS.CoreLib.Utilities
     {
         public string RelativeUrl { get; set; }
 
-        private readonly Dictionary<string, string> _items = new Dictionary<string, string>();
+        public Dictionary<string, string> Items { get; } = new Dictionary<string, string>();
+
         public Payload()
         {
         }
@@ -22,19 +23,19 @@ namespace AVS.CoreLib.Utilities
             Join(queryStringParameters);
         }
 
-        public bool ContainsKey(string key) => _items.ContainsKey(key);
+        public bool ContainsKey(string key) => Items.ContainsKey(key);
 
-        public bool Remove(string key) => _items.Remove(key);
+        public bool Remove(string key) => Items.Remove(key);
 
         /// <summary>
         /// creates query string with ordered key values 
         /// </summary>
         public string ToHttpQueryString()
         {
-            if (_items.Count == 0)
+            if (Items.Count == 0)
                 return string.Empty;
             var sb = new StringBuilder();
-            foreach (var kp in _items.OrderBy(i => i.Key))
+            foreach (var kp in Items.OrderBy(i => i.Key))
             {
                 if (kp.Value != null)
                 {
@@ -45,7 +46,7 @@ namespace AVS.CoreLib.Utilities
             if (sb.Length > 0)
             {
                 sb.Length--;
-                if (_items.Count == 1 && sb[^1] == '=')
+                if (Items.Count == 1 && sb[^1] == '=')
                     sb.Length--;
             }
 
@@ -54,13 +55,13 @@ namespace AVS.CoreLib.Utilities
 
         public string this[string key]
         {
-            get => _items[key];
-            set => _items[key] = value;
+            get => Items[key];
+            set => Items[key] = value;
         }
 
         public IPayload Add(string key, object value)
         {
-            _items[key] = value?.ToString();
+            Items[key] = value?.ToString();
             return this;
         }
 
@@ -68,7 +69,7 @@ namespace AVS.CoreLib.Utilities
         {
             foreach (var kp in queryString.Params)
             {
-                _items.Add(kp.Key, kp.Value?.ToString() ?? "");
+                Items.Add(kp.Key, kp.Value?.ToString() ?? "");
             } 
              
             return this;
@@ -165,7 +166,7 @@ namespace AVS.CoreLib.Utilities
 
         public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
         {
-            foreach (var kp in _items.OrderBy(i => i.Key))
+            foreach (var kp in Items.OrderBy(i => i.Key))
             {
                 if (kp.Value == null)
                     continue;

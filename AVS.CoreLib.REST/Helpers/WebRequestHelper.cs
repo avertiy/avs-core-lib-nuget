@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using AVS.CoreLib.REST.Extensions;
 
@@ -17,44 +18,23 @@ namespace AVS.CoreLib.REST.Helpers
             _userAgent = $"{asm.Name} v.{asm.Version.ToString(3)}";
         }
 
-        public static HttpWebRequest ConstructHttpWebRequest(string method, string url)
+        public static HttpWebRequest ConstructHttpWebRequest(string method, string url, IWebProxy proxy, string contentType = "application/x-www-form-urlencoded")
         {
             var request = WebRequest.CreateHttp(url);
             request.Method = method;
             request.UserAgent = _userAgent;
             request.Timeout = 15000;
             request.AcceptsJson("gzip,deflate");
-            request.ContentType = "application/x-www-form-urlencoded";
+            request.ContentType = contentType;
             request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+
+            if (proxy != null)
+                request.Proxy = proxy;
+
             return request;
         }
 
-        public static HttpWebRequest AcceptsJson(this HttpWebRequest request, string encoding = "gzip,deflate")
-        {
-            request.Headers[HttpRequestHeader.AcceptEncoding] = encoding;
-            request.Headers.Add("Accepts", "application/json");
-            return request;
-        }
-
-        public static void WriteBytes(this HttpWebRequest request, byte[] bytes)
-        {
-            request.ContentLength = bytes.Length;
-            using (var requestStream = request.GetRequestStream())
-            {
-                requestStream.Write(bytes, 0, bytes.Length);
-            }
-        }
-
-        public static void WriteJson(this HttpWebRequest request, string json)
-        {
-            request.ContentType = "application/json";
-            using (var streamWriter = new StreamWriter(request.GetRequestStream()))
-            {
-                streamWriter.Write(json);
-                streamWriter.Flush();
-            }
-        }
-
+        #region FetchResponse
         public static string FetchResponse(this HttpWebRequest request)
         {
             int attempt = 0;
@@ -67,20 +47,6 @@ namespace AVS.CoreLib.REST.Helpers
             }
 
             return jsonString;
-        }
-
-        public static async Task<string> FetchResponseAsync(HttpWebRequest request)
-        {
-            int attempt = 0;
-            start:
-            var jsonText = await request.FetchResponseAsync();
-            if (jsonText != null && jsonText.Contains("The remote server returned an error: (422).") && attempt++ < 2)
-            {
-                //sometimes exchange returns 422 error, but on the second attempt it is ok
-                goto start;
-            }
-
-            return jsonText;
         }
 
         [DebuggerStepThrough]
@@ -104,6 +70,23 @@ namespace AVS.CoreLib.REST.Helpers
             {
                 return $"{{ \"error\": \"Request to {request.RequestUri} failed. {ex.Message}\" }}";
             }
+        } 
+        #endregion
+
+        public static async Task<string> FetchResponseAsync(HttpWebRequest request)
+        {
+            int attempt = 0;
+            start:
+            var jsonText = await request.FetchResponseAsync();
+            if (jsonText != null && jsonText.Contains("The remote server returned an error: (422).") && attempt++ < 2)
+            {
+                //sometimes exchange returns 422 error, but on the second attempt it is ok
+                goto start;
+            }
+
+            return jsonText;
         }
+
+        
     }
 }

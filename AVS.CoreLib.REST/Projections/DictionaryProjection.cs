@@ -273,7 +273,9 @@ namespace AVS.CoreLib.REST.Projections
                         }
                         catch (Exception ex)
                         {
-                            throw new MapException($"ParseDictionary<{typeof(TKey).Name},{typeof(TValue).ToStringNotation()}> with projection of {typeof(TProjection).ToStringNotation()}> failed", ex);
+                            var msg =
+                                $"ParseDictionary<{typeof(TKey).Name},{typeof(TValue).ToStringNotation()}> with projection of {typeof(TProjection).ToStringNotation()}> failed";
+                            throw new MapException(msg, ex) { JsonText = JsonText };
                         }
 
                         return response;
@@ -314,13 +316,13 @@ namespace AVS.CoreLib.REST.Projections
                         }
                         catch (Exception ex)
                         {
-                            throw new MapException($"ParseDictionary<{typeof(TKey).Name},{typeof(TValue).ToStringNotation()}> with projection of {typeof(TProjection).ToStringNotation()}> failed", ex);
+                            throw new MapException($"ParseDictionary<{typeof(TKey).Name},{typeof(TValue).ToStringNotation()}> with projection of {typeof(TProjection).ToStringNotation()}> failed", ex) { JsonText = JsonText };
                         }
 
                         response.Data = transform(data);
                         return response;
                     }
-                    throw new JsonReaderException($"Unexpected JToken type {token.Type}");
+                    throw new MapException($"Unexpected JToken type {token.Type}") { JsonText = JsonText };
                 }
             }
             return response;
@@ -357,12 +359,12 @@ namespace AVS.CoreLib.REST.Projections
                         }
                         catch (Exception ex)
                         {
-                            throw new MapException($"ParseDictionary<{typeof(TKey).Name},{typeof(TValue).ToStringNotation()}> with projection of {typeof(TProjection).ToStringNotation()}> failed", ex);
+                            throw new MapException($"ParseDictionary<{typeof(TKey).Name},{typeof(TValue).ToStringNotation()}> with projection of {typeof(TProjection).ToStringNotation()}> failed", ex) { JsonText = JsonText };
                         }
                     }
                     else
                     {
-                        throw new JsonReaderException($"Unexpected JToken type {token.Type}");
+                        throw new MapException($"Unexpected JToken type {token.Type}") {JsonText = JsonText};
                     }
                 }
             }

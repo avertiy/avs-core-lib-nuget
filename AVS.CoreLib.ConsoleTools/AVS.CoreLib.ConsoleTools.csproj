@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
@@ -13,9 +13,9 @@
     <RepositoryUrl>https://github.com/avertiy/avs-core-lib-nuget</RepositoryUrl>
     <PackageTags>Console ConsoleTools ConsoleBootstrap avs</PackageTags>
     <RepositoryType>public</RepositoryType>
-    <AssemblyVersion>1.0.4.0</AssemblyVersion>
-    <FileVersion>1.0.4.0</FileVersion>
-    <Version>1.0.4</Version>
+    <AssemblyVersion>6.0.0</AssemblyVersion>
+    <FileVersion>6.0.0</FileVersion>
+    <Version>6.0.0-rc</Version>
     <Description>contains console bootstrap utitlities and ConsoleLogger</Description>
     <UserSecretsId>91a53b9d-7d12-4825-9877-5c9dc5583994</UserSecretsId>
     <LangVersion>9</LangVersion>
@@ -28,8 +28,6 @@
   </ItemGroup>
 
 <ItemGroup>
-    <PackageReference Include="AVS.CoreLib.Abstractions" Version="1.0.1" />
-    <PackageReference Include="AVS.CoreLib.PowerConsole" Version="1.0.12" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="6.0.0" />
@@ -40,6 +38,10 @@
     <Pack>True</Pack>
     <PackagePath></PackagePath>
   </None>
+</ItemGroup>
+
+<ItemGroup>
+  <ProjectReference Include="..\AVS.CoreLib.PowerConsole\AVS.CoreLib.PowerConsole.csproj" />
 </ItemGroup>
 
 </Project>
