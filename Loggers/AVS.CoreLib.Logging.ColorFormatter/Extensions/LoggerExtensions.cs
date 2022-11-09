@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 
 namespace AVS.CoreLib.Logging.ColorFormatter.Extensions;
-
+/*
 public static class LoggerExtensions
 {
     /// <summary>
@@ -60,7 +60,7 @@ public class LogColors
     public ConsoleColor H4Color { get; set; } = ConsoleColor.Blue;
     public ConsoleColor H5Color { get; set; } = ConsoleColor.DarkGray;
 }
-
+*/
 /*
 public class LoggerWrapper : ILogger
 {

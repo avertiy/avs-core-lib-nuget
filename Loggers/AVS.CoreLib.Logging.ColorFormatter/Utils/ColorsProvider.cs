@@ -1,44 +1,45 @@
-﻿using AVS.CoreLib.Logging.ColorFormatter.Enums;
+﻿using AVS.CoreLib.ConsoleColors;
+using AVS.CoreLib.Logging.ColorFormatter.Enums;
 using AVS.CoreLib.Logging.ColorFormatter.Extensions;
 using Microsoft.Extensions.Logging;
 
 namespace AVS.CoreLib.Logging.ColorFormatter.Utils;
 public interface IColorsProvider
 {
-    ConsoleColors GetColorsForArgument(ArgType kind);
-    ConsoleColors GetColorsForArgument(ObjType type, FormatFlags flags);
-    ConsoleColors GetColorsFor(LogPart part, LogLevel logLevel = LogLevel.None);
+    Colors GetColorsForArgument(ArgType kind);
+    Colors GetColorsForArgument(ObjType type, FormatFlags flags);
+    Colors GetColorsFor(LogPart part, LogLevel logLevel = LogLevel.None);
 }
 
 public class ColorsProvider : IColorsProvider
 {
-    public ConsoleColors GetColorsForArgument(ArgType kind)
+    public Colors GetColorsForArgument(ArgType kind)
     {
         return kind switch
         {
-            ArgType.Array => new ConsoleColors(ConsoleColor.Cyan, null),
-            ArgType.DateTime => new ConsoleColors(ConsoleColor.Cyan, null),
-            ArgType.TextJson => new ConsoleColors(ConsoleColor.Cyan, null),
+            ArgType.Array => new Colors(ConsoleColor.Cyan, null),
+            ArgType.DateTime => new Colors(ConsoleColor.Cyan, null),
+            ArgType.TextJson => new Colors(ConsoleColor.Cyan, null),
 
-            ArgType.Percentage => new ConsoleColors(ConsoleColor.Magenta, null),
+            ArgType.Percentage => new Colors(ConsoleColor.Magenta, null),
 
-            ArgType.Numeric => new ConsoleColors(ConsoleColor.Green, null),
-            ArgType.NumericNegative => new ConsoleColors(ConsoleColor.Red, null),
+            ArgType.Numeric => new Colors(ConsoleColor.Green, null),
+            ArgType.NumericNegative => new Colors(ConsoleColor.Red, null),
             
-            ArgType.Cash => new ConsoleColors(ConsoleColor.DarkGreen, null),
-            ArgType.CashNegative => new ConsoleColors(ConsoleColor.DarkRed, null),
+            ArgType.Cash => new Colors(ConsoleColor.DarkGreen, null),
+            ArgType.CashNegative => new Colors(ConsoleColor.DarkRed, null),
             
-            ArgType.Enum => new ConsoleColors(ConsoleColor.DarkYellow, null),
+            ArgType.Enum => new Colors(ConsoleColor.DarkYellow, null),
 
-            ArgType.String => new ConsoleColors(ConsoleColor.DarkCyan, null),
-            ArgType.Text => new ConsoleColors(ConsoleColor.DarkGray, null),
+            ArgType.String => new Colors(ConsoleColor.DarkCyan, null),
+            ArgType.Text => new Colors(ConsoleColor.DarkGray, null),
             
-            ArgType.Default => new ConsoleColors(ConsoleColor.Gray, null),
-            _ => new ConsoleColors(ConsoleColor.Gray, null)
+            ArgType.Default => new Colors(ConsoleColor.Gray, null),
+            _ => new Colors(ConsoleColor.Gray, null)
         };
     }
 
-    public ConsoleColors GetColorsForArgument(ObjType type, FormatFlags flags)
+    public Colors GetColorsForArgument(ObjType type, FormatFlags flags)
     {
         switch (type)
         {
@@ -47,21 +48,21 @@ public class ColorsProvider : IColorsProvider
             case ObjType.Dictionary:
             case ObjType.DateTime:
             case ObjType.Time:
-                return new ConsoleColors(ConsoleColor.Cyan, null);
+                return new Colors(ConsoleColor.Cyan, null);
             case ObjType.Boolean:
-                return new ConsoleColors(ConsoleColor.Blue, null);
+                return new Colors(ConsoleColor.Blue, null);
             case ObjType.Enum:
-                return new ConsoleColors(ConsoleColor.DarkYellow, null);
+                return new Colors(ConsoleColor.DarkYellow, null);
             case ObjType.String:
-                return new ConsoleColors(GetStringColor(flags), null);
+                return new Colors(GetStringColor(flags), null);
             case ObjType.Float:
-                return new ConsoleColors(GetFloatColor(flags), null);
+                return new Colors(GetFloatColor(flags), null);
             case ObjType.Integer:
-                return new ConsoleColors(GetIntColor(flags), null);
+                return new Colors(GetIntColor(flags), null);
             case ObjType.Object:
-                return new ConsoleColors(GetObjectColor(flags), null);
+                return new Colors(GetObjectColor(flags), null);
             default:
-                return new ConsoleColors(null, null);
+                return new Colors(null, null);
         }
     }
 
@@ -111,22 +112,22 @@ public class ColorsProvider : IColorsProvider
         return flags.PickColorBySignFlags(ConsoleColor.Blue, ConsoleColor.Red, ConsoleColor.DarkYellow);
     }
 
-    public ConsoleColors GetColorsFor(LogPart part, LogLevel logLevel)
+    public Colors GetColorsFor(LogPart part, LogLevel logLevel)
     {
-        var colors = ConsoleColors.Empty;
+        var colors = Colors.Empty;
         switch (part)
         {
             case LogPart.Error:
-                colors = new ConsoleColors(ConsoleColor.Red, null);
+                colors = new Colors(ConsoleColor.Red, null);
                 break;
             case LogPart.Scope:
-                colors = new ConsoleColors(ConsoleColor.Cyan, null);
+                colors = new Colors(ConsoleColor.Cyan, null);
                 break;
             case LogPart.Timestamp:
-                colors = new ConsoleColors(ConsoleColor.DarkGray, null);
+                colors = new Colors(ConsoleColor.DarkGray, null);
                 break;
             case LogPart.Category:
-                colors = new ConsoleColors(ConsoleColor.DarkYellow, null);
+                colors = new Colors(ConsoleColor.DarkYellow, null);
                 break;
             case LogPart.LogLevel:
                 colors = logLevel.GetLogLevelColors();
@@ -136,26 +137,26 @@ public class ColorsProvider : IColorsProvider
                 switch (logLevel)
                 {
                     case LogLevel.Debug:
-                        colors = new ConsoleColors(ConsoleColor.Gray, null);
+                        colors = new Colors(ConsoleColor.Gray, null);
                         break;
                     case LogLevel.Information:
-                        colors = ConsoleColors.Empty;
+                        colors = Colors.Empty;
                         break;
                     case LogLevel.Warning:
-                        colors = new ConsoleColors(ConsoleColor.Yellow, null);
+                        colors = new Colors(ConsoleColor.Yellow, null);
                         break;
                     case LogLevel.Error:
-                        colors = new ConsoleColors(ConsoleColor.DarkRed, null);
+                        colors = new Colors(ConsoleColor.DarkRed, null);
                         break;
                     case LogLevel.Critical:
-                        colors = new ConsoleColors(ConsoleColor.White, ConsoleColor.DarkRed);
+                        colors = new Colors(ConsoleColor.White, ConsoleColor.DarkRed);
                         break;
                 }
                 break;
             }
             default:
             {
-                colors = new ConsoleColors(ConsoleColor.Gray, null);
+                colors = new Colors(ConsoleColor.Gray, null);
                 break;
             }
         }

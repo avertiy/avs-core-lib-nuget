@@ -1,9 +1,10 @@
-﻿using AVS.CoreLib.Logging.ColorFormatter.Utils;
+﻿using AVS.CoreLib.ConsoleColors;
+using AVS.CoreLib.Logging.ColorFormatter.Utils;
 
 namespace AVS.CoreLib.Logging.ColorFormatter.Enums;
 /// <summary>
 /// tags to control console color behaviour by means of using ansi codes,
-/// tag values are convertible to ansi codes <see cref="AnsiCodes.FromTag"/>
+/// tag values are convertible to ansi codes
 /// </summary>
 public enum Tag
 {
@@ -75,4 +76,14 @@ public enum Tag
     H1,
     H2,
     H3
+}
+
+public static class TagExtensions
+{
+    public static string ToAnsiCode(this Tag tag)
+    {
+        var val = (int)tag;
+        var ansiCode = val > 1000 ? AnsiCodes.Bright(val - 1000) : AnsiCodes.Code(val);
+        return ansiCode;
+    }
 }

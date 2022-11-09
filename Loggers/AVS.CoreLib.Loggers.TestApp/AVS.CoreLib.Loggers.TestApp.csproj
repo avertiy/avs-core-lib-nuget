@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\AVS.CoreLib.ConsoleTools\AVS.CoreLib.ConsoleTools.csproj" />
     <ProjectReference Include="..\..\AVS.CoreLib\AVS.CoreLib.csproj" />
+    <ProjectReference Include="..\..\Console\AVS.CoreLib.ConsoleTools\AVS.CoreLib.ConsoleTools.csproj" />
     <ProjectReference Include="..\AVS.CoreLib.ConsoleLogger\AVS.CoreLib.ConsoleLogger.csproj" />
     <ProjectReference Include="..\AVS.CoreLib.FileLogger\AVS.CoreLib.FileLogger.csproj" />
     <ProjectReference Include="..\AVS.CoreLib.Logging.ColorFormatter\AVS.CoreLib.Logging.ColorFormatter.csproj" />

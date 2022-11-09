@@ -17,8 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\AVS.CoreLib.Trading\AVS.CoreLib.Trading.csproj" />
     <ProjectReference Include="..\AVS.CoreLib.PowerConsole\AVS.CoreLib.PowerConsole.csproj" />
-    <ProjectReference Include="..\AVS.CoreLib.Trading\AVS.CoreLib.Trading.csproj" />
   </ItemGroup>
 
 </Project>

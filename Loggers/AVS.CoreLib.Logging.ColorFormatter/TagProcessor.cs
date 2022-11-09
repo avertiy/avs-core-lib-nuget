@@ -1,4 +1,6 @@
 ﻿using System.Text;
+using AVS.CoreLib.ConsoleColors;
+using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Logging.ColorFormatter.Enums;
 using AVS.CoreLib.Logging.ColorFormatter.Extensions;
 using AVS.CoreLib.Logging.ColorFormatter.Utils;
@@ -37,7 +39,7 @@ public class TagProcessor
                 _sb.Append(' ');
 
             _sb.Replace($"</{tagName}>", AnsiCodes.RESET, closingTagIndex, length + 1);
-            var ansiCode = AnsiCodes.FromTag(tag);
+            var ansiCode = tag.ToAnsiCode();
             _sb.Replace($"<{tagName}>", ansiCode, i, length);
 
             i += ansiCode.Length;

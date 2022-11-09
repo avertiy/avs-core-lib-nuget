@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Logging.ColorFormatter.Enums;
 using AVS.CoreLib.Logging.ColorFormatter.Extensions;
 using AVS.CoreLib.Logging.ColorFormatter.Utils;

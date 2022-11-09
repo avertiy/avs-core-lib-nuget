@@ -1,72 +1,72 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using AVS.CoreLib.ConsoleColors;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
-
 namespace AVS.CoreLib.Logging.ColorFormatter.Extensions
 {
     public static class LogLevelExtensions
     {
-        public static ConsoleColors GetLogLevelColors(this LogLevel logLevel)
+        public static Colors GetLogLevelColors(this LogLevel logLevel)
         {
             // We must explicitly set the background color if we are setting the foreground color,
             // since just setting one can look bad on the users console.
             return logLevel switch
             {
-                LogLevel.Trace => new ConsoleColors(ConsoleColor.DarkGray, null),
-                LogLevel.Debug => new ConsoleColors(ConsoleColor.Gray, null),
-                LogLevel.Information => new ConsoleColors(ConsoleColor.DarkGreen, null),
-                LogLevel.Warning => new ConsoleColors(ConsoleColor.Yellow, null),
-                LogLevel.Error => new ConsoleColors(ConsoleColor.DarkRed, null),
-                LogLevel.Critical => new ConsoleColors(ConsoleColor.White, ConsoleColor.DarkRed),
-                _ => new ConsoleColors(null, null)
+                LogLevel.Trace => new Colors(ConsoleColor.DarkGray, null),
+                LogLevel.Debug => new Colors(ConsoleColor.Gray, null),
+                LogLevel.Information => new Colors(ConsoleColor.DarkGreen, null),
+                LogLevel.Warning => new Colors(ConsoleColor.Yellow, null),
+                LogLevel.Error => new Colors(ConsoleColor.DarkRed, null),
+                LogLevel.Critical => new Colors(ConsoleColor.White, ConsoleColor.DarkRed),
+                _ => new Colors(null, null)
             };
         }
 
 
-        public static ConsoleColors GetLogLevelConsoleColors(this LogLevel logLevel, LoggerColorBehavior colorBehavior)
+        public static Colors GetLogLevelColors(this LogLevel logLevel, LoggerColorBehavior colorBehavior)
         {
             // We shouldn't be outputting color codes for Android/Apple mobile platforms,
             // they have no shell (adb shell is not meant for running apps) and all the output gets redirected to some log file.
             bool disableColors = colorBehavior == LoggerColorBehavior.Disabled;
             if (disableColors)
             {
-                return new ConsoleColors(null, null);
+                return new Colors(null, null);
             }
 
             // We must explicitly set the background color if we are setting the foreground color,
             // since just setting one can look bad on the users console.
             return logLevel switch
             {
-                LogLevel.Trace => new ConsoleColors(ConsoleColor.DarkGray, ConsoleColor.Black),
-                LogLevel.Debug => new ConsoleColors(ConsoleColor.Gray, ConsoleColor.Black),
-                LogLevel.Information => new ConsoleColors(ConsoleColor.DarkGreen, ConsoleColor.Black),
-                LogLevel.Warning => new ConsoleColors(ConsoleColor.Yellow, ConsoleColor.Black),
-                LogLevel.Error => new ConsoleColors(ConsoleColor.DarkRed, ConsoleColor.Black),
-                LogLevel.Critical => new ConsoleColors(ConsoleColor.White, ConsoleColor.DarkRed),
-                _ => new ConsoleColors(null, null)
+                LogLevel.Trace => new Colors(ConsoleColor.DarkGray, ConsoleColor.Black),
+                LogLevel.Debug => new Colors(ConsoleColor.Gray, ConsoleColor.Black),
+                LogLevel.Information => new Colors(ConsoleColor.DarkGreen, ConsoleColor.Black),
+                LogLevel.Warning => new Colors(ConsoleColor.Yellow, ConsoleColor.Black),
+                LogLevel.Error => new Colors(ConsoleColor.DarkRed, ConsoleColor.Black),
+                LogLevel.Critical => new Colors(ConsoleColor.White, ConsoleColor.DarkRed),
+                _ => new Colors(null, null)
             };
         }
 
-        public static ConsoleColors GetMessageConsoleColors(this LogLevel logLevel, LoggerColorBehavior colorBehavior)
+        public static Colors GetMessageColors(this LogLevel logLevel, LoggerColorBehavior colorBehavior)
         {
             // We shouldn't be outputting color codes for Android/Apple mobile platforms,
             // they have no shell (adb shell is not meant for running apps) and all the output gets redirected to some log file.
             bool disableColors = colorBehavior == LoggerColorBehavior.Disabled;
             if (disableColors)
             {
-                return new ConsoleColors(null, null);
+                return new Colors(null, null);
             }
 
             // We must explicitly set the background color if we are setting the foreground color,
             // since just setting one can look bad on the users console.
             return logLevel switch
             {
-                LogLevel.Trace => new ConsoleColors(ConsoleColor.DarkGray, ConsoleColor.Black),
-                LogLevel.Debug => new ConsoleColors(ConsoleColor.Gray, ConsoleColor.Black),
-                LogLevel.Information => new ConsoleColors(ConsoleColor.White, ConsoleColor.Black),
-                LogLevel.Warning => new ConsoleColors(ConsoleColor.Yellow, ConsoleColor.Black),
-                LogLevel.Error => new ConsoleColors(ConsoleColor.DarkRed, ConsoleColor.Black),
-                LogLevel.Critical => new ConsoleColors(ConsoleColor.White, ConsoleColor.DarkRed),
-                _ => new ConsoleColors(null, null)
+                LogLevel.Trace => new Colors(ConsoleColor.DarkGray, ConsoleColor.Black),
+                LogLevel.Debug => new Colors(ConsoleColor.Gray, ConsoleColor.Black),
+                LogLevel.Information => new Colors(ConsoleColor.White, ConsoleColor.Black),
+                LogLevel.Warning => new Colors(ConsoleColor.Yellow, ConsoleColor.Black),
+                LogLevel.Error => new Colors(ConsoleColor.DarkRed, ConsoleColor.Black),
+                LogLevel.Critical => new Colors(ConsoleColor.White, ConsoleColor.DarkRed),
+                _ => new Colors(null, null)
             };
         }
 

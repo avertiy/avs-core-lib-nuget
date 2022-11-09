@@ -99,11 +99,14 @@ public static class AnsiCodes
             _ => RESET
         };
     }
+}
 
-    public static string FromTag(Tag tag)
+public static class TagExtensions
+{
+    public static string ToAnsiCode(this Tag tag)
     {
         var val = (int)tag;
-        var ansiCode = val > 1000 ? Bright(val - 1000) : Code(val);
+        var ansiCode = val > 1000 ? AnsiCodes.Bright(val - 1000) : AnsiCodes.Code(val);
         return ansiCode;
     }
 }

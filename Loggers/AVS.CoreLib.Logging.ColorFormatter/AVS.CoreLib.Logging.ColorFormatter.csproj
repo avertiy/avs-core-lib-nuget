@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -26,6 +26,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="ConsoleColors.cs" />
+    <Compile Remove="Enums\AnsiCode.cs" />
+    <Compile Remove="Extensions\LoggerExtensions.cs" />
+    <Compile Remove="Extensions\StringColorExtensions.cs" />
+    <Compile Remove="Extensions\StringExtensions.cs" />
+    <Compile Remove="Utils\AnsiCodes.cs" />
+    <Compile Remove="Utils\AnsiCodesPrinter.cs" />
     <Compile Remove="Utils\LogMessageBuilder.cs" />
     <Compile Remove="Utils\LogValuesFormatter.cs" />
   </ItemGroup>
@@ -38,7 +45,8 @@
     <PackageReference Include="System.Text.Json" Version="6.0.6" />
   </ItemGroup>
  <ItemGroup>
-   <Folder Include="ColorMakup\" />
+   <ProjectReference Include="..\..\AVS.CoreLib.StringExtensions\AVS.CoreLib.Extensions.csproj" />
+   <ProjectReference Include="..\..\Console\AVS.ConsoleColors\AVS.CoreLib.ConsoleColors.csproj" />
  </ItemGroup>
 
 </Project>

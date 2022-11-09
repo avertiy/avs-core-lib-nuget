@@ -1,4 +1,6 @@
 ﻿using System.Text;
+using AVS.CoreLib.ConsoleColors;
+using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Logging.ColorFormatter.Enums;
 using AVS.CoreLib.Logging.ColorFormatter.Extensions;
 using Microsoft.VisualBasic.CompilerServices;
@@ -91,7 +93,7 @@ public class ArgsColorFormatter
             }
 
             var colonInd = key.IndexOf(':');
-            if (colonInd <= 0 || !ConsoleColors.TryParse(key.Substring(colonInd), out var colors))
+            if (colonInd <= 0 || !Colors.TryParse(key.Substring(colonInd), out var colors))
             {
                 var obj = State[i].Value;
                 var (type, flags) = obj.GetTypeAndFlags(value);
@@ -117,8 +119,7 @@ public class ArgsColorFormatter
         return Output;
     }
 
-
-    private ConsoleColors GetColors(string argKey, ObjType type, FormatFlags flags)
+    private Colors GetColors(string argKey, ObjType type, FormatFlags flags)
     {
         var colorProvider = ColorsProvider ?? new ColorsProvider();
         var colors = colorProvider.GetColorsForArgument(type, flags);

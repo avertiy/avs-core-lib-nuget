@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32516.85
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.PowerConsole", "AVS.CoreLib.PowerConsole\AVS.CoreLib.PowerConsole.csproj", "{433672CA-EEC5-44CB-85A0-7790B8A18856}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.PowerConsole", "Console\AVS.CoreLib.PowerConsole\AVS.CoreLib.PowerConsole.csproj", "{433672CA-EEC5-44CB-85A0-7790B8A18856}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.PowerConsole.DemoApp", "AVS.CoreLib.PowerConsole.DemoApp\AVS.CoreLib.PowerConsole.DemoApp.csproj", "{C05D7881-BC01-47C3-8114-510999D8CFF6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.PowerConsole.DemoApp", "Console\AVS.CoreLib.PowerConsole.DemoApp\AVS.CoreLib.PowerConsole.DemoApp.csproj", "{C05D7881-BC01-47C3-8114-510999D8CFF6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.ConsoleTools", "AVS.CoreLib.ConsoleTools\AVS.CoreLib.ConsoleTools.csproj", "{C21FAD00-E005-4BB3-AF26-DCDCA903D540}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.ConsoleTools", "Console\AVS.CoreLib.ConsoleTools\AVS.CoreLib.ConsoleTools.csproj", "{C21FAD00-E005-4BB3-AF26-DCDCA903D540}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.Text", "AVS.CoreLib.Text\AVS.CoreLib.Text.csproj", "{258C979B-5389-49BB-8776-3FD5D57BD257}"
 EndProject
@@ -49,7 +49,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.Math", "AVS.Cor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.Logging.ColorFormatter", "Loggers\AVS.CoreLib.Logging.ColorFormatter\AVS.CoreLib.Logging.ColorFormatter.csproj", "{CFB721A8-CFD9-4155-9C61-E4C619BC3458}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApplication1", "C:\Users\verti\OneDrive\Документы\TestApp\WebApplication1\WebApplication1.csproj", "{D416F936-D640-49ED-8B21-28FDDF1DB5EC}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "console", "console", "{A87588EE-15B1-4B26-A25B-039EA5995F84}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.ConsoleColors", "Console\AVS.ConsoleColors\AVS.CoreLib.ConsoleColors.csproj", "{6E32273D-1CDC-4AF5-8A10-6AF97C1EF010}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AVS.CoreLib.Extensions", "AVS.CoreLib.StringExtensions\AVS.CoreLib.Extensions.csproj", "{B5953D87-F46E-4D4B-B7BF-9DD20B9A9789}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -141,21 +145,29 @@ Global
 		{CFB721A8-CFD9-4155-9C61-E4C619BC3458}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CFB721A8-CFD9-4155-9C61-E4C619BC3458}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CFB721A8-CFD9-4155-9C61-E4C619BC3458}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D416F936-D640-49ED-8B21-28FDDF1DB5EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D416F936-D640-49ED-8B21-28FDDF1DB5EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D416F936-D640-49ED-8B21-28FDDF1DB5EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D416F936-D640-49ED-8B21-28FDDF1DB5EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E32273D-1CDC-4AF5-8A10-6AF97C1EF010}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E32273D-1CDC-4AF5-8A10-6AF97C1EF010}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E32273D-1CDC-4AF5-8A10-6AF97C1EF010}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E32273D-1CDC-4AF5-8A10-6AF97C1EF010}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5953D87-F46E-4D4B-B7BF-9DD20B9A9789}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5953D87-F46E-4D4B-B7BF-9DD20B9A9789}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5953D87-F46E-4D4B-B7BF-9DD20B9A9789}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5953D87-F46E-4D4B-B7BF-9DD20B9A9789}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{433672CA-EEC5-44CB-85A0-7790B8A18856} = {A87588EE-15B1-4B26-A25B-039EA5995F84}
+		{C05D7881-BC01-47C3-8114-510999D8CFF6} = {A87588EE-15B1-4B26-A25B-039EA5995F84}
+		{C21FAD00-E005-4BB3-AF26-DCDCA903D540} = {A87588EE-15B1-4B26-A25B-039EA5995F84}
 		{68DFA0B4-3C39-4BB0-AE01-9CEB064DE29A} = {4A9D3A9E-083A-4C07-8789-FFC257D4A3DF}
 		{6F40DB1B-3258-43BA-813D-2A9B4692298E} = {F58648D7-219E-4D6D-AA3B-D11DDD534A73}
 		{059B25AB-3410-4E60-B024-F27B43B6943B} = {F58648D7-219E-4D6D-AA3B-D11DDD534A73}
 		{BC9259B6-D032-45D5-9D1C-CB8F74001106} = {F58648D7-219E-4D6D-AA3B-D11DDD534A73}
 		{C1847F96-5FFE-4247-A670-28746348E5BF} = {F58648D7-219E-4D6D-AA3B-D11DDD534A73}
 		{CFB721A8-CFD9-4155-9C61-E4C619BC3458} = {F58648D7-219E-4D6D-AA3B-D11DDD534A73}
+		{6E32273D-1CDC-4AF5-8A10-6AF97C1EF010} = {A87588EE-15B1-4B26-A25B-039EA5995F84}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F0BC5348-2A0B-4051-BFD7-86F74D429B5D}
