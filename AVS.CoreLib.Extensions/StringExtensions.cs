@@ -6,12 +6,13 @@ namespace AVS.CoreLib.Extensions
 {
     public static class StringExtensions
     {
-        public static bool Contains(this string str, string value, int fromIndex = 0)
+        public static bool ContainsAt(this string str, string value, int index = 0)
         {
-            if (str.Length < fromIndex + value.Length)
+            if (str.Length < index + value.Length)
                 return false;
+
             var i = 0;
-            while ((i < value.Length) && (str[fromIndex + i] == value[i]))
+            while ((i < value.Length) && (str[index + i] == value[i]))
                 i++;
 
             return i == value.Length;

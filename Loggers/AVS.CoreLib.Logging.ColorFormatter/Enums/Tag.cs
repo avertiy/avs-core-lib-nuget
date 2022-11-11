@@ -1,4 +1,4 @@
-﻿using AVS.CoreLib.ConsoleColors;
+﻿using AVS.CoreLib.Console.ColorFormatting;
 using AVS.CoreLib.Logging.ColorFormatter.Utils;
 
 namespace AVS.CoreLib.Logging.ColorFormatter.Enums;

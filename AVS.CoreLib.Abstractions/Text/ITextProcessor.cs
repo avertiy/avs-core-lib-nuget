@@ -1,4 +1,4 @@
-﻿namespace AVS.CoreLib.Text.TextProcessors
+﻿namespace AVS.CoreLib.Abstractions.Text
 {
     /// <summary>
     /// common interface for text processors of any kind to transform/translate/convert etc. the input string
@@ -7,8 +7,7 @@
     public interface ITextProcessor
     {
         /// <summary>
-        /// Text Processor manipulates somehow by the input string and returns the output
-        /// 
+        /// Text Processor manipulates the input string according to text processor's purpose and returns the output
         /// </summary>
         string Process(string input);
     }

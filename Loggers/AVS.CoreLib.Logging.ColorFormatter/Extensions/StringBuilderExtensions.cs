@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Text;
-using AVS.CoreLib.ConsoleColors;
+using AVS.CoreLib.Console.ColorFormatting;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Logging.ColorFormatter.Utils;
 
@@ -12,8 +12,35 @@ namespace AVS.CoreLib.Logging.ColorFormatter.Extensions;
 /// </summary>
 public static partial class StringBuilderExtensions
 {
+    public static bool MatchTag(this StringBuilder sb, int index, out string tagName, out int closingTagIndex, int tagMaxLength = 20)
+    {
+        closingTagIndex = -1;
+        tagName = null;
+        if (sb[index] != '<')
+            return false;
+
+        var ind = sb.IndexOf('>', index + 1, tagMaxLength);
+        if (ind == -1)
+            return false;
+
+        var tag = sb.ToString(index + 1, ind - index - 1);
+
+        var closingTag = $"</{tag}>";
+
+        var ind2 = sb.IndexOf(closingTag, index + tag.Length + 1);
+
+        if (ind2 == -1)
+            return false;
+
+        closingTagIndex = ind2;
+        tagName = tag;
+
+        return true;
+    }
+
     /// <summary>
-    /// when console is resized when line ends with bgcolor the bg color will be stretched with the window that seems background color console issue. 
+    /// when console is resized when line ends with bgcolor
+    /// the bg color will be stretched with the window that seems background color console issue. 
     /// </summary>
     public static StringBuilder FixBgColorLineEnding(this StringBuilder sb, int index, string lineEnd = ".")
     {
@@ -37,54 +64,5 @@ public static partial class StringBuilderExtensions
         return sb;
     }
 
-    internal static int StripTags(this StringBuilder sb, params string[] tags)
-    {
-        var counter = -1;
-        bool validateTag(string tag)
-        {
-            return tags.Length > 0 ? tags.Any(x => x == tag) : TagHelper.IsValidTagCandidate(tag);
-        }
-
-        var start = 0;
-        start:
-        var ind = sb.IndexOf('<', start);
-        if (ind == -1)
-            return counter;
-
-        //<time> or <time/> or </time>
-        var ind2 = sb.IndexOf('>', ind);
-        if (ind2 == -1)
-            return counter;
-
-        var tag = sb.ToString(ind, ind2 - ind);
-
-        if (!validateTag(tag))
-        {
-            start = ind2;
-            goto start;
-        }
-
-        // self closing tag time/
-        if (tag.EndsWith("/"))
-        {
-            sb.Replace($"<{tag}>", "");
-            counter++;
-            start = ind;
-            goto start;
-        }
-
-        var endTagInd = sb.IndexOf($"</{tag}>", ind2);
-
-        if (endTagInd > 0)
-        {
-            counter++;
-            sb.Replace($"<{tag}>", "");
-            sb.Replace($"</{tag}>", "");
-            start = ind;
-            goto start;
-        }
-
-        start = ind2;
-        goto start;
-    }
+    
 }

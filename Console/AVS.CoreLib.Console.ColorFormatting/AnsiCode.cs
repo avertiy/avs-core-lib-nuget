@@ -1,4 +1,4 @@
-﻿namespace AVS.CoreLib.ConsoleColors
+﻿namespace AVS.CoreLib.Console.ColorFormatting
 {
     public enum AnsiCode
     {

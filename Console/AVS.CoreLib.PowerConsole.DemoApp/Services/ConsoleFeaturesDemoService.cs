@@ -222,7 +222,7 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
         public async Task PromptAsync()
         {
             Console.PrintHeader($"PromptYesNo");
-            var answer = await Console.PromptYesNo("Do you confirm ...?", 5000);
+            var answer = await Console.PromptYesNoAsync("Do you confirm ...?", 5000);
             Console.Print($"Got an answer: {answer}");
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System.Text;
-using AVS.CoreLib.ConsoleColors;
+using AVS.CoreLib.Console.ColorFormatting;
+using AVS.CoreLib.Console.ColorFormatting.Tags;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Logging.ColorFormatter.Enums;
 using AVS.CoreLib.Logging.ColorFormatter.Extensions;
@@ -8,10 +9,15 @@ using Microsoft.Extensions.Options;
 
 namespace AVS.CoreLib.Logging.ColorFormatter;
 
+public interface ITagProcessor
+{
+    string Process(string input);
+}
+
 public class TagProcessor
 {
     private readonly StringBuilder _sb;
-    private string _message;
+    private readonly string _message;
     public TagProcessor(StringBuilder sb, string message)
     {
         this._sb = sb;
@@ -25,7 +31,7 @@ public class TagProcessor
 
         for (var i = 0; i < _sb.Length - 3; i++)
         {
-            if (!_sb.MatchTag(i, out var tagName, out var closingTagIndex) || !Enum.TryParse(tagName, out Tag tag))
+            if (!_sb.MatchTag(i, out var tagName, out var closingTagIndex) || !Enum.TryParse(tagName, out CTag tag))
                 continue;
             
             var length = tagName.Length + 2;
@@ -57,7 +63,7 @@ public class TagProcessor
             var rgbTagsCount = 0;
 
             label1:
-            if (RgbHelper.TryParse(_sb, out var rgb, out var rgbText))
+            if (RgbTagHelper.TryParse(_sb, out var rgb, out var rgbText))
             {
                 rgbTagsCount++;
                 _sb.Replace(rgbText, AnsiCodes.Rgb(rgb));
@@ -100,7 +106,7 @@ public class TagProcessor
 }
 
 
-internal static class RgbHelper
+internal static class RgbTagHelper
 {
     public static bool TryParse(string str, out (byte R, byte G, byte B) rgb, out string rgbText)
     {

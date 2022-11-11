@@ -1,4 +1,4 @@
-﻿using AVS.CoreLib.ConsoleColors;
+﻿using AVS.CoreLib.Console.ColorFormatting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 namespace AVS.CoreLib.Logging.ColorFormatter.Extensions

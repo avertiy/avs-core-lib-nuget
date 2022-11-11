@@ -46,7 +46,6 @@
   </ItemGroup>
  <ItemGroup>
    <ProjectReference Include="..\..\AVS.CoreLib.StringExtensions\AVS.CoreLib.Extensions.csproj" />
-   <ProjectReference Include="..\..\Console\AVS.ConsoleColors\AVS.CoreLib.ConsoleColors.csproj" />
  </ItemGroup>
 
 </Project>

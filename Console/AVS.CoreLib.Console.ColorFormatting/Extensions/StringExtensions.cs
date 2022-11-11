@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AVS.CoreLib.ConsoleColors.Extensions
+﻿namespace AVS.CoreLib.Console.ColorFormatting.Extensions
 {
     public static class StringExtensions
     {

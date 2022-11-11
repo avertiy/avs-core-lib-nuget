@@ -498,15 +498,15 @@
         </member>
         <member name="T:AVS.CoreLib.Text.TextProcessors.ITextProcessor">
             <summary>
-            interface for text processor that might be used to process input string  
+            common interface for text processors of any kind to transform/translate/convert etc. the input string
+            for example ColorTagProcessor will replace color tags with ansi-codes
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Text.TextProcessors.ITextProcessor.Process(System.String)">
             <summary>
+            Text Processor manipulates somehow by the input string and returns the output
             
             </summary>
-            <param name="str"></param>
-            <returns></returns>
         </member>
         <member name="T:AVS.CoreLib.Text.TextProcessors.TextExpressionProcessor">
             <summary>

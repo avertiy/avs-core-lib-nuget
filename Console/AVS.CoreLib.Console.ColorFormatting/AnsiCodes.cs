@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AVS.CoreLib.ConsoleColors
+namespace AVS.CoreLib.Console.ColorFormatting
 {
     /// <summary>
     /// https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences

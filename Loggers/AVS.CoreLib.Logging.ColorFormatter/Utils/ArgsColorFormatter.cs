@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using AVS.CoreLib.ConsoleColors;
+using AVS.CoreLib.Console.ColorFormatting;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Logging.ColorFormatter.Enums;
 using AVS.CoreLib.Logging.ColorFormatter.Extensions;

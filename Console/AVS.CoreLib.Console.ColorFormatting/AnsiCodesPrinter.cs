@@ -1,27 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-
-namespace AVS.CoreLib.ConsoleColors
+namespace AVS.CoreLib.Console.ColorFormatting
 {
     public static class AnsiCodesPrinter
     {
         public static void PrintAllCodes()
         {
             //decorations
-            Console.WriteLine("Decorations:");
+            System.Console.WriteLine("Decorations:");
             PrintCodes(0, 1, 2, 3, 4, 7);
 
             // foreground colors
-            Console.WriteLine("Foreground colors:");
+            System.Console.WriteLine("Foreground colors:");
             PrintCodes(30, 38);
             PrintCodes(90, 98);
 
             // bg colors
-            Console.WriteLine("Background colors:");
+            System.Console.WriteLine("Background colors:");
             PrintCodes(40, 48);
             PrintCodes(100, 108);
-            Console.WriteLine(AnsiCodes.RESET);
+            System.Console.WriteLine(AnsiCodes.RESET);
         }
         public static void PrintCodes(params int[] codes)
         {
@@ -32,9 +30,9 @@ namespace AVS.CoreLib.ConsoleColors
                 var esc = codeStr.Esc();
                 var esc2 = brightStr.Esc();
                 var text = $"({i}) {codeStr} code: {esc}{AnsiCodes.RESET} | {brightStr} bright: {esc2}{AnsiCodes.RESET};";
-                Console.WriteLine(text);
+                System.Console.WriteLine(text);
             }
-            Console.WriteLine(AnsiCodes.RESET);
+            System.Console.WriteLine(AnsiCodes.RESET);
         }
         public static void PrintCodes(int from, int to)
         {
@@ -49,9 +47,9 @@ namespace AVS.CoreLib.ConsoleColors
                 var code = AnsiCodes.Rgb(r, g, b);
                 var esc = code.Esc();
                 var text = $"{code}{esc}{AnsiCodes.RESET}";
-                Console.WriteLine(text);
+                System.Console.WriteLine(text);
             }
-            Console.WriteLine(AnsiCodes.RESET);
+            System.Console.WriteLine(AnsiCodes.RESET);
         }
 
 

@@ -1,9 +1,11 @@
 ﻿using System;
-using AVS.CoreLib.ConsoleColors.Extensions;
 using AVS.CoreLib.Extensions;
 
-namespace AVS.CoreLib.ConsoleColors
+namespace AVS.CoreLib.Console.ColorFormatting
 {
+    /// <summary>
+    /// Colors helps to deal with string color format modifiers e.g. "some text {arg:-Red -bgGray}"
+    /// </summary>
     public readonly struct Colors
     {
         public ConsoleColor? Foreground { get; }
@@ -107,7 +109,7 @@ namespace AVS.CoreLib.ConsoleColors
                     continue;
                 }
 
-                if ((str.Contains("--", fromIndex: i) || str.Contains("bg", fromIndex: i)) && char.IsUpper(str[i + 2]))
+                if ((str.ContainsAt("--", index: i) || str.ContainsAt("bg", index: i)) && char.IsUpper(str[i + 2]))
                 {
                     var colorStr = str.ReadWord(fromIndex: i + 2);
                     i += colorStr.Length;
