@@ -21,7 +21,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\AVS.CoreLib.StringExtensions\AVS.CoreLib.Extensions.csproj" />
+    <PackageReference Include="AVS.CoreLib.Extensions" Version="2.1.0-rc" />
   </ItemGroup>
 
 </Project>

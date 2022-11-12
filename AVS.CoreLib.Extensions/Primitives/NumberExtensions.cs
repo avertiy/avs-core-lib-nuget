@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Linq;
 
-namespace AVS.CoreLib.Extensions.Numbers
+namespace AVS.CoreLib.Extensions
 {
-    [Obsolete("Use AVS.CoreLib.Extensions package")]
     public static class NumberExtensions
     {
         #region doubles

@@ -3,14 +3,12 @@ using System.Text;
 
 namespace AVS.CoreLib.Console.ColorFormatting.Tags
 {
-    public class ColorTagProcessor : TagProcessor
+    public class CompositeTagProcessor : TagProcessor
     {
         private readonly List<TagProcessor> _processors = new List<TagProcessor>();
 
-        public ColorTagProcessor()
+        public CompositeTagProcessor()
         {
-            AddTagProcessor(new CTagProcessor());
-            AddTagProcessor(new RgbTagProcessor());
         }
 
         public void AddTagProcessor(TagProcessor tagProcessor)

@@ -9,15 +9,15 @@
     <Company>AV Stuido</Company>
     <Product>CoreLib</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>6.0.0</AssemblyVersion>
-    <FileVersion>6.0.0</FileVersion>
+    <AssemblyVersion>2.1.0</AssemblyVersion>
+    <FileVersion>2.1.0</FileVersion>
     <Description>contains useful utilities, types and extensions</Description>
     <Copyright>Artem Vertii</Copyright>
     <PackageProjectUrl>https://github.com/avertiy/avs-core-lib-nuget</PackageProjectUrl>
     <PackageTags>Text FormatProvider avs</PackageTags>
     <RepositoryUrl>https://github.com/avertiy/avs-core-lib-nuget</RepositoryUrl>
     <RepositoryType>public</RepositoryType>
-    <Version>6.0.0-rc</Version>
+    <Version>2.1.0-rc</Version>
     <LangVersion>9</LangVersion>
   </PropertyGroup>
 
@@ -26,15 +26,33 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Dates\Extensions\**" />
+    <Compile Remove="Extensions\Common\**" />
+    <Compile Remove="Extensions\Numbers\**" />
+    <Compile Remove="Extensions\Strings\**" />
+    <EmbeddedResource Remove="Dates\Extensions\**" />
+    <EmbeddedResource Remove="Extensions\Common\**" />
+    <EmbeddedResource Remove="Extensions\Numbers\**" />
+    <EmbeddedResource Remove="Extensions\Strings\**" />
+    <None Remove="Dates\Extensions\**" />
+    <None Remove="Extensions\Common\**" />
+    <None Remove="Extensions\Numbers\**" />
+    <None Remove="Extensions\Strings\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Extensions\QueryStringExtensions.cs" />
+    <Compile Remove="Utilities\Guard.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AVS.CoreLib.Abstractions" Version="6.0.0-rc" />
+    <PackageReference Include="AVS.CoreLib.Extensions" Version="2.1.0-rc" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\AVS.CoreLib.Abstractions\AVS.CoreLib.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

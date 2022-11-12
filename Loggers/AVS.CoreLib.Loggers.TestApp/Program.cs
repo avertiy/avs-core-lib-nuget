@@ -23,7 +23,7 @@ internal class Program
                     .AddTransient<ITestService, LoggerTestService>();
             })
             .RunAllTest();
-        Console.ReadLine();
+        System.Console.ReadLine();
     }
 
     private static IServiceCollection AddConsoleLogger(IServiceCollection services)

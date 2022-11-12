@@ -4,7 +4,7 @@
 	{
 		public static double Log2(this int number)
 		{
-			return System.Math.Log2(number);
+			return System.Math.Log(number, 2);
 		}
 
 		public static double Log(this int number, double @base)

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AVS.CoreLib.Dates.Extensions
+namespace AVS.CoreLib.Extensions
 {
-    [Obsolete("Use AVS.CoreLib.Extensions package")]
     public static class DateTimeExtensions
     {
         /// <summary>

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using AVS.CoreLib.Dates.Extensions;
+using AVS.CoreLib.Extensions;
 
 namespace AVS.CoreLib.Collections
 {

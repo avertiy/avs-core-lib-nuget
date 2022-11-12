@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Security;
 
 namespace AVS.CoreLib.Extensions
 {
-    [Obsolete("Use AVS.CoreLib.Extensions package")]
     public static class SecureStringExtensionMethods
     {
         public static string GetString(this SecureString source)

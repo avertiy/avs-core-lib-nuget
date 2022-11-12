@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
@@ -176,6 +177,100 @@ namespace AVS.CoreLib.Extensions
 
             return sb;
         }
+
+        /// <summary>
+        /// returns index of line that matches value 
+        /// </summary>
+        public static int GetLineIndexOf(this StringBuilder sb, string value)
+        {
+            var offset = sb.IndexOf(value);
+            var lineIndex = 0;
+            var startIndex = 0;
+            start:
+            var ind = sb.IndexOf(Environment.NewLine, startIndex);
+
+            if (ind == -1 || ind > offset)
+                return lineIndex;
+
+            startIndex =ind + Environment.NewLine.Length;
+            lineIndex++;
+            goto start;
+        }
+
+        /// <summary>
+        /// returns index of line where offset points to
+        /// e.g. if StringBuilder contains text of 3 lines "line1\r\nline2\r\nline3" offset = 10 (line2) the line index will be 1;   
+        /// </summary>
+        public static int GetLineIndexOf(this StringBuilder sb, int offset)
+        {
+            var lineIndex = 0;
+            var startIndex = 0;
+            start:
+            var ind = sb.IndexOf(Environment.NewLine, startIndex);
+
+            if (ind == -1 || ind > offset)
+                return lineIndex;
+           
+            startIndex = ind + Environment.NewLine.Length;
+            lineIndex++;
+            goto start;
+        }
+
+        /// <summary>
+        /// returns line by its index 
+        /// </summary>
+        public static string GetLineAt(this StringBuilder sb, int index)
+        {
+            var lineIndex = 0;
+            var startIndex = 0;
+
+            start:
+            var ind = sb.IndexOf(Environment.NewLine, startIndex);
+
+            if(index == lineIndex)
+                return sb.ToString(startIndex, ind > -1? ind-startIndex : sb.Length - startIndex);
+
+            if (ind == -1)
+                return string.Empty;
+
+            startIndex = ind + Environment.NewLine.Length;
+            lineIndex++;
+            goto start;
+        }
+
+        /// <summary>
+        /// Reads a line from a specified index
+        /// </summary>
+        public static string ReadLine(this StringBuilder sb, int startIndex = 0)
+        {
+            var ind = sb.IndexOf(Environment.NewLine, startIndex);
+            if (ind == -1)
+               return sb.ToString(startIndex + Environment.NewLine.Length, sb.Length - startIndex);
+
+            return sb.ToString(startIndex+ Environment.NewLine.Length, ind - startIndex);
+        }
+
+        public static string[] ReadAllLines(this StringBuilder sb, int startIndex = 0)
+        {
+            var lines = new List<string>();
+            string line;
+            start:
+            var ind = sb.IndexOf(Environment.NewLine, startIndex);
+            if (ind == -1)
+            {
+                line = sb.ToString(startIndex + Environment.NewLine.Length, sb.Length - startIndex);
+                //if(!string.IsNullOrEmpty(line))
+                //    lines.Add(line);
+                return lines.ToArray();
+            }
+            
+            line = sb.ToString(startIndex + Environment.NewLine.Length, ind - startIndex);
+            lines.Add(line);
+            startIndex += line.Length + Environment.NewLine.Length;
+            goto start;
+        }
+
+
 
         /// <summary>
         /// Removes the range of characters from the specified index to the end of <see cref="System.Text.StringBuilder"/>.

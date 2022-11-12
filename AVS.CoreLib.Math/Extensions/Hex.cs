@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Text;
+using AVS.CoreLib.Math.Bytes.Extensions;
 
 namespace AVS.CoreLib.Math.Extensions
 {
@@ -69,24 +70,47 @@ namespace AVS.CoreLib.Math.Extensions
 			return string.IsNullOrEmpty(hex) ? new BigInteger(0) : BigInteger.Parse(hex.StartsWith("0") ? hex : "0" + hex, NumberStyles.AllowHexSpecifier);
 		}
 
-		public static byte[] GetBytesFromHex(string hex)
+
+        /// <summary>
+        /// Decode hex string to bytes
+        /// </summary>
+        /// <param name="hex">Hex string</param>
+        /// <returns>Bytes</returns>
+        public static byte[] FromHexString(ReadOnlySpan<char> hex)
+        {
+            if (hex.Length % 2 != 0)
+                throw new ArgumentException("Odd hex string length.", nameof(hex));
+
+            var result = new byte[hex.Length / 2];
+            for (int i = 0; i < result.Length; i++)
+                result[i] = Convert.ToByte(hex.Slice(i * 2, 2).ToString(), 16);
+
+            return result;
+        }
+
+        public static byte[] GetBytesFromHex(string hex)
 		{
-			return Convert.FromHexString(hex);
+            return FromHexString(hex.AsSpan());
+            //return Convert.FromHexString(hex);
 		}
 
-        public static byte GetByteFromHex(string hex)
+        public static byte GetFirstByteFromHex(string hex)
         {
-            return Convert.FromHexString(hex)[0];
+            if (string.IsNullOrEmpty(hex) || hex.Length < 2)
+                return 0xb;
+
+            var @byte = Convert.ToByte(hex.Substring(0, 2), 16);
+            return @byte;
         }
 
         public static string ToHexString(params byte[] bytes)
 		{
-			return Convert.ToHexString(bytes);
+			return bytes.ToHexString();
 		}
 
         public static bool Match(string hex, byte[] bytes)
 		{
-			return Convert.ToHexString(bytes) == hex;
+			return bytes.ToHexString() == hex;
 		}
 
 		public static bool Match(byte[] arr1, byte[] arr2)

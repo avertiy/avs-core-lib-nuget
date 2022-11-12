@@ -1,5 +1,5 @@
 ﻿using System;
-using AVS.CoreLib.Dates.Extensions;
+using AVS.CoreLib.Extensions;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

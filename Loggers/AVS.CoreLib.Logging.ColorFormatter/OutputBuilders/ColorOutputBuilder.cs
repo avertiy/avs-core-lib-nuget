@@ -1,12 +1,14 @@
 ﻿using System.Text;
-using AVS.CoreLib.Extensions;
+using AVS.CoreLib.Console.ColorFormatting.Extensions;
+using AVS.CoreLib.Console.ColorFormatting.Tags;
 using AVS.CoreLib.Logging.ColorFormatter.Enums;
 using AVS.CoreLib.Logging.ColorFormatter.Extensions;
 using AVS.CoreLib.Logging.ColorFormatter.Utils;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using AVS.CoreLib.Extensions;
 
-namespace AVS.CoreLib.Logging.ColorFormatter;
+namespace AVS.CoreLib.Logging.ColorFormatter.OutputBuilders;
 
 public class ColorOutputBuilder : OutputBuilder
 {
@@ -15,7 +17,7 @@ public class ColorOutputBuilder : OutputBuilder
     protected override void InitMessage<T>(in LogEntry<T> logEntry)
     {
         var message = logEntry.Formatter?.Invoke(logEntry.State, logEntry.Exception);
-        
+
         if (Options.ArgsColorFormat == ArgsColorFormat.Auto)
         {
             // formatter not only adds color tags to highlight arguments but also makes extended args formatting:  
@@ -33,7 +35,7 @@ public class ColorOutputBuilder : OutputBuilder
             return;
 
         var timestamp = GetCurrentDateTime().ToString(Options.TimestampFormat);
-        PadLength += timestamp.Length+1;
+        PadLength += timestamp.Length + 1;
         var str = Format(LogPart.Timestamp, timestamp);
         Output.Append(str);
         Output.EnsureWhitespace();
@@ -78,8 +80,8 @@ public class ColorOutputBuilder : OutputBuilder
             return;
 
         var text = FormatLines();
-        text = Format(LogPart.Message, text);    
-       
+        text = Format(LogPart.Message, text);
+
         Output.AppendLine(text);
     }
 
@@ -92,6 +94,8 @@ public class ColorOutputBuilder : OutputBuilder
         Output.AppendLine(error);
     }
 
+
+
     protected override void ProcessTags()
     {
         if (Options.TagsBehavior == TagsBehavior.Disabled)
@@ -103,10 +107,27 @@ public class ColorOutputBuilder : OutputBuilder
             return;
         }
 
-        var tagProcessor = new TagProcessor(Output, Message);
-        tagProcessor.ProcessHeaderTags(Options.HeaderPadding);
-        tagProcessor.ProcessColorTags();
-        tagProcessor.ProcessRgbTags();
+        TagProcessor.Process(Output);
+    }
+
+
+    private static TagProcessor _tagProcessor;
+
+    protected static TagProcessor TagProcessor
+    {
+        get
+        {
+            if (_tagProcessor == null)
+            {
+                var processor = new CompositeTagProcessor();
+                processor.AddTagProcessor(new FormattingTagProcessor());
+                processor.AddTagProcessor(new CTagProcessor());
+                processor.AddTagProcessor(new RgbTagProcessor());
+                _tagProcessor = processor;
+            }
+
+            return _tagProcessor;
+        }
     }
 
     private string Format(LogPart part, string text)

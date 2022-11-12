@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AVS.CoreLib.Abstractions;
 using AVS.CoreLib.Extensions;
-using AVS.CoreLib.Structs;
 
-namespace AVS.CoreLib.Utilities
+namespace AVS.CoreLib.Guards
 {
     public static class Guard
     {
@@ -62,9 +60,7 @@ namespace AVS.CoreLib.Utilities
         public static void MustContainKey<TKey, TValue>(IDictionary<TKey, TValue> dict, TKey key, string name = "dictionary")
         {
             if (!dict.ContainsKey(key))
-            {
                 throw new ArgumentException($"{name} must contain key {key}");
-            }
         }
 
         /// <summary>
@@ -73,10 +69,8 @@ namespace AVS.CoreLib.Utilities
         public static void ValidKeys<TKey, TValue>(IDictionary<TKey, TValue> dict, TKey[] validKeys, string name = "dictionary")
         {
             foreach (var key in dict.Keys)
-            {
                 if (!validKeys.Contains(key))
                     throw new ArgumentException($"{name} contains invalid key: {key}");
-            }
         }
 
         /// <summary>
@@ -85,21 +79,15 @@ namespace AVS.CoreLib.Utilities
         public static void SupportedKeys<TKey, TValue>(IDictionary<TKey, TValue> dict, TKey[] supportedKeys, string name = "dictionary")
         {
             foreach (var key in dict.Keys)
-            {
-                if(!supportedKeys.Contains(key))
+                if (!supportedKeys.Contains(key))
                     throw new ArgumentException($"{name} contains not supported key: {key}");
-            }
         }
 
         public static void MustContainKeys<TKey, TValue>(IDictionary<TKey, TValue> dict, params TKey[] keys)
         {
             foreach (var key in keys)
-            {
                 if (!dict.ContainsKey(key))
-                {
                     throw new ArgumentException($"Must contain key {key}");
-                }
-            }
         }
         #endregion
 
@@ -128,41 +116,31 @@ namespace AVS.CoreLib.Utilities
         public static void AgainstNullOrEmpty(string param, string name = "argument")
         {
             if (string.IsNullOrEmpty(param))
-            {
                 throw new ArgumentNullException($"{name} must be not null or empty");
-            }
         }
 
         public static void AgainstNullOrEmpty(string param, bool allowNull, string name = "argument")
         {
             if (string.IsNullOrEmpty(param) && !allowNull)
-            {
                 throw new ArgumentNullException($"{name} must be not null or empty");
-            }
         }
 
         public static void AgainstNull(object param, string name = "argument")
         {
             if (param == null)
-            {
                 throw new ArgumentNullException($"{name} must be not null");
-            }
         }
 
         public static void AgainstNull(object param, bool allowNull, string name = "argument")
         {
             if (param == null && !allowNull)
-            {
                 throw new ArgumentNullException($"{name} must be not null");
-            }
         }
 
         public static void AgainstDateTimeMin(DateTime param, string name = "argument")
         {
             if (param == DateTime.MinValue)
-            {
                 throw new ArgumentNullException($"{name} must be not a DateTime.MinValue");
-            }
         }
 
         public static void MustBeEqual(string str1, string str2, string message = null)
@@ -171,59 +149,35 @@ namespace AVS.CoreLib.Utilities
                 throw new ArgumentException(message ?? $"'{str1}' expected to be equal '{str2}'");
         }
 
-        public static void MustHaveValue(IHasValue obj)
-        {
-            if (obj == null || !obj.HasValue)
-                throw new ArgumentNullException(nameof(obj));
-        }
-
         public static void MustBeWithinRange(int value, int from, int to, bool inclusiveRange = true, string name = "argument")
         {
             if (inclusiveRange)
-            {
                 if (value < from || value > to)
                     throw new ArgumentOutOfRangeException($"{name} is out of range [{from};{to}]");
-            }
             else
-            {
                 if (value <= from || value >= to)
                     throw new ArgumentOutOfRangeException($"{name} is out of range ({from};{to})");
-            }
         }
 
         public static void MustBeWithinRange(double value, double from, double to, bool inclusiveRange = true, string name = "argument")
         {
-	        if (inclusiveRange)
-	        {
-		        if (value < from || value > to)
-			        throw new ArgumentOutOfRangeException($"{name} is out of range [{from};{to}]");
-	        }
-	        else
-	        {
-		        if (value <= from || value >= to)
-			        throw new ArgumentOutOfRangeException($"{name} is out of range ({from};{to})");
-	        }
-        }
-
-        public static void MustBeWithinRange(int value, Range<int> range, bool inclusiveRange = true, string name = "argument")
-        {
-            if (!range.Contains(value, inclusiveRange))
-                throw new ArgumentOutOfRangeException($"{name} is out of range {range}");
+            if (inclusiveRange)
+                if (value < from || value > to)
+                    throw new ArgumentOutOfRangeException($"{name} is out of range [{from};{to}]");
+            else
+                if (value <= from || value >= to)
+                    throw new ArgumentOutOfRangeException($"{name} is out of range ({from};{to})");
         }
 
         public static void MustBeWithinRange(int value, (int from, int to) range, bool inclusiveRange = true, string name = "argument")
         {
             if (inclusiveRange)
-            {
                 if (value < range.from || value > range.to)
                     throw new ArgumentOutOfRangeException($"{name} is out of range [{range.from};{range.to}]");
-            }
             else
-            {
                 if (value <= range.from || value >= range.to)
                     throw new ArgumentOutOfRangeException($"{name} is out of range ({range.from};{range.to})");
-            }
-                
+
         }
 
         public static void MustBeGreaterThan(int value, int number = 0, string name = "argument")

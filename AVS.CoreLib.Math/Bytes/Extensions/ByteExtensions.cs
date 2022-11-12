@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using AVS.CoreLib.Math.Extensions;
-using AVS.CoreLib.Utilities;
 
 namespace AVS.CoreLib.Math.Bytes.Extensions
 {
@@ -34,9 +34,7 @@ namespace AVS.CoreLib.Math.Bytes.Extensions
 
         public static string ToHex(this byte @byte)
         {
-            return Convert.ToHexString(new byte[] {@byte});
+            return @byte.ToString("x2", CultureInfo.InvariantCulture);
         }
-
-        
     }
 }

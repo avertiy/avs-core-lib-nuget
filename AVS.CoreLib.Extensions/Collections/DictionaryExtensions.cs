@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
-using AVS.CoreLib.Utilities;
 
-namespace AVS.CoreLib.Collections.Extensions
+namespace AVS.CoreLib.Extensions.Collections
 {
     public static class DictionaryExtensions
     {
@@ -26,7 +25,7 @@ namespace AVS.CoreLib.Collections.Extensions
 
             foreach (var kvp in dict)
             {
-                string value = string.Empty;
+                var value = string.Empty;
                 if (kvp.Value != null)
                     value = kvp.Value.ToString();
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using AVS.CoreLib.Abstractions;
 using AVS.CoreLib.Extensions;
-using AVS.CoreLib.Logging.ColorFormatter;
 using AVS.CoreLib.Logging.ColorFormatter.Utils;
 using AVS.CoreLib.Text.Extensions;
 using Microsoft.Extensions.Logging;

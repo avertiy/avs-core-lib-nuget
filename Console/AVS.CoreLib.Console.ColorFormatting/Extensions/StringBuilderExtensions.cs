@@ -40,7 +40,7 @@ namespace AVS.CoreLib.Console.ColorFormatting.Extensions
         /// when console is resized when line ends with bgcolor
         /// the bg color will be stretched with the window that seems background color console issue. 
         /// </summary>
-        internal static StringBuilder FixBgColorLineEnding(this StringBuilder sb, int index, string lineEnd = ".")
+        public static StringBuilder FixBgColorLineEnding(this StringBuilder sb, int index, string lineEnd = ".")
         {
             var rest = sb.Length - index;
 
@@ -123,7 +123,7 @@ namespace AVS.CoreLib.Console.ColorFormatting.Extensions
                    (str.Length >= 9 && str.Length <= 17 && str.StartsWith("RGB:") && str.Contains(','));
         }
 
-        internal static int StripTags(this StringBuilder sb, params string[] tags)
+        public static int StripTags(this StringBuilder sb, params string[] tags)
         {
             var counter = -1;
             bool validateTag(string tag)

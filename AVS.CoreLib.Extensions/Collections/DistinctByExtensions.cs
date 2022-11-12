@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AVS.CoreLib.Collections.Extensions
+namespace AVS.CoreLib.Extensions.Collections
 {
     public static class DistinctByExtensions
     {
@@ -29,14 +29,10 @@ namespace AVS.CoreLib.Collections.Extensions
             Func<TSource, TKey> keySelector,
             IEqualityComparer<TKey> comparer)
         {
-            HashSet<TKey> knownKeys = new HashSet<TKey>(comparer);
-            foreach (TSource element in source)
-            {
+            var knownKeys = new HashSet<TKey>(comparer);
+            foreach (var element in source)
                 if (knownKeys.Add(keySelector(element)))
-                {
                     yield return element;
-                }
-            }
         }
     }
 }

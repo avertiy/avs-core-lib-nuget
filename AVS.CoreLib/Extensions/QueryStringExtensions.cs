@@ -7,6 +7,7 @@ using System.Web;
 
 namespace AVS.CoreLib.Extensions
 {
+    [Obsolete("Use AVS.CoreLib.Extensions package")]
     public static class QueryStringExtensions
     {
         public static string ToHttpQueryString(this IDictionary<string, object> data, bool orderBy = true)

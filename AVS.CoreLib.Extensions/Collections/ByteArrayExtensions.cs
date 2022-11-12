@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Web;
-using Newtonsoft.Json;
 
-namespace AVS.CoreLib.REST.Extensions
+namespace AVS.CoreLib.Extensions.Collections
 {
-    public static class Extensions
+    public static class ByteArrayExtensions
     {
         public static string ToHexString(this byte[] value)
         {

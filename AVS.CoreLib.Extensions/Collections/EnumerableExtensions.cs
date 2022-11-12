@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
 
-namespace AVS.CoreLib.Collections.Extensions
+namespace AVS.CoreLib.Extensions.Collections
 {
     public static class EnumerableExtensions
     {
@@ -23,10 +21,6 @@ namespace AVS.CoreLib.Collections.Extensions
             return res;
         }
 
-        public static IEnumerable<string> Match(this IEnumerable<string> items, string pattern)
-        {
-            var re = new Regex(pattern);
-            return items.Where(i => re.IsMatch(i));
-        }
+        
     }
 }

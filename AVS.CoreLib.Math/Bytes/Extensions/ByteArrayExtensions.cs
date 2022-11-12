@@ -1,16 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
-using AVS.CoreLib.Utilities;
+using AVS.CoreLib.Extensions.Collections;
+using AVS.CoreLib.Guards;
 
 namespace AVS.CoreLib.Math.Bytes.Extensions
 {
     public static class ByteArrayExtensions
     {
-        public static string AsHexString(this byte[] array)
+        public static string ToHexString(this byte[] arr)
         {
-            return Convert.ToHexString(array);
+            var output = string.Empty;
+            for (var i = 0; i < arr.Length; i++)
+            {
+                output += arr[i].ToString("x2", CultureInfo.InvariantCulture);
+            }
+            return (output);
         }
 
         public static string AsArrayString(this byte[] array, string separator = ",")

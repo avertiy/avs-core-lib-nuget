@@ -2,6 +2,7 @@
 using System.Linq;
 using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.Extensions;
+using AVS.CoreLib.Extensions.Web;
 using AVS.CoreLib.REST.Helpers;
 using AVS.CoreLib.Utilities;
 

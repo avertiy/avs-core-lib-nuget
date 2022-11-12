@@ -23,6 +23,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Extensions\Extensions.cs" />
     <Compile Remove="Json\Converters\ResponseConverter.cs" />
     <Compile Remove="Json\Converters\TimestampNanoSecondsConverter.cs" />
   </ItemGroup>
@@ -30,6 +31,7 @@
   <ItemGroup>
     <PackageReference Include="AVS.CoreLib" Version="6.0.0-rc" />
     <PackageReference Include="AVS.CoreLib.Abstractions" Version="6.0.0-rc" />
+    <PackageReference Include="AVS.CoreLib.Extensions" Version="2.1.0-rc" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>

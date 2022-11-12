@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
+using AVS.CoreLib.Math.Bytes.Extensions;
 
 namespace AVS.CoreLib.Math.Extensions
 {
@@ -11,7 +12,7 @@ namespace AVS.CoreLib.Math.Extensions
 		public static string ToHexString(this BigInteger number)
 		{
 			var arr = number.ToByteArray(true, true);
-			return Convert.ToHexString(arr);
+			return arr.ToHexString();
 		}
 
 		public static byte[] DecomposeOnBytes(this BigInteger n, long @base = int.MaxValue)

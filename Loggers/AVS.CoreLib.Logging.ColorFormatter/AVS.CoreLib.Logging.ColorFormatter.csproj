@@ -28,6 +28,7 @@
   <ItemGroup>
     <Compile Remove="ConsoleColors.cs" />
     <Compile Remove="Enums\AnsiCode.cs" />
+    <Compile Remove="Enums\Tag.cs" />
     <Compile Remove="Extensions\LoggerExtensions.cs" />
     <Compile Remove="Extensions\StringColorExtensions.cs" />
     <Compile Remove="Extensions\StringExtensions.cs" />
@@ -37,6 +38,8 @@
     <Compile Remove="Utils\LogValuesFormatter.cs" />
   </ItemGroup>
  <ItemGroup>
+    <PackageReference Include="AVS.CoreLib.Console.ColorFormatting" Version="2.1.0" />
+    <PackageReference Include="AVS.CoreLib.Extensions" Version="2.1.0-rc" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="6.0.0" />
@@ -44,8 +47,5 @@
     <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
     <PackageReference Include="System.Text.Json" Version="6.0.6" />
   </ItemGroup>
- <ItemGroup>
-   <ProjectReference Include="..\..\AVS.CoreLib.StringExtensions\AVS.CoreLib.Extensions.csproj" />
- </ItemGroup>
 
 </Project>

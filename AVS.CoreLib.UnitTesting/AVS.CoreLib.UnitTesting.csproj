@@ -31,6 +31,7 @@
   <ItemGroup>    
     <PackageReference Include="AVS.CoreLib" Version="6.0.0-rc" />    
     <PackageReference Include="AVS.CoreLib.Abstractions" Version="6.0.0-rc" />    
+    <PackageReference Include="AVS.CoreLib.Extensions" Version="2.1.0-rc" />    
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />    
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />    
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />    

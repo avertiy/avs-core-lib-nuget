@@ -1,19 +1,12 @@
 ﻿using System.Text;
+using AVS.CoreLib.Console.ColorFormatting.Extensions;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Logging.ColorFormatter.Extensions;
 using AVS.CoreLib.Logging.ColorFormatter.Utils;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace AVS.CoreLib.Logging.ColorFormatter;
-
-
-public interface IOutputBuilder
-{
-    void Init<T>(in LogEntry<T> logEntry, IExternalScopeProvider scopeProvider);
-    string Build();
-}
-
+namespace AVS.CoreLib.Logging.ColorFormatter.OutputBuilders;
 
 public class OutputBuilder : IOutputBuilder
 {
@@ -53,9 +46,7 @@ public class OutputBuilder : IOutputBuilder
     public string Build()
     {
         if (string.IsNullOrWhiteSpace(Message))
-        {
             Output.AppendLine(Message);
-        }
         else
         {
             PadLength = 0;
@@ -77,19 +68,19 @@ public class OutputBuilder : IOutputBuilder
             return;
 
         var timestamp = GetCurrentDateTime().ToString(Options.TimestampFormat);
-        PadLength += timestamp.Length+1;
+        PadLength += timestamp.Length + 1;
         Output.Append(timestamp);
         Output.EnsureWhitespace();
     }
 
     protected virtual void ProcessTags()
     {
-        if(Options.TagsBehavior == TagsBehavior.Disabled)
+        if (Options.TagsBehavior == TagsBehavior.Disabled)
             return;
 
         var removedTagsCount = Output.StripTags();
     }
-    
+
     protected virtual void AddMessageText()
     {
         if (ProcessStamps())
@@ -136,7 +127,7 @@ public class OutputBuilder : IOutputBuilder
 
     protected virtual void AddScopeInformation(IExternalScopeProvider scopeProvider)
     {
-        if(string.IsNullOrEmpty(Scopes))
+        if (string.IsNullOrEmpty(Scopes))
             return;
 
         Output.Append(Scopes);
@@ -180,7 +171,7 @@ public class OutputBuilder : IOutputBuilder
             return;
 
         var logLevel = LogLevel.GetLogLevelText() + LOGLEVEL_PADDING;
-        PadLength+=logLevel.Length;
+        PadLength += logLevel.Length;
         Output.Append(logLevel);
         Output.EnsureWhitespace();
     }

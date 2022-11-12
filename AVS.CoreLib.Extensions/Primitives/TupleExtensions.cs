@@ -1,8 +1,5 @@
-﻿using System;
-
-namespace AVS.CoreLib.Extensions.Numbers
+﻿namespace AVS.CoreLib.Extensions
 {
-    [Obsolete("Use AVS.CoreLib.Extensions package")]
     public static class TupleExtensions
     {
         public static decimal Smallest(this (decimal, decimal) tuple)

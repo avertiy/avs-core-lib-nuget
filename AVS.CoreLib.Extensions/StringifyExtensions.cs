@@ -5,7 +5,6 @@ using System.Text;
 
 namespace AVS.CoreLib.Extensions
 {
-    [Obsolete("Use AVS.CoreLib.Extensions package")]
     public static class StringifyExtensions
     {
         /// <summary>

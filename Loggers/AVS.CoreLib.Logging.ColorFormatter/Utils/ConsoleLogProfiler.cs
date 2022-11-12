@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace AVS.CoreLib.Logging.ColorFormatter;
+namespace AVS.CoreLib.Logging.ColorFormatter.Utils;
 
 public static class ConsoleLogProfiler
 {
