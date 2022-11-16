@@ -1,4 +1,4 @@
-﻿namespace AVS.CoreLib.Abstractions
+﻿namespace AVS.CoreLib.Abstractions.Rest
 {
     public interface IPropsContainer
     {

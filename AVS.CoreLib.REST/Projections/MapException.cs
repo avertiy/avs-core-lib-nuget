@@ -1,5 +1,6 @@
 ﻿using System;
 using AVS.CoreLib.Extensions;
+using AVS.CoreLib.Extensions.Reflection;
 
 namespace AVS.CoreLib.REST.Projections
 {

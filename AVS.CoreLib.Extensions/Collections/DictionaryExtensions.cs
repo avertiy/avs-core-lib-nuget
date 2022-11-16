@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Text;
 
 namespace AVS.CoreLib.Extensions.Collections
 {
@@ -18,23 +19,6 @@ namespace AVS.CoreLib.Extensions.Collections
             dictionary.Add(key, value);
 	    }
         
-        [DebuggerStepThrough]
-        public static NameValueCollection ToNameValueCollection<TKey, TValue>(this IDictionary<TKey, TValue> dict)
-        {
-            var nameValueCollection = new NameValueCollection();
-
-            foreach (var kvp in dict)
-            {
-                var value = string.Empty;
-                if (kvp.Value != null)
-                    value = kvp.Value.ToString();
-
-                nameValueCollection.Add(kvp.Key.ToString(), value);
-            }
-
-            return nameValueCollection;
-        }
-
         [DebuggerStepThrough]
         public static IEnumerable<TResult> Select<TKey, TValue, TResult>(this IDictionary<TKey, TValue> dictionary,
             Func<TValue, TResult> selector)
@@ -66,6 +50,33 @@ namespace AVS.CoreLib.Extensions.Collections
             {
                 action(kp.Key, kp.Value);
             }
+        }
+
+        public static NameValueCollection ToNameValueCollection<TKey, TValue>(this IDictionary<TKey, TValue> dict)
+        {
+            var nameValueCollection = new NameValueCollection();
+
+            foreach (var kvp in dict)
+            {
+                var value = string.Empty;
+                if (kvp.Value != null)
+                    value = kvp.Value.ToString();
+
+                nameValueCollection.Add(kvp.Key.ToString(), value);
+            }
+
+            return nameValueCollection;
+        }
+
+        public static string ToKeyValueString<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, string keyValueSeparator = " => ", string separator = "\r\n")
+        {
+            var sb = new StringBuilder();
+            foreach (var kp in dictionary)
+            {
+                sb.Append($"{kp.Key}{keyValueSeparator}{kp.Value}{separator}");
+            }
+            sb.Length -= separator.Length;
+            return sb.ToString();
         }
     }
 }

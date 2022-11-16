@@ -1,9 +1,10 @@
 ﻿using System;
+using AVS.CoreLib.Text.Formatters.GenericFormatter;
 
-namespace AVS.CoreLib.Text.Formatters
+namespace AVS.CoreLib.Text.Formatters.GenericTypeFormatter
 {
     /// <summary>
-    /// Type formatter
+    /// Type formatter <see cref="GenericTypeFormatter"/>
     /// </summary>
     public class TypeFormatter<T> : ITypeFormatter
     {

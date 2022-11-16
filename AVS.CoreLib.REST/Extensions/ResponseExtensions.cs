@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions;
 using AVS.CoreLib.Abstractions.Responses;
+using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.REST.Responses;
 
 namespace AVS.CoreLib.REST.Extensions

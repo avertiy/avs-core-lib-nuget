@@ -4,8 +4,10 @@ using AVS.CoreLib.PowerConsole.Utilities;
 
 namespace AVS.CoreLib.PowerConsole
 {
+    using Console= System.Console;
     public static partial class PowerConsole
     {
+        #region WriteLine
         /// <summary>
         /// Writes the specified string value, followed by the current line terminator,
         /// to the standard output stream.
@@ -65,12 +67,24 @@ namespace AVS.CoreLib.PowerConsole
                 return;
             Console.WriteLine();
             NewLineFlag = true;
-        }
+        } 
+        #endregion
 
         public static void Write(string value)
         {
             Console.Write(value);
             NewLineFlag = value.EndsWith("\r\n");
+        }
+
+        public static void Write(string value, bool endLine)
+        {
+            Console.Write(value);
+            NewLineFlag = value.EndsWith("\r\n");
+            if (endLine && NewLineFlag == false)
+            {
+                Console.WriteLine();
+                NewLineFlag = true;
+            }
         }
 
         public static void Write(string value, ConsoleColor color)
@@ -81,12 +95,38 @@ namespace AVS.CoreLib.PowerConsole
             NewLineFlag = value.EndsWith("\r\n");
         }
 
-        public static void Write(string value, ColorScheme scheme)
+        public static void Write(string value, ConsoleColor? color, bool endLine = false)
+        {
+            if (color.HasValue)
+            {
+                ApplyColor(color.Value);
+                Console.Write(value);
+                ColorSchemeReset();
+            }
+            else
+            {
+                Console.Write(value);
+            }
+            
+            NewLineFlag = value.EndsWith("\r\n");
+            if (endLine && NewLineFlag == false)
+            {
+                Console.WriteLine();
+                NewLineFlag = true;
+            }
+        }
+
+        public static void Write(string value, ColorScheme scheme, bool endLine = false)
         {
             ApplyColorScheme(scheme);
             Console.Write(value);
             ColorSchemeReset();
             NewLineFlag = value.EndsWith("\r\n");
+            if (endLine && NewLineFlag == false)
+            {
+                Console.WriteLine();
+                NewLineFlag = true;
+            }
         }
 
         [Conditional("DEBUG")]

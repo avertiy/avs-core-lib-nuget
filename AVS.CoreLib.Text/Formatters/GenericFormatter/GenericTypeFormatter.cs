@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AVS.CoreLib.Text.Formatters.GenericTypeFormatter;
 
-namespace AVS.CoreLib.Text.Formatters
+namespace AVS.CoreLib.Text.Formatters.GenericFormatter
 {
     /// <summary>
     /// Generic formatter allows to register a type formatter on the fly
     /// without the need to implement CustomFormatter 
     /// </summary>
-    public class CompositeFormatter : CustomFormatter
+    public class GenericTypeFormatter : CustomFormatter
     {
         private readonly Dictionary<string, ITypeFormatter> _formatters = new Dictionary<string, ITypeFormatter>();
 
@@ -34,9 +35,7 @@ namespace AVS.CoreLib.Text.Formatters
         {
             var key = arg.GetType().Name;
             if (_formatters.ContainsKey(key))
-            {
                 return _formatters[key].Format(format, arg);
-            }
 
             return arg?.ToString();
         }
@@ -60,7 +59,7 @@ namespace AVS.CoreLib.Text.Formatters
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"{nameof(CompositeFormatter)} [{string.Join(", ", _formatters.Keys)}]";
+            return $"{nameof(GenericTypeFormatter)} [{string.Join(", ", _formatters.Keys)}]";
         }
     }
 }

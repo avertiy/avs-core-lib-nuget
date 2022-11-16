@@ -3,6 +3,7 @@ using AVS.CoreLib.PowerConsole.Utilities;
 
 namespace AVS.CoreLib.PowerConsole
 {
+    using Console = System.Console;
     public static partial class PowerConsole
     {
         static PowerConsole()

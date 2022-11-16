@@ -83,5 +83,10 @@ namespace AVS.CoreLib.Collections
         {
             return GetEnumerator();
         }
+
+        public override string ToString()
+        {
+            return this._items.Stringify(StringifyFormat.Default, "; ", kp => $"{kp.Key:G}:{kp.Value.Value}");
+        }
     }
 }

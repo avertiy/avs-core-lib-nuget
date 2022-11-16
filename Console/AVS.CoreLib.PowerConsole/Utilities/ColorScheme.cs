@@ -1,7 +1,11 @@
 ﻿using System;
+using AVS.CoreLib.Console.ColorFormatting;
 
 namespace AVS.CoreLib.PowerConsole.Utilities
 {
+    using Console = System.Console;
+
+    //todo merge with ConsoleColors it looks pretty equivalent now
     public struct ColorScheme
     {
         public static ColorScheme Default { get; internal set; }
@@ -34,6 +38,11 @@ namespace AVS.CoreLib.PowerConsole.Utilities
         public override string ToString()
         {
             return $"-{Foreground} --{Background}";
+        }
+
+        public string Colorize(string text)
+        {
+            return $"{AnsiCodes.Color(Foreground)}{AnsiCodes.BgColor(Background)}{text}{AnsiCodes.RESET}";
         }
 
         /// <summary>

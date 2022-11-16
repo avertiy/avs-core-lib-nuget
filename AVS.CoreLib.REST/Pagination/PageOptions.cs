@@ -11,7 +11,7 @@ namespace AVS.CoreLib.REST.Pagination
     /// 10 means offset:0, limit:10, sort order: DESC
     /// </summary>
     [TypeConverter(typeof(PageOptionsTypeConverter))]
-    public class PageOptions : IQueryStringFormattable
+    public class PageOptions : IPageOptions, IQueryStringFormatable
     {
         public PageOptions(int limit = 0, int offset = 0, string sort = "DESC")
         {

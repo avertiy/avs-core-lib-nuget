@@ -1,9 +1,13 @@
 ﻿using System;
+using AVS.CoreLib.Abstractions.Text;
 using AVS.CoreLib.Text.FormatPreprocessors;
 using AVS.CoreLib.Text.FormatProviders;
 using AVS.CoreLib.Text.Formatters;
 using AVS.CoreLib.Text.Formatters.ColorMarkup;
+using AVS.CoreLib.Text.Formatters.GenericFormatter;
+using AVS.CoreLib.Text.Formatters.GenericTypeFormatter;
 using AVS.CoreLib.Text.TextProcessors;
+using IFormatPreprocessor = AVS.CoreLib.Text.FormatPreprocessors.IFormatPreprocessor;
 
 namespace AVS.CoreLib.Text
 {
@@ -39,7 +43,7 @@ namespace AVS.CoreLib.Text
         /// put color markup $"{arg:-Red}" => "$$arg:-Red$"
         /// <remarks>color markup is used by PowerConsole</remarks>
         ///  
-        /// <see cref="CompositeFormatter"/> by default does not include any formatters
+        /// <see cref="GenericTypeFormatter"/> by default does not include any formatters
         /// </summary>
         public static string Format(FormattableString str)
         {

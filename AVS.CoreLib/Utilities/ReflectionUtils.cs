@@ -4,19 +4,14 @@ namespace AVS.CoreLib.Utilities
 {
     public static class ReflectionUtils
     {
-        public static bool IsNullable(Type t)
+        public static bool IsNullable(Type type)
         {
-            if (t.IsValueType)
+            if (type.IsValueType)
             {
-                return IsNullableType(t);
+                return (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>));
             }
 
             return true;
-        }
-
-        public static bool IsNullableType(Type t)
-        {
-            return (t.IsGenericType && t.GetGenericTypeDefinition() == typeof(Nullable<>));
         }
     }
 }

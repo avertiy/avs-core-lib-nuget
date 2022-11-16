@@ -37,8 +37,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AVS.CoreLib" Version="1.0.2" />
-    <PackageReference Include="AVS.CoreLib.Text" Version="1.0.4" />
+    <PackageReference Include="AVS.CoreLib.Extensions" Version="2.1.0" />
+    <PackageReference Include="AVS.CoreLib.Text" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     <PackageReference Include="System.Text.Json" Version="5.0.2" />
   </ItemGroup>

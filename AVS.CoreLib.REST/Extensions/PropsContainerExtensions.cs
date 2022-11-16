@@ -1,7 +1,8 @@
 ﻿using System;
 using AVS.CoreLib.Abstractions;
+using AVS.CoreLib.Abstractions.Rest;
 
-namespace AVS.CoreLib.Extensions
+namespace AVS.CoreLib.REST.Extensions
 {
     public static class PropsContainerExtensions
     {

@@ -18,6 +18,7 @@ namespace AVS.CoreLib.Text.FormatPreprocessors
         /// 
         /// </summary>
         public ConsoleColor Color { get; set; } = ConsoleColor.Cyan;
+
         /// <summary>
         /// 
         /// </summary>

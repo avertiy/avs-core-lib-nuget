@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 namespace AVS.CoreLib.PowerConsole
 {
+    using Console = System.Console;
     public static partial class PowerConsole
     {
         public static int Read()

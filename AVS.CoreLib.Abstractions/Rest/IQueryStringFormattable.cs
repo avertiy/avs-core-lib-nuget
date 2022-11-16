@@ -1,6 +1,6 @@
 ﻿namespace AVS.CoreLib.Abstractions.Rest
 {
-    public interface IQueryStringFormattable
+    public interface IQueryStringFormatable
     {
         string ToQueryString(string format);
     }

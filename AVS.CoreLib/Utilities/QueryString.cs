@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Web;
+using AVS.CoreLib.Extensions.Web;
 
 namespace AVS.CoreLib.Utilities
 {
@@ -22,18 +24,7 @@ namespace AVS.CoreLib.Utilities
         public override string ToString()
         {
             var sb = new StringBuilder(BaseUrl ?? "?");
-
-            foreach (var kp in Params.OrderBy(x => x.Key))
-            {
-                sb.Append(HttpUtility.UrlEncode(kp.Key));
-                sb.Append('=');
-                sb.Append(HttpUtility.UrlEncode(kp.Value?.ToString() ?? ""));
-                sb.Append('&');
-            }
-
-            if (Params.Any())
-                sb.Length--;
-
+            sb.Append(Params.ToHttpQueryString());
             return sb.ToString();
         }
 

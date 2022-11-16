@@ -56,6 +56,21 @@ namespace AVS.CoreLib.Dates
         }
 
         #region Compare operators overloading
+        public bool Equals(DateRange other)
+        {
+            return From.Equals(other.From) && To.Equals(other.To);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is DateRange other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(From, To);
+        }
+
         public static bool operator ==(DateRange dateRange, DateRange compare)
         {
             return Math.Abs(dateRange.TotalSeconds - compare.TotalSeconds) < 0.1;

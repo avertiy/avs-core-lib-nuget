@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AVS.CoreLib.Extensions;
+using AVS.CoreLib.Extensions.Stringify;
 
 namespace AVS.CoreLib.Guards
 {

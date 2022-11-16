@@ -1,4 +1,6 @@
 ﻿using System;
+using AVS.CoreLib.PowerConsole.ConsoleWriters;
+using AVS.CoreLib.PowerConsole.Printers;
 using AVS.CoreLib.PowerConsole.Utilities;
 
 namespace AVS.CoreLib.PowerConsole
@@ -13,30 +15,53 @@ namespace AVS.CoreLib.PowerConsole
     /// <seealso>http://elw00d.github.io/consoleframework/- cross-platform toolkit that allows to develop TUI applications using C# and based on WPF-like concepts</seealso>
     public static partial class PowerConsole
     {
-        public static void Print(string str)
+        private static IPrinter _printer;
+        public static IPrinter Printer
         {
-            Write(str);
-            WriteEndLine(true);
+            get => _printer ??= new Printer(new ConsoleWriter());
+            set => _printer = value;
         }
 
-        public static void Print(string str, bool endLine)
+        public static void Print(string str, bool endLine = true)
         {
-            Write(str);
-            WriteEndLine(endLine);
+            Printer.Print(str, endLine);
         }
 
         public static void Print(string str, ConsoleColor color, bool endLine = true)
         {
-            Write(str, color);
-            WriteEndLine(endLine);
+            Printer.Print(str, color, endLine);
         }
 
         public static void Print(string str, ColorScheme scheme, bool endLine = true)
         {
-            ApplyColorScheme(scheme);
-            Write(str);
-            WriteEndLine(endLine);
-            ColorSchemeReset();
+            Printer.Print(str, scheme, endLine);
+        }
+
+
+        /// <summary>
+        /// Format string by <see cref="Printers.Printer.Format"/> delegate and print it
+        /// </summary>
+        public static void Print(FormattableString str, bool endLine = true)
+        {
+            Printer.Print(str, endLine);
+        }
+
+        /// <summary>
+        /// Format string by <see cref="Printers.Printer.Format"/> delegate and print it
+        /// </summary>
+        public static void Print(FormattableString str, ConsoleColor color, bool endLine = true)
+        {
+            Printer.Print(str, color, endLine);
+        }
+
+        public static void Print(FormattableString str, ColorPalette palette, bool endLine = true)
+        {
+            Printer.Print(str, palette, endLine);
+        }
+
+        public static void Print(FormattableString str, ConsoleColor[] colors, bool endLine = true)
+        {
+            Printer.Print(str, colors, endLine);
         }
     }
 }

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Text;
 
-namespace AVS.CoreLib.Extensions
+namespace AVS.CoreLib.Extensions.Reflection
 {
     public static class TypeExtensions
     {
-        public static Type FindGenericType(this Type type, string name)
+        public static Type? FindGenericType(this Type type, string name)
         {
             if (type.IsGenericType)
             {
@@ -34,6 +34,16 @@ namespace AVS.CoreLib.Extensions
             sb.Length--;
             sb.Append(">");
             return sb.ToString();
+        }
+
+        public static bool IsNullable(this Type type)
+        {
+            if (type.IsValueType)
+            {
+                return (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>));
+            }
+
+            return true;
         }
     }
 }

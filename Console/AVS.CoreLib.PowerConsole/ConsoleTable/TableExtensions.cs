@@ -61,36 +61,9 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
         public static ColorString ToColorString(this Cell cell)
         {
             var row = cell.Row;
-            var width = cell.Width;
-            if (cell.Colspan > 1)
-            {
-                var index = row.Cells.IndexOf(cell);
-                if (index >= 0 && index + cell.Colspan < row.Cells.Count)
-                {
-                    for (var i = 1; i < cell.Colspan; i++)
-                    {
-                        width += row[i + index].Width;
-                    }
-                }
-            }
-
-            var text = cell.Text;
-            var spacing = row?.Table?.Style?.Spacing ?? " ";
-            if (text.Length > width)
-                text = spacing + text.Truncate(width - 2 - spacing.Length) + "..";
-            else
-            {
-                text = spacing + text.PadRight(width - spacing.Length, ' ');
-            }
-
+            var text = cell.ToString();
             var scheme = cell.ColorScheme ?? row?.ColorScheme ?? cell.Column.ColorScheme;
             return scheme.HasValue ? new ColorString(text, scheme.Value) : new ColorString(text);
-        }
-
-        private static string GetBorderLine(this Table tbl)
-        {
-            var style = tbl.Style;
-            return style.Cross + string.Join(style.Cross, tbl.Columns.Select(x => "".PadRight(x.Width, style.Pad))) + style.Cross;
         }
     }
 }

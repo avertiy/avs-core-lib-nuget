@@ -1,6 +1,6 @@
-namespace AVS.CoreLib.Abstractions.Rest
+﻿namespace AVS.CoreLib.Abstractions.Rest
 {
-    public interface IPageOptions : IQueryStringFormattable
+    public interface IPageOptions
     {
         int Limit { get; set; }
         int Offset { get; set; }

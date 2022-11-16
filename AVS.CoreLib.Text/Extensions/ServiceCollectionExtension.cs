@@ -1,5 +1,7 @@
 ﻿using System;
 using AVS.CoreLib.Text.Formatters;
+using AVS.CoreLib.Text.Formatters.GenericFormatter;
+using AVS.CoreLib.Text.Formatters.GenericTypeFormatter;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AVS.CoreLib.Text.Extensions
@@ -34,7 +36,7 @@ namespace AVS.CoreLib.Text.Extensions
 
         /// <summary>
         /// Register formatter for type
-        /// <see cref="CompositeFormatter"/>
+        /// <see cref="GenericTypeFormatter"/>
         /// </summary>
         public static IServiceCollection AddFormatterForType<T>(this IServiceCollection services,
             string[] qualifiers, Func<string, T, string> formatter)
@@ -45,9 +47,9 @@ namespace AVS.CoreLib.Text.Extensions
 
         /// <summary>
         /// Configure composite formatter (it used to register/remove type formatters)
-        /// <see cref="CompositeFormatter"/>
+        /// <see cref="GenericTypeFormatter"/>
         /// </summary>
-        public static IServiceCollection ConfigureCompositeFormatter(this IServiceCollection services, Action<CompositeFormatter> configure)
+        public static IServiceCollection ConfigureCompositeFormatter(this IServiceCollection services, Action<GenericTypeFormatter> configure)
         {
             X.FormatProvider.ConfigureCompositeFormatter(configure);
             return services;

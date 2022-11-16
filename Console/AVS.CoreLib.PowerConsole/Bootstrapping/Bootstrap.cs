@@ -3,9 +3,9 @@ using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions;
+using AVS.CoreLib.Abstractions.Bootstrap;
 using AVS.CoreLib.PowerConsole.Utilities;
 using Microsoft.Extensions.DependencyInjection;
-using Console = AVS.CoreLib.PowerConsole.PowerConsole;
 
 namespace AVS.CoreLib.PowerConsole.Bootstrapping
 {
@@ -21,15 +21,15 @@ namespace AVS.CoreLib.PowerConsole.Bootstrapping
             }
             catch (Exception ex)
             {
-                Console.WriteError(ex);
+                PowerConsole.WriteError(ex);
                 throw;
             }
         }
 
         public static IServiceProvider Run<TStartup>() where TStartup : IStartup, new()
         {
-            Console.SetDefaultColorScheme(ColorScheme.DarkGray);
-            Console.ApplyColorScheme(ColorScheme.DarkGray);
+            PowerConsole.SetDefaultColorScheme(ColorScheme.DarkGray);
+            PowerConsole.ApplyColorScheme(ColorScheme.DarkGray);
             SetCulture("en-US");
             try
             {
@@ -42,8 +42,8 @@ namespace AVS.CoreLib.PowerConsole.Bootstrapping
             }
             catch (Exception ex)
             {
-                Console.Print($"Bootstrap.Run<{typeof(TStartup).Name}>() failed", ConsoleColor.Red);
-                Console.WriteError(ex);
+                PowerConsole.Print($"Bootstrap.Run<{typeof(TStartup).Name}>() failed", ConsoleColor.Red);
+                PowerConsole.WriteError(ex);
                 throw;
             }
         }
@@ -58,8 +58,8 @@ namespace AVS.CoreLib.PowerConsole.Bootstrapping
         /// </example>
         public static void Run<TStartup>(Action<IServiceProvider> action) where TStartup : IStartup, new()
         {
-            Console.SetDefaultColorScheme(ColorScheme.DarkGray);
-            Console.ApplyColorScheme(ColorScheme.DarkGray);
+            PowerConsole.SetDefaultColorScheme(ColorScheme.DarkGray);
+            PowerConsole.ApplyColorScheme(ColorScheme.DarkGray);
             SetCulture("en-US");
             try
             {
@@ -72,8 +72,8 @@ namespace AVS.CoreLib.PowerConsole.Bootstrapping
             }
             catch (Exception ex)
             {
-                Console.Print($"Bootstrap.Run<{typeof(TStartup).Name}>() failed", ConsoleColor.Red);
-                Console.WriteError(ex);
+                PowerConsole.Print($"Bootstrap.Run<{typeof(TStartup).Name}>() failed", ConsoleColor.Red);
+                PowerConsole.WriteError(ex);
                 throw;
             }
         }
@@ -88,8 +88,8 @@ namespace AVS.CoreLib.PowerConsole.Bootstrapping
         /// </example>
         public static Task RunAsync<TStartup>(Func<IServiceProvider, Task> func) where TStartup : IStartup, new()
         {
-            Console.SetDefaultColorScheme(ColorScheme.DarkGray);
-            Console.ApplyColorScheme(ColorScheme.DarkGray);
+            PowerConsole.SetDefaultColorScheme(ColorScheme.DarkGray);
+            PowerConsole.ApplyColorScheme(ColorScheme.DarkGray);
             SetCulture("en-US");
             try
             {
@@ -102,8 +102,8 @@ namespace AVS.CoreLib.PowerConsole.Bootstrapping
             }
             catch (Exception ex)
             {
-                Console.Print($"Bootstrap.Run<{typeof(TStartup).Name}>() failed", ConsoleColor.Red);
-                Console.WriteError(ex);
+                PowerConsole.Print($"Bootstrap.Run<{typeof(TStartup).Name}>() failed", ConsoleColor.Red);
+                PowerConsole.WriteError(ex);
                 throw;
             }
         }

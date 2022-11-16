@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Text.RegularExpressions;
+using AVS.CoreLib.Abstractions.Text;
 
 namespace AVS.CoreLib.Text.TextProcessors
 {

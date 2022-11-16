@@ -1,0 +1,109 @@
+﻿using System;
+using System.Collections.Generic;
+using AVS.CoreLib.Extensions;
+using AVS.CoreLib.PowerConsole.ConsoleTable;
+using AVS.CoreLib.PowerConsole.Printers;
+using AVS.CoreLib.PowerConsole.Structs;
+
+namespace AVS.CoreLib.PowerConsole.Extensions
+{
+    public static class PrinterExtensions
+    {
+        public static void PrintJson<T>(this IPrinter printer, T obj, bool indented, ConsoleColor? color, bool endLine)
+        {
+            var str = obj.ToJsonString(indented);
+            printer.Print(str, color, endLine);
+        }
+
+        public static void PrintArray<T>(this IPrinter printer, IEnumerable<T> enumerable,
+            string? message,
+            StringifyOptions? options,
+            Func<T, string>? formatter,
+            bool endLine)
+        {
+            string str;
+            var tags = false;
+            if (options == null)
+            {
+                str = enumerable.Stringify(StringifyFormat.Default, ",", formatter);
+            }
+            else
+            {
+                str = enumerable.Stringify(options.Format, options.Separator, formatter);
+                str = options.Colors.Colorize(str);
+                tags = options.ContainsCTags;
+            }
+
+            var text = message == null ? str : $"{message}{str}";
+            printer.Print(text, endLine, tags);
+        }
+
+        public static void PrintDictionary<TKey, TValue>(this IPrinter printer,
+            string? message, IDictionary<TKey, TValue> dictionary,
+            StringifyOptions? options,
+            Func<TKey, TValue, string>? formatter,
+            bool endLine)
+        {
+            string str;
+            var tags = false;
+            if (options == null)
+            {
+                str = dictionary.Stringify(StringifyFormat.Default, ",", ":", formatter);
+            }
+            else
+            {
+                str = dictionary.Stringify(options.Format, options.Separator, options.KeyValueSeparator, formatter, options.MaxLength);
+                str = options.Colors.Colorize(str);
+                tags = options.ContainsCTags;
+            }
+
+            var text = message == null ? str : $"{message}{str}";
+            printer.Print(text, endLine, tags);
+        }
+
+
+        public static void PrintTable(this IPrinter printer, Table table, ConsoleColor? color, bool endLine, bool containsCTags)
+        {
+            var str = table.ToString();
+            printer.Print(str, color, endLine, containsCTags);
+        }
+
+        public static void PrintHeader(this IPrinter printer, string header, string template, string lineIndentation, ConsoleColor? color)
+        {
+            printer.Writer.WriteLine();
+            var str = $"{template} {header} {template}{lineIndentation}";
+            printer.Print(str, color, false);
+        }
+
+        public static void PrintTest(this IPrinter printer, string message, bool test, int padRight, bool endLine)
+        {
+            var str = message.PadRight(padRight) + (test ? "OK" : "Fail");
+            printer.Print(str, test ? ConsoleColor.DarkGreen : ConsoleColor.DarkRed, endLine);
+        }
+
+        public static void PrintTimeElapsed(this IPrinter printer, string? message, DateTime from, ConsoleColor? color, bool endLine)
+        {
+            var ms = (DateTime.Now - @from).TotalMilliseconds;
+            if (ms < 0.5)
+                return;
+
+            printer.Print(message == null ? $"[elapsed:{ms:N3} ms]" : $"{message}   [elapsed:{ms:N3} ms]", color, endLine);
+        }
+
+        public static void PrintConsoleColors(this IPrinter printer)
+        {
+            var values = Enum.GetNames(typeof(ConsoleColor));
+            foreach (var colorName in values)
+            {
+                var color = Enum.Parse<ConsoleColor>(colorName);
+                printer.Print(colorName, color, true);
+            }
+        }
+
+        public static void Print(this IPrinter printer, IEnumerable<ColorString> messages)
+        {
+            foreach (var coloredText in messages)
+                printer.Print(coloredText.Text, coloredText.Color, false);
+        }
+    }
+}

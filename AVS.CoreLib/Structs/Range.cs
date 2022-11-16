@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 
 namespace AVS.CoreLib.Structs
 {
+    [DebuggerDisplay("Range [{Min};{Max}]")]
     public readonly struct Range<T> where T : IComparable<T>
     {
         public T Min { get; }

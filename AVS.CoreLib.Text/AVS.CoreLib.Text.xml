@@ -14,21 +14,6 @@
             Converts <see cref="T:System.ConsoleColor"/> to ColorScheme string representation
             </summary>
         </member>
-        <member name="T:AVS.CoreLib.Text.Extensions.JsonExtensions">
-            <summary>
-            Json extensions
-            </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Text.Extensions.JsonExtensions.ToJsonString``1(``0,System.Boolean)">
-            <summary>
-            Converts the value of a type specified into a JSON string through <see cref="T:System.Text.Json.JsonSerializer"/>
-            </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Text.Extensions.JsonExtensions.ToJsonString``1(``0,System.Text.Json.JsonSerializerOptions)">
-            <summary>
-            Converts the value of a type specified into a JSON string through <see cref="T:System.Text.Json.JsonSerializer"/>
-            </summary>
-        </member>
         <member name="T:AVS.CoreLib.Text.Extensions.ServiceCollectionExtension">
             <summary>
             Service collection extension methods
@@ -47,13 +32,13 @@
         <member name="M:AVS.CoreLib.Text.Extensions.ServiceCollectionExtension.AddFormatterForType``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.String[],System.Func{System.String,``0,System.String})">
             <summary>
             Register formatter for type
-            <see cref="T:AVS.CoreLib.Text.Formatters.CompositeFormatter"/>
+            <see cref="T:AVS.CoreLib.Text.Formatters.GenericFormatter.GenericTypeFormatter"/>
             </summary>
         </member>
-        <member name="M:AVS.CoreLib.Text.Extensions.ServiceCollectionExtension.ConfigureCompositeFormatter(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{AVS.CoreLib.Text.Formatters.CompositeFormatter})">
+        <member name="M:AVS.CoreLib.Text.Extensions.ServiceCollectionExtension.ConfigureCompositeFormatter(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{AVS.CoreLib.Text.Formatters.GenericFormatter.GenericTypeFormatter})">
             <summary>
             Configure composite formatter (it used to register/remove type formatters)
-            <see cref="T:AVS.CoreLib.Text.Formatters.CompositeFormatter"/>
+            <see cref="T:AVS.CoreLib.Text.Formatters.GenericFormatter.GenericTypeFormatter"/>
             </summary>
         </member>
         <member name="T:AVS.CoreLib.Text.Extensions.StringBuilderExtensions">
@@ -65,22 +50,6 @@
             <summary>
             Append X.Format(str)
             </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Text.Extensions.StringBuilderExtensions.EnsureWhitespace(System.Text.StringBuilder)">
-            <summary>
-            If StringBuilder content is not empty and the last character is neither a whitespace ' ', neither '\t' or '\n'
-            append a whitespace ' '
-            </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Text.Extensions.StringBuilderExtensions.IndexOf(System.Text.StringBuilder,System.String,System.Int32,System.Boolean)">
-            <summary>
-            Returns the index of the start of the contents in a StringBuilder
-            </summary>
-            <param name="sb">StringBuilder</param>
-            <param name="value">The string to find</param>
-            <param name="startIndex">The starting index.</param>
-            <param name="ignoreCase">if set to <c>true</c> it will ignore case</param>
-            <returns></returns>
         </member>
         <member name="T:AVS.CoreLib.Text.FormatPreprocessors.EnumFormatPreprocessor">
             <summary>
@@ -162,7 +131,7 @@
             Append custom formatter
             </summary>
         </member>
-        <member name="M:AVS.CoreLib.Text.FormatProviders.XFormatProvider.ConfigureCompositeFormatter(System.Action{AVS.CoreLib.Text.Formatters.CompositeFormatter})">
+        <member name="M:AVS.CoreLib.Text.FormatProviders.XFormatProvider.ConfigureCompositeFormatter(System.Action{AVS.CoreLib.Text.Formatters.GenericFormatter.GenericTypeFormatter})">
             <summary>
             Configure composite formatter
             </summary>
@@ -210,7 +179,7 @@
         <member name="M:AVS.CoreLib.Text.FormattableString2.ToString(System.IFormatProvider)">
             <inheritdoc />
         </member>
-        <member name="M:AVS.CoreLib.Text.FormattableString2.ToString(System.IFormatProvider,AVS.CoreLib.Text.FormatPreprocessors.IFormatPreprocessor,AVS.CoreLib.Text.TextProcessors.ITextProcessor)">
+        <member name="M:AVS.CoreLib.Text.FormattableString2.ToString(System.IFormatProvider,AVS.CoreLib.Text.FormatPreprocessors.IFormatPreprocessor,AVS.CoreLib.Abstractions.Text.ITextProcessor)">
             <summary>
             Preprocess format of arguments before formatting string, format string and process the result with text processor 
             </summary>
@@ -360,34 +329,6 @@
             returns true if match success, false otherwise
             </summary>
         </member>
-        <member name="T:AVS.CoreLib.Text.Formatters.CompositeFormatter">
-            <summary>
-            Generic formatter allows to register a type formatter on the fly
-            without the need to implement CustomFormatter 
-            </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Text.Formatters.CompositeFormatter.AddTypeFormatter``1(System.String[],System.Func{System.String,``0,System.String})">
-            <summary>
-            Register type formatter 
-            </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Text.Formatters.CompositeFormatter.RemoveTypeFormatter``1">
-            <summary>
-            Remove type formatter
-            </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Text.Formatters.CompositeFormatter.CustomFormat(System.String,System.Object,System.IFormatProvider)">
-            <inheritdoc />
-        </member>
-        <member name="M:AVS.CoreLib.Text.Formatters.CompositeFormatter.NoFormat(System.Object)">
-            <inheritdoc />
-        </member>
-        <member name="M:AVS.CoreLib.Text.Formatters.CompositeFormatter.Match(System.String)">
-            <inheritdoc />
-        </member>
-        <member name="M:AVS.CoreLib.Text.Formatters.CompositeFormatter.ToString">
-            <inheritdoc />
-        </member>
         <member name="T:AVS.CoreLib.Text.Formatters.CustomFormatter">
             <summary>
             base abstract class for custom format providers
@@ -450,19 +391,67 @@
             <param name="formatType"></param>
             <returns></returns>
         </member>
-        <member name="T:AVS.CoreLib.Text.Formatters.ITypeFormatter">
+        <member name="T:AVS.CoreLib.Text.Formatters.GenericFormatter.GenericTypeFormatter">
             <summary>
-            Type formatter interface
+            Generic formatter allows to register a type formatter on the fly
+            without the need to implement CustomFormatter 
             </summary>
         </member>
-        <member name="P:AVS.CoreLib.Text.Formatters.ITypeFormatter.Qualifiers">
+        <member name="M:AVS.CoreLib.Text.Formatters.GenericFormatter.GenericTypeFormatter.AddTypeFormatter``1(System.String[],System.Func{System.String,``0,System.String})">
+            <summary>
+            Register type formatter 
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Text.Formatters.GenericFormatter.GenericTypeFormatter.RemoveTypeFormatter``1">
+            <summary>
+            Remove type formatter
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Text.Formatters.GenericFormatter.GenericTypeFormatter.CustomFormat(System.String,System.Object,System.IFormatProvider)">
+            <inheritdoc />
+        </member>
+        <member name="M:AVS.CoreLib.Text.Formatters.GenericFormatter.GenericTypeFormatter.NoFormat(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:AVS.CoreLib.Text.Formatters.GenericFormatter.GenericTypeFormatter.Match(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:AVS.CoreLib.Text.Formatters.GenericFormatter.GenericTypeFormatter.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:AVS.CoreLib.Text.Formatters.GenericTypeFormatter.ITypeFormatter">
+            <summary>
+            Type formatter interface <seealso cref="N:AVS.CoreLib.Text.Formatters.GenericTypeFormatter"/>
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Text.Formatters.GenericTypeFormatter.ITypeFormatter.Qualifiers">
             <summary>
             string format qualifier
             </summary>
         </member>
-        <member name="M:AVS.CoreLib.Text.Formatters.ITypeFormatter.Format(System.String,System.Object)">
+        <member name="M:AVS.CoreLib.Text.Formatters.GenericTypeFormatter.ITypeFormatter.Format(System.String,System.Object)">
             <summary>
             format argument 
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Text.Formatters.GenericTypeFormatter.TypeFormatter`1">
+            <summary>
+            Type formatter <see cref="N:AVS.CoreLib.Text.Formatters.GenericTypeFormatter"/>
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Text.Formatters.GenericTypeFormatter.TypeFormatter`1.Qualifiers">
+            <summary>
+            string format qualifies
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Text.Formatters.GenericTypeFormatter.TypeFormatter`1.#ctor(System.String[],System.Func{System.String,`0,System.String})">
+            <summary>
+            C-tor
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Text.Formatters.GenericTypeFormatter.TypeFormatter`1.Format(System.String,System.Object)">
+            <summary>
+            Format argument, argument should be convertible to type T 
             </summary>
         </member>
         <member name="T:AVS.CoreLib.Text.Formatters.NotEmptyFormatter">
@@ -475,38 +464,6 @@
         </member>
         <member name="M:AVS.CoreLib.Text.Formatters.NotEmptyFormatter.Match(System.String)">
             <inheritdoc />
-        </member>
-        <member name="T:AVS.CoreLib.Text.Formatters.TypeFormatter`1">
-            <summary>
-            Type formatter
-            </summary>
-        </member>
-        <member name="P:AVS.CoreLib.Text.Formatters.TypeFormatter`1.Qualifiers">
-            <summary>
-            string format qualifies
-            </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Text.Formatters.TypeFormatter`1.#ctor(System.String[],System.Func{System.String,`0,System.String})">
-            <summary>
-            C-tor
-            </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Text.Formatters.TypeFormatter`1.Format(System.String,System.Object)">
-            <summary>
-            Format argument, argument should be convertible to type T 
-            </summary>
-        </member>
-        <member name="T:AVS.CoreLib.Text.TextProcessors.ITextProcessor">
-            <summary>
-            common interface for text processors of any kind to transform/translate/convert etc. the input string
-            for example ColorTagProcessor will replace color tags with ansi-codes
-            </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Text.TextProcessors.ITextProcessor.Process(System.String)">
-            <summary>
-            Text Processor manipulates somehow by the input string and returns the output
-            
-            </summary>
         </member>
         <member name="T:AVS.CoreLib.Text.TextProcessors.TextExpressionProcessor">
             <summary>
@@ -550,7 +507,7 @@
             put color markup $"{arg:-Red}" => "$$arg:-Red$"
             <remarks>color markup is used by PowerConsole</remarks>
              
-            <see cref="T:AVS.CoreLib.Text.Formatters.CompositeFormatter"/> by default does not include any formatters
+            <see cref="T:AVS.CoreLib.Text.Formatters.GenericFormatter.GenericTypeFormatter"/> by default does not include any formatters
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Text.X.Format(System.FormattableString,AVS.CoreLib.Text.FormatPreprocessors.IFormatPreprocessor)">
@@ -565,7 +522,7 @@
             <param name="str">string</param>
             <param name="preprocessor">if not null each argument format is preprocessed by preprocessor</param>
         </member>
-        <member name="M:AVS.CoreLib.Text.X.Format(System.FormattableString,AVS.CoreLib.Text.FormatPreprocessors.IFormatPreprocessor,AVS.CoreLib.Text.TextProcessors.ITextProcessor)">
+        <member name="M:AVS.CoreLib.Text.X.Format(System.FormattableString,AVS.CoreLib.Text.FormatPreprocessors.IFormatPreprocessor,AVS.CoreLib.Abstractions.Text.ITextProcessor)">
             <summary>
             Format <see cref="T:System.FormattableString"/> string to string
             </summary>

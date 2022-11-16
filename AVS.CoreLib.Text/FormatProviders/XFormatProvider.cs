@@ -1,6 +1,8 @@
 ﻿using System;
 using AVS.CoreLib.Text.Formatters;
 using AVS.CoreLib.Text.Formatters.ColorMarkup;
+using AVS.CoreLib.Text.Formatters.GenericFormatter;
+using AVS.CoreLib.Text.Formatters.GenericTypeFormatter;
 
 namespace AVS.CoreLib.Text.FormatProviders
 {
@@ -16,15 +18,15 @@ namespace AVS.CoreLib.Text.FormatProviders
         /// </summary>
         protected CustomFormatter Formatter { get; set; }
 
-        private CompositeFormatter CompositeFormatter { get; set; }
+        private GenericTypeFormatter GenericTypeFormatter { get; set; }
 
         /// <summary>
         /// C-tor
         /// </summary>
         public XFormatProvider()
         {
-            CompositeFormatter = new CompositeFormatter();
-            Formatter = new NotEmptyFormatter() { Next = new ColorMarkupFormatter() { Next = CompositeFormatter } };
+            GenericTypeFormatter = new GenericTypeFormatter();
+            Formatter = new NotEmptyFormatter() { Next = new ColorMarkupFormatter() { Next = GenericTypeFormatter } };
         }
 
 
@@ -39,9 +41,9 @@ namespace AVS.CoreLib.Text.FormatProviders
         /// <summary>
         /// Configure composite formatter
         /// </summary>
-        public void ConfigureCompositeFormatter(Action<CompositeFormatter> configure)
+        public void ConfigureCompositeFormatter(Action<GenericTypeFormatter> configure)
         {
-            configure(CompositeFormatter);
+            configure(GenericTypeFormatter);
         }
 
         /// <inheritdoc />

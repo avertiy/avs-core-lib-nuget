@@ -5,8 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using AVS.CoreLib.Abstractions.Rest;
+using AVS.CoreLib.Utilities;
 
-namespace AVS.CoreLib.Utilities
+namespace AVS.CoreLib.REST.Utilities
 {
     public class Payload : IPayload
     {

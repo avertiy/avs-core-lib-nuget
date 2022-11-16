@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using AVS.CoreLib.PowerConsole.Utilities;
 
 namespace AVS.CoreLib.PowerConsole.ConsoleTable
@@ -12,6 +13,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
         public IList<Column> Columns { get; set; } = new List<Column>();
         public IList<Row> Rows { get; set; } = new List<Row>();
         public int TotalWidth { get; private set; }
+        public bool AutoWidth { get; set; } = true;
 
         public TableStyle Style { get; set; } = new TableStyle();
 
@@ -108,11 +110,49 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
 
         }
 
-        public string ToString(bool useAutoWidth = true)
+        public override string ToString()
         {
-            if (useAutoWidth)
+            if (AutoWidth)
                 CalculateWidth();
-            return $"{string.Join(" | ", Columns)}\r\n{string.Join("\r\n", Rows)}";
+            var sb = new StringBuilder();
+
+            var line = this.GetBorderLine();
+            sb.AppendLine(line);
+
+            for (var i = 0; i < Columns.Count; i++)
+            {
+                if (i == 0)
+                    sb.Append(Style.Bar);
+
+                var column = Columns[i];
+                sb.Append(column.ToString());
+                sb.Append(Style.Bar);
+            }
+            sb.AppendLine();
+            sb.AppendLine(line);
+
+            foreach (var row in Rows)
+            {
+                for (var i = 0; i < row.Cells.Count; i++)
+                {
+                    if (i == 0)
+                        sb.Append(Style.Bar);
+
+                    var cell = row.Cells[i];
+                    sb.Append(cell.ToString());
+                    sb.Append(Style.Bar);
+                }
+                sb.AppendLine();
+            }
+
+            sb.AppendLine(line);
+            return sb.ToString();
+        }
+
+        public string GetBorderLine()
+        {
+            var style = Style;
+            return style.Cross + string.Join(style.Cross, Columns.Select(x => "".PadRight(x.Width, style.Pad))) + style.Cross;
         }
 
         public void AddColumn(string title, ColorScheme? scheme = null, int? width = null)

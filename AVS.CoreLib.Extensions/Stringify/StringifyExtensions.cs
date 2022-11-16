@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace AVS.CoreLib.Extensions
+namespace AVS.CoreLib.Extensions.Stringify
 {
     public static class StringifyExtensions
     {
@@ -28,7 +28,7 @@ namespace AVS.CoreLib.Extensions
             StringifyFormat format = StringifyFormat.Default,
             string separator = ", ",
             string keyValueSeparator = ":",
-            Func<TKey,TValue, string> formatter = null,
+            Func<TKey, TValue, string>? formatter = null,
             int maxLength = 256
             )
         {
@@ -64,9 +64,7 @@ namespace AVS.CoreLib.Extensions
                     str = key + keyValueSeparator + value;
                 }
                 else
-                {
                     str = formatter(kp.Key, kp.Value);
-                }
 
                 if (count == 0 && (multiLine || str.Length > 10))
                     multiLine = true;
@@ -115,7 +113,7 @@ namespace AVS.CoreLib.Extensions
 
         public static string Stringify<T>(this IEnumerable<T> enumerable, StringifyFormat format = StringifyFormat.Default,
             string separator = ",",
-            Func<T, string> formatter = null,
+            Func<T, string>? formatter = null,
             int maxLength = 256)
         {
             var brackets = format.HasFlag(StringifyFormat.Brackets);
@@ -125,12 +123,12 @@ namespace AVS.CoreLib.Extensions
             var padding = " ";
 
             var sb = new StringBuilder();
-            
+
             if (brackets)
                 sb.Append('[');
 
             var count = 0;
-            var l = "..".Length + separator.Length + (brackets ?  1 : 0);
+            var l = "..".Length + separator.Length + (brackets ? 1 : 0);
             var reachedLimit = false;
             foreach (var item in enumerable)
             {
@@ -175,7 +173,7 @@ namespace AVS.CoreLib.Extensions
                 count++;
             }
 
-            if(count > 0 && separator.Length > 0)
+            if (count > 0 && separator.Length > 0)
                 sb.Length -= separator.Length;
 
             if (multiLine)
@@ -189,16 +187,19 @@ namespace AVS.CoreLib.Extensions
 
             return sb.ToString();
         }
+
+
+        public static string Stringify<T>(this IEnumerable<T> enumerable, StringifyOptions? options = null, Func<T, string>? formatter = null)
+        {
+            return Stringificator.Instance.Stringify(enumerable, options, formatter);
+        }
+
+        public static string Stringify<TKey,TValue>(this IDictionary<TKey,TValue> dictionary, StringifyOptions? options = null,
+            Func<TKey, TValue, string>? formatter = null)
+        {
+            return Stringificator.Instance.Stringify(dictionary, options, formatter);
+        }
     }
 
-    [Flags]
-    public enum StringifyFormat
-    {
-        None = 0,
-        Brackets = 1,
-        Count =2,
-        MultiLine = 4,
-        Limit = 8,
-        Default =  Brackets | Count | Limit
-    }
+
 }

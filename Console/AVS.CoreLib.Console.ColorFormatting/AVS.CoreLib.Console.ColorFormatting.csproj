@@ -21,7 +21,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AVS.CoreLib.Extensions" Version="2.1.0-rc" />
+    <PackageReference Include="AVS.CoreLib.Extensions" Version="2.1.0" />
   </ItemGroup>
 
 </Project>

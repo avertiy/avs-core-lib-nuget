@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AVS.CoreLib.Abstractions
+namespace AVS.CoreLib.Abstractions.Bootstrap
 {
     public interface IStartup
     {

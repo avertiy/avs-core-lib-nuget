@@ -6,6 +6,7 @@ namespace AVS.CoreLib.PowerConsole.Extensions
 {
     public static class SystemExtensions
     {
+        [Obsolete("Use avs.corelib.extensions")]
         public static string Truncate(this string str, int maxLength)
         {
             if (string.IsNullOrEmpty(str))
@@ -13,6 +14,7 @@ namespace AVS.CoreLib.PowerConsole.Extensions
             return str.Substring(0, Math.Min(str.Length, maxLength));
         }
 
+        [Obsolete("Use avs.corelib.extensions Stringify")]
         public static string ToArrayString<T>(this IEnumerable<T> enumerable, Func<T, string> formatter = null, bool addLength = true)
         {
             var sb = new StringBuilder("[");
@@ -49,33 +51,7 @@ namespace AVS.CoreLib.PowerConsole.Extensions
             return sb.ToString();
         }
 
-        [Obsolete]
-        public static string ToArrayString(this Array arr, bool addLength = true)
-        {
-            var sb = new StringBuilder("[");
-
-            var enumerator = arr.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
-                var str = enumerator.Current.ToString();
-                if (str.Length > 10)
-                {
-                    sb.AppendLine();
-                    sb.Append(str);
-                }
-                else
-                    sb.Append(", ");
-            }
-
-            sb.Length -= 2;
-            sb.Append("]");
-
-            if (addLength && arr.Length > 5)
-                sb.Append($"(#{arr.Length})");
-
-            return sb.ToString();
-        }
-
+        [Obsolete("Use avs.corelib.extensions package")]
         public static string ToKeyValueString<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, string keyValueSeparator = " => ", string separator = "\r\n")
         {
             var sb = new StringBuilder();

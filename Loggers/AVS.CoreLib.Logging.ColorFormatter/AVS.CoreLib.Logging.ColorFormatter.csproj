@@ -39,7 +39,7 @@
   </ItemGroup>
  <ItemGroup>
     <PackageReference Include="AVS.CoreLib.Console.ColorFormatting" Version="2.1.0" />
-    <PackageReference Include="AVS.CoreLib.Extensions" Version="2.1.0-rc" />
+    <PackageReference Include="AVS.CoreLib.Extensions" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="6.0.0" />

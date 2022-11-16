@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using AVS.CoreLib.Extensions;
 
 namespace AVS.CoreLib.Collections
 {
@@ -102,5 +104,10 @@ namespace AVS.CoreLib.Collections
         public virtual ICollection<TValue> Values => Data.Values;
 
         protected virtual bool ShouldSerializeValues() => false;
+
+        public override string ToString()
+        {
+            return Data.Stringify();
+        }
     }
 }

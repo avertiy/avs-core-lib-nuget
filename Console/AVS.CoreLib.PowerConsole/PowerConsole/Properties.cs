@@ -3,8 +3,14 @@ using System.Text;
 
 namespace AVS.CoreLib.PowerConsole
 {
+    using Console= System.Console;
     public static partial class PowerConsole
     {
+        public static bool CapsLock => Console.CapsLock;
+        public static bool NumberLock => Console.NumberLock;
+        public static bool CursorVisible => Console.CursorVisible;
+        public static bool KeyAvailable => Console.KeyAvailable;
+
         public static ConsoleColor Foreground
         {
             get => System.Console.ForegroundColor;
@@ -27,11 +33,7 @@ namespace AVS.CoreLib.PowerConsole
             get => Console.OutputEncoding;
             set => Console.OutputEncoding = value;
         }
-
-        public static bool CapsLock => Console.CapsLock;
-        public static bool NumberLock => Console.NumberLock;
-        public static bool CursorVisible => Console.CursorVisible;
-        public static bool KeyAvailable => Console.KeyAvailable;
+        
         public static int BufferHeight
         {
             get => Console.BufferHeight;

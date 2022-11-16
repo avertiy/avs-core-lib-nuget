@@ -1,7 +1,9 @@
-﻿namespace AVS.CoreLib.Text.Formatters
+﻿using AVS.CoreLib.Text.Formatters.GenericFormatter;
+
+namespace AVS.CoreLib.Text.Formatters.GenericTypeFormatter
 {
     /// <summary>
-    /// Type formatter interface
+    /// Type formatter interface <seealso cref="GenericTypeFormatter"/>
     /// </summary>
     public interface ITypeFormatter
     {
