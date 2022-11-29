@@ -1,4 +1,5 @@
 ﻿using AVS.CoreLib.Text.Formatters;
+using AVS.CoreLib.Text.Formatters.GenericFormatter;
 using AVS.CoreLib.Trading.Enums;
 
 namespace AVS.CoreLib.Trading.Extensions
@@ -11,7 +12,7 @@ namespace AVS.CoreLib.Trading.Extensions
         /// <summary>
         /// Register <see cref="TradeType"/> enum formatting
         /// </summary>
-        public static CompositeFormatter AddTradeTypeFormatter(this CompositeFormatter formatter)
+        public static GenericTypeFormatter AddTradeTypeFormatter(this GenericTypeFormatter formatter)
         {
             formatter.AddTypeFormatter(new[] { "+", "c", "character", "n", "number" }, (string format, TradeType x) =>
              {
@@ -35,7 +36,7 @@ namespace AVS.CoreLib.Trading.Extensions
         /// <summary>
         /// Register <see cref="OrderSide"/> enum formatting
         /// </summary>
-        public static CompositeFormatter AddOrderSideFormatter(this CompositeFormatter formatter)
+        public static GenericTypeFormatter AddOrderSideFormatter(this GenericTypeFormatter formatter)
         {
             formatter.AddTypeFormatter(new[] { "+", "c", "character", "n", "number" }, (string format, OrderSide x) =>
             {
@@ -59,7 +60,7 @@ namespace AVS.CoreLib.Trading.Extensions
         /// <summary>
         /// Register <see cref="PositionType"/> enum formatting
         /// </summary>
-        public static CompositeFormatter AddPositionTypeFormatter(this CompositeFormatter formatter)
+        public static GenericTypeFormatter AddPositionTypeFormatter(this GenericTypeFormatter formatter)
         {
             formatter.AddTypeFormatter(new[] { "+", "c", "character", "n", "number" }, (string format, PositionType x) =>
             {

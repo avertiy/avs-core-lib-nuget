@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using AVS.CoreLib.PowerConsole.Extensions;
+using AVS.CoreLib.PowerConsole.Printers;
 using AVS.CoreLib.PowerConsole.Utilities;
 
 namespace AVS.CoreLib.PowerConsole
@@ -20,37 +22,17 @@ namespace AVS.CoreLib.PowerConsole
             if (!string.IsNullOrEmpty(timeFormat))
                 message = $"{DateTime.Now.ToString(timeFormat)} {message}";
 
-            ApplyColor(color);
-            Console.WriteLine(message);
-            NewLineFlag = true;
-            ColorSchemeReset();
+            Printer.Print(message, color, true);
         }
-
         public static void WriteLine(string message, ColorScheme scheme, string timeFormat = "yyyy-MM-dd hh:mm:ss.ff")
         {
             if (!string.IsNullOrEmpty(timeFormat))
                 message = $"{DateTime.Now.ToString(timeFormat)} {message}";
 
-            ApplyColorScheme(scheme);
-            Console.WriteLine(message);
-            NewLineFlag = true;
-            ColorSchemeReset();
+            Printer.Print(message, scheme, true);
         }
 
-
-        /// <summary>
-        /// Writes the specified string value, followed by the current line terminator,
-        /// to the standard output stream.
-        /// </summary>
-        /// <param name="message">Message to be written to console output</param>
-        /// <param name="status">status of the message to be written to console output</param>
-        /// <param name="timeFormat">Date and time format of the time written next to message in console output</param>
-        public static void WriteLine(string message, MessageStatus status, string timeFormat = "yyyy-MM-dd hh:mm:ss.ff")
-        {
-            WriteLine(message, ColorScheme.GetStatusColorScheme(status), timeFormat);
-            if (BeepOnMessageStatus.HasValue && status == BeepOnMessageStatus.Value)
-                Console.Beep();
-        }
+        
 
         public static void WriteLine(int posX, int posY, params string[] arr)
         {
@@ -63,93 +45,61 @@ namespace AVS.CoreLib.PowerConsole
 
         public static void WriteLine(bool voidMultipleEmptyLines = true)
         {
-            if (voidMultipleEmptyLines && NewLineFlag)
-                return;
-            Console.WriteLine();
-            NewLineFlag = true;
+            Printer.WriteLine(voidMultipleEmptyLines);
         } 
         #endregion
 
-        public static void Write(string value)
+        public static void Write(string str)
         {
-            Console.Write(value);
-            NewLineFlag = value.EndsWith("\r\n");
+            Printer.Print(str, false);
         }
 
-        public static void Write(string value, bool endLine)
+        public static void Write(string str, bool endLine)
         {
-            Console.Write(value);
-            NewLineFlag = value.EndsWith("\r\n");
-            if (endLine && NewLineFlag == false)
-            {
-                Console.WriteLine();
-                NewLineFlag = true;
-            }
+            Printer.Print(str, endLine);
         }
 
-        public static void Write(string value, ConsoleColor color)
+        public static void Write(string str, ConsoleColor color)
         {
-            ApplyColor(color);
-            Console.Write(value);
-            ColorSchemeReset();
-            NewLineFlag = value.EndsWith("\r\n");
+            Printer.Print(str, color, false);
         }
 
-        public static void Write(string value, ConsoleColor? color, bool endLine = false)
+        public static void Write(string str, ConsoleColor? color, bool endLine = false)
         {
-            if (color.HasValue)
-            {
-                ApplyColor(color.Value);
-                Console.Write(value);
-                ColorSchemeReset();
-            }
-            else
-            {
-                Console.Write(value);
-            }
-            
-            NewLineFlag = value.EndsWith("\r\n");
-            if (endLine && NewLineFlag == false)
-            {
-                Console.WriteLine();
-                NewLineFlag = true;
-            }
+            Printer.Print(str, color, endLine);
         }
 
-        public static void Write(string value, ColorScheme scheme, bool endLine = false)
+        public static void Write(string str, ColorScheme scheme, bool endLine = false)
         {
-            ApplyColorScheme(scheme);
-            Console.Write(value);
-            ColorSchemeReset();
-            NewLineFlag = value.EndsWith("\r\n");
-            if (endLine && NewLineFlag == false)
-            {
-                Console.WriteLine();
-                NewLineFlag = true;
-            }
+            Printer.Print(str, scheme, endLine);
+        }
+
+        /// <summary>
+        /// Writes the specified string value, followed by the current line terminator,
+        /// to the standard output stream.
+        /// </summary>
+        /// <param name="message">Message to be written to console output</param>
+        /// <param name="status">status of the message to be written to console output</param>
+        /// <param name="timeFormat">Date and time format of the time written next to message in console output</param>
+        public static void WriteLine(string message, MessageStatus status,
+            string? timeFormat = "yyyy-MM-dd hh:mm:ss.ff")
+        {
+            Printer.Print(message, status, timeFormat);
+            if (status == BeepOnMessageStatus)
+                Console.Beep();
         }
 
         [Conditional("DEBUG")]
-        public static void WriteDebug(string str, string timeFormat = "yyyy-MM-dd hh:mm:ss.ff")
+        public static void WriteDebug(string str, string? timeFormat = "yyyy-MM-dd hh:mm:ss.ff")
         {
             WriteLine(str, MessageStatus.Debug, timeFormat);
         }
 
-        public static void WriteError(Exception ex, bool printStackTrace = true, string timeFormat = "yyyy-MM-dd hh:mm:ss.ff")
+        public static void WriteError(Exception ex, bool printStackTrace = true, string? timeFormat = "yyyy-MM-dd hh:mm:ss.ff")
         {
-            Write($"\r\n {ex.GetType().Name}: ", ConsoleColor.DarkRed);
-            WriteLine(ex.Message, MessageStatus.Error, timeFormat);
-            if (printStackTrace)
-                WriteLine(ex.StackTrace, MessageStatus.Debug, null);
-        }
-
-        public static void WriteEndLine(bool endLine)
-        {
-            if (endLine && NewLineFlag == false)
-            {
-                Console.WriteLine();
-                NewLineFlag = true;
-            }
+            Printer.PrintError(ex, printStackTrace, timeFormat);
+            if (BeepOnMessageStatus is MessageStatus.Error)
+                Console.Beep();
         }
     }
 }

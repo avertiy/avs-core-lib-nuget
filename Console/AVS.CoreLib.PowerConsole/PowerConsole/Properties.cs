@@ -93,5 +93,11 @@ namespace AVS.CoreLib.PowerConsole
         {
             Console.SetWindowPosition(left, top);
         }
+
+        /// <summary>
+        /// Status of the message will produce beep sound when written to console
+        /// <see cref="WriteLine(string,MessageStatus,string)"/>
+        /// </summary>
+        public static MessageStatus? BeepOnMessageStatus { get; set; } = null;
     }
 }

@@ -5,6 +5,7 @@ using AVS.CoreLib.Text.Formatters.GenericTypeFormatter;
 
 namespace AVS.CoreLib.Text.Formatters.GenericFormatter
 {
+    //todo rename to GenericFormatter
     /// <summary>
     /// Generic formatter allows to register a type formatter on the fly
     /// without the need to implement CustomFormatter 

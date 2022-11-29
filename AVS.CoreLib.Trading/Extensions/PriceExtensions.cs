@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
-using AVS.CoreLib.Extensions.Numbers;
 using AVS.CoreLib.Trading.Abstractions;
 using AVS.CoreLib.Trading.Helpers;
+using AVS.CoreLib.Extensions;
 
 namespace AVS.CoreLib.Trading.Extensions
 {

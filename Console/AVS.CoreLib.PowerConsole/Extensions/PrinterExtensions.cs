@@ -4,6 +4,7 @@ using AVS.CoreLib.Extensions;
 using AVS.CoreLib.PowerConsole.ConsoleTable;
 using AVS.CoreLib.PowerConsole.Printers;
 using AVS.CoreLib.PowerConsole.Structs;
+using AVS.CoreLib.PowerConsole.Utilities;
 
 namespace AVS.CoreLib.PowerConsole.Extensions
 {
@@ -24,9 +25,7 @@ namespace AVS.CoreLib.PowerConsole.Extensions
             string str;
             var tags = false;
             if (options == null)
-            {
                 str = enumerable.Stringify(StringifyFormat.Default, ",", formatter);
-            }
             else
             {
                 str = enumerable.Stringify(options.Format, options.Separator, formatter);
@@ -47,9 +46,7 @@ namespace AVS.CoreLib.PowerConsole.Extensions
             string str;
             var tags = false;
             if (options == null)
-            {
                 str = dictionary.Stringify(StringifyFormat.Default, ",", ":", formatter);
-            }
             else
             {
                 str = dictionary.Stringify(options.Format, options.Separator, options.KeyValueSeparator, formatter, options.MaxLength);
@@ -70,7 +67,7 @@ namespace AVS.CoreLib.PowerConsole.Extensions
 
         public static void PrintHeader(this IPrinter printer, string header, string template, string lineIndentation, ConsoleColor? color)
         {
-            printer.Writer.WriteLine();
+            printer.WriteLine();
             var str = $"{template} {header} {template}{lineIndentation}";
             printer.Print(str, color, false);
         }
@@ -99,11 +96,25 @@ namespace AVS.CoreLib.PowerConsole.Extensions
                 printer.Print(colorName, color, true);
             }
         }
-
-        public static void Print(this IPrinter printer, IEnumerable<ColorString> messages)
+        public static void Print(this IPrinter printer, 
+            string str, 
+            MessageStatus status,
+            string? timeFormat = "yyyy-MM-dd hh:mm:ss.ff", bool endLine = true)
         {
-            foreach (var coloredText in messages)
-                printer.Print(coloredText.Text, coloredText.Color, false);
+            if (!string.IsNullOrEmpty(timeFormat))
+                str = $"{DateTime.Now.ToString(timeFormat)} {str}";
+            var color = ColorScheme.GetStatusColorScheme(status);
+            printer.Print(str, color, endLine);
+        }
+
+        public static void PrintError(this IPrinter printer, Exception ex,
+            bool printStackTrace = true,
+            string? timeFormat = "yyyy-MM-dd hh:mm:ss.ff")
+        {
+             printer.Print($"\r\n{ex.GetType().Name}: ", ConsoleColor.DarkRed, false);
+             printer.Print(ex.Message, MessageStatus.Error, timeFormat);
+            if (printStackTrace)
+                printer.Print(ex.StackTrace, MessageStatus.Debug, null);
         }
     }
 }

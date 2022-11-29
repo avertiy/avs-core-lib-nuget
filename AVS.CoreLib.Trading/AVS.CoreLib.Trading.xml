@@ -133,17 +133,17 @@
             GenericFormatter extensions
             </summary>
         </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.CompositeFormatterExtensions.AddTradeTypeFormatter(AVS.CoreLib.Text.Formatters.CompositeFormatter)">
+        <member name="M:AVS.CoreLib.Trading.Extensions.CompositeFormatterExtensions.AddTradeTypeFormatter(AVS.CoreLib.Text.Formatters.GenericFormatter.GenericTypeFormatter)">
             <summary>
             Register <see cref="T:AVS.CoreLib.Trading.Enums.TradeType"/> enum formatting
             </summary>
         </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.CompositeFormatterExtensions.AddOrderSideFormatter(AVS.CoreLib.Text.Formatters.CompositeFormatter)">
+        <member name="M:AVS.CoreLib.Trading.Extensions.CompositeFormatterExtensions.AddOrderSideFormatter(AVS.CoreLib.Text.Formatters.GenericFormatter.GenericTypeFormatter)">
             <summary>
             Register <see cref="T:AVS.CoreLib.Trading.Enums.OrderSide"/> enum formatting
             </summary>
         </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.CompositeFormatterExtensions.AddPositionTypeFormatter(AVS.CoreLib.Text.Formatters.CompositeFormatter)">
+        <member name="M:AVS.CoreLib.Trading.Extensions.CompositeFormatterExtensions.AddPositionTypeFormatter(AVS.CoreLib.Text.Formatters.GenericFormatter.GenericTypeFormatter)">
             <summary>
             Register <see cref="T:AVS.CoreLib.Trading.Enums.PositionType"/> enum formatting
             </summary>
@@ -318,7 +318,7 @@
         </member>
         <member name="T:AVS.CoreLib.Trading.FormatProviders.TradingEnumsFormatter">
             <summary>
-            This formatter is replaced with <see cref="T:AVS.CoreLib.Text.Formatters.CompositeFormatter"/>
+            This formatter is replaced with <see cref="!:CompositeFormatter"/>
             formatter for TradeType, OrderSide, PositionType enums
             </summary>
         </member>

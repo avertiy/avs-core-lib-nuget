@@ -5,7 +5,6 @@ namespace AVS.CoreLib.PowerConsole.Utilities
 {
     using Console = System.Console;
 
-    //todo merge with ConsoleColors it looks pretty equivalent now
     public struct ColorScheme
     {
         public static ColorScheme Default { get; internal set; }

@@ -3,7 +3,8 @@
 namespace AVS.CoreLib.PowerConsole
 {
     /// <summary>
-    /// Basic enumeration of message statuses
+    /// Basic enumeration of message statuses, analog of LogLevel same purpose
+    /// to distinct different levels of messages 
     /// </summary>
     [Flags]
     public enum MessageStatus

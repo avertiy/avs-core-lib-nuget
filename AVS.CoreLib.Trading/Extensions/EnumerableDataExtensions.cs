@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AVS.CoreLib.Enums;
 using AVS.CoreLib.Trading.Abstractions;
 using AVS.CoreLib.Trading.Collections;
+using AVS.CoreLib.Trading.Enums;
 
 namespace AVS.CoreLib.Trading.Extensions
 {

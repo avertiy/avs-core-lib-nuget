@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Globalization;
-using AVS.CoreLib.Extensions.Numbers;
+using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Trading.Extensions;
 
 namespace AVS.CoreLib.Trading.Helpers

@@ -8,11 +8,12 @@ namespace AVS.CoreLib.Console.ColorFormatting
     public static class AnsiCodes
     {
         //public const string DEFAULT_FOREGROUND_COLOR = "\x1B[39m\x1B[22m";
+        //public const string RESET = "RESET";
         public const string RESET = "\u001b[0m";
-        //public const string RESET = "RESET";//"\u001b[0m";
+        
         public static string Code(int code)
         {
-            //return $"\x1B[{code}m";
+            //seems the same $"\x1B[{code}m";
             return $"\u001b[{code}m";
         }
 

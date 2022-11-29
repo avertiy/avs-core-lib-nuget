@@ -2,7 +2,7 @@
 using AVS.CoreLib.Console.ColorFormatting;
 using AVS.CoreLib.Extensions;
 
-namespace AVS.CoreLib.PowerConsole.Printers
+namespace AVS.CoreLib.PowerConsole.Utilities
 {
     public class StringifyOptions
     {

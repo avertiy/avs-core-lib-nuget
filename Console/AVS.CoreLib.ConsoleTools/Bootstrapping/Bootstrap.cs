@@ -3,13 +3,14 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions;
+using AVS.CoreLib.Abstractions.Bootstrap;
 using AVS.CoreLib.PowerConsole.Utilities;
 using Microsoft.Extensions.Hosting;
 using BootstrapBase = AVS.CoreLib.PowerConsole.Bootstrapping.Bootstrap;
-using Console = AVS.CoreLib.PowerConsole.PowerConsole;
 
 namespace AVS.CoreLib.ConsoleTools.Bootstrapping
 {
+    using Console = AVS.CoreLib.PowerConsole.PowerConsole;
     /// <remarks>
     /// This Bootstrap was written first, it builds a Host and can run it as a windows service 
     /// I've decided to include a lightweight Bootstrap version in PowerConsole package also put there ArgsParser

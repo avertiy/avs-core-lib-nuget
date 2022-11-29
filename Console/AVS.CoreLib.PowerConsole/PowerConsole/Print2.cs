@@ -13,13 +13,6 @@ using AVS.CoreLib.Text.Formatters.ColorMarkup;
 namespace AVS.CoreLib.PowerConsole
 {
     using Console = System.Console;
-    /// <summary>
-    /// PowerConsole represents simple extensions over standard .NET Console functionality
-    /// If you need more rich and extensive console frameworks check out links below  
-    /// </summary>
-    /// <seealso>https://github.com/Athari/CsConsoleFormat - advanced formatting of console output for .NET</seealso>
-    /// <seealso>https://github.com/migueldeicaza/gui.cs - Terminal GUI toolkit for .NET</seealso>
-    /// <seealso>http://elw00d.github.io/consoleframework/- cross-platform toolkit that allows to develop TUI applications using C# and based on WPF-like concepts</seealso>
     public static partial class PowerConsole
     {
         public static void PrintArray<T>(
@@ -37,12 +30,19 @@ namespace AVS.CoreLib.PowerConsole
             Printer.PrintConsoleColors();
         }
 
-        public static void PrintKeyValue<TKey, TValue>(IDictionary<TKey, TValue> dictionary, ConsoleColor color = ConsoleColor.White, string keyValueSeparator = " => ", string separator = "\r\n", bool endLine = true)
+        public static void PrintKeyValue<TKey, TValue>(IDictionary<TKey, TValue> dictionary,
+            ConsoleColor color = ConsoleColor.White,
+            string keyValueSeparator = " => ",
+            string separator = "\r\n",
+            bool endLine = true)
         {
             Printer.Print(dictionary.ToKeyValueString(keyValueSeparator, separator), color, endLine);
         }
 
-        public static void PrintJson<T>(T obj, bool indented = false, ConsoleColor color = ConsoleColor.White, bool endLine = true)
+        public static void PrintJson<T>(T obj,
+            bool indented = false,
+            ConsoleColor color = ConsoleColor.White,
+            bool endLine = true)
         {
             Printer.PrintJson<T>(obj, indented, color, endLine);
             
@@ -60,20 +60,26 @@ namespace AVS.CoreLib.PowerConsole
         }
 
         #region PrintTable
-        public static void PrintTable<T>(IEnumerable<T> data, ConsoleColor color = ConsoleColor.White, bool endLine = true)
+        public static void PrintTable<T>(IEnumerable<T> data,
+            ConsoleColor color = ConsoleColor.White,
+            bool endLine = true)
         {
             var table = Table.Create(data);
             Printer.PrintTable(table,color, endLine, false);
         }
 
-        public static void PrintTable<T>(IEnumerable<T> data, Action<Table> configure = null, bool endLine = true)
+        public static void PrintTable<T>(IEnumerable<T> data,
+            Action<Table>? configure = null,
+            bool endLine = true)
         {
             var table = Table.Create(data);
             configure?.Invoke(table);
             Printer.PrintTable(table, null, endLine, false);
         }
 
-        public static void PrintTable(Table table, ConsoleColor color = ConsoleColor.White, bool endLine = true)
+        public static void PrintTable(Table table,
+            ConsoleColor color = ConsoleColor.White,
+            bool endLine = true)
         {
             Printer.PrintTable(table, color, endLine, false);
         }
@@ -85,7 +91,10 @@ namespace AVS.CoreLib.PowerConsole
             Printer.PrintTest(message, test, padRight, endLine);
         }
 
-        public static void PrintTimeElapsed(DateTime @from, string message, ConsoleColor color = ConsoleColor.DarkCyan, bool endLine = false)
+        public static void PrintTimeElapsed(DateTime @from,
+            string message,
+            ConsoleColor color = ConsoleColor.DarkCyan,
+            bool endLine = false)
         {
             Printer.PrintTimeElapsed(message, @from, color, endLine);
         }

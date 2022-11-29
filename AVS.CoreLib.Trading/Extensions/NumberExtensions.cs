@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
-using AVS.CoreLib.Extensions.Numbers;
+using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Trading.Constants;
 
 namespace AVS.CoreLib.Trading.Extensions

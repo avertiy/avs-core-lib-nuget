@@ -1,46 +1,116 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
+using System.Text;
 using AVS.CoreLib.Console.ColorFormatting;
 using AVS.CoreLib.Console.ColorFormatting.Tags;
 using AVS.CoreLib.Extensions;
-using AVS.CoreLib.PowerConsole.ConsoleWriters;
 using AVS.CoreLib.PowerConsole.Extensions;
 using AVS.CoreLib.PowerConsole.Utilities;
-using AVS.CoreLib.Text.Formatters.ColorMarkup;
+using AVS.CoreLib.Text;
 
 namespace AVS.CoreLib.PowerConsole.Printers
 {
-    using Console = System.Console;
-
-    public interface IPrinter
+    public class Printer : PrinterBase, IPrinter
     {
-        public IConsoleWriter Writer { get; }
-        void Print(string str, bool endLine);
-        void Print(string str, ConsoleColor? color, bool endLine);
-        void Print(string str, ConsoleColor color, bool endLine);
-        void Print(string str, Colors colors, bool endLine);
-        void Print(string str, ColorScheme scheme, bool endLine);
-        void Print(FormattableString str, bool endLine);
-        void Print(FormattableString str, ConsoleColor color, bool endLine);
-        void Print(FormattableString str, ColorScheme scheme, bool endLine);
-        void Print(string message, bool endLine, bool containsCTags);
-        void Print(string message, ConsoleColor? color, bool endLine, bool containsCTags);
-        void Print(FormattableString str, bool endLine, bool containsCTags);
-
-        /// <summary>
-        /// colorize arguments of <see cref="FormattableString"/> kind of auto-highlight feature in color formatter for console logging
-        /// </summary>
-        void Print(FormattableString str, ColorPalette palette, bool endLine);
-        void Print(ColorMarkupString str, bool endLine);
-    }
-
-    public class Printer : ColorPrinter, IPrinter
-    {
-        public Printer(IConsoleWriter writer) : base(writer)
+        public Printer(TextWriter writer, bool cTags = true) : base(writer)
         {
+            if (cTags)
+            {
+                var tagProcessor = new CompositeTagProcessor();
+                tagProcessor.AddTagProcessor(new CTagProcessor());
+                tagProcessor.AddTagProcessor(new RgbTagProcessor());
+                TagProcessor = tagProcessor;
+            }
+            else
+            {
+                TagProcessor = new DummyTagProcessor();
+            }
+            FormatProcessor = new ColorFormatProcessor();
         }
 
-       
+        public virtual TagProcessor TagProcessor { get; }
+        public virtual IColorFormatProcessor FormatProcessor { get; }
+        public virtual Func<FormattableString, string> Format { get; set; } = str => str.ToString(CultureInfo.CurrentCulture);
+        /// <summary>
+        /// XFormat delegate based on <see cref="X.Format(FormattableString)"/> is used to convert <see cref="FormattableString"/> to string in PowerConsole.PrintF(..) methods
+        /// strings staring with @ symbol are treated as strings with expression(s) and processed by <see cref="X.TextProcessor"/>
+        /// </summary>
+        public virtual Func<FormattableString, string> XFormat { get; set; } = x => X.Format(x, X.FormatPreprocessor);
+        public virtual void Print(string str, bool endLine)
+        {
+            Write(str, endLine);
+        }
+
+        public virtual void Print(string str, ConsoleColor? color, bool endLine)
+        {
+            if (color == null)
+                Write(str, endLine);
+            else
+            {
+                Write(str, color.Value, endLine);
+            }
+        }
+    }
+
+    public abstract class PrinterBase
+    {
+        /// <summary>
+        /// Indicates whether new line (\r\n) has been just written
+        /// </summary>
+        public bool NewLineFlag = true;
+
+        public TextWriter Writer { get; }
+
+        protected PrinterBase(TextWriter writer)
+        {
+            Writer = writer;
+        }
+        
+        public virtual void Write(string str, bool endLine)
+        {
+            Writer.Write(str);
+            if (endLine && !NewLineFlag)
+            {
+                Writer.WriteLine();
+                NewLineFlag = true;
+            }
+            else
+                NewLineFlag = str.EndsWith(Environment.NewLine);
+        }
+        public virtual void Write(string str, ConsoleColor color, bool endLine)
+        {
+            var coloredStr = $"{AnsiCodes.Color(color)}{str}{AnsiCodes.RESET}";
+            Writer.Write(coloredStr);
+            if (endLine && !NewLineFlag)
+            {
+                Writer.WriteLine();
+                NewLineFlag = true;
+            }
+            else
+                NewLineFlag = str.EndsWith(Environment.NewLine);
+        }
+
+        public void WriteLine(bool voidMultipleEmptyLines = true)
+        {
+            if (voidMultipleEmptyLines && NewLineFlag)
+                return;
+
+            Writer.WriteLine();
+            NewLineFlag = true;
+        }
+    }
+
+    public class DummyTagProcessor : TagProcessor
+    {
+        public override string Process(string input)
+        {
+            return input;
+        }
+
+        public override void Process(StringBuilder sb)
+        {   
+        }
     }
 }

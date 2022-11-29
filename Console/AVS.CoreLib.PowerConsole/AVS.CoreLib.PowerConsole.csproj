@@ -9,13 +9,13 @@
     <RepositoryUrl>https://github.com/avertiy/avs-core-lib-nuget</RepositoryUrl>
     <RepositoryType>public</RepositoryType>
     <PackageTags>Console PowerConsole avs</PackageTags>
-    <AssemblyVersion>6.0.0</AssemblyVersion>
-    <FileVersion>6.0.0</FileVersion>
+    <AssemblyVersion>2.1.0.0</AssemblyVersion>
+    <FileVersion>2.1.0.0</FileVersion>
     <Copyright>Artem Vertii</Copyright>
     <PackageIcon>command-line-icon.jpg</PackageIcon>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <NeutralLanguage />
-    <Version>6.0.0-rc</Version>
+    <Version>2.1.0.0-rc</Version>
     <Description>contains vairous useful console utility methods, including print table, print array, colored printing by means of color formatted string, console get/set font, read key, prompting etc.</Description>
     <Authors>Artem Vertii</Authors>
     <Company>AV Studio</Company>
@@ -35,11 +35,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Printers_backup\**" />
+    <Compile Remove="Writers\**" />
+    <EmbeddedResource Remove="Printers_backup\**" />
+    <EmbeddedResource Remove="Writers\**" />
+    <None Remove="Printers_backup\**" />
+    <None Remove="Writers\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Extensions\RegexExtensions.cs" />
     <Compile Remove="Printers\IColorPrinter.cs" />
-    <Compile Remove="Printers\IPrinter.cs" />
     <Compile Remove="Printers\IPrinter_.cs" />
-    <Compile Remove="Printers\IPrintF.cs" />
     <Compile Remove="Printers\StringifyPrinter.cs" />
   </ItemGroup>
 
