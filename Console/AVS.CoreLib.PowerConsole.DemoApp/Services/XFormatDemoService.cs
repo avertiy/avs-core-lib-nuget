@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions;
+using AVS.CoreLib.Abstractions.Bootstrap;
 using AVS.CoreLib.Text;
 using AVS.CoreLib.Trading.FormatProviders;
 using AVS.CoreLib.Trading.Models;
 
 namespace AVS.CoreLib.PowerConsole.DemoApp.Services
 {
-    internal class XFormatDemoService : IDemoService
+    internal class XFormatDemoService : DemoService
     {
-        public Task DemoAsync()
+        public override Task DemoAsync()
         {
             try
             {

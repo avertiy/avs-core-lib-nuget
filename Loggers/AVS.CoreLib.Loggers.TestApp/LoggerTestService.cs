@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AVS.CoreLib.Loggers.TestApp
 {
-    public class LoggerTestService : ITestService
+    public class LoggerTestService : TestService
     {
         private readonly ILogger _logger;
         private readonly NestedService _service;
@@ -22,7 +22,7 @@ namespace AVS.CoreLib.Loggers.TestApp
             _service = service;
         }
 
-        public void Test()
+        public override void Test()
         {
             ConsoleLogProfiler.Enabled = true;
             ArgsFormatTests();

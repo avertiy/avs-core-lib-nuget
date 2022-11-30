@@ -1,5 +1,6 @@
 ﻿using System;
 using AVS.CoreLib.Abstractions;
+using AVS.CoreLib.Abstractions.Bootstrap;
 using AVS.CoreLib.ConsoleLogger;
 using AVS.CoreLib.ConsoleTools.Bootstrapping;
 using AVS.CoreLib.Logging.ColorFormatter;

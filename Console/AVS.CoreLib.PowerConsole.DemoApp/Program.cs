@@ -1,4 +1,5 @@
 ﻿using AVS.CoreLib.Abstractions;
+using AVS.CoreLib.Abstractions.Bootstrap;
 using AVS.CoreLib.PowerConsole.Bootstrapping;
 using AVS.CoreLib.PowerConsole.DemoApp.Services;
 using AVS.CoreLib.PowerConsole.Utilities;
