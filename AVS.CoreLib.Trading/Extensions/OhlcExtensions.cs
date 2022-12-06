@@ -20,6 +20,12 @@ namespace AVS.CoreLib.Trading.Extensions
                 ohlc.Low = price;
         }
 
+        [Obsolete("Use GetLength")]
+        public static decimal CandleHeight(this IOhlc ohlc)
+        {
+            return (ohlc.High - ohlc.Low) / ohlc.Low;
+        }
+
         #region color extensions for Japanese green/red candles
         public static ConsoleColor GetCandleColor(this IOhlc ohlc)
         {
@@ -155,12 +161,6 @@ namespace AVS.CoreLib.Trading.Extensions
             return CandleType.None;
         }
         #endregion
-
-        [Obsolete("Use GetLength")]
-        public static decimal CandleHeight(this IOhlc ohlc)
-        {
-            return (ohlc.High - ohlc.Low) / ohlc.Low;
-        }
 
         /// <summary>
         /// Get candle length in % formula: (High - Low)/Low * 100

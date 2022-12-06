@@ -1,4 +1,5 @@
 ﻿using System;
+using AVS.CoreLib.Abstractions.Text;
 using AVS.CoreLib.Text.Extensions;
 
 namespace AVS.CoreLib.Text.FormatPreprocessors
@@ -6,21 +7,20 @@ namespace AVS.CoreLib.Text.FormatPreprocessors
     /// <summary>
     /// That's an example of the idea with format preprocessors
     /// Enum format preprocessor highlight enum values
-    /// values matches to default enum value will be gray otherwise blue
     /// </summary>
     public class EnumFormatPreprocessor : IFormatPreprocessor
     {
         /// <summary>
-        /// 
-        /// </summary>
+        /// holds color to highlight a default enum value
+        /// /// </summary>
         public ConsoleColor DefaultColor { get; set; } = ConsoleColor.DarkGray;
         /// <summary>
-        /// 
+        /// hold color to highlight enum values
         /// </summary>
         public ConsoleColor Color { get; set; } = ConsoleColor.Cyan;
 
         /// <summary>
-        /// 
+        /// returns argument format for the enum value 
         /// </summary>
         protected virtual string GetFormat(Type enumType, int value)
         {

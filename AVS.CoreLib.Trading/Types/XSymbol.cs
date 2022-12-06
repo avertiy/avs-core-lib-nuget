@@ -2,7 +2,7 @@
 
 namespace AVS.CoreLib.Trading.Types
 {
-    public struct XSymbol : IHasValue
+    public class XSymbol : IHasValue
     {
         public XSymbol(string symbol, string exchange)
         {

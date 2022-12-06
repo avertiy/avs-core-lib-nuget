@@ -46,7 +46,7 @@ namespace AVS.CoreLib.Trading.Extensions
 
         public static string PriceFormat(this double price, string symbol)
         {
-            var quote = symbol.GetQuoteCurrency();
+            var quote = symbol.QuoteCurrency();
             var s = CoinHelper.GetCurrencySymbol(quote);
 
             if (s == "$")
@@ -163,7 +163,7 @@ namespace AVS.CoreLib.Trading.Extensions
 
         public static string PriceFormat(this decimal price, string symbol)
         {
-            var quote = symbol.GetQuoteCurrency();
+            var quote = symbol.QuoteCurrency();
             var s = CoinHelper.GetCurrencySymbol(quote);
 
             if (s == "$")

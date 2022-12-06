@@ -1,14 +1,43 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace AVS.CoreLib.PowerConsole.Utilities
 {
-    /// <summary>
-    /// Deal with args parameters supplied in Main method of the console app 
-    /// </summary>
+    /// <remarks>
+    /// If you want to deal with command line args use https://github.com/commandlineparser/commandline package
+    /// which seems very nice solution to deal with command-line args")
+    /// </remarks>
+    [Obsolete("I don't remember where this was used, to parse command line args there are nuget packages.. ArgsParser will be removed")]
     public class ArgsParser
     {
         private const string ARGS_REGEX = @"-((?<param>(\w)+) (?<arg>(\w|\S)+))";
+
+        /// <summary>
+        /// Parse args, required format: -arg1:value1 -arg2:value2 
+        /// </summary>
+        public static Dictionary<string, string> Parse(string[] args)
+        {
+            var dict = new Dictionary<string, string>();
+            if (args.Length == 0)
+                return dict;
+
+            foreach (var arg in args)
+            {
+                if (!arg.StartsWith("-"))
+                    continue;
+                var ind = arg.IndexOf(':');
+
+                if (ind <= 0)
+                    continue;
+
+                var param = arg.Substring(1, ind - 1);
+                var value = arg.Substring(ind + 1);
+                dict.Add(param, value);
+            }
+
+            return dict;
+        }
 
         public static Dictionary<string, string> Parse(string args)
         {
@@ -30,29 +59,6 @@ namespace AVS.CoreLib.PowerConsole.Utilities
                 {
                     dict.Add(key, gr.Value);
                 }
-            }
-
-            return dict;
-        }
-
-        public static Dictionary<string, string> Parse(string[] args)
-        {
-            var dict = new Dictionary<string, string>();
-            if (args.Length == 0)
-                return dict;
-
-            foreach (var arg in args)
-            {
-                if (!arg.StartsWith("-"))
-                    continue;
-                var ind = arg.IndexOf(':');
-
-                if (ind <= 0)
-                    continue;
-
-                var param = arg.Substring(1, ind - 1);
-                var value = arg.Substring(ind + 1);
-                dict.Add(param, value);
             }
 
             return dict;

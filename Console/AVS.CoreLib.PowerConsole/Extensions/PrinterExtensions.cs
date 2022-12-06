@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using AVS.CoreLib.Extensions;
+using AVS.CoreLib.Extensions.Stringify;
 using AVS.CoreLib.PowerConsole.ConsoleTable;
 using AVS.CoreLib.PowerConsole.Printers;
 using AVS.CoreLib.PowerConsole.Structs;
 using AVS.CoreLib.PowerConsole.Utilities;
+using StringifyOptions = AVS.CoreLib.PowerConsole.Utilities.StringifyOptions;
 
 namespace AVS.CoreLib.PowerConsole.Extensions
 {

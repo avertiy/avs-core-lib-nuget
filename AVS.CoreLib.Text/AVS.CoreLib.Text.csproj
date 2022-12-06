@@ -39,6 +39,7 @@ e.g. ColorFormatter, NotEmptyFormatter, PriceFormatter, EnumFormatter etc.</Desc
 
   <ItemGroup>
     <Compile Remove="Extensions\JsonExtensions.cs" />
+    <Compile Remove="FormatPreprocessors\IFormatPreprocessor.cs" />
     <Compile Remove="TextProcessors\ITextProcessor.cs" />
   </ItemGroup>
 

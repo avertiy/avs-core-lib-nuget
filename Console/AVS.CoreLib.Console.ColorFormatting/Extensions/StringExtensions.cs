@@ -1,4 +1,6 @@
-﻿namespace AVS.CoreLib.Console.ColorFormatting.Extensions
+﻿using AVS.CoreLib.Console.ColorFormatting.Tags;
+
+namespace AVS.CoreLib.Console.ColorFormatting.Extensions
 {
     public static class StringExtensions
     {
@@ -8,6 +10,11 @@
                 return str;
 
             return colors.Colorize(str);
+        }
+
+        public static string WrapInTag(this string str, CTag tag)
+        {
+            return $"<{tag}>{str}</{tag}>";
         }
     }
 }

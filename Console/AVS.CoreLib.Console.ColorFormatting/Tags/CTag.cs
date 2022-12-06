@@ -90,5 +90,10 @@
             var ansiCode = val > 1000 ? AnsiCodes.Bright(val - 1000) : AnsiCodes.Code(val);
             return ansiCode;
         }
+
+        public static string Wrap(this CTag tag, string str)
+        {
+            return $"<{tag}>{str}</{tag}>";
+        }
     }
 }

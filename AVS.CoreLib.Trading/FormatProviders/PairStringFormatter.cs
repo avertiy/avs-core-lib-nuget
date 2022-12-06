@@ -57,28 +57,6 @@ namespace AVS.CoreLib.Trading.FormatProviders
                         default:
                             return cp.ToString();
                     }
-                case PairString pairString:
-                    switch (format)
-                    {
-                        case "b":
-                        case "base":
-                            return new CurrencyPair(pairString.Value).BaseCurrency;
-                        case "q":
-                        case "quote":
-                            return new CurrencyPair(pairString.Value).QuoteCurrency;
-                        case "Q":
-                            return CoinHelper.GetCurrencySymbol(new CurrencyPair(pairString.Value).QuoteCurrency);
-                        case "B":
-                            return CoinHelper.GetCurrencySymbol(new CurrencyPair(pairString.Value).BaseCurrency);
-                        case "p":
-                        case "pair":
-                            return pairString.ToTradingPair();
-                        case "s":
-                        case "symbol":
-                            return pairString.ToSymbol();
-                        default:
-                            return pairString.Value;
-                    }
                 case Symbol symbol:
                     switch (format)
                     {

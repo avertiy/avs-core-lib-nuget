@@ -1,18 +1,23 @@
 ﻿using System;
 using System.Linq;
-using AVS.CoreLib.Text.Extensions;
-using AVS.CoreLib.Text.FormatPreprocessors;
+using AVS.CoreLib.Abstractions.Text;
+using AVS.CoreLib.PowerConsole.Extensions;
+using AVS.CoreLib.PowerConsole.Utilities;
 
-namespace AVS.CoreLib.PowerConsole.Utilities
+namespace AVS.CoreLib.PowerConsole.FormatProcessors
 {
-    public interface IColorFormatProcessor : IFormatPreprocessor
+    /// <summary>
+    /// does not change the format
+    /// </summary>
+    public class PlainFormatPreprocessor : IFormatPreprocessor
     {
-        ColorPalette Palette { get; set; }
-
-        ConsoleColor StringColor { get; set; }
+        public virtual string Process(string format, object argument)
+        {
+            return format;
+        }
     }
 
-    public class ColorFormatProcessor : IColorFormatProcessor, IFormatPreprocessor
+    public class ColorFormatPreprocessor : IFormatPreprocessor
     {
         public ColorPalette Palette { get; set; } = ColorPalette.BlueGreen;
 
@@ -66,6 +71,15 @@ namespace AVS.CoreLib.PowerConsole.Utilities
             return Palette[0].ToColorSchemeString();
         }
 
-        protected string GetFormatForBoolean(bool value) => Palette.Length <= 2 ? value ? Palette.First().ToColorSchemeString() : Palette.Last().ToColorSchemeString() : value ? Palette[1].ToColorSchemeString() : Palette[2].ToColorSchemeString();
+        protected string GetFormatForBoolean(bool value)
+        {
+            return Palette.Length <= 2
+                ?
+                value ? Palette.First().ToColorSchemeString() : Palette.Last().ToColorSchemeString()
+                :
+                value
+                    ? Palette[1].ToColorSchemeString()
+                    : Palette[2].ToColorSchemeString();
+        }
     }
 }

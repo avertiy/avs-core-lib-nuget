@@ -55,22 +55,21 @@
             <summary>
             That's an example of the idea with format preprocessors
             Enum format preprocessor highlight enum values
-            values matches to default enum value will be gray otherwise blue
             </summary>
         </member>
         <member name="P:AVS.CoreLib.Text.FormatPreprocessors.EnumFormatPreprocessor.DefaultColor">
             <summary>
-            
-            </summary>
+            holds color to highlight a default enum value
+            /// </summary>
         </member>
         <member name="P:AVS.CoreLib.Text.FormatPreprocessors.EnumFormatPreprocessor.Color">
             <summary>
-            
+            hold color to highlight enum values
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Text.FormatPreprocessors.EnumFormatPreprocessor.GetFormat(System.Type,System.Int32)">
             <summary>
-            
+            returns argument format for the enum value 
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Text.FormatPreprocessors.EnumFormatPreprocessor.Process(System.String,System.Object)">
@@ -84,7 +83,7 @@
         <member name="M:AVS.CoreLib.Text.FormatPreprocessors.FormatPreprocessor.Process(System.String,System.Object)">
             <inheritdoc />
         </member>
-        <member name="M:AVS.CoreLib.Text.FormatPreprocessors.FormatPreprocessor.Add(AVS.CoreLib.Text.FormatPreprocessors.IFormatPreprocessor)">
+        <member name="M:AVS.CoreLib.Text.FormatPreprocessors.FormatPreprocessor.Add(AVS.CoreLib.Abstractions.Text.IFormatPreprocessor)">
             <summary>
             Add FormatPreprocessor
             </summary>
@@ -93,21 +92,6 @@
             <summary>
             Clear all preprocessors
             </summary>
-        </member>
-        <member name="T:AVS.CoreLib.Text.FormatPreprocessors.IFormatPreprocessor">
-            <summary>
-            Argument format preprocessor
-            it allows to modify format of arguments of <see cref="T:System.FormattableString"/> just before converting to string
-            i.e. <see cref="M:System.String.Format(System.IFormatProvider,System.String,System.Object)"/> is called
-            
-            the purpose of the modifier is to add some behavior for adding color formatting to string arguments if color was not specified   
-            </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Text.FormatPreprocessors.IFormatPreprocessor.Process(System.String,System.Object)">
-            <summary>
-            Modify argument string format
-            </summary>
-            <returns>new argument format</returns>
         </member>
         <member name="T:AVS.CoreLib.Text.FormatProviders.XFormatProvider">
             <summary>
@@ -179,7 +163,7 @@
         <member name="M:AVS.CoreLib.Text.FormattableString2.ToString(System.IFormatProvider)">
             <inheritdoc />
         </member>
-        <member name="M:AVS.CoreLib.Text.FormattableString2.ToString(System.IFormatProvider,AVS.CoreLib.Text.FormatPreprocessors.IFormatPreprocessor,AVS.CoreLib.Abstractions.Text.ITextProcessor)">
+        <member name="M:AVS.CoreLib.Text.FormattableString2.ToString(System.IFormatProvider,AVS.CoreLib.Abstractions.Text.IFormatPreprocessor,AVS.CoreLib.Abstractions.Text.ITextProcessor)">
             <summary>
             Preprocess format of arguments before formatting string, format string and process the result with text processor 
             </summary>
@@ -510,19 +494,19 @@
             <see cref="T:AVS.CoreLib.Text.Formatters.GenericFormatter.GenericTypeFormatter"/> by default does not include any formatters
             </summary>
         </member>
-        <member name="M:AVS.CoreLib.Text.X.Format(System.FormattableString,AVS.CoreLib.Text.FormatPreprocessors.IFormatPreprocessor)">
+        <member name="M:AVS.CoreLib.Text.X.Format(System.FormattableString,AVS.CoreLib.Abstractions.Text.IFormatPreprocessor)">
             <summary>
             applies format modifier before string format and there after process the result with <see cref="T:AVS.CoreLib.Text.TextProcessors.TextExpressionProcessor"/>
             </summary>
         </member>
-        <member name="M:AVS.CoreLib.Text.X.Format(AVS.CoreLib.Text.FormattableString2,AVS.CoreLib.Text.FormatPreprocessors.IFormatPreprocessor)">
+        <member name="M:AVS.CoreLib.Text.X.Format(AVS.CoreLib.Text.FormattableString2,AVS.CoreLib.Abstractions.Text.IFormatPreprocessor)">
             <summary>
             Format <see cref="T:System.FormattableString"/> string to string
             </summary>
             <param name="str">string</param>
             <param name="preprocessor">if not null each argument format is preprocessed by preprocessor</param>
         </member>
-        <member name="M:AVS.CoreLib.Text.X.Format(System.FormattableString,AVS.CoreLib.Text.FormatPreprocessors.IFormatPreprocessor,AVS.CoreLib.Abstractions.Text.ITextProcessor)">
+        <member name="M:AVS.CoreLib.Text.X.Format(System.FormattableString,AVS.CoreLib.Abstractions.Text.IFormatPreprocessor,AVS.CoreLib.Abstractions.Text.ITextProcessor)">
             <summary>
             Format <see cref="T:System.FormattableString"/> string to string
             </summary>

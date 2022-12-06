@@ -7,7 +7,7 @@ namespace AVS.CoreLib.Trading.Extensions
     /// <summary>
     /// GenericFormatter extensions
     /// </summary>
-    public static class CompositeFormatterExtensions
+    public static class GenericTypeFormatterExtensions
     {
         /// <summary>
         /// Register <see cref="TradeType"/> enum formatting

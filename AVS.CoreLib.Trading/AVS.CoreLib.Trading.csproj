@@ -32,6 +32,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Types\Obsolete\**" />
+    <EmbeddedResource Remove="Types\Obsolete\**" />
+    <None Remove="Types\Obsolete\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Extensions\PriceStepExtensions.cs" />
     <Compile Remove="Types\Pairs.cs" />
   </ItemGroup>

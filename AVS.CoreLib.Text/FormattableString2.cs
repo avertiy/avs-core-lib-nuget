@@ -5,7 +5,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using AVS.CoreLib.Abstractions.Text;
 using AVS.CoreLib.Text.TextProcessors;
-using IFormatPreprocessor = AVS.CoreLib.Text.FormatPreprocessors.IFormatPreprocessor;
 
 namespace AVS.CoreLib.Text
 {

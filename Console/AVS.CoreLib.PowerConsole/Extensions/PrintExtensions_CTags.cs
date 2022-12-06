@@ -10,7 +10,7 @@ namespace AVS.CoreLib.PowerConsole.Printers
                 printer.Print(message, endLine);
 
             var text = printer.TagProcessor.Process(message);
-            printer.Print(message, endLine);
+            printer.Print(text, endLine);
         }
 
         public static void Print(this IPrinter printer, string message, ConsoleColor? color, bool endLine, bool containsCTags)
@@ -19,7 +19,7 @@ namespace AVS.CoreLib.PowerConsole.Printers
                 printer.Print(message, color, endLine);
 
             var text = printer.TagProcessor.Process(message);
-            printer.Print(message, color, endLine);
+            printer.Print(text, color, endLine);
         }
 
         public static void Print(this IPrinter printer, FormattableString str, bool endLine, bool containsCTags)

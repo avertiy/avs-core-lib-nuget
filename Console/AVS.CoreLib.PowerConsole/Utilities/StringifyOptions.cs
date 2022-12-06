@@ -1,6 +1,7 @@
 ﻿using System;
 using AVS.CoreLib.Console.ColorFormatting;
 using AVS.CoreLib.Extensions;
+using AVS.CoreLib.Extensions.Stringify;
 
 namespace AVS.CoreLib.PowerConsole.Utilities
 {

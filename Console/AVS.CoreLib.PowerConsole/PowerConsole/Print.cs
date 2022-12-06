@@ -1,5 +1,6 @@
 ﻿using System;
 using AVS.CoreLib.Console.ColorFormatting;
+using AVS.CoreLib.Console.ColorFormatting.Extensions;
 using AVS.CoreLib.Console.ColorFormatting.Tags;
 using AVS.CoreLib.PowerConsole.Printers;
 using AVS.CoreLib.PowerConsole.Utilities;
@@ -30,9 +31,14 @@ namespace AVS.CoreLib.PowerConsole
             set => _printer = value;
         }
 
-        public static void Print(string str, bool endLine = true)
+        public static void Print(string str, bool endLine = true, bool colorTags = true)
         {
-            Printer.Print(str, endLine);
+            Printer.Print(str, endLine, colorTags);
+        }
+
+        public static void Print(string str, CTag tag, bool endLine = true)
+        {
+            Printer.Print(str.WrapInTag(tag) , endLine, true);
         }
 
         public static void Print(string str, ConsoleColor color, bool endLine = true)
@@ -49,9 +55,9 @@ namespace AVS.CoreLib.PowerConsole
         /// <summary>
         /// Format string by <see cref="Printers.Printer.Format"/> delegate and print it
         /// </summary>
-        public static void Print(FormattableString str, bool endLine = true)
+        public static void Print(FormattableString str, bool endLine = true, bool colorTags = true)
         {
-            Printer.Print(str, endLine);
+            Printer.Print(str, endLine, colorTags);
         }
 
         /// <summary>

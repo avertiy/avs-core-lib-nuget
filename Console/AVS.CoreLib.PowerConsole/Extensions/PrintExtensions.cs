@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using AVS.CoreLib.Console.ColorFormatting;
+using AVS.CoreLib.PowerConsole.FormatProcessors;
 using AVS.CoreLib.PowerConsole.Structs;
 using AVS.CoreLib.PowerConsole.Utilities;
 using AVS.CoreLib.Text;
@@ -30,8 +31,13 @@ namespace AVS.CoreLib.PowerConsole.Printers
             //to-do combine or make common feature as it seems duplicate color formatter args auto-highlight
             var arguments = str.GetArguments();
             var str2 = new FormattableString2(str.Format, arguments);
-            printer.FormatProcessor.Palette = palette;
-            var colorMarkupStr = new ColorMarkupString(str2.ToString(X.FormatProvider, printer.FormatProcessor, X.TextProcessor));
+            var preprocessor = printer.FormatPreprocessor;
+            
+            if(preprocessor is ColorFormatPreprocessor colorFormatPreprocessor)
+                colorFormatPreprocessor.Palette = palette;
+
+            var formattedString = str2.ToString(X.FormatProvider, printer.FormatPreprocessor, X.TextProcessor);
+            var colorMarkupStr = new ColorMarkupString(formattedString);
 
             printer.Print(colorMarkupStr, endLine);
         }

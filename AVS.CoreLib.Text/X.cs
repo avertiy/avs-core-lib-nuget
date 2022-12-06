@@ -7,7 +7,6 @@ using AVS.CoreLib.Text.Formatters.ColorMarkup;
 using AVS.CoreLib.Text.Formatters.GenericFormatter;
 using AVS.CoreLib.Text.Formatters.GenericTypeFormatter;
 using AVS.CoreLib.Text.TextProcessors;
-using IFormatPreprocessor = AVS.CoreLib.Text.FormatPreprocessors.IFormatPreprocessor;
 
 namespace AVS.CoreLib.Text
 {

@@ -128,26 +128,6 @@
         <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.D">
             <summary>A time interval of a day.</summary>
         </member>
-        <member name="T:AVS.CoreLib.Trading.Extensions.CompositeFormatterExtensions">
-            <summary>
-            GenericFormatter extensions
-            </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.CompositeFormatterExtensions.AddTradeTypeFormatter(AVS.CoreLib.Text.Formatters.GenericFormatter.GenericTypeFormatter)">
-            <summary>
-            Register <see cref="T:AVS.CoreLib.Trading.Enums.TradeType"/> enum formatting
-            </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.CompositeFormatterExtensions.AddOrderSideFormatter(AVS.CoreLib.Text.Formatters.GenericFormatter.GenericTypeFormatter)">
-            <summary>
-            Register <see cref="T:AVS.CoreLib.Trading.Enums.OrderSide"/> enum formatting
-            </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.CompositeFormatterExtensions.AddPositionTypeFormatter(AVS.CoreLib.Text.Formatters.GenericFormatter.GenericTypeFormatter)">
-            <summary>
-            Register <see cref="T:AVS.CoreLib.Trading.Enums.PositionType"/> enum formatting
-            </summary>
-        </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.DecimalExtensions.Deduct(System.Decimal,System.Decimal)">
             <summary>
             deducts specified percent from the value
@@ -159,6 +139,26 @@
             format numbers to string using n.FormatPrice()
             leading zeros will be replaced by replacement
             (e.g. 0.0001234 => 0..1234) 
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Extensions.GenericTypeFormatterExtensions">
+            <summary>
+            GenericFormatter extensions
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.GenericTypeFormatterExtensions.AddTradeTypeFormatter(AVS.CoreLib.Text.Formatters.GenericFormatter.GenericTypeFormatter)">
+            <summary>
+            Register <see cref="T:AVS.CoreLib.Trading.Enums.TradeType"/> enum formatting
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.GenericTypeFormatterExtensions.AddOrderSideFormatter(AVS.CoreLib.Text.Formatters.GenericFormatter.GenericTypeFormatter)">
+            <summary>
+            Register <see cref="T:AVS.CoreLib.Trading.Enums.OrderSide"/> enum formatting
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.GenericTypeFormatterExtensions.AddPositionTypeFormatter(AVS.CoreLib.Text.Formatters.GenericFormatter.GenericTypeFormatter)">
+            <summary>
+            Register <see cref="T:AVS.CoreLib.Trading.Enums.PositionType"/> enum formatting
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.NumberExtensions.GetLeastExpDiff(System.Double,System.Double)">
@@ -186,22 +186,6 @@
             determines whether price is within (Low, High) range;
             </summary>
         </member>
-        <member name="T:AVS.CoreLib.Trading.Extensions.SymbolExtensions">
-            <summary>
-            supposed to deal with a normalized symbol like BTC_USDT (i.e. currencies are upper case, underscore separator)  
-            </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolExtensions.Q(System.String,System.Boolean)">
-            <summary>
-            returns quote currency, when possible replace currency iso code with symbol e.g. USDT => $
-            <seealso cref="M:AVS.CoreLib.Trading.Helpers.CoinHelper.GetCurrencySymbol(System.String)"/>
-            </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolExtensions.B(System.String)">
-            <summary>
-            returns base currency
-            </summary>
-        </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.PriceExtensions.GetRoundDecimals(System.Decimal)">
             <summary>
             determines number of meaningful digits based on price value
@@ -218,6 +202,32 @@
         <member name="M:AVS.CoreLib.Trading.Extensions.ServiceCollectionExtension.AddTradingCore(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             Add trading formatters core services
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Extensions.SymbolExtensions">
+            <summary>
+            supposed to deal with a normalized symbol like BTC_USDT (i.e. currencies are upper case, underscore separator)  
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolExtensions.QuoteCurrency(System.String)">
+            <summary>
+            returns quote currency for BTC_USDT => USDT
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolExtensions.BaseCurrency(System.String)">
+            <summary>
+            returns base currency for BTC_USDT => BTC
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolExtensions.Q(System.String,System.Boolean)">
+            <summary>
+            returns quote currency, when possible replace currency iso code with symbol e.g. USDT => $
+            <seealso cref="M:AVS.CoreLib.Trading.Helpers.CoinHelper.GetCurrencySymbol(System.String)"/>
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolExtensions.B(System.String)">
+            <summary>
+            returns base currency for BTC_USDT => BTC
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.XFormatProviderExtensions.AddTradingFormatters(AVS.CoreLib.Text.FormatProviders.XFormatProvider)">
@@ -384,37 +394,13 @@
             </summary>
             <param name="str">"100.00 UAH"</param>
         </member>
-        <member name="M:AVS.CoreLib.Trading.Types.CurrencyBalance.Parse(System.String)">
-            <summary>
-            parses values like 10.00 UAH, 2.2 XRP into currency balance 
-            </summary>
-            <param name="str">"100.00 UAH"</param>
-        </member>
-        <member name="M:AVS.CoreLib.Trading.Types.PairCurrencyValue.Parse(System.String)">
-            <summary>
-            parses values like 0.2 BTC;10 USD into corresponding PairAmount value 
-            </summary>
-        </member>
-        <member name="T:AVS.CoreLib.Trading.Types.PairString">
-            <summary>
-            by default PairString supposed to be a "normalized pair" e.g. USDT_BTC, which is opposite to symbol format BTC_USDT
-            this is historical issue, <see cref="T:AVS.CoreLib.Trading.Types.Symbol"/> was introduced recently
-            <see cref="T:AVS.CoreLib.Trading.Types.Symbol"/> is less confusing due to many exchanges upgraded their api and operate with symbols
-            </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Trading.Types.PairString.ToSymbol">
-            <summary>
-            under symbol mean base currency in a 2nd position
-            </summary>
-            <returns></returns>
-        </member>
         <member name="T:AVS.CoreLib.Trading.Types.Symbol">
             <summary>
             Symbol represent a trade instrument, most exchanges operate symbols 
             <see cref="T:AVS.CoreLib.Trading.Types.Symbol"/> format convention is [base_currency]_[quote_currency] e.g. BTC_USDT
             </summary>
             <remarks>
-            this type replace <see cref="T:AVS.CoreLib.Trading.Types.PairString"/>  pair `USDT_BTC` pair is a `BTC_USDT` symbol, i.e. swap quote and base currencies 
+            this type replace <see cref="!:PairString"/>  pair `USDT_BTC` pair is a `BTC_USDT` symbol, i.e. swap quote and base currencies 
             </remarks>
         </member>
         <member name="T:AVS.CoreLib.Trading.Types.Symbols">

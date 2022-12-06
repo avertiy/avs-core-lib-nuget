@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using AVS.CoreLib.Extensions;
+using AVS.CoreLib.Extensions.Stringify;
 
 namespace AVS.CoreLib.Collections
 {
@@ -99,15 +100,21 @@ namespace AVS.CoreLib.Collections
 
         public virtual ICollection<TKey> Keys => Data.Keys;
 
-        protected virtual bool ShouldSerializeKeys() => false;
+        protected virtual bool ShouldSerializeKeys()
+        {
+            return false;
+        }
 
         public virtual ICollection<TValue> Values => Data.Values;
 
-        protected virtual bool ShouldSerializeValues() => false;
+        protected virtual bool ShouldSerializeValues()
+        {
+            return false;
+        }
 
         public override string ToString()
         {
-            return Data.Stringify();
+            return Data.Stringify(options: default);
         }
     }
 }
