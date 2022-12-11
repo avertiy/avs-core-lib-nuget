@@ -1,5 +1,6 @@
 ﻿using System;
 using AVS.CoreLib.Console.ColorFormatting;
+using AVS.CoreLib.PowerConsole.Enums;
 
 namespace AVS.CoreLib.PowerConsole.Utilities
 {

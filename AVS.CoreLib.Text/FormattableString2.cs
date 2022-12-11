@@ -75,7 +75,9 @@ namespace AVS.CoreLib.Text
         /// <summary>
         /// Preprocess format of arguments before formatting string, format string and process the result with text processor 
         /// </summary>
-        public string ToString(IFormatProvider formatProvider, IFormatPreprocessor preprocessor, ITextProcessor textProcessor)
+        public string ToString(IFormatProvider formatProvider,
+            IFormatPreprocessor preprocessor,
+            ITextProcessor textProcessor)
         {
             var sb = new StringBuilder();
             if (preprocessor != null)

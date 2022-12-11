@@ -36,7 +36,7 @@ namespace AVS.CoreLib.PowerConsole
             string separator = "\r\n",
             bool endLine = true)
         {
-            Printer.Print(dictionary.ToKeyValueString(keyValueSeparator, separator), color, endLine);
+            Printer.Print(dictionary.ToKeyValueString(keyValueSeparator, separator), endLine, color, false);
         }
 
         public static void PrintJson<T>(T obj,
@@ -79,9 +79,9 @@ namespace AVS.CoreLib.PowerConsole
 
         public static void PrintTable(Table table,
             ConsoleColor color = ConsoleColor.White,
-            bool endLine = true)
+            bool endLine = true, bool containsTags = false)
         {
-            Printer.PrintTable(table, color, endLine, false);
+            Printer.PrintTable(table, color, endLine, containsTags);
         }
 
         #endregion

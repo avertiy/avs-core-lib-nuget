@@ -1,4 +1,5 @@
 ﻿using System;
+using AVS.CoreLib.Console.ColorFormatting;
 using AVS.CoreLib.PowerConsole.Utilities;
 
 namespace AVS.CoreLib.PowerConsole
@@ -20,6 +21,15 @@ namespace AVS.CoreLib.PowerConsole
         {
             Console.ForegroundColor = scheme.Foreground;
             Console.BackgroundColor = scheme.Background;
+        }
+
+        public static void ApplyColors(Colors colors)
+        {
+            if(colors.Foreground.HasValue)
+                Console.ForegroundColor = colors.Foreground.Value;
+
+            if (colors.Background.HasValue)
+                Console.BackgroundColor = colors.Background.Value;
         }
 
         /// <summary>

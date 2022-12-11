@@ -1,15 +1,21 @@
 ﻿using System;
+using System.IO;
 using System.Text;
+using AVS.CoreLib.PowerConsole.Enums;
 
 namespace AVS.CoreLib.PowerConsole
 {
-    using Console= System.Console;
+    using Console = System.Console;
     public static partial class PowerConsole
     {
         public static bool CapsLock => Console.CapsLock;
         public static bool NumberLock => Console.NumberLock;
         public static bool CursorVisible => Console.CursorVisible;
         public static bool KeyAvailable => Console.KeyAvailable;
+        /// <summary>
+        /// Standard output stream
+        /// </summary>
+        public static TextWriter Out => System.Console.Out;
 
         public static ConsoleColor Foreground
         {

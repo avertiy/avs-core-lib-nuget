@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using AVS.CoreLib.Console.ColorFormatting;
+using AVS.CoreLib.PowerConsole.Extensions;
 using AVS.CoreLib.PowerConsole.FormatProcessors;
 using AVS.CoreLib.PowerConsole.Structs;
 using AVS.CoreLib.PowerConsole.Utilities;
 using AVS.CoreLib.Text;
 using AVS.CoreLib.Text.Formatters.ColorMarkup;
-
+using IPrinter = AVS.CoreLib.PowerConsole.Printers.IPowerConsolePrinter;
 namespace AVS.CoreLib.PowerConsole.Printers
 {
     public static partial class PrintExtensions
@@ -23,24 +24,7 @@ namespace AVS.CoreLib.PowerConsole.Printers
             printer.Print(coloredStr, endLine);
         }
 
-        /// <summary>
-        /// colorize arguments of <see cref="FormattableString"/> kind of auto-highlight feature in color formatter for console logging
-        /// </summary>
-        public static void Print(this IPrinter printer, FormattableString str, ColorPalette palette, bool endLine)
-        {
-            //to-do combine or make common feature as it seems duplicate color formatter args auto-highlight
-            var arguments = str.GetArguments();
-            var str2 = new FormattableString2(str.Format, arguments);
-            var preprocessor = printer.FormatPreprocessor;
-            
-            if(preprocessor is ColorFormatPreprocessor colorFormatPreprocessor)
-                colorFormatPreprocessor.Palette = palette;
-
-            var formattedString = str2.ToString(X.FormatProvider, printer.FormatPreprocessor, X.TextProcessor);
-            var colorMarkupStr = new ColorMarkupString(formattedString);
-
-            printer.Print(colorMarkupStr, endLine);
-        }
+        
 
         public static void Print(this IPrinter printer, ColorMarkupString str, bool endLine)
         {
@@ -58,7 +42,7 @@ namespace AVS.CoreLib.PowerConsole.Printers
             }
 
             if (endLine)
-                printer.WriteLine();
+                printer.PrintLine();
         }
 
         public static void Print(this IPrinter printer, ColorMarkupString str, ConsoleColor? color, bool endLine)
@@ -77,7 +61,7 @@ namespace AVS.CoreLib.PowerConsole.Printers
             }
 
             if (endLine)
-                printer.WriteLine();
+                printer.PrintLine();
         }
 
         public static void Print(this IPrinter printer, IEnumerable<ColorString> messages)

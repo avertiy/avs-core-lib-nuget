@@ -35,17 +35,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Printers0\**" />
     <Compile Remove="Printers_backup\**" />
-    <Compile Remove="Writers\**" />
+    <Compile Remove="Writers_old\**" />
+    <EmbeddedResource Remove="Printers0\**" />
     <EmbeddedResource Remove="Printers_backup\**" />
-    <EmbeddedResource Remove="Writers\**" />
+    <EmbeddedResource Remove="Writers_old\**" />
+    <None Remove="Printers0\**" />
     <None Remove="Printers_backup\**" />
-    <None Remove="Writers\**" />
+    <None Remove="Writers_old\**" />
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Extensions\PrintExtensions_FormattableString.cs" />
+    <Compile Remove="Extensions\PrintFExtensions.cs" />
     <Compile Remove="Extensions\RegexExtensions.cs" />
-    <Compile Remove="Printers\IColorPrinter.cs" />
     <Compile Remove="Printers\IPrinter_.cs" />
     <Compile Remove="Printers\StringifyPrinter.cs" />
   </ItemGroup>
