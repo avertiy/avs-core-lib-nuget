@@ -1,5 +1,5 @@
 ﻿using System;
-using System.IO;
+using AVS.CoreLib.Console.ColorFormatting;
 using AVS.CoreLib.Console.ColorFormatting.Extensions;
 using AVS.CoreLib.Console.ColorFormatting.Tags;
 using AVS.CoreLib.PowerConsole.Enums;
@@ -9,9 +9,44 @@ using AVS.CoreLib.PowerConsole.Utilities;
 using AVS.CoreLib.PowerConsole.Writers;
 using AVS.CoreLib.Text;
 using AVS.CoreLib.Text.Formatters.ColorMarkup;
+using AVS.CoreLib.Text.TextProcessors;
 
 namespace AVS.CoreLib.PowerConsole.Printers
 {
+    public interface IBasicPrinter
+    {
+        void Print(string str, bool endLine);
+        void Print(FormattableString str, bool endLine);
+        void PrintLine(bool voidMultipleEmptyLines = true);
+        void PrintLine(string str, bool voidMultipleEmptyLines);
+    }
+
+    public interface IColorPrinter
+    {
+        void SwitchMode(ColorMode mode);
+        void Print(string str, bool endLine, bool? containsCTags);
+        void Print(string str, bool endLine, ConsoleColor? color, bool? containsCTags = null);
+        void Print(string str, bool endLine, Colors colors, bool? containsCTags = null);
+        void Print(string str, bool endLine, ColorScheme scheme, bool? containsCTags = null);
+
+        void Print(FormattableString str, bool endLine, bool? containsCTags = null);
+        void Print(FormattableString str, bool endLine, ConsoleColor? color, bool? containsCTags = null);
+        void Print(FormattableString str, bool endLine, Colors colors, bool? containsCTags = null);
+        void Print(FormattableString str, bool endLine, ColorScheme scheme, bool? containsCTags = null);
+    }
+
+    /// <remarks>
+    /// strings staring with @ symbol are treated as strings with expression(s) and processed by TextProcessor(s) this is part of X.Format(); 
+    /// <see cref="TextExpressionProcessor"/>
+    /// </remarks>
+    public interface IXPrinter
+    {
+        void PrintF(FormattableString str, bool endLine, bool containsCTags = true);
+        void PrintF(FormattableString str, bool endLine, ConsoleColor? color, bool containsCTags = true);
+        void PrintF(FormattableString str, bool endLine, Colors colors, bool containsCTags = true);
+        void PrintF(FormattableString str, bool endLine, ColorScheme scheme, bool containsCTags = true);
+    }
+
     public interface IPowerConsolePrinter : IBasicPrinter, IColorPrinter, IXPrinter
     {
         void SetCustomFormatter(Func<FormattableString, string> formatter, bool printF = true);
@@ -19,42 +54,12 @@ namespace AVS.CoreLib.PowerConsole.Printers
         void Print(string str, CTag tag, bool endLine);
     }
 
-    public class PowerConsolePrinter : XPrinter, IPowerConsolePrinter
+
+
+    public interface IBasicPrinter2
     {
-        public PowerConsolePrinter(TextWriter writer, ColorMode mode = ColorMode.AnsiCodes) : base(writer, mode)
-        {
-        }
-
-        public void SetCustomFormatter(Func<FormattableString, string> formatter, bool printF = true)
-        {
-            if (printF)
-                XFormat = formatter;
-            else
-                Format = formatter;
-        }
-
-        /// <summary>
-        /// colorize arguments of <see cref="FormattableString"/> kind of auto-highlight feature in color formatter for console logging
-        /// </summary>
-        public void Print(FormattableString str, ColorPalette palette, bool endLine)
-        {
-            throw new NotImplementedException();
-            //var arguments = str.GetArguments();
-            //var str2 = new FormattableString2(str.Format, arguments);
-            //var preprocessor = FormatPreprocessor;
-
-            //if (preprocessor is ColorFormatPreprocessor colorFormatPreprocessor)
-            //    colorFormatPreprocessor.Palette = palette;
-
-            //var formattedString = str2.ToString(X.FormatProvider, printer.FormatPreprocessor, X.TextProcessor);
-            //var colorMarkupStr = new ColorMarkupString(formattedString);
-
-            //printer.Print(colorMarkupStr, endLine);
-        }
-
-        public void Print(string str, CTag tag, bool endLine = true)
-        {
-            Writer.Write(str, tag, endLine);
-        }
+        void Print(string str, bool endLine);
+        void PrintLine(bool voidMultipleEmptyLines = true);
+        void PrintLine(string str, bool voidMultipleEmptyLines);
     }
 }

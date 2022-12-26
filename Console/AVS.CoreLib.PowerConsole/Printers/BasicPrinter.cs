@@ -5,20 +5,10 @@ using AVS.CoreLib.PowerConsole.Writers;
 
 namespace AVS.CoreLib.PowerConsole.Printers
 {
-    public interface IBasicPrinter
-    {
-        void Print(string str, bool endLine);
-
-        void Print(FormattableString str, bool endLine);
-
-        void PrintLine(bool voidMultipleEmptyLines = true);
-        void PrintLine(string str, bool voidMultipleEmptyLines);
-    }
-
     /// <summary>
     /// simply write str to <see cref="System.Console.Out"/> stream
     /// </summary>
-    public class BasicPrinter<TWriter> : IBasicPrinter where TWriter : class, IBasicWriter
+    public class BasicPrinter<TWriter> : IBasicPrinter where TWriter : class, IOutputWriter
     {
         /// <summary>
         /// Indicates whether new line (\r\n) has been just written
@@ -45,7 +35,7 @@ namespace AVS.CoreLib.PowerConsole.Printers
 
         public void PrintLine(bool voidMultipleEmptyLines = true)
         {
-            Writer.WriteLine(voidMultipleEmptyLines);
+            Writer.WriteLine(null, voidMultipleEmptyLines);
         }
 
         public void PrintLine(string str, bool voidMultipleEmptyLines)

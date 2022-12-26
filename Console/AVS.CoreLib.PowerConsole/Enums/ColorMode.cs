@@ -17,7 +17,7 @@
         /// </summary>
         AnsiCodes = 1,
         /// <summary>
-        /// avoid colors print just plain text
+        /// print plain text, i.e. no colors removing color tags and color-markup 
         /// </summary>
         PlainText = 2
     }

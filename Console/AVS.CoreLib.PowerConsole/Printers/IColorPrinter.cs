@@ -10,33 +10,19 @@ using AVS.CoreLib.PowerConsole.Writers;
 
 namespace AVS.CoreLib.PowerConsole.Printers
 {
-    public interface IColorPrinter
-    {
-        void SwitchMode(ColorMode mode);
-        void Print(string str, bool endLine, bool? containsCTags);
-        void Print(string str, bool endLine, ConsoleColor? color, bool? containsCTags = null);
-        void Print(string str, bool endLine, Colors colors, bool? containsCTags = null);
-        void Print(string str, bool endLine, ColorScheme scheme, bool? containsCTags = null);
-
-        void Print(FormattableString str, bool endLine, bool? containsCTags = null);
-        void Print(FormattableString str, bool endLine, ConsoleColor? color, bool? containsCTags = null);
-        void Print(FormattableString str, bool endLine, Colors colors, bool? containsCTags = null);
-        void Print(FormattableString str, bool endLine, ColorScheme scheme, bool? containsCTags = null);
-    }
-
-    public class ColorPrinter: BasicPrinter<IColorWriter>, IColorPrinter
+    public class ColorPrinter: BasicPrinter<IOutputWriter>, IColorPrinter
     {
         private readonly TextWriter _textWriter;
         public ColorMode ColorMode { get; private set; }
 
-        public ColorPrinter(TextWriter textWriter, ColorMode mode) : base(ColorWriter.Create(textWriter, mode))
+        public ColorPrinter(TextWriter textWriter, ColorMode mode) : base(OutputWriter.Create(textWriter, mode))
         {
             _textWriter = textWriter;
         }
 
         public void SwitchMode(ColorMode mode)
         {
-            Writer = ColorWriter.Create(_textWriter, mode);
+            Writer = OutputWriter.Create(_textWriter, mode);
             ColorMode = mode;
         }
 
@@ -50,19 +36,19 @@ namespace AVS.CoreLib.PowerConsole.Printers
         public virtual void Print(string str, bool endLine, ConsoleColor? color, bool? containsCTags = null)
         {
             if (color.HasValue)
-                Writer.Write(str, color.Value, endLine, containsCTags);
+                Writer.Write(str, endLine, containsCTags, color.Value);
             else
                 Writer.Write(str, endLine, containsCTags);
         }
 
         public virtual void Print(string str, bool endLine, Colors colors, bool? containsCTags = null)
         {
-            Writer.Write(str, colors, endLine, containsCTags);
+            Writer.Write(str, endLine, containsCTags, colors);
         }
 
         public virtual void Print(string str, bool endLine, ColorScheme scheme, bool? containsCTags = null)
         {
-            Writer.Write(str, scheme, endLine, containsCTags);
+            Writer.Write(str, endLine, containsCTags, scheme);
         }
 
         #endregion
@@ -79,7 +65,7 @@ namespace AVS.CoreLib.PowerConsole.Printers
         {
             var text = FormatInternal(str);
             if (color.HasValue)
-                Writer.Write(text, color.Value, endLine, containsCTags);
+                Writer.Write(text, endLine, containsCTags, color.Value);
             else             
                 Writer.Write(text, endLine, containsCTags);
         }
@@ -87,13 +73,13 @@ namespace AVS.CoreLib.PowerConsole.Printers
         public void Print(FormattableString str, bool endLine, Colors colors, bool? containsCTags = null)
         {
             var text = FormatInternal(str);
-            Writer.Write(text, colors, endLine, containsCTags);
+            Writer.Write(text, endLine, containsCTags, colors);
         }
 
         public void Print(FormattableString str, bool endLine, ColorScheme scheme, bool? containsCTags = null)
         {
             var text = FormatInternal(str);
-            Writer.Write(text, scheme, endLine, containsCTags);
+            Writer.Write(text, endLine, containsCTags, scheme);
         }
         #endregion
     }

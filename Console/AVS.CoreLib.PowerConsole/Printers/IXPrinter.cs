@@ -12,19 +12,6 @@ using AVS.CoreLib.Text.TextProcessors;
 namespace AVS.CoreLib.PowerConsole.Printers
 {
     //note PrintF methods by default should support ctags and color markup in text e.g. <Red>Hello {world:--bgYellow}</Red> 
-
-    /// <remarks>
-    /// strings staring with @ symbol are treated as strings with expression(s) and processed by TextProcessor(s) this is part of X.Format(); 
-    /// <see cref="TextExpressionProcessor"/>
-    /// </remarks>
-    public interface IXPrinter
-    {
-        void PrintF(FormattableString str, bool endLine, bool containsCTags = true);
-        void PrintF(FormattableString str, bool endLine, ConsoleColor? color, bool containsCTags = true);
-        void PrintF(FormattableString str, bool endLine, Colors colors, bool containsCTags = true);
-        void PrintF(FormattableString str, bool endLine, ColorScheme scheme, bool containsCTags = true);
-    }
-
     public class XPrinter : ColorPrinter, IXPrinter
     {
         /// <summary>
@@ -70,7 +57,7 @@ namespace AVS.CoreLib.PowerConsole.Printers
             var text = XFormatInternal(str);
 
             if (color.HasValue)
-                Writer.Write(text, color.Value, endLine, containsCTags);
+                Writer.Write(text, endLine, containsCTags, color.Value);
             else
                 Writer.Write(text, endLine, containsCTags);
         }
@@ -78,13 +65,13 @@ namespace AVS.CoreLib.PowerConsole.Printers
         public void PrintF(FormattableString str, bool endLine, Colors colors, bool containsCTags = true)
         {
             var text = XFormatInternal(str);
-            Writer.Write(text, colors, endLine, containsCTags);
+            Writer.Write(text, endLine, containsCTags, colors);
         }
 
         public void PrintF(FormattableString str, bool endLine, ColorScheme scheme, bool containsCTags = true)
         {
             var text = XFormatInternal(str);
-            Writer.Write(text, scheme, endLine, containsCTags);
+            Writer.Write(text, endLine, containsCTags, scheme);
         }
     }
 }

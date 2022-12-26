@@ -52,6 +52,11 @@
     <Compile Remove="Extensions\RegexExtensions.cs" />
     <Compile Remove="Printers\IPrinter_.cs" />
     <Compile Remove="Printers\StringifyPrinter.cs" />
+    <Compile Remove="Writers\BasicWriter.cs" />
+    <Compile Remove="Writers\ColorWriter.cs" />
+    <Compile Remove="Writers\IColorWriter.cs" />
+    <Compile Remove="Writers\PlainTextWriter.cs" />
+    <Compile Remove="Writers\SwitchColorWriter.cs" />
   </ItemGroup>
 
   <ItemGroup>
