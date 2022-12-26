@@ -13,10 +13,10 @@ namespace AVS.CoreLib.PowerConsole.Extensions
 {
     public static class PrinterExtensions
     {
-        public static void PrintJson<T>(this IPowerConsolePrinter printer, T obj, bool indented, ConsoleColor? color, bool endLine)
+        public static void PrintJson<T>(this IPowerConsolePrinter printer, T obj, bool indented, ConsoleColor? color = null, bool endLine = true)
         {
             var str = obj.ToJsonString(indented);
-            printer.Print(str, endLine, color);
+            printer.Print(str, endLine, false, color);
         }
 
         public static void PrintArray<T>(this IPowerConsolePrinter printer, IEnumerable<T> enumerable,
@@ -62,22 +62,22 @@ namespace AVS.CoreLib.PowerConsole.Extensions
         }
 
 
-        public static void PrintTable(this IPowerConsolePrinter printer, Table table, ConsoleColor? color, bool endLine, bool containsCTags)
+        public static void PrintTable(this IPowerConsolePrinter printer, Table table, bool endLine, bool? containsCTags, ConsoleColor? color)
         {
             var str = table.ToString();
-            printer.Print(str, endLine, color,  containsCTags);
+            printer.Print(str, endLine, containsCTags, color);
         }
 
-        public static void PrintHeader(this IPowerConsolePrinter printer, string header, string template, string lineIndentation, ConsoleColor? color)
+        public static void PrintHeader(this IPowerConsolePrinter printer, string header, string template, string lineIndentation, bool? containsCTags, ConsoleColor? color)
         {
             var str = $"{template} {header} {template}{lineIndentation}";
-            printer.Print(str, false, color);
+            printer.Print(str, false, containsCTags, color);
         }
 
-        public static void PrintTest(this IPowerConsolePrinter printer, string message, bool test, int padRight, bool endLine)
+        public static void PrintTest(this IPowerConsolePrinter printer, string message, bool test, int padRight, bool endLine, bool? containsCTags = null)
         {
             var str = message.PadRight(padRight) + (test ? "OK" : "Fail");
-            printer.Print(str, endLine, test ? ConsoleColor.DarkGreen : ConsoleColor.DarkRed, false);
+            printer.Print(str, endLine, containsCTags, test ? ConsoleColor.DarkGreen : ConsoleColor.DarkRed);
         }
 
         public static void PrintTimeElapsed(this IPowerConsolePrinter printer, string? message, DateTime from, ConsoleColor? color, bool endLine)
@@ -87,7 +87,7 @@ namespace AVS.CoreLib.PowerConsole.Extensions
                 return;
 
             var text = message == null ? $"[elapsed:{ms:N3} ms]" : $"{message}   [elapsed:{ms:N3} ms]";
-            printer.Print(text, endLine, color);
+            printer.Print(text, endLine, false, color);
         }
 
         public static void PrintConsoleColors(this IPowerConsolePrinter printer)
@@ -96,7 +96,7 @@ namespace AVS.CoreLib.PowerConsole.Extensions
             foreach (var colorName in values)
             {
                 var color = Enum.Parse<ConsoleColor>(colorName);
-                printer.Print(colorName, true, color);
+                printer.Print(colorName, true, false, color);
             }
         }
         public static void Print(this IPowerConsolePrinter printer, 
@@ -107,14 +107,14 @@ namespace AVS.CoreLib.PowerConsole.Extensions
             if (!string.IsNullOrEmpty(timeFormat))
                 str = $"{DateTime.Now.ToString(timeFormat)} {str}";
             var color = ColorScheme.GetStatusColorScheme(status);
-            printer.Print(str, endLine, color, containsCTags);
+            printer.Print(str, endLine, containsCTags, color);
         }
 
         public static void PrintError(this IPowerConsolePrinter printer, Exception ex,
             bool printStackTrace = true,
             string? timeFormat = "yyyy-MM-dd hh:mm:ss.ff")
         {
-             printer.Print($"\r\n{ex.GetType().Name}: ", false, ConsoleColor.DarkRed, containsCTags: false);
+             printer.Print($"\r\n{ex.GetType().Name}: ", false, containsCTags: false, ConsoleColor.DarkRed);
              printer.Print(ex.Message, MessageStatus.Error, timeFormat, true, containsCTags: false);
             if (printStackTrace)
                 printer.Print(ex.StackTrace, MessageStatus.Debug, null, containsCTags: false);

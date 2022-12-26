@@ -47,12 +47,12 @@ namespace AVS.CoreLib.PowerConsole
 
         public static void Print(string str, CTag tag, bool endLine = true)
         {
-            Printer.Print(str, tag, endLine);
+            Printer.Print(str, endLine, false, tag);
         }
 
         public static void Print(string str, ConsoleColor color, bool endLine = true, bool colorTags = false)
         {
-            Printer.Print(str, endLine, color, endLine);
+            Printer.Print(str, endLine, colorTags, color);
         }
 
         public static void Print(string str, ColorScheme scheme, bool endLine = true, bool colorTags = false)
@@ -62,12 +62,12 @@ namespace AVS.CoreLib.PowerConsole
 
         public static void Print(FormattableString str, bool endLine = true, bool colorTags = false)
         {
-            Printer.Print(str, endLine, color: null, colorTags);
+            Printer.Print(str, endLine, colorTags);
         }
 
         public static void Print(FormattableString str, ConsoleColor color, bool endLine = true, bool colorTags = false)
         {
-            Printer.Print(str, endLine, color, colorTags);
+            Printer.Print(str, endLine, colorTags, color);
         }
 
         public static void Print(FormattableString str, ColorPalette palette, bool endLine = true)

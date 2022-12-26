@@ -19,7 +19,7 @@ namespace AVS.CoreLib.PowerConsole
 
         public static void WriteLine(string message, bool voidEmptyLines = false)
         {
-            Printer.PrintLine(message, voidEmptyLines);
+            Printer.WriteLine(message, voidEmptyLines);
         }
 
         /// <summary>
@@ -34,14 +34,14 @@ namespace AVS.CoreLib.PowerConsole
             if (!string.IsNullOrEmpty(timeFormat))
                 message = $"{DateTime.Now.ToString(timeFormat)} {message}";
 
-            Printer.Print(message, true, color, false);
+            Printer.Print(message, true, false, color);
         }
         public static void WriteLine(string message, ColorScheme scheme, string timeFormat = "yyyy-MM-dd hh:mm:ss.ff")
         {
             if (!string.IsNullOrEmpty(timeFormat))
                 message = $"{DateTime.Now.ToString(timeFormat)} {message}";
 
-            Printer.Print(message,true, scheme, false);
+            Printer.Print(message,true, false, scheme);
         }
 
         public static void WriteLine(int posX, int posY, params string[] arr)
@@ -55,7 +55,7 @@ namespace AVS.CoreLib.PowerConsole
 
         public static void WriteLine(bool voidMultipleEmptyLines = true)
         {
-            Printer.PrintLine(voidMultipleEmptyLines);
+            Printer.WriteLine(null, voidMultipleEmptyLines);
         } 
 
         #endregion
@@ -67,12 +67,12 @@ namespace AVS.CoreLib.PowerConsole
      
         public static void Write(string str, ConsoleColor? color, bool endLine = false)
         {
-            Printer.Print(str, endLine, color, containsCTags: false);
+            Printer.Print(str, endLine, containsCTags: false, color);
         }
 
         public static void Write(string str, ColorScheme scheme, bool endLine = false)
         {
-            Printer.Print(str, endLine, scheme, containsCTags:false);
+            Printer.Print(str, endLine, containsCTags:false, scheme);
         }
 
         /// <summary>

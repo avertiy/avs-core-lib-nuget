@@ -11,8 +11,7 @@ using AVS.CoreLib.Text.TextProcessors;
 
 namespace AVS.CoreLib.PowerConsole.Printers
 {
-    //note PrintF methods by default should support ctags and color markup in text e.g. <Red>Hello {world:--bgYellow}</Red> 
-    public class XPrinter : ColorPrinter, IXPrinter
+    public class XPrinter : Printer, IXPrinter
     {
         /// <summary>
         /// XFormat delegate based on <see cref="X.Format(FormattableString)"/> is used to convert <see cref="FormattableString"/> to string in PowerConsole.PrintF(..) methods
@@ -24,17 +23,15 @@ namespace AVS.CoreLib.PowerConsole.Printers
         {
         }
 
-        protected string XFormatInternal(FormattableString str)
+        public void SetCustomFormatter(Func<FormattableString, string> formatter, bool printF = true)
         {
-            return XFormat?.Invoke(str) ?? str.ToString(CultureInfo.CurrentCulture);
-        }
-        public void PrintF(FormattableString str, bool endLine, bool containsCTags = true)
-        {
-            var text = XFormatInternal(str);
-            Writer.Write(text, endLine, containsCTags);
+            if (printF)
+                XFormat = formatter;
+            else
+                Format = formatter;
         }
 
-        public void PrintF(FormattableString str, bool endLine, ConsoleColor? color, bool containsCTags = true)
+        protected string XFormatInternal(FormattableString str)
         {
             //1. x-formatted string might contain color formatting: {text:-Color --BackgroundColor}
             //Table/Square/Header tag formatters are not implemented yet
@@ -50,28 +47,38 @@ namespace AVS.CoreLib.PowerConsole.Printers
 
             //i.e. we need here somehow process line by line highlight etc.
             //XFormattedStringFactory.Create(formattedString) => ColorFormattedString or TableFormatted or something else
-
             //Print(new ColorMarkupString(formattedString), color, endLine);
-
-
-            var text = XFormatInternal(str);
-
-            if (color.HasValue)
-                Writer.Write(text, endLine, containsCTags, color.Value);
-            else
-                Writer.Write(text, endLine, containsCTags);
+            return XFormat?.Invoke(str) ?? str.ToString(CultureInfo.CurrentCulture);
         }
 
-        public void PrintF(FormattableString str, bool endLine, Colors colors, bool containsCTags = true)
+        public void PrintF(FormattableString str, bool endLine = true)
+        {
+            var text = XFormatInternal(str);
+            Writer.Write(text, endLine);
+        }
+
+        public void PrintF(FormattableString str, bool endLine, bool? containsCTags)
+        {
+            var text = XFormatInternal(str);
+            Writer.Write(text, endLine, containsCTags);
+        }
+
+        public void PrintF(FormattableString str, bool endLine, bool? containsCTags, ConsoleColor? color)
+        {
+            var text = XFormatInternal(str);
+            Writer.Write(text, endLine, containsCTags, color);
+        }
+
+        public void PrintF(FormattableString str, bool endLine, bool? containsCTags, Colors colors)
         {
             var text = XFormatInternal(str);
             Writer.Write(text, endLine, containsCTags, colors);
         }
 
-        public void PrintF(FormattableString str, bool endLine, ColorScheme scheme, bool containsCTags = true)
+        public void PrintF(FormattableString str, bool endLine, bool? containsCTags, ColorScheme scheme)
         {
             var text = XFormatInternal(str);
             Writer.Write(text, endLine, containsCTags, scheme);
         }
-    }
+      }
 }

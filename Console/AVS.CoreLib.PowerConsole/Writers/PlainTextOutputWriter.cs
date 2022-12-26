@@ -12,7 +12,7 @@ namespace AVS.CoreLib.PowerConsole.Writers
         {
         }
 
-        public override void Write(string str, bool endLine, bool? containsCTags, ConsoleColor color)
+        public override void Write(string str, bool endLine, bool? containsCTags, ConsoleColor? color)
         {
             base.Write(str, endLine, containsCTags);
         }

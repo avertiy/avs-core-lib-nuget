@@ -36,27 +36,27 @@ namespace AVS.CoreLib.PowerConsole
             string separator = "\r\n",
             bool endLine = true)
         {
-            Printer.Print(dictionary.ToKeyValueString(keyValueSeparator, separator), endLine, color, false);
+            Printer.Print(dictionary.ToKeyValueString(keyValueSeparator, separator), endLine, false, color);
         }
 
         public static void PrintJson<T>(T obj,
             bool indented = false,
-            ConsoleColor color = ConsoleColor.White,
+            ConsoleColor? color = null,
             bool endLine = true)
         {
             Printer.PrintJson<T>(obj, indented, color, endLine);
             
         }
 
-        public static void Dump<T>(T obj, ConsoleColor color = ConsoleColor.White)
+        public static void Dump<T>(T obj, ConsoleColor? color = null, bool endLine = true)
         {
-            Printer.PrintJson<T>(obj, true, color, true);
+            Printer.PrintJson<T>(obj, true, color, endLine);
         }
 
         public static void PrintHeader(string header, ConsoleColor color = ConsoleColor.Cyan,
             string template = "============", string lineIndentation = "\r\n\r\n")
         {
-            Printer.PrintHeader(header, template, lineIndentation, color);
+            Printer.PrintHeader(header, template, lineIndentation, false, color);
         }
 
         #region PrintTable
@@ -65,7 +65,7 @@ namespace AVS.CoreLib.PowerConsole
             bool endLine = true)
         {
             var table = Table.Create(data);
-            Printer.PrintTable(table,color, endLine, false);
+            Printer.PrintTable(table, endLine, false, color);
         }
 
         public static void PrintTable<T>(IEnumerable<T> data,
@@ -74,14 +74,14 @@ namespace AVS.CoreLib.PowerConsole
         {
             var table = Table.Create(data);
             configure?.Invoke(table);
-            Printer.PrintTable(table, null, endLine, false);
+            Printer.PrintTable(table, endLine, false, null);
         }
 
         public static void PrintTable(Table table,
             ConsoleColor color = ConsoleColor.White,
             bool endLine = true, bool containsTags = false)
         {
-            Printer.PrintTable(table, color, endLine, containsTags);
+            Printer.PrintTable(table, endLine, containsTags, color);
         }
 
         #endregion

@@ -11,7 +11,7 @@ namespace AVS.CoreLib.PowerConsole.Writers
     {
         void Write(string str, bool endLine = true);
         void Write(string str, bool endLine, bool? containsCTags);
-        void Write(string str, bool endLine, bool? containsCTags, ConsoleColor color);
+        void Write(string str, bool endLine, bool? containsCTags, ConsoleColor? color);
         void Write(string str, bool endLine, bool? containsCTags, CTag tag);
         void Write(string str, bool endLine, bool? containsCTags, ColorScheme scheme);
         void Write(string str, bool endLine, bool? containsCTags, Colors colors);
@@ -33,11 +33,6 @@ namespace AVS.CoreLib.PowerConsole.Writers
             TagProcessor = tagProcessor;
         }
 
-        public abstract void Write(string str, bool endLine, bool? containsCTags, ConsoleColor color);
-        public abstract void Write(string str, bool endLine, bool? containsCTags, CTag tag);
-        public abstract void Write(string str, bool endLine, bool? containsCTags, ColorScheme scheme);
-        public abstract void Write(string str, bool endLine, bool? containsCTags, Colors colors);
-
         public virtual void Write(string str, bool endLine = true)
         {
             Writer.Write(str);
@@ -55,6 +50,13 @@ namespace AVS.CoreLib.PowerConsole.Writers
             var text = PreProcessText(str, containsCTags);
             Writer.Write(text, endLine);
         }
+
+        public abstract void Write(string str, bool endLine, bool? containsCTags, ConsoleColor? color);
+        public abstract void Write(string str, bool endLine, bool? containsCTags, CTag tag);
+        public abstract void Write(string str, bool endLine, bool? containsCTags, ColorScheme scheme);
+        public abstract void Write(string str, bool endLine, bool? containsCTags, Colors colors);
+
+        
 
         public virtual void WriteLine(string? str = null, bool voidMultipleEmptyLines = true)
         {

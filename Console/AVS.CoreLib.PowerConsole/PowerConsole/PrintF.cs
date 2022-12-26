@@ -37,7 +37,7 @@ namespace AVS.CoreLib.PowerConsole
         /// </remarks>
         public static void PrintF(FormattableString str, ConsoleColor color, bool endLine = true, bool containsTags= true)
         {
-            Printer.PrintF(str, endLine, color, containsTags);
+            Printer.PrintF(str, endLine, containsTags, color);
         }
 
         //public static void PrintF(int posX, int posY, FormattableString str, bool endLine = true)

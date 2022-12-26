@@ -13,12 +13,19 @@ namespace AVS.CoreLib.PowerConsole.Writers
         {
         }
 
-        public override void Write(string str, bool endLine, bool? containsCTags, ConsoleColor color)
+        public override void Write(string str, bool endLine, bool? containsCTags, ConsoleColor? color)
         {
-            var colorBackup = System.Console.ForegroundColor;
-            System.Console.ForegroundColor = color;
-            base.Write(str, endLine, containsCTags);
-            System.Console.ForegroundColor = colorBackup;
+            if (color.HasValue)
+            {
+                var colorBackup = System.Console.ForegroundColor;
+                System.Console.ForegroundColor = color.Value;
+                base.Write(str, endLine, containsCTags);
+                System.Console.ForegroundColor = colorBackup;
+            }
+            else
+            {
+                base.Write(str, endLine, containsCTags);
+            }
         }
 
         public override void Write(string str, bool endLine, bool? containsCTags, CTag tag)

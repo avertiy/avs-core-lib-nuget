@@ -6,18 +6,15 @@ using AVS.CoreLib.PowerConsole.Utilities;
 
 namespace AVS.CoreLib.PowerConsole.Printers
 {
+    public interface IPowerConsolePrinter : IXPrinter
+    {
+        void Print(FormattableString str, ColorPalette palette, bool endLine);
+    }
+
     public class PowerConsolePrinter : XPrinter, IPowerConsolePrinter
     {
         public PowerConsolePrinter(TextWriter writer, ColorMode mode = ColorMode.AnsiCodes) : base(writer, mode)
         {
-        }
-
-        public void SetCustomFormatter(Func<FormattableString, string> formatter, bool printF = true)
-        {
-            if (printF)
-                XFormat = formatter;
-            else
-                Format = formatter;
         }
 
         /// <summary>
@@ -37,11 +34,6 @@ namespace AVS.CoreLib.PowerConsole.Printers
             //var colorMarkupStr = new ColorMarkupString(formattedString);
 
             //printer.Print(colorMarkupStr, endLine);
-        }
-
-        public void Print(string str, CTag tag, bool endLine = true)
-        {
-            Writer.Write(str, endLine, false, tag);
         }
     }
 }

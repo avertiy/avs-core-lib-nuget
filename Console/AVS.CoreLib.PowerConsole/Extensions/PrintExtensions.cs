@@ -42,7 +42,7 @@ namespace AVS.CoreLib.PowerConsole.Printers
             }
 
             if (endLine)
-                printer.PrintLine();
+                printer.WriteLine();
         }
 
         public static void Print(this IPrinter printer, ColorMarkupString str, ConsoleColor? color, bool endLine)
@@ -61,7 +61,7 @@ namespace AVS.CoreLib.PowerConsole.Printers
             }
 
             if (endLine)
-                printer.PrintLine();
+                printer.WriteLine();
         }
 
         public static void Print(this IPrinter printer, IEnumerable<ColorString> messages)
