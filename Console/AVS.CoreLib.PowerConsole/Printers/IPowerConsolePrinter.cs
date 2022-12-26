@@ -54,7 +54,7 @@ namespace AVS.CoreLib.PowerConsole.Printers
 
         public void Print(string str, CTag tag, bool endLine = true)
         {
-            Writer.Write(str.WrapInTag(tag), endLine, true);
+            Writer.Write(str, tag, endLine);
         }
     }
 }

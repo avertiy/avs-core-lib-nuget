@@ -9,38 +9,30 @@ namespace AVS.CoreLib.Console.ColorFormatting.Tags
     /// </summary>
     public class CTagProcessor : TagProcessor
     {
-        public bool FixBgColorLineEnding { get; set; } = true;
-        public int TagMaxLength { get; set; } = 20;
+        public static bool FixBgColorLineEnding { get; set; } = true;
 
         public override void Process(StringBuilder sb)
         {
-            if (!sb.AnyTags())
-                return;
-
-            for (var i = 0; i < sb.Length - 3; i++)
+            Process(sb, (tagName, startIndex, endIndex) =>
             {
-                if (!sb.MatchTag(i, out var tagName, out var closingTagIndex, TagMaxLength) || !Enum.TryParse(tagName, out CTag tag))
-                    continue;
-
-                var length = tagName.Length + 2;
-                var end = closingTagIndex + length + 1;
+                if (!Enum.TryParse(tagName, out CTag tag))
+                    return -1;
 
                 if (FixBgColorLineEnding && tagName.StartsWith("bg"))
-                    sb.FixBgColorLineEnding(end);
+                    sb.FixBgColorLineEnding(endIndex);
 
                 // fix bg color at the end of line 
-                if (end == sb.Length - 1 || end == sb.Length)
+                if (endIndex == sb.Length - 1 || endIndex == sb.Length)
                     sb.Append(' ');
 
-                sb.Replace($"</{tagName}>", AnsiCodes.RESET, closingTagIndex, length + 1);
+                var length = tagName.Length;
                 var ansiCode = tag.ToAnsiCode();
-                sb.Replace($"<{tagName}>", ansiCode, i, length);
 
-                i += ansiCode.Length;
-                //return back cursor position
-                if (i > length)
-                    i -= (length - ansiCode.Length + 1);
-            }
+                sb.Replace($"</{tagName}>", AnsiCodes.RESET, endIndex - length-3, length + 3);
+                sb.Replace($"<{tagName}>", ansiCode, startIndex, length+2);
+
+                return ansiCode.Length;
+            });
         }
     }
 }

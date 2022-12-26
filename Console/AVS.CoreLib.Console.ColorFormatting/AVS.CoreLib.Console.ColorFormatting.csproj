@@ -21,6 +21,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="CTagMarkup\**" />
+    <EmbeddedResource Remove="CTagMarkup\**" />
+    <None Remove="CTagMarkup\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AVS.CoreLib.Extensions" Version="2.1.0" />
   </ItemGroup>
 

@@ -2,6 +2,7 @@
 using System.IO;
 using System.Security.Cryptography;
 using AVS.CoreLib.Console.ColorFormatting;
+using AVS.CoreLib.Console.ColorFormatting.Extensions;
 using AVS.CoreLib.Console.ColorFormatting.Tags;
 using AVS.CoreLib.PowerConsole.Enums;
 using AVS.CoreLib.PowerConsole.Extensions;
@@ -14,6 +15,7 @@ namespace AVS.CoreLib.PowerConsole.Writers
         void Write(string str, ConsoleColor? color, bool endLine, bool? containsCTags);
         void Write(string str, ColorScheme scheme, bool endLine, bool? containsCTags);
         void Write(string str, Colors colors, bool endLine, bool? containsCTags);
+        void Write(string str, CTag tag, bool endLine);
     }
 
     public class ColorWriter : BasicWriter, IColorWriter
@@ -57,6 +59,13 @@ namespace AVS.CoreLib.PowerConsole.Writers
             var coloredStr = colors.Colorize(str);
             Write(coloredStr, endLine, containsCTags);
         }
+
+        public virtual void Write(string str, CTag tag, bool endLine)
+        {
+            var coloredStr = tag.Colorize(str);
+            Write(coloredStr, endLine);
+        }
+
         #endregion
 
 
@@ -68,7 +77,7 @@ namespace AVS.CoreLib.PowerConsole.Writers
                 case ColorMode.PlainText:
                     writer = new PlainTextWriter(textWriter);
                     break;
-                case ColorMode.Default:
+                case ColorMode.AnsiCodes:
                     writer = new ColorWriter(textWriter);
                     break;
                 default:

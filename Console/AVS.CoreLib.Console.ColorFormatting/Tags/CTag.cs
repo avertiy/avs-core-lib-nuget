@@ -1,4 +1,6 @@
-﻿namespace AVS.CoreLib.Console.ColorFormatting.Tags
+﻿using System;
+
+namespace AVS.CoreLib.Console.ColorFormatting.Tags
 {
     /// <summary>
     /// CTags (color tags) or simply tags correlate with ansi codes, the purpose of tags is to make string color formatting human-readable
@@ -91,9 +93,124 @@
             return ansiCode;
         }
 
+        public static string Colorize(this CTag tag, string str)
+        {
+            return $"{tag.ToAnsiCode()}{str}{AnsiCodes.RESET}";
+        }
+
         public static string Wrap(this CTag tag, string str)
         {
             return $"<{tag}>{str}</{tag}>";
+        }
+
+        public static Colors ToColors(this CTag tag)
+        {
+            var color = tag.ToConsoleColor(out var bright, out var bg);
+            return bg ? new Colors(null, color) : new Colors(color, null);
+        }
+
+        public static ConsoleColor? ToConsoleColor(this CTag tag, out bool bright, out bool isBgColor)
+        {
+            bright = false;
+            isBgColor = false;
+
+            switch (tag)
+            {
+                case CTag.Black:
+                    return ConsoleColor.Black;
+                case CTag.DarkBlue:
+                    return ConsoleColor.DarkBlue;
+                case CTag.DarkGreen:
+                    return ConsoleColor.DarkGreen;
+                case CTag.DarkCyan:
+                    return ConsoleColor.DarkCyan;
+                case CTag.DarkRed:
+                    return ConsoleColor.DarkRed;
+                case CTag.DarkMagenta:
+                    return ConsoleColor.DarkMagenta;
+                case CTag.DarkYellow:
+                    return ConsoleColor.DarkYellow;
+                case CTag.Gray:
+                    return ConsoleColor.Gray;
+                case CTag.DarkGray:
+                    return ConsoleColor.DarkGray;
+                case CTag.Blue:
+                    return ConsoleColor.Blue;
+                case CTag.Green:
+                    return ConsoleColor.Green;
+                case CTag.Cyan:
+                    return ConsoleColor.Cyan;
+                case CTag.Red:
+                    return ConsoleColor.Red;
+                case CTag.Magenta:
+                    return ConsoleColor.Magenta;
+                case CTag.Yellow:
+                    return ConsoleColor.Yellow;
+                case CTag.White:
+                    return ConsoleColor.White;
+            }
+
+            bright = true;
+
+            switch (tag)
+            {
+                case CTag.BrightRed:
+                    return ConsoleColor.Red;
+                case CTag.BrightGreen:
+                    return ConsoleColor.Green;
+                case CTag.BrightYellow:
+                    return ConsoleColor.Yellow;
+                case CTag.BrightBlue:
+                    return ConsoleColor.Blue;
+                case CTag.BrightMagenta:
+                    return ConsoleColor.Magenta;
+                case CTag.BrightCyan:
+                    return ConsoleColor.Cyan;
+                case CTag.BrightWhite:
+                    return ConsoleColor.White;
+            }
+
+            bright = false;
+            isBgColor = true;
+
+            switch (tag)
+            {
+                case CTag.bgBlack:
+                    return ConsoleColor.Black;
+                case CTag.bgDarkBlue:
+                    return ConsoleColor.DarkBlue;
+                case CTag.bgDarkGreen:
+                    return ConsoleColor.DarkGreen;
+                case CTag.bgDarkCyan:
+                    return ConsoleColor.DarkCyan;
+                case CTag.bgDarkRed:
+                    return ConsoleColor.DarkRed;
+                case CTag.bgDarkMagenta:
+                    return ConsoleColor.DarkMagenta;
+                case CTag.bgDarkYellow:
+                    return ConsoleColor.DarkYellow;
+
+                case CTag.bgGray:
+                    return ConsoleColor.Gray;
+                case CTag.bgDarkGray:
+                    return ConsoleColor.DarkGray;
+                case CTag.bgBlue:
+                    return ConsoleColor.Blue;
+                case CTag.bgGreen:
+                    return ConsoleColor.Green;
+                case CTag.bgCyan:
+                    return ConsoleColor.Cyan;
+                case CTag.bgRed:
+                    return ConsoleColor.Red;
+                case CTag.bgMagenta:
+                    return ConsoleColor.Magenta;
+                case CTag.bgYellow:
+                    return ConsoleColor.Yellow;
+                case CTag.bgWhite:
+                    return ConsoleColor.White;
+            }
+
+            return null;
         }
     }
 }

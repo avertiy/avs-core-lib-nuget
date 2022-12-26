@@ -19,13 +19,13 @@ namespace AVS.CoreLib.PowerConsole
         /// in case you use X.Format
         /// strings staring with @ symbol are treated as strings with expression(s) and processed by TextProcessor(s)
         /// </remarks>
-        public static void PrintF(FormattableString str, bool endLine = true)
+        public static void PrintF(FormattableString str, bool endLine = true, bool containsTags = true)
         {
-            Printer.PrintF(str, endLine);
+            Printer.PrintF(str, endLine, containsTags);
         }
 
         /// <summary>
-        /// An input string formatted by <see cref="XFormat"/> delegate
+        /// An input string formatted by <see cref="XFormatProvider"/> delegate
         /// <see cref="ColorMarkupString"/> formatting is supported
         /// </summary>
         /// <param name="str">input string</param>

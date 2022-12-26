@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions;
 using AVS.CoreLib.Abstractions.Bootstrap;
+using AVS.CoreLib.Console.ColorFormatting.Tags;
 using AVS.CoreLib.PowerConsole.ConsoleTable;
 using AVS.CoreLib.PowerConsole.Utilities;
 using AVS.CoreLib.Text;
@@ -18,7 +19,8 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
         {
             try
             {
-                FormatPreprocessorTest();
+                //FormatPreprocessorTest();
+                PrintCTagsTest();
                 PrinterTest();
                 PrintHeader();
                 PrintColorScheme();
@@ -51,10 +53,20 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
             PowerConsole.PrintF($"Supposed to be Cyan: {TradeType.Sell}");
         }
 
+
+        private void PrintCTagsTest()
+        {
+            PowerConsole.PrintHeader($" CTags Test");
+
+            PowerConsole.Print("text in yellow ctag", CTag.Yellow);
+            PowerConsole.Print("text with color tags <Cyan>cyan</Cyan>", colorTags: true);
+            PowerConsole.Print("text with <Red>a few tags</Red><Cyan>cyan</Cyan>", colorTags: true);
+            PowerConsole.Print("text with <Red>a few tags<Cyan>cyan</Cyan></Red>", colorTags: true);
+        }
+
         private void PrinterTest()
         {
             PowerConsole.PrintHeader($" Printer Test");
-
             PowerConsole.Print($"some text {TradeType.Buy} some other text {TradeType.Sell}", ColorPalette.RedGreen, true);
             PowerConsole.Print($"some text {TradeType.Buy} some other text {TradeType.Sell}", new[] { ConsoleColor.DarkYellow, ConsoleColor.Cyan }, true);
         }
