@@ -19,28 +19,6 @@ namespace AVS.CoreLib.PowerConsole.Extensions
             printer.Print(str, endLine, false, color);
         }
 
-        public static void PrintDictionary<TKey, TValue>(this IPowerConsolePrinter printer,
-            string? message, IDictionary<TKey, TValue> dictionary,
-            PrintArrayOptions? options,
-            Func<TKey, TValue, string>? formatter,
-            bool endLine)
-        {
-            string str;
-            var tags = false;
-            if (options == null)
-                str = dictionary.Stringify(StringifyFormat.Default, ",", ":", formatter);
-            else
-            {
-                str = dictionary.Stringify(options.Format, options.Separator, options.KeyValueSeparator, formatter, options.MaxLength);
-                str = options.Colors.Colorize(str);
-                tags = options.ContainsCTags;
-            }
-
-            var text = message == null ? str : $"{message}{str}";
-            printer.Print(text, endLine, tags);
-        }
-
-
         public static void PrintTable(this IPowerConsolePrinter printer, Table table, bool endLine, bool? containsCTags, ConsoleColor? color)
         {
             var str = table.ToString();

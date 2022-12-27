@@ -18,13 +18,25 @@ namespace AVS.CoreLib.PowerConsole
     public static partial class PowerConsole
     {
         public static void PrintKeyValue<TKey, TValue>(IDictionary<TKey, TValue> dictionary,
-            ConsoleColor color = ConsoleColor.White,
-            string keyValueSeparator = " => ",
-            string separator = "\r\n",
-            bool endLine = true)
+            ConsoleColor? color = null,
+            string? message = null,
+            StringifyOptions? options = null,
+            Func<TKey, TValue, string>? formatter = null,
+            bool endLine = true,
+            bool colorTags = false)
         {
-            Printer.Print(dictionary.ToKeyValueString(keyValueSeparator, separator), endLine, false, color);
+            Printer.PrintDictionary(dictionary, message, options, formatter, color, endLine, colorTags);
         }
 
+        public static void PrintKeyValue<TKey, TValue>(IDictionary<TKey, TValue> dictionary,
+            Colors colors,
+            string? message = null,
+            StringifyOptions? options = null,
+            Func<TKey, TValue, string>? formatter = null,
+            bool endLine = true,
+            bool colorTags = false)
+        {
+            Printer.PrintDictionary(dictionary, message, options, formatter, colors, endLine, colorTags);
+        }
     }
 }

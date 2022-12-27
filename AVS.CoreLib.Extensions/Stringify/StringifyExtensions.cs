@@ -111,7 +111,7 @@ namespace AVS.CoreLib.Extensions.Stringify
         #endregion
 
         [Obsolete("Use Stringify based on StringifyOptions")]
-        public static string Stringify<TKey, TValue>(this IDictionary<TKey, TValue> dict,
+        public static string StringifyOld<TKey, TValue>(this IDictionary<TKey, TValue> dict,
                     StringifyFormat format = StringifyFormat.Default,
                     string separator = ", ",
                     string keyValueSeparator = ":",
