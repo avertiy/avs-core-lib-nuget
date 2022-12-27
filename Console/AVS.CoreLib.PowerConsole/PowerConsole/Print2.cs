@@ -15,42 +15,9 @@ namespace AVS.CoreLib.PowerConsole
     using Console = System.Console;
     public static partial class PowerConsole
     {
-        public static void PrintArray<T>(
-            IEnumerable<T> enumerable,
-            string? message = null,
-            StringifyOptions? options = null,
-            Func<T, string>? formatter = null,
-            bool endLine = true)
-        {
-            Printer.PrintArray(enumerable, message, options, formatter, endLine);
-        }
-
         public static void PrintAllColors()
         {
             Printer.PrintConsoleColors();
-        }
-
-        public static void PrintKeyValue<TKey, TValue>(IDictionary<TKey, TValue> dictionary,
-            ConsoleColor color = ConsoleColor.White,
-            string keyValueSeparator = " => ",
-            string separator = "\r\n",
-            bool endLine = true)
-        {
-            Printer.Print(dictionary.ToKeyValueString(keyValueSeparator, separator), endLine, false, color);
-        }
-
-        public static void PrintJson<T>(T obj,
-            bool indented = false,
-            ConsoleColor? color = null,
-            bool endLine = true)
-        {
-            Printer.PrintJson<T>(obj, indented, color, endLine);
-            
-        }
-
-        public static void Dump<T>(T obj, ConsoleColor? color = null, bool endLine = true)
-        {
-            Printer.PrintJson<T>(obj, true, color, endLine);
         }
 
         public static void PrintHeader(string header, ConsoleColor color = ConsoleColor.Cyan,

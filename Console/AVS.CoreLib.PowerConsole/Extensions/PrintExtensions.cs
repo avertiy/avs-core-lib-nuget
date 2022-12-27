@@ -12,17 +12,17 @@ namespace AVS.CoreLib.PowerConsole.Printers
 {
     public static partial class PrintExtensions
     {
-        public static void Print(this IPrinter printer, string str, Colors colors, bool endLine)
-        {
-            var coloredStr = colors.Colorize(str);
-            printer.Print(coloredStr, endLine);
-        }
+        //public static void Print(this IPrinter printer, string str, Colors colors, bool endLine)
+        //{
+        //    var coloredStr = colors.Colorize(str);
+        //    printer.Print(coloredStr, endLine);
+        //}
 
-        public static void Print(this IPrinter printer, string str, ColorScheme scheme, bool endLine)
-        {
-            var coloredStr = scheme.Colorize(str);
-            printer.Print(coloredStr, endLine);
-        }
+        //public static void Print(this IPrinter printer, string str, ColorScheme scheme, bool endLine)
+        //{
+        //    var coloredStr = scheme.Colorize(str);
+        //    printer.Print(coloredStr, endLine);
+        //}
 
         
 
@@ -34,11 +34,11 @@ namespace AVS.CoreLib.PowerConsole.Printers
             {
                 // write plain text
                 if (!string.IsNullOrEmpty(plainText))
-                    printer.Print(plainText, currentScheme, false);
+                    printer.Print(plainText, false, false, currentScheme);
 
                 // if scheme valid apply it
                 if (!string.IsNullOrEmpty(coloredText) && ColorSchemeHelper.TryParse(colorScheme, out var scheme))
-                    printer.Print(coloredText, scheme, false);
+                    printer.Print(coloredText, false, false, scheme);
             }
 
             if (endLine)
@@ -53,11 +53,11 @@ namespace AVS.CoreLib.PowerConsole.Printers
             {
                 // write plain text
                 if (!string.IsNullOrEmpty(plainText))
-                    printer.Print(plainText, colors, false);
+                    printer.Print(plainText, false, false, colors);
 
                 // if scheme valid apply it
                 if (!string.IsNullOrEmpty(coloredText) && ColorSchemeHelper.TryParse(colorScheme, out var scheme))
-                    printer.Print(coloredText, scheme, false);
+                    printer.Print(coloredText, false, false, scheme);
             }
 
             if (endLine)
@@ -67,7 +67,7 @@ namespace AVS.CoreLib.PowerConsole.Printers
         public static void Print(this IPrinter printer, IEnumerable<ColorString> messages)
         {
             foreach (var coloredText in messages)
-                printer.Print(coloredText.Text, coloredText.Color, false);
+                printer.Print(coloredText.Text, false, false, coloredText.Color);
         }
     }
 }

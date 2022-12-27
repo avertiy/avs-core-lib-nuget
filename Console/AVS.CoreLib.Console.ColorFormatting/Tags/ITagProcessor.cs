@@ -1,7 +1,7 @@
 ﻿namespace AVS.CoreLib.Console.ColorFormatting.Tags
 {
     /// <summary>
-    /// tag processor might replace tags in input string with something else ansi-codes or strip tags
+    /// Process input string replacing tags, for example replace color tags with ansi-codes or removing tags from the input string to make it a plain text  
     /// </summary>
     public interface ITagProcessor
     {

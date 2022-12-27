@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using AVS.CoreLib.Console.ColorFormatting;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Stringify;
 using AVS.CoreLib.PowerConsole.ConsoleTable;
@@ -7,7 +8,6 @@ using AVS.CoreLib.PowerConsole.Enums;
 using AVS.CoreLib.PowerConsole.Printers;
 using AVS.CoreLib.PowerConsole.Structs;
 using AVS.CoreLib.PowerConsole.Utilities;
-using StringifyOptions = AVS.CoreLib.PowerConsole.Utilities.StringifyOptions;
 
 namespace AVS.CoreLib.PowerConsole.Extensions
 {
@@ -19,30 +19,9 @@ namespace AVS.CoreLib.PowerConsole.Extensions
             printer.Print(str, endLine, false, color);
         }
 
-        public static void PrintArray<T>(this IPowerConsolePrinter printer, IEnumerable<T> enumerable,
-            string? message,
-            StringifyOptions? options,
-            Func<T, string>? formatter,
-            bool endLine)
-        {
-            string str;
-            var tags = false;
-            if (options == null)
-                str = enumerable.Stringify(StringifyFormat.Default, ",", formatter);
-            else
-            {
-                str = enumerable.Stringify(options.Format, options.Separator, formatter);
-                str = options.Colors.Colorize(str);
-                tags = options.ContainsCTags;
-            }
-
-            var text = message == null ? str : $"{message}{str}";
-            printer.Print(text, endLine, tags);
-        }
-
         public static void PrintDictionary<TKey, TValue>(this IPowerConsolePrinter printer,
             string? message, IDictionary<TKey, TValue> dictionary,
-            StringifyOptions? options,
+            PrintArrayOptions? options,
             Func<TKey, TValue, string>? formatter,
             bool endLine)
         {

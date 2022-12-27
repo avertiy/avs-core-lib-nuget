@@ -81,6 +81,12 @@ namespace AVS.CoreLib.PowerConsole.Printers
             Writer.Write(formattedStr, endLine, containsCTags, colors);
         }
 
+        public void Print(FormattableString str, bool endLine, bool? containsCTags, CTag tag)
+        {
+            var formattedStr = FormatInternal(str);
+            Writer.Write(formattedStr, endLine, containsCTags, tag);
+        }
+
         public void Print(FormattableString str, bool endLine, bool? containsCTags, ColorScheme scheme)
         {
             var formattedStr = FormatInternal(str);

@@ -19,8 +19,9 @@ namespace AVS.CoreLib.PowerConsole.Printers
         void Print(FormattableString str, bool endLine = true);
         void Print(FormattableString str, bool endLine, bool? containsCTags);
         void Print(FormattableString str, bool endLine,  bool? containsCTags, ConsoleColor? color);
-        void Print(FormattableString str, bool endLine, bool? containsCTags, Colors colors);
+        void Print(FormattableString str, bool endLine, bool? containsCTags, CTag tag);
         void Print(FormattableString str, bool endLine, bool? containsCTags, ColorScheme scheme);
+        void Print(FormattableString str, bool endLine, bool? containsCTags, Colors colors);
 
         void WriteLine(string? str = null, bool voidMultipleEmptyLines = true);
         void SwitchMode(ColorMode mode);

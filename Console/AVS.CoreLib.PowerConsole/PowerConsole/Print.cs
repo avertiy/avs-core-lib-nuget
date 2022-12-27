@@ -23,8 +23,7 @@ namespace AVS.CoreLib.PowerConsole
     {
         private static IPowerConsolePrinter? _printer;
         /// <summary>
-        /// Printed messages are forwarded to <see cref="PowerConsolePrinter"/>
-        /// Printer provides all printing and writing features e.g. print array, processing color tags etc.
+        /// provide power console print features
         /// </summary>
         public static IPowerConsolePrinter Printer
         {
@@ -40,14 +39,21 @@ namespace AVS.CoreLib.PowerConsole
             Printer.SwitchMode(mode);
         }
 
+        #region Print(string str) methods
+        /// <summary>
+        /// Print str 
+        /// </summary>
+        /// <param name="str">str to be printed</param>
+        /// <param name="endLine">when true write line terminator i.e. WriteLine()</param>
+        /// <param name="colorTags">when true process input str for color tags <see cref="TagProcessor"/></param>
         public static void Print(string str, bool endLine = true, bool colorTags = false)
         {
             Printer.Print(str, endLine, colorTags);
         }
 
-        public static void Print(string str, CTag tag, bool endLine = true)
+        public static void Print(string str, CTag tag, bool endLine = true, bool colorTags = false)
         {
-            Printer.Print(str, endLine, false, tag);
+            Printer.Print(str, endLine, colorTags, tag);
         }
 
         public static void Print(string str, ConsoleColor color, bool endLine = true, bool colorTags = false)
@@ -55,11 +61,18 @@ namespace AVS.CoreLib.PowerConsole
             Printer.Print(str, endLine, colorTags, color);
         }
 
-        public static void Print(string str, ColorScheme scheme, bool endLine = true, bool colorTags = false)
+        public static void Print(string str, Colors colors, bool endLine = true, bool colorTags = false)
         {
-            Printer.Print(str, scheme, endLine);
+            Printer.Print(str, endLine, colorTags, colors);
         }
 
+        public static void Print(string str, ColorScheme scheme, bool endLine = true, bool colorTags = false)
+        {
+            Printer.Print(str, endLine, colorTags, scheme);
+        }
+        #endregion
+
+        #region Print(FormattableString str) methods
         public static void Print(FormattableString str, bool endLine = true, bool colorTags = false)
         {
             Printer.Print(str, endLine, colorTags);
@@ -70,14 +83,30 @@ namespace AVS.CoreLib.PowerConsole
             Printer.Print(str, endLine, colorTags, color);
         }
 
+        public static void Print(FormattableString str, Colors colors, bool endLine = true, bool colorTags = false)
+        {
+            Printer.Print(str, endLine, colorTags, colors);
+        }
+
+        public static void Print(FormattableString str, CTag tag, bool endLine = true, bool colorTags = false)
+        {
+            Printer.Print(str, endLine, colorTags, tag);
+        }
+
+        public static void Print(FormattableString str, ColorScheme scheme, bool endLine = true, bool colorTags = false)
+        {
+            Printer.Print(str, endLine, colorTags, scheme);
+        }
+
         public static void Print(FormattableString str, ColorPalette palette, bool endLine = true)
         {
             Printer.Print(str, palette, endLine);
         }
 
-        public static void Print(FormattableString str, ConsoleColor[] colors, bool endLine = true)
+        public static void Print(FormattableString str, bool endLine = true, params ConsoleColor[] colors)
         {
             Printer.Print(str, colors, endLine);
-        }
+        } 
+        #endregion
     }
 }
