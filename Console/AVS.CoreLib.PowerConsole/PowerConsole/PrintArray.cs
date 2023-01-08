@@ -17,49 +17,101 @@ namespace AVS.CoreLib.PowerConsole
     using Console = System.Console;
     public static partial class PowerConsole
     {
+        ///// <summary>
+        ///// Print array
+        ///// </summary>
+        ///// <typeparam name="T"></typeparam>
+        ///// <param name="enumerable"></param>
+        ///// <param name="color">printed text color [optional]</param>
+        ///// <param name="message">message [optional]</param>
+        ///// <param name="options">stringify options [optional], when null <see cref="StringifyOptions.Default"/> is applied</param>
+        ///// <param name="formatter">formatter to format array items</param>
+        ///// <param name="endLine"></param>
+        ///// <param name="colorTags"></param>
+        //public static void PrintArray<T>(
+        //    IEnumerable<T> enumerable,
+        //    ConsoleColor? color = null,
+        //    string? message = null,
+        //    StringifyOptions? options = null,
+        //    Func<T, string>? formatter = null,
+        //    bool endLine = true,
+        //    bool colorTags = false)
+        //{
+        //    var arrayPrintOptions = new ArrayPrintOptions<T>()
+        //    {
+        //        StringifyOptions = options ?? StringifyOptions.Default,
+        //        Formatter = formatter,
+        //        EndLine = endLine,
+        //        ColorTags = colorTags
+        //    };
+
+        //    Printer.PrintArray(enumerable, message, arrayPrintOptions);
+        //}
+
         /// <summary>
         /// Print array
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="enumerable"></param>
-        /// <param name="color">printed text color [optional]</param>
         /// <param name="message">message [optional]</param>
-        /// <param name="options">stringify options [optional], when null <see cref="StringifyOptions.Default"/> is applied</param>
-        /// <param name="formatter">formatter to format array items</param>
-        /// <param name="endLine"></param>
-        /// <param name="colorTags"></param>
+        /// <param name="options"><see cref="ArrayPrintOptions{T}"/></param>
+        /// <param name="formatter"></param>
         public static void PrintArray<T>(
             IEnumerable<T> enumerable,
-            ConsoleColor? color = null,
             string? message = null,
-            StringifyOptions? options = null,
-            Func<T, string>? formatter = null,
-            bool endLine = true,
-            bool colorTags = false)
+            ArrayPrintOptions<T>? options = null,
+            Func<T, string>? formatter = null)
         {
-            Printer.PrintArray(enumerable, message, options, formatter, color, endLine, colorTags);
+            options = options ?? new ArrayPrintOptions<T>() { StringifyOptions = StringifyOptions.Default };
+            options.Formatter = formatter;
+            Printer.PrintArray(enumerable, message, options);
         }
+
+
+    }
+
+    public class ArrayPrintOptions<T> : PrintOptions
+    {
         /// <summary>
-        /// Print array
+        /// format array items
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="enumerable"></param>
-        /// <param name="colors">printed text colors</param>
-        /// <param name="message">message [optional]</param>
-        /// <param name="options">stringify options [optional], when null <see cref="StringifyOptions.Default"/> is applied</param>
-        /// <param name="formatter">formatter to format array items</param>
-        /// <param name="endLine"></param>
-        /// <param name="colorTags"></param>
-        public static void PrintArray<T>(
-            IEnumerable<T> enumerable,
-            Colors colors,
-            string? message = null,
-            StringifyOptions? options = null,
-            Func<T, string>? formatter = null,
-            bool endLine = true,
-            bool colorTags = false)
+        public Func<T, string>? Formatter { get; set; }
+
+        public StringifyOptions StringifyOptions { get; set; } = StringifyOptions.Default;
+
+        public static implicit operator ArrayPrintOptions<T>(Func<T, string> formatter)
         {
-            Printer.PrintArray(enumerable, message, options, formatter, colors, endLine, colorTags);
+            return new ArrayPrintOptions<T>()
+            {
+                Formatter = formatter, 
+                StringifyOptions = StringifyOptions.Default
+            };
+        }
+
+        public static implicit operator ArrayPrintOptions<T>(StringifyOptions options)
+        {
+            return new ArrayPrintOptions<T>()
+            {
+                StringifyOptions = options
+            };
+        }
+
+        public static implicit operator ArrayPrintOptions<T>(ConsoleColor color)
+        {
+            return new ArrayPrintOptions<T>()
+            {
+                Color = color,
+                StringifyOptions = StringifyOptions.Default
+            };
+        }
+
+        public static implicit operator ArrayPrintOptions<T>(Colors colors)
+        {
+            return new ArrayPrintOptions<T>()
+            {
+                Colors = colors,
+                StringifyOptions = StringifyOptions.Default
+            };
         }
     }
 }

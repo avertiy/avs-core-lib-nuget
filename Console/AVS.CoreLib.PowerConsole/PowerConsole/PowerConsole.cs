@@ -5,6 +5,10 @@ using AVS.CoreLib.PowerConsole.Utilities;
 namespace AVS.CoreLib.PowerConsole
 {
     using Console = System.Console;
+
+    //todo print time labels implement via printer and datetimehelper system time instead of DateTime.Now
+    //add overload print methods to print elapsed time
+
     public static partial class PowerConsole
     {
         static PowerConsole()

@@ -89,19 +89,19 @@ namespace AVS.CoreLib.PowerConsole.Utilities
         /// <summary>
         /// Gets the color for specific message status enumeration value
         /// </summary>
-        /// <param name="status">Status of the message</param>
+        /// <param name="level">Status of the message</param>
         /// <returns>Console color for the passed message status enumeration value</returns>
-        internal static ColorScheme GetStatusColorScheme(MessageStatus status)
+        internal static ColorScheme GetColorScheme(MessageLevel level)
         {
-            switch (status)
+            switch (level)
             {
-                case MessageStatus.Debug:
+                case MessageLevel.Debug:
                     return Debug;
-                case MessageStatus.Info:
+                case MessageLevel.Info:
                     return Info;
-                case MessageStatus.Warning:
+                case MessageLevel.Warning:
                     return Warning;
-                case MessageStatus.Error:
+                case MessageLevel.Error:
                     return Error;
                 default:
                     return Default;

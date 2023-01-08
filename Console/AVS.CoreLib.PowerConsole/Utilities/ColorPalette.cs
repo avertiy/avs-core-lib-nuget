@@ -19,6 +19,12 @@ namespace AVS.CoreLib.PowerConsole.Utilities
             Colors = colors;
         }
 
+        public void Init(params ConsoleColor[] colors)
+        {
+            Colors = colors;
+        }
+
+
         public static implicit operator ColorPalette(ConsoleColor[] colors)
         {
             return new ColorPalette(colors);

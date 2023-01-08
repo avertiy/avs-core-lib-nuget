@@ -3,6 +3,7 @@ using System.IO;
 using AVS.CoreLib.Console.ColorFormatting;
 using AVS.CoreLib.Console.ColorFormatting.Tags;
 using AVS.CoreLib.PowerConsole.Enums;
+using AVS.CoreLib.PowerConsole.Printers;
 using AVS.CoreLib.PowerConsole.Utilities;
 
 namespace AVS.CoreLib.PowerConsole.Writers
@@ -10,12 +11,17 @@ namespace AVS.CoreLib.PowerConsole.Writers
     public interface IOutputWriter
     {
         void Write(string str, bool endLine = true);
-        void Write(string str, bool endLine, bool? containsCTags);
-        void Write(string str, bool endLine, bool? containsCTags, ConsoleColor? color);
-        void Write(string str, bool endLine, bool? containsCTags, CTag tag);
-        void Write(string str, bool endLine, bool? containsCTags, ColorScheme scheme);
-        void Write(string str, bool endLine, bool? containsCTags, Colors colors);
-        void WriteLine(string? str = null, bool voidMultipleEmptyLines = true);
+        void Write(string str, PrintOptions options);
+
+        //void Write(string str, bool endLine = true);
+        //void Write(string str, bool endLine, bool? containsCTags);
+        //void Write(string str, bool endLine, bool? containsCTags, ConsoleColor? color);
+        //void Write(string str, bool endLine, bool? containsCTags, CTag tag);
+        //void Write(string str, bool endLine, bool? containsCTags, ColorScheme scheme);
+        //void Write(string str, bool endLine, bool? containsCTags, Colors colors);
+
+        void WriteLine(string? str, PrintOptions options);
+        void WriteLine(bool voidMultipleEmptyLines = true);
     }
 
     public abstract class OutputWriter : IOutputWriter
@@ -33,7 +39,35 @@ namespace AVS.CoreLib.PowerConsole.Writers
             TagProcessor = tagProcessor;
         }
 
-        public virtual void Write(string str, bool endLine = true)
+        public void Write(string str, bool endLine = true)
+        {
+            Writer.Write(str);
+            if (endLine)
+            {
+                Writer.WriteLine();
+                NewLineFlag = true;
+            }
+            else
+            {
+                NewLineFlag = str.EndsWith('\n');
+            }
+        }
+
+        
+
+        public void Write(string str, PrintOptions options)
+        {
+            if (options.HasColors)
+            {
+                WriteColored(str, options);
+            }
+            else
+            {
+                WriteInternal(str, options.EndLine, options.ColorTags);
+            }
+        }
+
+        protected void WriteInternal(string str, bool endLine)
         {
             Writer.Write(str);
             if (endLine)
@@ -45,36 +79,47 @@ namespace AVS.CoreLib.PowerConsole.Writers
                 NewLineFlag = str.EndsWith('\n');
         }
 
-        public virtual void Write(string str, bool endLine, bool? containsCTags)
+        protected void WriteInternal(string str, bool endLine, bool? containsCTags)
         {
             var text = PreProcessText(str, containsCTags);
-            Writer.Write(text, endLine);
+            WriteInternal(text, endLine);
         }
 
         public abstract void Write(string str, bool endLine, bool? containsCTags, ConsoleColor? color);
         public abstract void Write(string str, bool endLine, bool? containsCTags, CTag tag);
         public abstract void Write(string str, bool endLine, bool? containsCTags, ColorScheme scheme);
         public abstract void Write(string str, bool endLine, bool? containsCTags, Colors colors);
+        public abstract void WriteColored(string str, PrintOptions options);
 
-        
-
-        public virtual void WriteLine(string? str = null, bool voidMultipleEmptyLines = true)
+        public void WriteLine(string? str, PrintOptions options)
         {
             if (str == null)
             {
-                if (voidMultipleEmptyLines && NewLineFlag)
+                if (options.VoidEmptyLines && NewLineFlag)
                     return;
 
                 Writer.WriteLine();
             }
             else
             {
-                if (voidMultipleEmptyLines && NewLineFlag)
-                    return;
-
-                Writer.WriteLine(str);
+                if (options.HasColors)
+                {
+                    WriteColored(str, options);
+                }
+                else
+                {
+                    Writer.WriteLine(str);
+                }
             }
             NewLineFlag = true;
+        }
+
+        public void WriteLine(bool voidMultipleEmptyLines = true)
+        {
+            if (voidMultipleEmptyLines && NewLineFlag)
+                return;
+
+            Writer.WriteLine();
         }
 
         protected virtual string PreProcessText(string str, bool? containsCTags)

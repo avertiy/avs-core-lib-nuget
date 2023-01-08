@@ -2,6 +2,7 @@
 using System.IO;
 using AVS.CoreLib.Console.ColorFormatting;
 using AVS.CoreLib.Console.ColorFormatting.Tags;
+using AVS.CoreLib.PowerConsole.Printers;
 using AVS.CoreLib.PowerConsole.Utilities;
 
 namespace AVS.CoreLib.PowerConsole.Writers
@@ -14,22 +15,27 @@ namespace AVS.CoreLib.PowerConsole.Writers
 
         public override void Write(string str, bool endLine, bool? containsCTags, ConsoleColor? color)
         {
-            base.Write(str, endLine, containsCTags);
+            base.WriteInternal(str, endLine, containsCTags);
         }
 
         public override void Write(string str, bool endLine, bool? containsCTags, CTag tag)
         {
-            base.Write(str, endLine, containsCTags);
+            base.WriteInternal(str, endLine, containsCTags);
         }
 
         public override void Write(string str, bool endLine, bool? containsCTags, ColorScheme scheme)
         {
-            base.Write(str, endLine, containsCTags);
+            base.WriteInternal(str, endLine, containsCTags);
         }
 
         public override void Write(string str, bool endLine, bool? containsCTags, Colors colors)
         {
-            base.Write(str, endLine, containsCTags);
+            base.WriteInternal(str, endLine, containsCTags);
+        }
+
+        public override void WriteColored(string str, PrintOptions options)
+        {
+            base.WriteInternal(str, options.EndLine, options.ColorTags);
         }
 
         protected static TagProcessor GetDefaultTagsProcessor()

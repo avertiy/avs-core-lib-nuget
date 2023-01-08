@@ -17,18 +17,57 @@ namespace AVS.CoreLib.PowerConsole
     using Console = System.Console;
     public static partial class PowerConsole
     {
-        public static void PrintJson<T>(T obj,
-            bool indented = false,
-            ConsoleColor? color = null,
-            bool endLine = true)
+        public static void PrintJson<T>(T obj, JsonPrintOptions? options = null)
         {
-            Printer.PrintJson<T>(obj, indented, color, endLine);
-            
+            Printer.PrintJson<T>(obj, options ?? JsonPrintOptions.Json);
         }
 
-        public static void Dump<T>(T obj, ConsoleColor? color = null, bool endLine = true)
+        /// <summary>
+        /// synonym of <see cref="PrintJson{T}"/>
+        /// </summary>
+        public static void Dump<T>(T obj, JsonPrintOptions? options = null)
         {
-            Printer.PrintJson<T>(obj, true, color, endLine);
+            Printer.PrintJson<T>(obj, options ?? JsonPrintOptions.JsonIndented);
+        }
+    }
+
+    public class JsonPrintOptions : PrintOptions
+    {
+        public bool Indented { get; set; }
+
+        public static JsonPrintOptions Json { get; set; } = new JsonPrintOptions()
+        {
+            ColorTags = false,
+            EndLine = true,
+            Color = ConsoleColor.Cyan,
+        };
+
+        public static JsonPrintOptions JsonIndented { get; set; } = new JsonPrintOptions()
+        {
+            ColorTags = false,
+            EndLine = true,
+            Color = ConsoleColor.Cyan,
+            Indented = true
+        };
+
+        public static JsonPrintOptions Create(bool indented = true, ConsoleColor? color = ConsoleColor.Cyan,  bool endLine = true, bool? colorTags = false)
+        {
+            return new JsonPrintOptions()
+            {
+                ColorTags = colorTags,
+                EndLine = endLine,
+                Color = color,
+                Indented = indented
+            };
+        }
+        public static implicit operator JsonPrintOptions(ConsoleColor color)
+        {
+            return new JsonPrintOptions()
+            {
+                ColorTags = false,
+                EndLine = true,
+                Color = color,
+            };
         }
     }
 }

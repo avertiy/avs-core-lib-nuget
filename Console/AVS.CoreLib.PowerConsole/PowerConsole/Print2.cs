@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
+using System.Linq;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.PowerConsole.ConsoleTable;
 using AVS.CoreLib.PowerConsole.Extensions;
@@ -20,53 +22,48 @@ namespace AVS.CoreLib.PowerConsole
             Printer.PrintConsoleColors();
         }
 
-        public static void PrintHeader(string header, ConsoleColor color = ConsoleColor.Cyan,
-            string template = "============", string lineIndentation = "\r\n\r\n")
+        public static void PrintHeader(string header, HeaderPrintOptions? options = null)
         {
-            Printer.PrintHeader(header, template, lineIndentation, false, color);
+            Printer.PrintHeader(header, options ?? HeaderPrintOptions.Options);
         }
 
         #region PrintTable
-        public static void PrintTable<T>(IEnumerable<T> data,
-            ConsoleColor color = ConsoleColor.White,
-            bool endLine = true)
+        public static void PrintTable<T>(IEnumerable<T> data, PrintOptions? options = null)
         {
             var table = Table.Create(data);
-            Printer.PrintTable(table, endLine, false, color);
+            PrintTable(table, options);
         }
 
         public static void PrintTable<T>(IEnumerable<T> data,
-            Action<Table>? configure = null,
-            bool endLine = true)
+            Action<Table>? configure, PrintOptions? options = null)
         {
             var table = Table.Create(data);
             configure?.Invoke(table);
-            Printer.PrintTable(table, endLine, false, null);
+            PrintTable(table, options);
         }
 
-        public static void PrintTable(Table table,
-            ConsoleColor color = ConsoleColor.White,
-            bool endLine = true, bool containsTags = false)
+        public static void PrintTable(Table table, PrintOptions? options = null)
         {
-            Printer.PrintTable(table, endLine, containsTags, color);
+            options = options ?? DefaultOptions;
+            Printer.PrintTable(table, options);
         }
 
         #endregion
 
-        public static void PrintTest(bool test, string message, int padRight, bool endLine = true)
+        public static void PrintTest(bool test, string message, int padRight, PrintOptions? options = null)
         {
-            Printer.PrintTest(message, test, padRight, endLine);
+            Printer.PrintTest(message, test, padRight, options ?? DefaultOptions);
         }
 
-        public static void PrintTimeElapsed(DateTime @from,
-            string message,
-            ConsoleColor color = ConsoleColor.DarkCyan,
-            bool endLine = false)
+        public static void PrintTimeElapsed(
+            DateTime dateTime,
+            string? message = null,
+            PrintOptions? options = null)
         {
-            Printer.PrintTimeElapsed(message, @from, color, endLine);
+            Printer.PrintTimeElapsed(message, dateTime, options ?? DefaultOptions);
         }
 
-        public static void Print(params ColorString[] messages)
+        public static void PrintColorStrings(params ColorString[] messages)
         {
             Printer.Print(messages);
         }
@@ -76,9 +73,24 @@ namespace AVS.CoreLib.PowerConsole
             Printer.Print(messages);
         }
 
-        public static void Print(ColorMarkupString str, bool endLine = true)
+        public static void Print(ColorMarkupString str, PrintOptions? options = null)
         {
-            Printer.Print(str, endLine);
+            Printer.Print(str, options ?? DefaultOptions);
+        }
+
+        [Conditional("DEBUG")]
+        public static void PrintDebug(string message, PrintOptions? options = null)
+        {
+            options = options ?? PrintOptions.Debug;
+            WriteLine(message, options);
+        }
+
+        public static void PrintError(Exception ex, string? message = null, bool printStackTrace = true, PrintOptions? options = null)
+        {
+            options = options ?? PrintOptions.Error;
+            Printer.PrintError(ex, message, printStackTrace, options);
+            if (BeepOnMessageLevels != null && BeepOnMessageLevels.Any(x => x == options.Level))
+                Console.Beep(2500, 1000);
         }
     }
 }

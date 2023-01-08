@@ -9,21 +9,18 @@ namespace AVS.CoreLib.PowerConsole.Printers
 {
     public interface IPrinter
     {
-        void Print(string str, bool endLine = true);
-        void Print(string str, bool endLine, bool? containsCTags);
-        void Print(string str, bool endLine, bool? containsCTags, ConsoleColor? color);
-        void Print(string str, bool endLine, bool? containsCTags, CTag tag);
-        void Print(string str, bool endLine, bool? containsCTags, ColorScheme scheme);
-        void Print(string str, bool endLine, bool? containsCTags, Colors colors);
+        void Write(string str, bool endLine = false);
+        void Write(string str, ConsoleColor color, bool endLine = false);
+        void Write(string str, PrintOptions options);
 
-        void Print(FormattableString str, bool endLine = true);
-        void Print(FormattableString str, bool endLine, bool? containsCTags);
-        void Print(FormattableString str, bool endLine,  bool? containsCTags, ConsoleColor? color);
-        void Print(FormattableString str, bool endLine, bool? containsCTags, CTag tag);
-        void Print(FormattableString str, bool endLine, bool? containsCTags, ColorScheme scheme);
-        void Print(FormattableString str, bool endLine, bool? containsCTags, Colors colors);
+        void WriteLine(bool voidMultipleEmptyLines = true);
+        void WriteLine(string? str, PrintOptions options);
+        void Print(string str, PrintOptions options);
 
-        void WriteLine(string? str = null, bool voidMultipleEmptyLines = true);
+        void Print(FormattableString str, PrintOptions options);
+
+        void Print(FormattableString str, MultiColorPrintOptions options);
+
         void SwitchMode(ColorMode mode);
     }
 
@@ -33,12 +30,13 @@ namespace AVS.CoreLib.PowerConsole.Printers
     /// </remarks>
     public interface IXPrinter : IPrinter
     {
-        void PrintF(FormattableString str, bool endLine = true);
-        void PrintF(FormattableString str, bool endLine, bool? containsCTags);
-        void PrintF(FormattableString str, bool endLine, bool? containsCTags, ConsoleColor? color);
-        void PrintF(FormattableString str, bool endLine, bool? containsCTags, Colors colors);
-        void PrintF(FormattableString str, bool endLine, bool? containsCTags, ColorScheme scheme);
+        void PrintF(FormattableString str, PrintOptions options);
 
+        //void PrintF(FormattableString str, bool endLine = true);
+        //void PrintF(FormattableString str, bool endLine, bool? containsCTags);
+        //void PrintF(FormattableString str, bool endLine, bool? containsCTags, ConsoleColor? color);
+        //void PrintF(FormattableString str, bool endLine, bool? containsCTags, Colors colors);
+        //void PrintF(FormattableString str, bool endLine, bool? containsCTags, ColorScheme scheme);
         void SetCustomFormatter(Func<FormattableString, string> formatter, bool printF = true);
     }
 }

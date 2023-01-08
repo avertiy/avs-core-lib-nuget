@@ -17,7 +17,7 @@ namespace AVS.CoreLib.PowerConsole.Bootstrapping
             catch (Exception ex)
             {
                 PowerConsole.Write("Run() failed");
-                PowerConsole.WriteError(ex);
+                PowerConsole.PrintError(ex);
             }
 
             return sp;
@@ -37,7 +37,7 @@ namespace AVS.CoreLib.PowerConsole.Bootstrapping
                     catch (Exception ex)
                     {
                         PowerConsole.Write($"{demoService.GetType().Name}.DemoAsync() failed");
-                        PowerConsole.WriteError(ex);
+                        PowerConsole.PrintError(ex);
                     }
                 }
             });
@@ -57,7 +57,7 @@ namespace AVS.CoreLib.PowerConsole.Bootstrapping
                 catch (Exception ex)
                 {
                     PowerConsole.Write($"{testService.GetType().Name}.Test() failed");
-                    PowerConsole.WriteError(ex);
+                    PowerConsole.PrintError(ex);
                 }
             }
             return sp;
@@ -78,7 +78,7 @@ namespace AVS.CoreLib.PowerConsole.Bootstrapping
             catch (Exception ex)
             {
                 PowerConsole.Write($"{typeof(TService).Name}.Test() failed");
-                PowerConsole.WriteError(ex);
+                PowerConsole.PrintError(ex);
                 throw;
             }
 
@@ -100,7 +100,7 @@ namespace AVS.CoreLib.PowerConsole.Bootstrapping
             catch (Exception ex)
             {
                 PowerConsole.Write($"{typeof(TService).Name}.Test() failed");
-                PowerConsole.WriteError(ex);
+                PowerConsole.PrintError(ex);
             }
 
             return sp;

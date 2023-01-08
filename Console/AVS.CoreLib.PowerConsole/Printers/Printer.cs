@@ -25,79 +25,68 @@ namespace AVS.CoreLib.PowerConsole.Printers
         }
 
         #region Print methods
-        public void Print(string str, bool endLine = true)
+
+        public void Print(string str, PrintOptions options)
+        {
+            Writer.Write(str, options);
+        }
+
+        #endregion
+
+        #region Print(FormattableString) methods
+
+        public void Print(FormattableString str, PrintOptions options)
+        {
+            var formattedStr = FormatInternal(str);
+            Writer.Write(formattedStr, options);
+        }
+
+        public void Print(FormattableString str, MultiColorPrintOptions options)
+        {
+            var formattedStr = FormatInternal(str);
+            throw new NotImplementedException("");
+            //var arguments = str.GetArguments();
+            //var str2 = new FormattableString2(str.Format, arguments);
+            //var preprocessor = FormatPreprocessor;
+
+            //if (preprocessor is ColorFormatPreprocessor colorFormatPreprocessor)
+            //    colorFormatPreprocessor.Palette = palette;
+
+            //var formattedString = str2.ToString(X.FormatProvider, printer.FormatPreprocessor, X.TextProcessor);
+            //var colorMarkupStr = new ColorMarkupString(formattedString);
+
+            //printer.Print(colorMarkupStr, endLine);
+            Writer.Write(formattedStr, options);
+        }
+
+        #endregion
+
+        #region Write & WriteLine methods
+        public void Write(string str, bool endLine = false)
         {
             Writer.Write(str, endLine);
         }
 
-        public void Print(string str, bool endLine, bool? containsCTags)
+        public void Write(string str, ConsoleColor color, bool endLine = false)
         {
-            Writer.Write(str, endLine, containsCTags);
+            Writer.Write(str, new PrintOptions() { EndLine = endLine, Color = color });
         }
 
-        public void Print(string str, bool endLine, bool? containsCTags, ConsoleColor? color)
+        public void Write(string str, PrintOptions options)
         {
-            Writer.Write(str, endLine, containsCTags, color);
+            Writer.Write(str, options);
         }
 
-        public void Print(string str, bool endLine, bool? containsCTags, CTag tag)
+        public void WriteLine(bool voidMultipleEmptyLines = true)
         {
-            Writer.Write(str, endLine, containsCTags, tag);
+            Writer.WriteLine(voidMultipleEmptyLines);
         }
 
-        public void Print(string str, bool endLine, bool? containsCTags, ColorScheme scheme)
+        public void WriteLine(string? str, PrintOptions options)
         {
-            Writer.Write(str, endLine, containsCTags, scheme);
-        }
-
-        public void Print(string str, bool endLine, bool? containsCTags, Colors colors)
-        {
-            Writer.Write(str, endLine, containsCTags, colors);
+            Writer.WriteLine(str, options);
         } 
         #endregion
-
-        #region Print(FormattableString) methods
-        public void Print(FormattableString str, bool endLine)
-        {
-            var formattedStr = FormatInternal(str);
-            Writer.Write(formattedStr, endLine);
-        }
-
-        public void Print(FormattableString str, bool endLine, bool? containsCTags)
-        {
-            var formattedStr = FormatInternal(str);
-            Writer.Write(formattedStr, endLine, containsCTags);
-        }
-
-        public void Print(FormattableString str, bool endLine, bool? containsCTags, ConsoleColor? color)
-        {
-            var formattedStr = FormatInternal(str);
-            Writer.Write(formattedStr, endLine, containsCTags, color);
-        }
-
-        public void Print(FormattableString str, bool endLine, bool? containsCTags, Colors colors)
-        {
-            var formattedStr = FormatInternal(str);
-            Writer.Write(formattedStr, endLine, containsCTags, colors);
-        }
-
-        public void Print(FormattableString str, bool endLine, bool? containsCTags, CTag tag)
-        {
-            var formattedStr = FormatInternal(str);
-            Writer.Write(formattedStr, endLine, containsCTags, tag);
-        }
-
-        public void Print(FormattableString str, bool endLine, bool? containsCTags, ColorScheme scheme)
-        {
-            var formattedStr = FormatInternal(str);
-            Writer.Write(formattedStr, endLine, containsCTags, scheme);
-        } 
-        #endregion
-
-        public void WriteLine(string? str = null, bool voidMultipleEmptyLines = true)
-        {
-            Writer.WriteLine(str, voidMultipleEmptyLines);
-        }
 
         public void SwitchMode(ColorMode mode)
         {

@@ -15,48 +15,33 @@ namespace AVS.CoreLib.PowerConsole.Extensions
     {
         public static void PrintArray<T>(this IPowerConsolePrinter printer, IEnumerable<T> enumerable,
             string? message,
-            StringifyOptions? options,
-            Func<T, string>? formatter,
-            ConsoleColor? color = null,
-            bool endLine = true,
-            bool colorTags = false)
+            ArrayPrintOptions<T> options)
         {
-            string str;
-            if (options == null)
-            {
-                str = enumerable.Stringify(StringifyFormat.Default, ",", formatter);
-            }
-            else
-            {
-                str = enumerable.Stringify(options.Format, options.Separator, formatter);
-            }
-
+            var stringifyOptions = options.StringifyOptions;
+            var str = enumerable.Stringify(stringifyOptions.Format, stringifyOptions.Separator, options.Formatter);
             var text = message == null ? str : $"{message}{str}";
-            printer.Print(text, endLine, colorTags, color);
+            printer.Print(text, options);
         }
 
-        public static void PrintArray<T>(this IPowerConsolePrinter printer, IEnumerable<T> enumerable,
-            string? message,
-            StringifyOptions? options,
-            Func<T, string>? formatter,
-            Colors colors,
-            bool endLine = true,
-            bool colorTags = false)
-        {
-            string str;
-            if (options == null)
-            {
-                str = enumerable.Stringify(StringifyFormat.Default, ",", formatter);
-            }
-            else
-            {
-                str = enumerable.Stringify(options.Format, options.Separator, formatter);
-                str = colors.Colorize(str);
-            }
+        //public static void PrintArray<T>(this IPowerConsolePrinter printer, IEnumerable<T> enumerable,
+        //    string? message,
+        //    PrintOptions printOptions,
+        //    StringifyOptions? options,
+        //    Func<T, string>? formatter)
+        //{
+        //    string str;
+        //    if (options == null)
+        //    {
+        //        str = enumerable.Stringify(StringifyFormat.Default, ",", formatter);
+        //    }
+        //    else
+        //    {
+        //        str = enumerable.Stringify(options.Format, options.Separator, formatter);
+        //    }
 
-            var text = message == null ? str : $"{message}{str}";
-            printer.Print(text, endLine, colorTags, colors);
-        }
+        //    var text = message == null ? str : $"{message}{str}";
+        //    printer.Print(text, printOptions);
+        //}
 
     }
 }

@@ -21,7 +21,7 @@ namespace AVS.CoreLib.PowerConsole.Bootstrapping
             }
             catch (Exception ex)
             {
-                PowerConsole.WriteError(ex);
+                PowerConsole.PrintError(ex);
                 throw;
             }
         }
@@ -42,8 +42,7 @@ namespace AVS.CoreLib.PowerConsole.Bootstrapping
             }
             catch (Exception ex)
             {
-                PowerConsole.Print($"Bootstrap.Run<{typeof(TStartup).Name}>() failed", ConsoleColor.Red);
-                PowerConsole.WriteError(ex);
+                PowerConsole.PrintError(ex, $"Bootstrap.Run<{typeof(TStartup).Name}>() failed", printStackTrace: true);
                 throw;
             }
         }
@@ -73,7 +72,7 @@ namespace AVS.CoreLib.PowerConsole.Bootstrapping
             catch (Exception ex)
             {
                 PowerConsole.Print($"Bootstrap.Run<{typeof(TStartup).Name}>() failed", ConsoleColor.Red);
-                PowerConsole.WriteError(ex);
+                PowerConsole.PrintError(ex);
                 throw;
             }
         }
@@ -103,7 +102,7 @@ namespace AVS.CoreLib.PowerConsole.Bootstrapping
             catch (Exception ex)
             {
                 PowerConsole.Print($"Bootstrap.Run<{typeof(TStartup).Name}>() failed", ConsoleColor.Red);
-                PowerConsole.WriteError(ex);
+                PowerConsole.PrintError(ex);
                 throw;
             }
         }

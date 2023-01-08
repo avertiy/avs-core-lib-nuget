@@ -19,47 +19,37 @@ namespace AVS.CoreLib.PowerConsole
         /// in case you use X.Format
         /// strings staring with @ symbol are treated as strings with expression(s) and processed by TextProcessor(s)
         /// </remarks>
-        public static void PrintF(FormattableString str, bool endLine = true, bool containsTags = true)
+        public static void PrintF(FormattableString str, PrintOptions? options = null)
         {
-            Printer.PrintF(str, endLine, containsTags);
+            Printer.PrintF(str, options ?? DefaultOptions);
+        }
+
+        public static void PrintF(FormattableString str, Action<PrintOptions> configureOptions)
+        {
+            var options = DefaultOptions.Clone();
+            configureOptions(options);
+            Printer.Print(str, options);
         }
 
         /// <summary>
-        /// An input string formatted by <see cref="XFormatProvider"/> delegate
-        /// <see cref="ColorMarkupString"/> formatting is supported
+        /// format and print string auto-highlighting arguments picking colors from color palette provided in <see cref="MultiColorPrintOptions"/>
         /// </summary>
-        /// <param name="str">input string</param>
-        /// <param name="color">console foreground color</param>
-        /// <param name="endLine">end line or not</param>
-        /// <param name="containsTags">color tags <see cref="CTag"/></param>
-        /// <remarks>
-        /// After the printing is done the <see cref="ColorScheme"/> is reset <see cref="ColorSchemeReset"/>
-        /// </remarks>
-        public static void PrintF(FormattableString str, ConsoleColor color, bool endLine = true, bool containsTags= true)
+        public static void PrintF(FormattableString str, MultiColorPrintOptions options)
         {
-            Printer.PrintF(str, endLine, containsTags, color);
+            Printer.Print(str, options);
         }
 
-        //public static void PrintF(int posX, int posY, FormattableString str, bool endLine = true)
-        //{
-        //    var formattedString = Printer.XFormat(str);
-        //    var rows = Regex.Matches(formattedString, Environment.NewLine).Count;
-        //    ClearRegion(posX, posY, rows);
-        //    Printer.Print(new ColorMarkupString(formattedString), endLine);
-        //}
-
-        public static void PrintF(int posX, int posY, string str, bool endLine = true)
+        public static void PrintF(FormattableString str, params ConsoleColor[] colors)
         {
-            var rows = Regex.Matches(str, Environment.NewLine).Count;
-            ClearRegion(posX, posY, rows);
-            Printer.Print(new ColorMarkupString(str), endLine);
+            Printer.Print(str, new MultiColorPrintOptions(colors));
         }
 
-        public static void PrintF(int posX, int posY, string str, ConsoleColor color, bool endLine = true)
+        public static void PrintF(int posX, int posY, FormattableString str, PrintOptions? options = null)
         {
-            var rows = Regex.Matches(str, Environment.NewLine).Count;
+            var text = str.ToString();
+            var rows = Regex.Matches(text, Environment.NewLine).Count;
             ClearRegion(posX, posY, rows);
-            Printer.Print(new ColorMarkupString(str), color, endLine);
+            Printer.Print(new ColorMarkupString(text), options?? DefaultOptions);
             ClearLine();
         }
     }

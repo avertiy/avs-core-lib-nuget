@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using AVS.CoreLib.PowerConsole.Enums;
 using AVS.CoreLib.PowerConsole.Extensions;
 using AVS.CoreLib.PowerConsole.Printers;
@@ -17,32 +18,32 @@ namespace AVS.CoreLib.PowerConsole
     {
         #region WriteLine
 
-        public static void WriteLine(string message, bool voidEmptyLines = false)
+        public static void WriteLine(PrintOptions? options = null)
         {
-            Printer.WriteLine(message, voidEmptyLines);
+            Printer.WriteLine(null, options ?? DefaultOptions);
         }
 
-        /// <summary>
-        /// Writes the specified string value, followed by the current line terminator,
-        /// to the standard output stream.
-        /// </summary>
-        /// <param name="message">Message to be written to console output</param>
-        /// <param name="color">Color of message text</param>
-        /// <param name="timeFormat">Date and time format of the time written next to message in console output</param>
-        public static void WriteLine(string message, ConsoleColor? color, string timeFormat = "yyyy-MM-dd hh:mm:ss.ff")
+        ///// <summary>
+        ///// Writes the specified string value, followed by the current line terminator, to console output stream.
+        ///// </summary>
+        /// <param name="str">string value to write</param>
+        /// <param name="options"><see cref="PrintOptions"/></param>
+        public static void WriteLine(string str, PrintOptions? options = null)
         {
-            if (!string.IsNullOrEmpty(timeFormat))
-                message = $"{DateTime.Now.ToString(timeFormat)} {message}";
+            options = options ?? DefaultOptions;
+            Printer.WriteLine(str, options);
 
-            Printer.Print(message, true, false, color);
+            if (BeepOnMessageLevels != null && BeepOnMessageLevels.Contains(options.Level))
+                Console.Beep();
         }
-        public static void WriteLine(string message, ColorScheme scheme, string timeFormat = "yyyy-MM-dd hh:mm:ss.ff")
+
+        public static void WriteLine(string str, Action<PrintOptions> configure)
         {
-            if (!string.IsNullOrEmpty(timeFormat))
-                message = $"{DateTime.Now.ToString(timeFormat)} {message}";
-
-            Printer.Print(message,true, false, scheme);
+            var options = DefaultOptions.Clone();
+            configure(options);
+            WriteLine(str, options);
         }
+
 
         public static void WriteLine(int posX, int posY, params string[] arr)
         {
@@ -53,54 +54,6 @@ namespace AVS.CoreLib.PowerConsole
             }
         }
 
-        public static void WriteLine(bool voidMultipleEmptyLines = true)
-        {
-            Printer.WriteLine(null, voidMultipleEmptyLines);
-        } 
-
         #endregion
-
-        public static void Write(string str)
-        {
-            Printer.Print(str, false);
-        }
-     
-        public static void Write(string str, ConsoleColor? color, bool endLine = false)
-        {
-            Printer.Print(str, endLine, containsCTags: false, color);
-        }
-
-        public static void Write(string str, ColorScheme scheme, bool endLine = false)
-        {
-            Printer.Print(str, endLine, containsCTags:false, scheme);
-        }
-
-        /// <summary>
-        /// Writes the specified string value, followed by the current line terminator,
-        /// to the standard output stream.
-        /// </summary>
-        /// <param name="message">Message to be written to console output</param>
-        /// <param name="status">status of the message to be written to console output</param>
-        /// <param name="timeFormat">Date and time format of the time written next to message in console output</param>
-        public static void WriteLine(string message, MessageStatus status,
-            string? timeFormat = "yyyy-MM-dd hh:mm:ss.ff")
-        {
-            Printer.Print(message, status, timeFormat);
-            if (status == BeepOnMessageStatus)
-                Console.Beep();
-        }
-
-        [Conditional("DEBUG")]
-        public static void WriteDebug(string str, string? timeFormat = "yyyy-MM-dd hh:mm:ss.ff")
-        {
-            WriteLine(str, MessageStatus.Debug, timeFormat);
-        }
-
-        public static void WriteError(Exception ex, bool printStackTrace = true, string? timeFormat = "yyyy-MM-dd hh:mm:ss.ff")
-        {
-            Printer.PrintError(ex, printStackTrace, timeFormat);
-            if (BeepOnMessageStatus is MessageStatus.Error)
-                Console.Beep();
-        }
     }
 }

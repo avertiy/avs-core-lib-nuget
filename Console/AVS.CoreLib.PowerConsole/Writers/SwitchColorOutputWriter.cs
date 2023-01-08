@@ -2,6 +2,7 @@
 using System.IO;
 using AVS.CoreLib.Console.ColorFormatting;
 using AVS.CoreLib.Console.ColorFormatting.Tags;
+using AVS.CoreLib.PowerConsole.Printers;
 using AVS.CoreLib.PowerConsole.TagProcessors;
 using AVS.CoreLib.PowerConsole.Utilities;
 
@@ -19,12 +20,12 @@ namespace AVS.CoreLib.PowerConsole.Writers
             {
                 var colorBackup = System.Console.ForegroundColor;
                 System.Console.ForegroundColor = color.Value;
-                base.Write(str, endLine, containsCTags);
+                base.WriteInternal(str, endLine, containsCTags);
                 System.Console.ForegroundColor = colorBackup;
             }
             else
             {
-                base.Write(str, endLine, containsCTags);
+                base.WriteInternal(str, endLine, containsCTags);
             }
         }
 
@@ -39,8 +40,7 @@ namespace AVS.CoreLib.PowerConsole.Writers
             var backup = ColorScheme.GetCurrentScheme();
             PowerConsole.ApplyColorScheme(scheme);
 
-            var coloredStr = scheme.Colorize(str);
-            base.Write(coloredStr, endLine, containsCTags);
+            base.WriteInternal(str, endLine, containsCTags);
 
             // restore scheme
             PowerConsole.ApplyColorScheme(backup);
@@ -52,9 +52,25 @@ namespace AVS.CoreLib.PowerConsole.Writers
             PowerConsole.ApplyColors(colors);
 
             if (containsCTags.HasValue && containsCTags.Value)
-                base.Write(str, endLine, containsCTags);
+                base.WriteInternal(str, endLine, containsCTags);
             else
-                base.Write(str, endLine);
+                base.WriteInternal(str, endLine);
+
+            // restore scheme
+            PowerConsole.ApplyColorScheme(backup);
+        }
+
+        public override void WriteColored(string str, PrintOptions options)
+        {
+            var backup = ColorScheme.GetCurrentScheme();
+            
+            var colors = options.GetColors();
+            PowerConsole.ApplyColors(colors);
+
+            if (options.ColorTags is false)
+                base.WriteInternal(str, options.EndLine);
+            else
+                base.WriteInternal(str, options.EndLine, options.ColorTags);
 
             // restore scheme
             PowerConsole.ApplyColorScheme(backup);

@@ -33,30 +33,21 @@ namespace AVS.CoreLib.PowerConsole.Extensions
             }
 
             var text = message == null ? str : $"{message}{str}";
-            printer.Print(text, endLine, colorTags, color);
+            var printOptions = PrintOptions.Default.Clone();
+            printOptions.EndLine = endLine;
+            printOptions.ColorTags = colorTags;
+            printOptions.Color = color;
+            printer.Print(text, printOptions);
         }
 
         public static void PrintDictionary<TKey, TValue>(this IPowerConsolePrinter printer,
             IDictionary<TKey, TValue> dictionary,
             string? message,
-            StringifyOptions? options,
-            Func<TKey, TValue, string>? formatter,
-            Colors colors,
-            bool endLine = true,
-            bool colorTags = false)
+            KeyValuePrintOptions<TKey,TValue> options)
         {
-            string str;
-            if (options == null)
-            {
-                str = dictionary.Stringify(StringifyOptions.Default, formatter);
-            }
-            else
-            {
-                str = dictionary.Stringify(options, formatter);
-            }
-
+            var str = dictionary.Stringify(options.StringifyOptions, options.Formatter);
             var text = message == null ? str : $"{message}{str}";
-            printer.Print(text, endLine, colorTags, colors);
+            printer.Print(text, options);
         }
 
     }

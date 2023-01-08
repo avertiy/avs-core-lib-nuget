@@ -5,15 +5,16 @@ using AVS.CoreLib.Console.ColorFormatting.Tags;
 using AVS.CoreLib.PowerConsole.Enums;
 using AVS.CoreLib.PowerConsole.Printers;
 using AVS.CoreLib.PowerConsole.Utilities;
+using AVS.CoreLib.PowerConsole.Writers;
 using AVS.CoreLib.Text.FormatProviders;
 
 namespace AVS.CoreLib.PowerConsole
 {
     /// <summary>
-    /// PowerConsole provides various extension methods to print to console
-    /// supports coloring messages via ansi codes <see cref="AnsiCodes"/>,
-    /// color tags <see cref="CTagProcessor"/>,
-    /// extra formatting <see cref="XFormatProvider"/>.
+    /// PowerConsole provides various extension methods to console printing
+    /// support color printing (via ansi codes <see cref="AnsiCodes"/>, and by switching colors <see cref="SwitchColorOutputWriter"/>
+    /// support color tags <see cref="CTagProcessor"/>
+    /// provide various print utility method like PrintTable, PrintArray, PrintKeyValue etc.
     /// </summary>
     /// <remarks>If you need more rich and extensive console frameworks check out links below </remarks>
     /// <seealso>https://github.com/Athari/CsConsoleFormat - advanced formatting of console output for .NET</seealso>
@@ -39,74 +40,23 @@ namespace AVS.CoreLib.PowerConsole
             Printer.SwitchMode(mode);
         }
 
-        #region Print(string str) methods
         /// <summary>
-        /// Print str 
+        /// Print str value to console, if <see cref="PrintOptions"/> are not provided, the <see cref="DefaultOptions"/> are used
         /// </summary>
-        /// <param name="str">str to be printed</param>
-        /// <param name="endLine">when true write line terminator i.e. WriteLine()</param>
-        /// <param name="colorTags">when true process input str for color tags <see cref="TagProcessor"/></param>
-        public static void Print(string str, bool endLine = true, bool colorTags = false)
+        /// <remarks>PrintOptions provide implicit conversion from ConsoleColor and <see cref="CTag"/> enums,
+        /// from <see cref="ColorScheme"/> and <see cref="Colors"/> structs, from <see cref="MessageLevel"/> 
+        /// thus you can call Print("text", CTag.Red) or Print("text", MessageLevel.Warning);
+        /// </remarks>
+        public static void Print(string str, PrintOptions? options = null)
         {
-            Printer.Print(str, endLine, colorTags);
+            Printer.Print(str, options ?? DefaultOptions);
         }
 
-        public static void Print(string str, CTag tag, bool endLine = true, bool colorTags = false)
+        public static void Print(string str, Action<PrintOptions> configureOptions)
         {
-            Printer.Print(str, endLine, colorTags, tag);
+            var options = DefaultOptions.Clone();
+            configureOptions(options);
+            Printer.Print(str, options);
         }
-
-        public static void Print(string str, ConsoleColor color, bool endLine = true, bool colorTags = false)
-        {
-            Printer.Print(str, endLine, colorTags, color);
-        }
-
-        public static void Print(string str, Colors colors, bool endLine = true, bool colorTags = false)
-        {
-            Printer.Print(str, endLine, colorTags, colors);
-        }
-
-        public static void Print(string str, ColorScheme scheme, bool endLine = true, bool colorTags = false)
-        {
-            Printer.Print(str, endLine, colorTags, scheme);
-        }
-        #endregion
-
-        #region Print(FormattableString str) methods
-        public static void Print(FormattableString str, bool endLine = true, bool colorTags = false)
-        {
-            Printer.Print(str, endLine, colorTags);
-        }
-
-        public static void Print(FormattableString str, ConsoleColor color, bool endLine = true, bool colorTags = false)
-        {
-            Printer.Print(str, endLine, colorTags, color);
-        }
-
-        public static void Print(FormattableString str, Colors colors, bool endLine = true, bool colorTags = false)
-        {
-            Printer.Print(str, endLine, colorTags, colors);
-        }
-
-        public static void Print(FormattableString str, CTag tag, bool endLine = true, bool colorTags = false)
-        {
-            Printer.Print(str, endLine, colorTags, tag);
-        }
-
-        public static void Print(FormattableString str, ColorScheme scheme, bool endLine = true, bool colorTags = false)
-        {
-            Printer.Print(str, endLine, colorTags, scheme);
-        }
-
-        public static void Print(FormattableString str, ColorPalette palette, bool endLine = true)
-        {
-            Printer.Print(str, palette, endLine);
-        }
-
-        public static void Print(FormattableString str, bool endLine = true, params ConsoleColor[] colors)
-        {
-            Printer.Print(str, colors, endLine);
-        } 
-        #endregion
     }
 }

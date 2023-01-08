@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using AVS.CoreLib.PowerConsole.Enums;
+using AVS.CoreLib.PowerConsole.Printers;
 
 namespace AVS.CoreLib.PowerConsole
 {
@@ -24,26 +25,12 @@ namespace AVS.CoreLib.PowerConsole
         /// Writes a message with options and wait for the user input
         /// </summary>
         /// <param name="message">Message text to be written in console output</param>
-        /// <param name="color">Console color to be used to write only tis line of text</param>
-        /// <param name="timeFormat">Display format for the date and time</param>
+        /// <param name="options"><see cref="PrintOptions"/></param>
         /// <returns>Returns entered value from the user</returns>
-        public static string ReadLine(string message, ConsoleColor color = ConsoleColor.Gray, string timeFormat = "yyyy-MM-dd hh:mm:ss.ff")
+        public static string ReadLine(string message, PrintOptions? options = null)
         {
-            WriteLine(message, color, timeFormat);
-            return Console.ReadLine();
-        }
-
-        /// <summary>
-        /// Writes a message with options and wait for the user input
-        /// </summary>
-        /// <param name="message">Message text to be written in console output</param>
-        /// <param name="status">Message status to be used to output message text</param>
-        /// <param name="timeFormat">Display format for the date and time</param>
-        /// <returns>Returns entered value from the user</returns>
-        public static string ReadLine(string message, MessageStatus status = MessageStatus.Default, string timeFormat = "yyyy-MM-dd hh:mm:ss.ff")
-        {
-            WriteLine(message, status, timeFormat);
-            return Console.ReadLine();
+            WriteLine(message, options ?? DefaultOptions);
+            return Console.ReadLine() ?? string.Empty;
         }
 
 
@@ -52,22 +39,21 @@ namespace AVS.CoreLib.PowerConsole
         /// </summary>
         /// <typeparam name="T">Generic type to validate the input and request for re-entering if eneted value is invalid</typeparam>
         /// <param name="message">Message text to be written in console output</param>
-        /// <param name="color">Console color to be used to write only tis line of text</param>
-        /// <param name="timeFormat">Display format for the date and time</param>
+        /// <param name="options"></param>
         /// <returns>Returns entered value from the user</returns>
-        public static T ReadLine<T>(string message, ConsoleColor color = ConsoleColor.Gray, string timeFormat = "yyyy-MM-dd hh:mm:ss.ff")
+        public static T ReadLine<T>(string message, PrintOptions? options = null)
             where T : IConvertible
         {
-            WriteLine(message, color, timeFormat);
-            string input = Console.ReadLine();
+            WriteLine(message, options ?? DefaultOptions);
+            var input = Console.ReadLine();
             try
             {
                 return (T)Convert.ChangeType(input, typeof(T));
             }
             catch (Exception ex)
             {
-                PowerConsole.WriteError(ex, true, timeFormat);
-                return ReadLine<T>(message, color, timeFormat);
+                PowerConsole.PrintError(ex,$"{nameof(ReadLine)} failed", true);
+                return ReadLine<T>(message, options);
             }
         }
     }

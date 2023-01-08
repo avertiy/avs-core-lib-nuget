@@ -23,6 +23,12 @@ namespace AVS.CoreLib.PowerConsole.Printers
         {
         }
 
+        public void PrintF(FormattableString str, PrintOptions options)
+        {
+            var text = XFormatInternal(str);
+            Writer.Write(text, options);
+        }
+
         public void SetCustomFormatter(Func<FormattableString, string> formatter, bool printF = true)
         {
             if (printF)
@@ -51,34 +57,34 @@ namespace AVS.CoreLib.PowerConsole.Printers
             return XFormat?.Invoke(str) ?? str.ToString(CultureInfo.CurrentCulture);
         }
 
-        public void PrintF(FormattableString str, bool endLine = true)
-        {
-            var text = XFormatInternal(str);
-            Writer.Write(text, endLine);
-        }
+        //public void PrintF(FormattableString str, bool endLine = true)
+        //{
+        //    var text = XFormatInternal(str);
+        //    Writer.Write(text, endLine);
+        //}
 
-        public void PrintF(FormattableString str, bool endLine, bool? containsCTags)
-        {
-            var text = XFormatInternal(str);
-            Writer.Write(text, endLine, containsCTags);
-        }
+        //public void PrintF(FormattableString str, bool endLine, bool? containsCTags)
+        //{
+        //    var text = XFormatInternal(str);
+        //    Writer.Write(text, endLine, containsCTags);
+        //}
 
-        public void PrintF(FormattableString str, bool endLine, bool? containsCTags, ConsoleColor? color)
-        {
-            var text = XFormatInternal(str);
-            Writer.Write(text, endLine, containsCTags, color);
-        }
+        //public void PrintF(FormattableString str, bool endLine, bool? containsCTags, ConsoleColor? color)
+        //{
+        //    var text = XFormatInternal(str);
+        //    Writer.Write(text, endLine, containsCTags, color);
+        //}
 
-        public void PrintF(FormattableString str, bool endLine, bool? containsCTags, Colors colors)
-        {
-            var text = XFormatInternal(str);
-            Writer.Write(text, endLine, containsCTags, colors);
-        }
+        //public void PrintF(FormattableString str, bool endLine, bool? containsCTags, Colors colors)
+        //{
+        //    var text = XFormatInternal(str);
+        //    Writer.Write(text, endLine, containsCTags, colors);
+        //}
 
-        public void PrintF(FormattableString str, bool endLine, bool? containsCTags, ColorScheme scheme)
-        {
-            var text = XFormatInternal(str);
-            Writer.Write(text, endLine, containsCTags, scheme);
-        }
+        //public void PrintF(FormattableString str, bool endLine, bool? containsCTags, ColorScheme scheme)
+        //{
+        //    var text = XFormatInternal(str);
+        //    Writer.Write(text, endLine, containsCTags, scheme);
+        //}
       }
 }
