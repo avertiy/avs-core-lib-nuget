@@ -61,7 +61,7 @@ namespace AVS.CoreLib.REST.Projections
 
         public Task<Response<T>> MapAsync()
         {
-            return MapAsync(Map);
+            return MapAsyncInternal(Map);
         }
 
         private void EnsureProxyInitialized()
@@ -269,7 +269,7 @@ namespace AVS.CoreLib.REST.Projections
 
         public Task<Response<T>> MapAsync()
         {
-            return MapAsync(Map);
+            return MapAsyncInternal(Map);
         }
 
         public virtual Response<T> Map()

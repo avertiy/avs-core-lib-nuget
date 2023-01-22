@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions;
 using AVS.CoreLib.Abstractions.Bootstrap;
+using AVS.CoreLib.Console.ColorFormatting;
 using AVS.CoreLib.Console.ColorFormatting.Tags;
 using AVS.CoreLib.PowerConsole.ConsoleTable;
 using AVS.CoreLib.PowerConsole.Enums;
@@ -23,6 +24,8 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
             {
                 //FormatPreprocessorTest();
                 WriteTests();
+                WriteLineTests();
+                PrintTests();
                 CTagsTests();
                 ColorSchemeTests();
 
@@ -32,10 +35,11 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
                 PrintTableTests();
                 //PrintColorPaletteTest();
 
-
+                PrintUtilitiesTests();
+                PrintTest();
                 PrintAllColors();
                 
-                PrintTest();
+                
                 PrintTimeElapsed();
                 PrintFTests();
                 
@@ -52,6 +56,27 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
                 PowerConsole.PrintError(ex);
             }
         }
+        private void PrintTests()
+        {
+            PowerConsole.PrintHeader($"Print tests");
+
+            PowerConsole.Print("print without parameters");
+            PowerConsole.Print("print without parameters <Red> color tags by default not handled</Red>");
+            PowerConsole.Print("print CTag.Blue parameter", CTag.Blue);
+            PowerConsole.Print("print colors parameter", Colors);
+            PowerConsole.Print("print options default", PrintOptions.Default);
+            PowerConsole.Print("print options inline", PrintOptions.Inline);
+            PowerConsole.Print(" continue inline", PrintOptions.NoTimestampInLine);
+            PowerConsole.Print(" continue no time stamp", PrintOptions.NoTimestamp);
+
+            PowerConsole.Print("print with options as tuple", (endLine: true, timeFormat: "HH:mm:ss"));
+            PowerConsole.Print("print with <Yellow>options as tuple</Yellow>", (endLine: true, colorTags: true, timeFormat: "HH:mm:ss"));
+
+            PowerConsole.Print("print <Cyan>color tags should be handled</Cyan>", PrintOptions.CTags());
+            PowerConsole.Print("print <Red>few color tags</Red> both <Cyan>should be handled</Cyan>", PrintOptions.CTags());
+            PowerConsole.Print("print in yellow color, <Cyan>color tags should be handled as well</Cyan>", PrintOptions.CTags(color: ConsoleColor.DarkYellow));
+        }
+
 
         private void FormatPreprocessorTest()
         {
@@ -64,7 +89,7 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
 
         private void CTagsTests()
         {
-            PowerConsole.PrintHeader($" CTags Test");
+            PowerConsole.PrintHeader($"Color Tags tests");
 
             PowerConsole.Print("text colorized by yellow ctag", CTag.Yellow);
             PowerConsole.Print("text with color tags <Cyan>cyan</Cyan>", PrintOptions.CTags());
@@ -93,7 +118,7 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
 
         public void ColorSchemeTests()
         {
-            PowerConsole.Print("this is (dark blue / white) color scheme", new ColorScheme(ConsoleColor.DarkBlue, ConsoleColor.White));
+            PowerConsole.Print("this is (dark blue / white) color scheme", new ColorScheme(ConsoleColor.White, ConsoleColor.DarkBlue));
         }
 
         public void PrintArrayTests()
@@ -127,25 +152,19 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
 
         public void WriteTests()
         {
-            PowerConsole.Write("simple write ");
-            PowerConsole.Write(" ConsoleColor.Cyan ", ConsoleColor.Cyan);
-            PowerConsole.Write(" ColorScheme.DarkRed ", ColorScheme.DarkRed);
+            PowerConsole.PrintHeader($"write tests");
+            PowerConsole.Write("simple write");
+            PowerConsole.Write(" continue should be the same line");
+            PowerConsole.Write("\r\nwrite + ConsoleColor.Cyan", ConsoleColor.Cyan, true);
+            PowerConsole.Write("color scheme write", new ColorScheme(ConsoleColor.DarkRed, ConsoleColor.Gray), true);
+            PowerConsole.Write("print options write", new PrintOptions());
+            PowerConsole.Write("print options write with timestamp", new PrintOptions(timeFormat: "HH:mm:ss"));
+            PowerConsole.Write("print options color", new PrintOptions(color: ConsoleColor.Green));
+            PowerConsole.Write("print options with <Blue>color tags</Blue>", new PrintOptions(colorTags: true));
+        }
 
-            PowerConsole.PrintHeader($"WriteLine tests");
-            PowerConsole.WriteLine("write line");
-            PowerConsole.WriteLine("write line ConsoleColor.DarkYellow with timestamp", ConsoleColor.DarkYellow);
-            PowerConsole.WriteLine("write line ColorScheme.DarkYellow", ColorScheme.DarkYellow);
-
-
-            PowerConsole.PrintHeader($"WriteLine message status tests");
-            PowerConsole.WriteLine("write line debug", MessageLevel.Debug);
-            PowerConsole.WriteLine("write line default", MessageLevel.Default);
-            PowerConsole.WriteLine("write line info", MessageLevel.Info);
-            PowerConsole.WriteLine("write line warning", MessageLevel.Warning);
-            PowerConsole.WriteLine("write line error", MessageLevel.Error);
-            
-            
-
+        public void PrintUtilitiesTests()
+        {
             PowerConsole.PrintDebug("this is a debug message");
             try
             {
@@ -155,6 +174,28 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
             {
                 PowerConsole.PrintError(ex);
             }
+        }
+
+        Colors Colors => new Colors(ConsoleColor.DarkBlue, ConsoleColor.DarkYellow);
+
+        public void WriteLineTests()
+        {
+            PowerConsole.PrintHeader($"WriteLine tests");
+            PowerConsole.WriteLine("write line");
+            PowerConsole.WriteLine("write line ConsoleColor.DarkYellow", ConsoleColor.DarkYellow);
+            PowerConsole.WriteLine("write line print options from ColorScheme.Success", ColorScheme.Success);
+            PowerConsole.WriteLine("write line print options with time format", new PrintOptions(timeFormat:"HH:mm:ss"));
+            PowerConsole.WriteLine("write line print options from colors", Colors);
+
+            PowerConsole.PrintHeader($"WriteLine message status tests");
+            PowerConsole.WriteLine("write debug message", MessageLevel.Debug);
+            PowerConsole.WriteLine("write default message", MessageLevel.Default);
+            PowerConsole.WriteLine("write info message", MessageLevel.Info);
+            PowerConsole.WriteLine("write success message", MessageLevel.Success);
+            PowerConsole.WriteLine("write important message", MessageLevel.Important);
+            PowerConsole.WriteLine("write warning message", MessageLevel.Warning);
+            PowerConsole.WriteLine("write error message", MessageLevel.Error);
+            PowerConsole.WriteLine("write critical error", MessageLevel.Critical);
         }
 
         public async Task ReadLineAsync()
@@ -228,7 +269,7 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
             PowerConsole.PrintTable(arr, ConsoleColor.DarkCyan);
             PowerConsole.WriteLine();
 
-            var table = Table.Create(new[] { "Buys", "Sells", "Column 3", "Column 4" }, new[] { ColorScheme.DarkGreen, ColorScheme.DarkRed });
+            var table = Table.Create(new[] { "Buys", "Sells", "Column 3", "Column 4" }, new[] { ColorScheme.Info, ColorScheme.Success });
             table.AddRow().AddCell("row 1 colspan = 4", 4);
             table.AddRow().AddCell("row 2 colspan = 3", 3).AddCell("Cell 4");
             table.AddRow().AddCell("row 3 cell 1").AddCell("Cell 2       -        3", 2).AddCell("cell 4");

@@ -8,7 +8,12 @@ using AVS.CoreLib.PowerConsole.Utilities;
 namespace AVS.CoreLib.PowerConsole.Printers
 {
     /// <summary>
-    /// Print options provide common parameters used in print methods, allows to set all the various aspects within one argument instead of having multiple method overloads 
+    /// Provide common parameters used in print methods,
+    /// Options configure various print aspects like end line, colors, color tags etc.
+    /// PrintOptions has various overloads for implicit conversion from tuples for usage convenience
+    /// e.g. Print("str", (endLine: true, timeFormat:"G")),
+    /// also predefined static props PrintOptions.Default, PrintOptions.Inline etc.
+    /// of course you can pass argument explicitly e.g. Print("str", new PrintOptions() { ... }),
     /// </summary>
     public class PrintOptions
     {
@@ -18,7 +23,7 @@ namespace AVS.CoreLib.PowerConsole.Printers
         public string? TimeFormat { get; set; }
 
         public MessageLevel Level { get; set; }
-        public bool EndLine { get; set; }
+        public bool EndLine { get; set; } = true;
 
         public bool? ColorTags { get; set; }
         public bool VoidEmptyLines { get; set; } = true;
@@ -39,6 +44,10 @@ namespace AVS.CoreLib.PowerConsole.Printers
         public CTag? CTag { get; set; }
 
         public bool HasColors => Color.HasValue || Scheme.HasValue || Colors.HasValue || CTag.HasValue;
+
+        public PrintOptions()
+        {
+        }
 
         public PrintOptions(bool endLine = true, bool colorTags = false, string? timeFormat = null, ConsoleColor? color = null)
         {
@@ -96,7 +105,7 @@ namespace AVS.CoreLib.PowerConsole.Printers
             return this;
         }
 
-        public PrintOptions UseTimeStamp(string timeFormat = "hh:mm:ss")
+        public PrintOptions UseTimeStamp(string timeFormat = "HH:mm:ss")
         {
             TimeFormat = timeFormat;
             return this;
@@ -130,6 +139,85 @@ namespace AVS.CoreLib.PowerConsole.Printers
 
             return copy;
         }
+
+
+        #region implicit conversions from tuples
+
+        [DebuggerStepThrough]
+        public static implicit operator PrintOptions((bool endLine, bool colorTags) options)
+        {
+            return new PrintOptions() { EndLine = options.endLine, ColorTags = options.colorTags };
+        }
+
+        [DebuggerStepThrough]
+        public static implicit operator PrintOptions((bool endLine, bool colorTags, string timeFormat) options)
+        {
+            return new PrintOptions()
+            {
+                EndLine = options.endLine,
+                ColorTags = options.colorTags,
+                TimeFormat = options.timeFormat
+            };
+        }
+
+        [DebuggerStepThrough]
+        public static implicit operator PrintOptions((bool endLine, bool colorTags, ConsoleColor color) options)
+        {
+            return new PrintOptions()
+            {
+                EndLine = options.endLine,
+                ColorTags = options.colorTags,
+                Color = options.color
+            };
+        }
+
+        [DebuggerStepThrough]
+        public static implicit operator PrintOptions((bool endLine, ConsoleColor color) options)
+        {
+            return new PrintOptions() { EndLine = options.endLine, Color = options.color };
+        }
+
+        [DebuggerStepThrough]
+        public static implicit operator PrintOptions((bool endLine, string timeFormat) options)
+        {
+            return new PrintOptions()
+            {
+                EndLine = options.endLine,
+                TimeFormat = options.timeFormat
+            };
+        }
+
+        [DebuggerStepThrough]
+        public static implicit operator PrintOptions((bool endLine, string timeFormat, ConsoleColor color) options)
+        {
+            return new PrintOptions() { EndLine = options.endLine, TimeFormat = options.timeFormat, Color = options.color };
+        }
+
+        [DebuggerStepThrough]
+        public static implicit operator PrintOptions((bool endLine, bool colorTags, string timeFormat, ConsoleColor color) options)
+        {
+            return new PrintOptions()
+            {
+                EndLine = options.endLine,
+                ColorTags = options.colorTags,
+                TimeFormat = options.timeFormat,
+                Color = options.color
+            };
+        }
+
+        [DebuggerStepThrough]
+        public static implicit operator PrintOptions((bool endLine, MessageLevel level) options)
+        {
+            return new PrintOptions() { EndLine = options.endLine, Level = options.level };
+        }
+
+        [DebuggerStepThrough]
+        public static implicit operator PrintOptions((bool endLine, ColorScheme scheme) options)
+        {
+            return new PrintOptions() { EndLine = options.endLine, Scheme = options.scheme };
+        }
+
+        #endregion
 
         [DebuggerStepThrough]
         public static implicit operator PrintOptions(ConsoleColor color)
@@ -180,43 +268,53 @@ namespace AVS.CoreLib.PowerConsole.Printers
         public static PrintOptions Default { get; set; } = new PrintOptions()
         {
             EndLine = true,
-            TimeFormat = "hh:mm:ss",
+            TimeFormat = "HH:mm:ss",
             ColorTags = false
         };
 
         [DebuggerStepThrough]
-        public static PrintOptions Create(bool endLine = true, bool colorTags = false, string? timeFormat = "hh:mm:ss", ConsoleColor? color = null)
+        public static PrintOptions Create(bool endLine = true, bool colorTags = false, string? timeFormat = "HH:mm:ss", ConsoleColor? color = null)
         {
             var options = new PrintOptions { ColorTags = colorTags, EndLine = endLine, TimeFormat = timeFormat, Color = color };
             return options;
         }
 
-        [DebuggerStepThrough]
-        public static PrintOptions CTags()
+        //[DebuggerStepThrough]
+        public static PrintOptions CTags(bool endLine = true, string? timeFormat = "HH:mm:ss", ConsoleColor? color = null)
         {
-            var options = Default.Clone();
-            options.ColorTags = true;
-            return options;
-        }
-
-        [DebuggerStepThrough]
-        public static PrintOptions CTags(bool endLine, string? timeFormat = "hh:mm:ss", ConsoleColor? color = null)
-        {
-            var options = new PrintOptions { ColorTags = true, EndLine = endLine, TimeFormat = timeFormat, Color = color};
+            var options = new PrintOptions
+            {
+                ColorTags = true,
+                EndLine = endLine,
+                TimeFormat = timeFormat,
+                Color = color
+            };
             return options;
         } 
 
         public static PrintOptions Inline { get; set; } = new PrintOptions()
         {
             EndLine = false,
-            TimeFormat = null,
+            TimeFormat = "HH:mm:ss",
+            ColorTags = false
+        };
+
+        public static PrintOptions NoTimestamp { get; set; } = new PrintOptions()
+        {
+            EndLine = true,
+            ColorTags = false
+        };
+
+        public static PrintOptions NoTimestampInLine { get; set; } = new PrintOptions()
+        {
+            EndLine = false,
             ColorTags = false
         };
 
         public static PrintOptions Debug { get; set; } = new PrintOptions()
         {
             EndLine = true,
-            TimeFormat = "hh:mm:ss",
+            TimeFormat = "HH:mm:ss",
             ColorTags = false,
             Level = MessageLevel.Debug,
             Color = ConsoleColor.DarkGray,
@@ -226,7 +324,7 @@ namespace AVS.CoreLib.PowerConsole.Printers
         {
             Color = ConsoleColor.Red,
             EndLine = true,
-            TimeFormat = "hh:mm:ss",
+            TimeFormat = "HH:mm:ss",
             ColorTags = false,
             Level = MessageLevel.Error
         };
@@ -255,14 +353,14 @@ namespace AVS.CoreLib.PowerConsole.Printers
     public class HeaderPrintOptions : PrintOptions
     {
         public string Template { get; set; } = "============";
-        public string LineIndentation { get; set; } = "\r\n\r\n";
+        public string LineIndentation { get; set; } = "\r\n";
 
         public static HeaderPrintOptions Options { get; set; } = new HeaderPrintOptions()
         {
             EndLine = true,
             Color = ConsoleColor.Cyan,
             Template = "============",
-            LineIndentation = "\r\n\r\n",
+            LineIndentation = "\r\n",
         };
 
         public override PrintOptions Clone()

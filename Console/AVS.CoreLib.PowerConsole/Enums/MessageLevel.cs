@@ -11,7 +11,10 @@ namespace AVS.CoreLib.PowerConsole.Enums
         Default = 0,
         Debug = 1,
         Info = 2,
-        Warning = 3,
-        Error = 4
+        Success = 3,
+        Important = 4,
+        Warning = 5,
+        Error = 6,
+        Critical = 7
     }
 }

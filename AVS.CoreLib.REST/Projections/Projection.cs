@@ -65,7 +65,7 @@ namespace AVS.CoreLib.REST.Projections
             {
                 response.Data = new TProjection();
             }
-            else if (ContainsError(out string err))
+            else if (ContainsError(out var err))
             {
                 response.Error = err;
             }
@@ -79,7 +79,7 @@ namespace AVS.CoreLib.REST.Projections
             {
                 result.Data = new TProjection();
             }
-            else if (ContainsError(out string err))
+            else if (ContainsError(out var err))
             {
                 result.Error = err;
             }
@@ -88,7 +88,7 @@ namespace AVS.CoreLib.REST.Projections
 
         protected string _selectTokenPath;
 
-        protected Task<Response<T>> MapAsync<T>(Func<Response<T>> map)
+        protected Task<Response<T>> MapAsyncInternal<T>(Func<Response<T>> map)
         {
             return IsEmpty || JsonText.Length < 2000 ? Task.FromResult(map()) : Task.Factory.StartNew(map);
         }
@@ -139,7 +139,7 @@ namespace AVS.CoreLib.REST.Projections
             }
         }
 
-        protected void LoadToken<TToken, TProjection, TItem>(Action<TToken> action) where TToken : JContainer
+        protected void LoadToken<TToken, T, TItem>(Action<TToken> action) where TToken : JContainer
         {
             try
             {
@@ -148,7 +148,7 @@ namespace AVS.CoreLib.REST.Projections
             }
             catch (Exception ex)
             {
-                throw new MapJsonException<TProjection, TItem>(ex);
+                throw new MapJsonException<T, TItem>(ex);
             }
         }
 

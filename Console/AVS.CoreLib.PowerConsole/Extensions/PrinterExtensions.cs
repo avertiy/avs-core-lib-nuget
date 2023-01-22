@@ -27,7 +27,7 @@ namespace AVS.CoreLib.PowerConsole.Extensions
 
         public static void PrintHeader(this IPowerConsolePrinter printer, string header, HeaderPrintOptions options)
         {
-            var str = $"{options.Template} {header} {options.Template}{options.LineIndentation}";
+            var str = $"{options.LineIndentation}{options.Template} {header} {options.Template}{options.LineIndentation}";
             printer.Print(str, options);
         }
 

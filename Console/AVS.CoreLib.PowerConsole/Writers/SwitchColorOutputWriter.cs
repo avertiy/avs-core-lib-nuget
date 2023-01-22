@@ -14,51 +14,51 @@ namespace AVS.CoreLib.PowerConsole.Writers
         {
         }
 
-        public override void Write(string str, bool endLine, bool? containsCTags, ConsoleColor? color)
-        {
-            if (color.HasValue)
-            {
-                var colorBackup = System.Console.ForegroundColor;
-                System.Console.ForegroundColor = color.Value;
-                base.WriteInternal(str, endLine, containsCTags);
-                System.Console.ForegroundColor = colorBackup;
-            }
-            else
-            {
-                base.WriteInternal(str, endLine, containsCTags);
-            }
-        }
+        //public override void Write(string str, bool endLine, bool? containsCTags, ConsoleColor? color)
+        //{
+        //    if (color.HasValue)
+        //    {
+        //        var colorBackup = System.Console.ForegroundColor;
+        //        System.Console.ForegroundColor = color.Value;
+        //        base.WriteInternal(str, endLine, containsCTags);
+        //        System.Console.ForegroundColor = colorBackup;
+        //    }
+        //    else
+        //    {
+        //        base.WriteInternal(str, endLine, containsCTags);
+        //    }
+        //}
 
-        public override void Write(string str, bool endLine, bool? containsCTags, CTag tag)
-        {
-            var colors = tag.ToColors();
-            this.Write(str, endLine, containsCTags, colors);
-        }
+        //public override void Write(string str, bool endLine, bool? containsCTags, CTag tag)
+        //{
+        //    var colors = tag.ToColors();
+        //    this.Write(str, endLine, containsCTags, colors);
+        //}
 
-        public override void Write(string str, bool endLine, bool? containsCTags, ColorScheme scheme)
-        {
-            var backup = ColorScheme.GetCurrentScheme();
-            PowerConsole.ApplyColorScheme(scheme);
+        //public override void Write(string str, bool endLine, bool? containsCTags, ColorScheme scheme)
+        //{
+        //    var backup = ColorScheme.GetCurrentScheme();
+        //    PowerConsole.ApplyColorScheme(scheme);
 
-            base.WriteInternal(str, endLine, containsCTags);
+        //    base.WriteInternal(str, endLine, containsCTags);
 
-            // restore scheme
-            PowerConsole.ApplyColorScheme(backup);
-        }
+        //    // restore scheme
+        //    PowerConsole.ApplyColorScheme(backup);
+        //}
 
-        public override void Write(string str, bool endLine, bool? containsCTags, Colors colors)
-        {
-            var backup = ColorScheme.GetCurrentScheme();
-            PowerConsole.ApplyColors(colors);
+        //public override void Write(string str, bool endLine, bool? containsCTags, Colors colors)
+        //{
+        //    var backup = ColorScheme.GetCurrentScheme();
+        //    PowerConsole.ApplyColors(colors);
 
-            if (containsCTags.HasValue && containsCTags.Value)
-                base.WriteInternal(str, endLine, containsCTags);
-            else
-                base.WriteInternal(str, endLine);
+        //    if (containsCTags.HasValue && containsCTags.Value)
+        //        base.WriteInternal(str, endLine, containsCTags);
+        //    else
+        //        base.WriteInternal(str, endLine);
 
-            // restore scheme
-            PowerConsole.ApplyColorScheme(backup);
-        }
+        //    // restore scheme
+        //    PowerConsole.ApplyColorScheme(backup);
+        //}
 
         public override void WriteColored(string str, PrintOptions options)
         {

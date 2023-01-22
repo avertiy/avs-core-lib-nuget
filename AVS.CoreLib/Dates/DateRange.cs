@@ -306,8 +306,14 @@ namespace AVS.CoreLib.Dates
         public static DateRange FromNow(int seconds, bool useUtcTime = false)
         {
             var now = useUtcTime ? DateTime.UtcNow : DateTime.Now;
-            var from = now.AddSeconds(-seconds);
-            return new DateRange(from, now);
+            if (seconds < 0)
+            {
+                return new DateRange(now.AddSeconds(seconds), now);
+            }
+            else
+            {
+                return new DateRange(now, now.AddSeconds(seconds));
+            }
         }
 
         public static DateRange FromNow(DateTime from, bool useUtcTime = false)
@@ -320,6 +326,20 @@ namespace AVS.CoreLib.Dates
         {
             return new DateRange(from, DateTime.Today);
         }
+
+        public static DateRange FromToday(int days)
+        {
+            if(days < 0)
+                return new DateRange(DateTime.Today.AddDays(days), DateTime.Today);
+            else
+                return new DateRange(DateTime.Today, DateTime.Today.AddDays(days));
+        }
+
+        public static DateRange Day => new DateRange(DateTime.Now.AddDays(-1), DateTime.Now);
+        public static DateRange Week => new DateRange(DateTime.Today.AddDays(-7), DateTime.Today);
+        public static DateRange Month => new DateRange(DateTime.Today.AddMonths(-1), DateTime.Today);
+        public static DateRange Quarter => new DateRange(DateTime.Today.AddMonths(-3), DateTime.Today);
+        public static DateRange Year => new DateRange(DateTime.Today.AddYears(-1), DateTime.Today);
     }
 
     public class DateRangeTypeConverter : TypeConverter

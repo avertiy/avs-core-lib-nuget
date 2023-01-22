@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Dynamic;
 using AVS.CoreLib.Console.ColorFormatting;
 using AVS.CoreLib.Console.ColorFormatting.Extensions;
 using AVS.CoreLib.Console.ColorFormatting.Tags;
@@ -58,5 +59,7 @@ namespace AVS.CoreLib.PowerConsole
             configureOptions(options);
             Printer.Print(str, options);
         }
+
+        
     }
 }

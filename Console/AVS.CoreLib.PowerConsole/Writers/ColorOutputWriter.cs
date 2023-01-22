@@ -14,37 +14,6 @@ namespace AVS.CoreLib.PowerConsole.Writers
         {
         }
 
-        public override void Write(string str, bool endLine, bool? containsCTags, ConsoleColor? color)
-        {
-            if (color.HasValue)
-            {
-                var coloredStr = color.Value.Colorize(str);
-                base.WriteInternal(coloredStr, endLine, containsCTags);
-            }
-            else
-            {
-                WriteInternal(str, endLine, containsCTags);
-            }
-        }
-
-        public override void Write(string str, bool endLine, bool? containsCTags, CTag tag)
-        {
-            var coloredStr = tag.Colorize(str);
-            base.WriteInternal(coloredStr, endLine, containsCTags);
-        }
-
-        public override void Write(string str, bool endLine, bool? containsCTags, ColorScheme scheme)
-        {
-            var coloredStr = scheme.Colorize(str);
-            base.WriteInternal(coloredStr, endLine, containsCTags);
-        }
-
-        public override void Write(string str, bool endLine, bool? containsCTags, Colors colors)
-        {
-            var coloredStr = colors.Colorize(str);
-            base.WriteInternal(coloredStr, endLine, containsCTags);
-        }
-
         public override void WriteColored(string str, PrintOptions options)
         {
             var coloredStr = Colorize(str, options);

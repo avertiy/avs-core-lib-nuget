@@ -57,13 +57,17 @@ namespace AVS.CoreLib.PowerConsole.Writers
 
         public void Write(string str, PrintOptions options)
         {
+            var text = string.IsNullOrEmpty(options.TimeFormat)
+                ? str
+                : $"{PowerConsolePrinter.SystemTime.ToString(options.TimeFormat)} {str}";
+
             if (options.HasColors)
             {
-                WriteColored(str, options);
+                WriteColored(text, options);
             }
             else
             {
-                WriteInternal(str, options.EndLine, options.ColorTags);
+                WriteInternal(text, options.EndLine, options.ColorTags);
             }
         }
 
@@ -85,10 +89,6 @@ namespace AVS.CoreLib.PowerConsole.Writers
             WriteInternal(text, endLine);
         }
 
-        public abstract void Write(string str, bool endLine, bool? containsCTags, ConsoleColor? color);
-        public abstract void Write(string str, bool endLine, bool? containsCTags, CTag tag);
-        public abstract void Write(string str, bool endLine, bool? containsCTags, ColorScheme scheme);
-        public abstract void Write(string str, bool endLine, bool? containsCTags, Colors colors);
         public abstract void WriteColored(string str, PrintOptions options);
 
         public void WriteLine(string? str, PrintOptions options)
