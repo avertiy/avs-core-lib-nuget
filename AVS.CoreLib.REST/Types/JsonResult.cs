@@ -18,11 +18,6 @@ namespace AVS.CoreLib.REST
         {
         }
 
-        //public JsonResult(string jsonText)
-        //{
-        //    JsonText = jsonText;
-        //}
-
         /// <summary>
         /// Match JsonText to regex pattern and cut it to match data group
         /// </summary>
@@ -76,6 +71,9 @@ namespace AVS.CoreLib.REST
         {
             get
             {
+                if(!string.IsNullOrEmpty(Error))
+                    return true;
+
                 var re = new Regex("(error|err-msg|error-message)[\"']?:[\"']?(?<error>.*?)[\"',}]", RegexOptions.IgnoreCase);
                 var match = re.Match(JsonText);
 

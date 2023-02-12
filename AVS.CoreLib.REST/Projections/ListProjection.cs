@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using AVS.CoreLib.Json;
 using AVS.CoreLib.REST.Json;
 using Newtonsoft.Json.Linq;
 

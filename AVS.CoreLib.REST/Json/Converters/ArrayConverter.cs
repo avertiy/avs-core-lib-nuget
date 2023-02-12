@@ -3,12 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
-using AVS.CoreLib.Json.Extensions;
 using AVS.CoreLib.REST.Attributes;
+using AVS.CoreLib.REST.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace AVS.CoreLib.Json.Converters
+namespace AVS.CoreLib.REST.Json.Converters
 {
     /// <summary>
     /// Allows to convert json string into custom type 

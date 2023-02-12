@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AVS.CoreLib.Collections.Extensions
+namespace AVS.CoreLib.Extensions
 {
     public static class Enumerable
     {

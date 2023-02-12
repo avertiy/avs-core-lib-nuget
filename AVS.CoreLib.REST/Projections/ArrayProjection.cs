@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions.Collections;
-using AVS.CoreLib.Json;
 using AVS.CoreLib.REST.Json;
 using AVS.CoreLib.REST.Responses;
 using Newtonsoft.Json.Linq;
@@ -80,7 +79,8 @@ namespace AVS.CoreLib.REST.Projections
     /// In case projection is an interface(abstraction) the concrete type is needed
     /// it could be just an implementation for some complex cases consider to use either
     /// <see cref="MapThrough{TWrapper}"/> or <see cref="MapThrough{TWrapper,TItemType}"/> - an approach when Wrapper allows to add items by abstraction
-    /// or consider to use a proxy <see cref="UseProxy{TProxy}"/>
+    /// or consider to use proxy (aka object builder) <see cref="UseProxy{TProxy}"/> in case you need to filter items or do other operations over items
+    /// proxy might help to eliminate routine and memory consumption for large arrays fi you do filtering or processing items without a need to keep them as an object 
     /// </remarks>
     public class ArrayProjection<T, TItem> : Projection where T : class
     {

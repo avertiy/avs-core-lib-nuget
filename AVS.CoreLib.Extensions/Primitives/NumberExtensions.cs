@@ -18,8 +18,8 @@ namespace AVS.CoreLib.Extensions
         {
             return value switch
             {
-                > 10000 => 0,
-                > 1000 => 1,
+               // > 10000 => 0,
+               // > 1000 => 1,
                 > 100 => 2,
                 > 10 => 3,
                 > 1 => 4,
@@ -60,6 +60,12 @@ namespace AVS.CoreLib.Extensions
             return equal;
         }
 
+        public static bool IsNotEqual(this double value, double valueToCompare, double tolerance)
+        {
+            var equal = Math.Abs(value - valueToCompare) <= tolerance;
+            return equal;
+        }
+
         #endregion
 
         #region deciamls
@@ -75,8 +81,6 @@ namespace AVS.CoreLib.Extensions
         {
             return value switch
             {
-                > 10000 => 0,
-                > 1000 => 1,
                 > 100 => 2,
                 > 10 => 3,
                 > 1 => 4,
@@ -87,9 +91,11 @@ namespace AVS.CoreLib.Extensions
             };
         }
 
-        public static decimal Round(this decimal value, int? roundDecimals = null)
+        public static decimal Round(this decimal value, int? roundDecimals = null, int extraPrecision = 0, int minPrecision =0)
         {
-            var dec = roundDecimals ?? GetRoundDecimals(value);
+            var dec = (roundDecimals ?? GetRoundDecimals(value)) + extraPrecision;
+            if (minPrecision > 0 && dec < minPrecision)
+                dec = minPrecision;
             return Math.Round(value, dec, MidpointRounding.AwayFromZero);
         }
 
@@ -128,6 +134,17 @@ namespace AVS.CoreLib.Extensions
         {
             var equal = Math.Abs(value - valueToCompare) <= tolerance;
             return equal;
+        }
+
+        public static bool IsNotEqual(this decimal value, decimal valueToCompare, decimal tolerance)
+        {
+            var equal = Math.Abs(value - valueToCompare) <= tolerance;
+            return !equal;
+        }
+
+        public static decimal Sqrt(this decimal value)
+        {
+            return (decimal)Math.Sqrt((double)(value));
         }
 
         #endregion

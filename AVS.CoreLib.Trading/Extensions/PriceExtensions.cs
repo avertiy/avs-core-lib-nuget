@@ -10,38 +10,23 @@ namespace AVS.CoreLib.Trading.Extensions
     public static class PriceExtensions
     {
         #region double
-        public static int GetRoundDecimals(this double price)
+        
+        public static double PriceRound(this double price, int? roundDecimals = null, int extraPrecision = 0)
         {
-            return price switch
-            {
-                > 10000 => 0,
-                > 1000 => 1,
-                > 100 => 2,
-                > 10 => 3,
-                > 1 => 4,
-                > 0.1 => 5,
-                > 0.01 => 6,
-                > 0.001 => 7,
-                _ => 8
-            };
+            var dec = roundDecimals ?? price.GetRoundDecimals();
+            return Math.Round(price, dec + extraPrecision, MidpointRounding.AwayFromZero);
         }
 
-        public static double PriceRound(this double price, int? roundDecimals = null)
+        public static double PriceRoundUp(this double price, int? roundDecimals = null, int extraPrecision = 0)
         {
-            var dec = roundDecimals ?? GetRoundDecimals(price);
-            return price.Round(dec);
+            var dec = roundDecimals ?? price.GetRoundDecimals();
+            return price.RoundUp(dec + extraPrecision);
         }
 
-        public static double PriceRoundUp(this double price, int? roundDecimals = null)
+        public static double PriceRoundDown(this double price, int? roundDecimals = null, int extraPrecision = 0)
         {
-            var dec = roundDecimals ?? GetRoundDecimals(price);
-            return price.RoundUp(dec);
-        }
-
-        public static double PriceRoundDown(this double price, int? roundDecimals = null)
-        {
-            var dec = roundDecimals ?? GetRoundDecimals(price);
-            return price.RoundDown(dec);
+            var dec = roundDecimals ?? price.GetRoundDecimals();
+            return price.RoundDown(dec + extraPrecision);
         }
 
         public static string PriceFormat(this double price, string symbol)
@@ -58,48 +43,28 @@ namespace AVS.CoreLib.Trading.Extensions
         #endregion
 
         #region decimal
-        /// <summary>
-        /// determines number of meaningful digits based on price value
-        /// </summary>
-        /// <param name="price"></param>
-        /// <returns></returns>
-        public static int GetRoundDecimals(this decimal price)
+
+        public static decimal PriceRound(this decimal price, int? roundDecimals = null, int extraPrecision = 0)
         {
-            return price switch
-            {
-                > 10000 => 0,
-                > 1000 => 1,
-                > 100 => 2,
-                > 10 => 3,
-                > 1 => 4,
-                > 0.1m => 5,
-                >0.01m => 6,
-                >0.001m => 7,
-                _ =>8
-            };
+            var dec = roundDecimals ?? price.GetRoundDecimals();
+            return price.Round(dec+ extraPrecision);
         }
 
-        public static decimal PriceRound(this decimal price, int? roundDecimals = null)
+        public static decimal PriceRoundUp(this decimal price, int? roundDecimals = null, int extraPrecision = 0)
         {
-            var dec = roundDecimals ?? GetRoundDecimals(price);
-            return price.Round(dec);
+            var dec = roundDecimals ?? price.GetRoundDecimals();
+            return price.RoundUp(dec+ extraPrecision);
         }
 
-        public static decimal PriceRoundUp(this decimal price, int? roundDecimals = null)
+        public static decimal PriceRoundDown(this decimal price, int? roundDecimals = null, int extraPrecision = 0)
         {
-            var dec = roundDecimals ?? GetRoundDecimals(price);
-            return price.RoundUp(dec);
-        }
-
-        public static decimal PriceRoundDown(this decimal price, int? roundDecimals = null)
-        {
-            var dec = roundDecimals ?? GetRoundDecimals(price);
-            return price.RoundDown(dec);
+            var dec = roundDecimals ?? price.GetRoundDecimals();
+            return price.RoundDown(dec+ extraPrecision);
         }
 
         /// <summary>
         /// compare prices if price difference is tiny returns true (about the same), otherwise false
-        /// when tolerance is not provided, comparison relies on price meaningful digits see <see cref="GetRoundDecimals(decimal)"/> 
+        /// when tolerance is not provided, comparison relies on price meaningful digits
         /// </summary>
         public static bool IsAboutTheSame(this decimal price, decimal priceToCompare, decimal? tolerance = null)
         {
@@ -212,6 +177,8 @@ namespace AVS.CoreLib.Trading.Extensions
             var dec = roundDecimals ?? GetVolumeRoundDecimals(price);
             return volume.RoundDown(dec);
         }
+
+
         #endregion
 
         #region decimal
@@ -240,13 +207,32 @@ namespace AVS.CoreLib.Trading.Extensions
             return volume.RoundUp(dec);
         }
 
+        public static decimal TotalRoundUp(this decimal volume, decimal price, int? roundDecimals = null)
+        {
+            var dec = roundDecimals ?? GetVolumeRoundDecimals(price);
+            return volume.RoundUp(dec);
+        }
+
         public static decimal VolumeRound(this decimal volume, decimal price, int? roundDecimals = null)
         {
             var dec = roundDecimals ?? GetVolumeRoundDecimals(price);
             return volume.Round(dec);
         }
 
+        public static decimal TotalRound(this decimal volume, decimal price, int? roundDecimals = null)
+        {
+            var dec = roundDecimals ?? GetVolumeRoundDecimals(price);
+            return volume.Round(dec);
+        }
+
         public static decimal VolumeRoundDown(this decimal volume, decimal price, int? roundDecimals = null)
+        {
+            var dec = roundDecimals ?? GetVolumeRoundDecimals(price);
+            return volume.RoundDown(dec);
+        }
+
+       
+        public static decimal TotalRoundDown(this decimal volume, decimal price, int? roundDecimals = null)
         {
             var dec = roundDecimals ?? GetVolumeRoundDecimals(price);
             return volume.RoundDown(dec);

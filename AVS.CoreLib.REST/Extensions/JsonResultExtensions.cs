@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using AVS.CoreLib.Json.Extensions;
 using AVS.CoreLib.REST.Projections;
 using AVS.CoreLib.REST.Responses;
 

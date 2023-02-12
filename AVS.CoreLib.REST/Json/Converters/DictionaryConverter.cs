@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using AVS.CoreLib.Json.Extensions;
+using AVS.CoreLib.REST.Extensions;
 using Newtonsoft.Json;
 
-namespace AVS.CoreLib.Json.Converters
+namespace AVS.CoreLib.REST.Json.Converters
 {
     /// <summary>
     /// Converts an object to JSON

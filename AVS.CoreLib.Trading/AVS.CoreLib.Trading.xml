@@ -19,6 +19,11 @@
             total is an amount of quote currency
             </summary>
         </member>
+        <member name="M:AVS.CoreLib.Trading.Collections.CurrencyCollection.System#Collections#Generic#ICollection{System#String}#Add(System.String)">
+            <summary>
+            the Add method implemented explicitly due to model binding mechanics 
+            </summary>
+        </member>
         <member name="T:AVS.CoreLib.Trading.Collections.StringCollection">
             <summary>
             base type to make bind-able string[] parameter type <see cref="T:AVS.CoreLib.Trading.Collections.Exchanges"/>
@@ -186,17 +191,10 @@
             determines whether price is within (Low, High) range;
             </summary>
         </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.PriceExtensions.GetRoundDecimals(System.Decimal)">
-            <summary>
-            determines number of meaningful digits based on price value
-            </summary>
-            <param name="price"></param>
-            <returns></returns>
-        </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.PriceExtensions.IsAboutTheSame(System.Decimal,System.Decimal,System.Nullable{System.Decimal})">
             <summary>
             compare prices if price difference is tiny returns true (about the same), otherwise false
-            when tolerance is not provided, comparison relies on price meaningful digits see <see cref="M:AVS.CoreLib.Trading.Extensions.PriceExtensions.GetRoundDecimals(System.Decimal)"/> 
+            when tolerance is not provided, comparison relies on price meaningful digits
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.ServiceCollectionExtension.AddTradingCore(Microsoft.Extensions.DependencyInjection.IServiceCollection)">

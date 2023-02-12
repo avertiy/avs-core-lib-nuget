@@ -113,5 +113,10 @@ namespace AVS.CoreLib.Extensions
             long ticks = (date.Ticks + span.Ticks - 1) / span.Ticks;
             return new DateTime(ticks * span.Ticks);
         }
+
+        public static bool IsElapsed(this DateTime dateTime, int seconds)
+        {
+            return (DateTime.Now - dateTime).TotalSeconds > seconds;
+        }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using AVS.CoreLib.Abstractions.Rest;
-using AVS.CoreLib.Json.Extensions;
 
 namespace AVS.CoreLib.REST.Extensions
 {

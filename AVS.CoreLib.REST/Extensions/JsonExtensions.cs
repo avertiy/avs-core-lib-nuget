@@ -1,11 +1,10 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using AVS.CoreLib.REST;
 using AVS.CoreLib.REST.Json;
 using Newtonsoft.Json;
 
-namespace AVS.CoreLib.Json.Extensions
+namespace AVS.CoreLib.REST.Extensions
 {
     public static class JsonExtensions
     {
@@ -42,7 +41,7 @@ namespace AVS.CoreLib.Json.Extensions
             var mi = type.GetMethod(shouldSerializeName, flags);
             if (mi != null && mi.ReturnType == typeof(bool))
             {
-                bool shouldSerialize = (bool)mi.Invoke(value, new object[] { });
+                var shouldSerialize = (bool)mi.Invoke(value, new object[] { });
                 return shouldSerialize;
             }
             return true;
@@ -53,6 +52,30 @@ namespace AVS.CoreLib.Json.Extensions
             return JsonConvert.SerializeObject(obj);
         }
 
+        public static string ToJsonOrToString(this object obj)
+        {
+            try
+            {
+                return JsonConvert.SerializeObject(obj);
+            }
+            catch (Exception ex)
+            {
+                return obj.ToString();
+            }
+        }
+
+        public static string JsonSafe(this object obj)
+        {
+            try
+            {
+                return JsonConvert.SerializeObject(obj);
+            }
+            catch (Exception ex)
+            {
+                return ex.ToString();
+            }
+        }
+
         public static T Deserialize<T>(this string json) where T : new()
         {
             return JsonConvert.DeserializeObject<T>(json);
@@ -61,9 +84,7 @@ namespace AVS.CoreLib.Json.Extensions
         public static T Deserialize<T>(this JsonResult jsonResult)
         {
             using (var stringReader = new StringReader(jsonResult.JsonText))
-            {
                 using (var jsonTextReader = new JsonTextReader(stringReader))
-                {
                     try
                     {
                         var serializer = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore };
@@ -73,8 +94,6 @@ namespace AVS.CoreLib.Json.Extensions
                     {
                         throw new Exception($"Deserialization of type {typeof(T).Name} failed", ex);
                     }
-                }
-            }
         }
     }
 }

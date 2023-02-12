@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Trading.Enums;
@@ -8,7 +9,7 @@ using AVS.CoreLib.Trading.Types;
 
 namespace AVS.CoreLib.Trading.Collections
 {
-    public class CurrencyCollection : StringCollection
+    public class CurrencyCollection : StringCollection, ICollection<string>
     {
         public CurrencyCollection()
         {
@@ -21,6 +22,26 @@ namespace AVS.CoreLib.Trading.Collections
         public bool Any { get; set; }
 
         public CryptoCategory? Category { get; set; }
+
+        /// <summary>
+        /// the Add method implemented explicitly due to model binding mechanics 
+        /// </summary>
+        void ICollection<string>.Add(string str)
+        {
+            if (string.IsNullOrEmpty(str))
+                return;
+
+            if (Enum.TryParse<CryptoCategory>(str, true, out var category))
+            {
+                Category = category;
+            }
+            else if (str.Contains(","))
+                foreach (var exchange in str.Split(',', StringSplitOptions.RemoveEmptyEntries))
+                    base.Add(exchange);
+            else
+                base.Add(str);
+        }
+
 
         public bool IsAllOrAny()
         {

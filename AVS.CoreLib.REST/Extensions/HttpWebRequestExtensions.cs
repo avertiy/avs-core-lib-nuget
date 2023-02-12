@@ -37,8 +37,15 @@ namespace AVS.CoreLib.REST.Extensions
 
         public static async Task<HttpWebResponse> GetHttpResponseAsync(this HttpWebRequest request)
         {
-            var response = await request.GetResponseAsync().ConfigureAwait(false);
-            return response as HttpWebResponse;
+            try
+            {
+                var response = await request.GetResponseAsync().ConfigureAwait(false);
+                return response as HttpWebResponse;
+            }
+            catch (WebException ex)
+            {
+                return (HttpWebResponse)ex.Response;
+            }
         }
 
         public static async Task<HttpWebResponse> FetchHttpResponseAsync(this HttpWebRequest request, int maxAttempts = 2)

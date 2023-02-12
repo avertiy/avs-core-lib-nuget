@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Stringify;
 
 namespace AVS.CoreLib.Guards
@@ -149,6 +150,18 @@ namespace AVS.CoreLib.Guards
                 throw new ArgumentException(message ?? $"'{str1}' expected to be equal '{str2}'");
         }
 
+        public static void MustBeEqual(double value, double valueToCompare, double tolerance = 0.001, string name = "argument")
+        {
+            if (!value.IsEqual(valueToCompare, tolerance))
+                throw new ArgumentException($"{name} must be equal to {valueToCompare}");
+        }
+
+        public static void MustBeEqual(decimal value, decimal valueToCompare, decimal tolerance = 0.001m, string name = "argument")
+        {
+            if (!value.IsEqual(valueToCompare, tolerance))
+                throw new ArgumentException($"{name} must be equal to {valueToCompare}");
+        }
+
         public static void MustBeWithinRange(int value, int from, int to, bool inclusiveRange = true,
             string name = "argument")
         {
@@ -229,6 +242,24 @@ namespace AVS.CoreLib.Guards
         {
             if (value <= number)
                 throw new ArgumentException($"{name} must be greater than {number}");
+        }
+
+        public static void MustBeGreaterThanOrEqual(int value, int number = 0, string name = "argument")
+        {
+            if (value < number)
+                throw new ArgumentException($"{name} must be greater or equal to {number}");
+        }
+
+        public static void MustBeGreaterThanOrEqual(double value, double number = 0, string name = "argument")
+        {
+            if (value < number)
+                throw new ArgumentException($"{name} must be greater or equal to {number}");
+        }
+
+        public static void MustBeGreaterThanOrEqual(decimal value, decimal number = 0, string name = "argument")
+        {
+            if (value < number)
+                throw new ArgumentException($"{name} must be greater or equal to {number}");
         }
 
         public static string MustBeOneOf(string value, params string[] values)

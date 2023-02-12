@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Globalization;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace AVS.CoreLib.Dates
 {
@@ -9,14 +11,30 @@ namespace AVS.CoreLib.Dates
     /// support string literals e.g. today, yesterday, day, week, month, 15m, 30m, 1h, 24h, 1d,2d, 1M, 1Q, 1Y etc.
     /// </summary>
     [TypeConverter(typeof(DateRangeTypeConverter))]
+    [JsonConverter(typeof(DateRangeJsonConverter))]
     public readonly struct DateRange
     {
         public DateTime From { get; }
 
         public DateTime To { get; }
 
+        public bool HasValue => To > From;
         public double TotalDays => (To - From).TotalDays;
         public double TotalSeconds => (To - From).TotalSeconds;
+
+        public int Days => Convert.ToInt32(TotalDays);
+        public int Hours => Convert.ToInt32(TotalSeconds / 3600);
+        public int Seconds => Convert.ToInt32(TotalSeconds);
+
+        public DateRange(DateTime from, DateTime to)
+        {
+            if (from > to)
+                throw new ArgumentException($"From date must be less or equal to date (({from:g}) <= {to:g})");
+
+            From = from;
+            To = to;
+            
+        }
 
         public DateRange(DateRange other)
         {
@@ -24,24 +42,7 @@ namespace AVS.CoreLib.Dates
             To = other.To;
         }
 
-        public DateRange(DateTime from, DateTime to)
-        {
-            From = from;
-            To = to;
-            if (To < From)
-                throw new ArgumentException("To must be greater than From");
-        }
-
-        public bool Contains(DateTime date)
-        {
-            return From <= date && To >= date;
-        }
-
-        public bool Contains(DateRange range)
-        {
-            return From <= range.From && To >= range.To;
-        }
-
+        #region implicit conversions
         public static implicit operator DateRange((DateTime, DateTime) tuple)
         {
             return new DateRange(tuple.Item1, tuple.Item2);
@@ -53,7 +54,8 @@ namespace AVS.CoreLib.Dates
                 return range;
 
             throw new Exception($"String '{value}' is not valid DateRange value");
-        }
+        } 
+        #endregion
 
         #region Compare operators overloading
         public bool Equals(DateRange other)
@@ -106,12 +108,22 @@ namespace AVS.CoreLib.Dates
 
         public override string ToString()
         {
-            return $"[{From:d};{To:d}]";
+            return $"[{From:g};{To:g}]";
         }
 
         public string ToString(string dateFormat)
         {
             return $"[{From.ToString(dateFormat)};{To.ToString(dateFormat)}]";
+        }
+
+        public bool Contains(DateTime date)
+        {
+            return From <= date && To >= date;
+        }
+
+        public bool Contains(DateRange range)
+        {
+            return From <= range.From && To >= range.To;
         }
 
         /// <summary>
@@ -121,12 +133,19 @@ namespace AVS.CoreLib.Dates
         {
             return new[]
             {
+                "Today",
                 "today",
+                "Yesterday",
                 "yesterday",
+                "Day",
                 "day",
                 "week",
+                "Week",
+                "Month",
                 "month",
+                "Quarter",
                 "quarter",
+                "Year",
                 "year",
                 "1m",
                 "5m",
@@ -139,6 +158,7 @@ namespace AVS.CoreLib.Dates
                 "12h",
                 "24h",
                 "48h",
+                "72h",
                 "1d",
                 "2d",
                 "3d",
@@ -152,6 +172,7 @@ namespace AVS.CoreLib.Dates
                 "6M",
                 "9M",
                 "12M",
+                "36M",
                 "1Q",
                 "2Q",
                 "3Q",
@@ -160,8 +181,7 @@ namespace AVS.CoreLib.Dates
                 "2Y",
                 "3Y",
                 "5Y",
-                "10Y",
-
+                "10Y"
             };
         }
 
@@ -173,9 +193,11 @@ namespace AVS.CoreLib.Dates
 
             switch (str.Trim())
             {
+                case "Today":
                 case "today":
                     range = new DateRange(DateTime.Today, DateTime.Now);
                     return true;
+                case "Yesterday":
                 case "yesterday":
                     range = new DateRange(DateTime.Today.AddDays(-1), DateTime.Now);
                     return true;
@@ -204,6 +226,7 @@ namespace AVS.CoreLib.Dates
                 case "24h":
                     range = new DateRange(DateTime.Now.AddHours(-24), DateTime.Now);
                     return true;
+                case "Day":
                 case "day":
                 case "1d":
                     range = new DateRange(DateTime.Today.AddDays(-1), DateTime.Now);
@@ -217,6 +240,7 @@ namespace AVS.CoreLib.Dates
                     range = new DateRange(DateTime.Today.AddDays(-3), DateTime.Now);
                     return true;
                 case "7d":
+                case "Week":
                 case "week":
                 case "1w":
                     range = new DateRange(DateTime.Today.AddDays(-7), DateTime.Now);
@@ -231,16 +255,19 @@ namespace AVS.CoreLib.Dates
                     range = new DateRange(DateTime.Today.AddDays(-7 * 4), DateTime.Now);
                     return true;
                 case "1M":
+                case "Month":
                 case "month":
                     range = new DateRange(DateTime.Today.AddMonths(-1), DateTime.Now);
                     return true;
                 case "3M":
+                case "Quarter":
                 case "quarter":
                 case "1Q":
                     range = new DateRange(DateTime.Today.AddMonths(-3), DateTime.Now);
                     return true;
                 case "6M":
                 case "2Q":
+                case "HalfYear":
                     range = new DateRange(DateTime.Today.AddMonths(-6), DateTime.Now);
                     return true;
                 case "9M":
@@ -249,13 +276,22 @@ namespace AVS.CoreLib.Dates
                     return true;
                 case "12M":
                 case "4Q":
+                case "Year":
                 case "year":
                 case "1Y":
                     range = new DateRange(DateTime.Today.AddMonths(-12), DateTime.Now);
                     return true;
+                case "18M":
+                    range = new DateRange(DateTime.Today.AddMonths(-18), DateTime.Now);
+                    return true;
+                case "24M":
                 case "2Y":
                     range = new DateRange(DateTime.Today.AddYears(-2), DateTime.Now);
                     return true;
+                case "30M":
+                    range = new DateRange(DateTime.Today.AddMonths(-30), DateTime.Now);
+                    return true;
+                case "36M":
                 case "3Y":
                     range = new DateRange(DateTime.Today.AddYears(-3), DateTime.Now);
                     return true;
@@ -335,10 +371,13 @@ namespace AVS.CoreLib.Dates
                 return new DateRange(DateTime.Today, DateTime.Today.AddDays(days));
         }
 
+        public static DateRange Empty => new DateRange(DateTime.MinValue, DateTime.MinValue);
         public static DateRange Day => new DateRange(DateTime.Now.AddDays(-1), DateTime.Now);
         public static DateRange Week => new DateRange(DateTime.Today.AddDays(-7), DateTime.Today);
+        public static DateRange TwoWeeks => new DateRange(DateTime.Today.AddDays(-14), DateTime.Today);
         public static DateRange Month => new DateRange(DateTime.Today.AddMonths(-1), DateTime.Today);
         public static DateRange Quarter => new DateRange(DateTime.Today.AddMonths(-3), DateTime.Today);
+        public static DateRange HalfYear => new DateRange(DateTime.Today.AddMonths(-6), DateTime.Today);
         public static DateRange Year => new DateRange(DateTime.Today.AddYears(-1), DateTime.Today);
     }
 
@@ -363,7 +402,7 @@ namespace AVS.CoreLib.Dates
         {
             if (value is string)
             {
-                if (TryParse((string)value, out DateRange range))
+                if (TryParse((string)value, out var range))
                 {
                     return range;
                 }
@@ -374,6 +413,25 @@ namespace AVS.CoreLib.Dates
         public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
         {
             return base.GetStandardValues(context);
+        }
+    }
+
+    public class DateRangeJsonConverter : JsonConverter<DateRange>
+    {
+        public override DateRange Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            var str = reader.GetString()!;
+            if (DateRange.TryParse(str, out var range))
+            {
+                return range;
+            }
+
+            throw new JsonException($"Unable to parse {nameof(DateRange)} from `{str}`");
+        }
+
+        public override void Write(Utf8JsonWriter writer, DateRange value, JsonSerializerOptions options)
+        {
+            writer.WriteStringValue(value.ToString());
         }
     }
 }

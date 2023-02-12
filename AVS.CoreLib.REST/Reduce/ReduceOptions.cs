@@ -4,6 +4,8 @@ using System.Globalization;
 
 namespace AVS.CoreLib.REST.Reduce
 {
+    //to-do move out reduce and filters from REST package, make the package clean
+
     /// <summary>
     /// Represents pair of decimal Value & Factor
     /// Value is a threshold for Reducer function

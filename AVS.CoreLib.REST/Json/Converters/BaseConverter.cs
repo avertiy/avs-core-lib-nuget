@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace AVS.CoreLib.Json.Converters
+namespace AVS.CoreLib.REST.Json.Converters
 {
     //no usages
     public abstract class BaseConverter<T> : JsonConverter

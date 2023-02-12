@@ -24,6 +24,7 @@
     /// In cases when json can't be deserialized into a certain model directly, the proxy object is used to deserialize json into it, and then it produces
     /// the target type (projection) 
     /// </summary>
+    /// <remarks>proxy might help to eliminate routine and memory consumption for large arrays when you do filtering or processing items without need to keep them as objects</remarks>
     public interface IArrayProxy<out T, in TItem>
     {
         void Add(TItem item);

@@ -3,7 +3,7 @@ using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace AVS.CoreLib.Json.Converters
+namespace AVS.CoreLib.REST.Json.Converters
 {
     public class DecimalConverter : JsonConverter
     {

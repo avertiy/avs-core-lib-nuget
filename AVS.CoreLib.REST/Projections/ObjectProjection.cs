@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using AVS.CoreLib.Json;
 using AVS.CoreLib.REST.Json;
 using AVS.CoreLib.REST.Responses;
 using Newtonsoft.Json.Linq;

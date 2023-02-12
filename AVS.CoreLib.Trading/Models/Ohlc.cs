@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Linq;
 using AVS.CoreLib.Trading.Abstractions;
 
 namespace AVS.CoreLib.Trading.Models
@@ -14,6 +15,17 @@ namespace AVS.CoreLib.Trading.Models
         public override string ToString()
         {
             return $"{Open:C};{High:C};{Low:C};{Close:C}";
+        }
+
+        public static implicit operator Ohlc(IOhlc[] items)
+        {
+            return new Ohlc()
+            {
+                Open = items.First().Open,
+                High = items.Max(x => x.High),
+                Low = items.Min(x => x.Low),
+                Close = items.Last().Close
+            };
         }
     }
 }
