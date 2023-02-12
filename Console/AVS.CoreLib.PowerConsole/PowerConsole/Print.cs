@@ -1,19 +1,21 @@
 ﻿using System;
+using System.Dynamic;
 using AVS.CoreLib.Console.ColorFormatting;
 using AVS.CoreLib.Console.ColorFormatting.Extensions;
 using AVS.CoreLib.Console.ColorFormatting.Tags;
 using AVS.CoreLib.PowerConsole.Enums;
 using AVS.CoreLib.PowerConsole.Printers;
 using AVS.CoreLib.PowerConsole.Utilities;
+using AVS.CoreLib.PowerConsole.Writers;
 using AVS.CoreLib.Text.FormatProviders;
 
 namespace AVS.CoreLib.PowerConsole
 {
     /// <summary>
-    /// PowerConsole provides various extension methods to print to console
-    /// supports coloring messages via ansi codes <see cref="AnsiCodes"/>,
-    /// color tags <see cref="CTagProcessor"/>,
-    /// extra formatting <see cref="XFormatProvider"/>.
+    /// PowerConsole provides various extension methods to console printing
+    /// support color printing (via ansi codes <see cref="AnsiCodes"/>, and by switching colors <see cref="SwitchColorOutputWriter"/>
+    /// support color tags <see cref="CTagProcessor"/>
+    /// provide various print utility method like PrintTable, PrintArray, PrintKeyValue etc.
     /// </summary>
     /// <remarks>If you need more rich and extensive console frameworks check out links below </remarks>
     /// <seealso>https://github.com/Athari/CsConsoleFormat - advanced formatting of console output for .NET</seealso>
@@ -23,8 +25,7 @@ namespace AVS.CoreLib.PowerConsole
     {
         private static IPowerConsolePrinter? _printer;
         /// <summary>
-        /// Printed messages are forwarded to <see cref="PowerConsolePrinter"/>
-        /// Printer provides all printing and writing features e.g. print array, processing color tags etc.
+        /// provide power console print features
         /// </summary>
         public static IPowerConsolePrinter Printer
         {
@@ -40,44 +41,25 @@ namespace AVS.CoreLib.PowerConsole
             Printer.SwitchMode(mode);
         }
 
-        public static void Print(string str, bool endLine = true, bool colorTags = false)
+        /// <summary>
+        /// Print str value to console, if <see cref="PrintOptions"/> are not provided, the <see cref="DefaultOptions"/> are used
+        /// </summary>
+        /// <remarks>PrintOptions provide implicit conversion from ConsoleColor and <see cref="CTag"/> enums,
+        /// from <see cref="ColorScheme"/> and <see cref="Colors"/> structs, from <see cref="MessageLevel"/> 
+        /// thus you can call Print("text", CTag.Red) or Print("text", MessageLevel.Warning);
+        /// </remarks>
+        public static void Print(string str, PrintOptions? options = null)
         {
-            Printer.Print(str, endLine, colorTags);
+            Printer.Print(str, options ?? DefaultOptions);
         }
 
-        public static void Print(string str, CTag tag, bool endLine = true)
+        public static void Print(string str, Action<PrintOptions> configureOptions)
         {
-            Printer.Print(str, endLine, false, tag);
+            var options = DefaultOptions.Clone();
+            configureOptions(options);
+            Printer.Print(str, options);
         }
 
-        public static void Print(string str, ConsoleColor color, bool endLine = true, bool colorTags = false)
-        {
-            Printer.Print(str, endLine, colorTags, color);
-        }
-
-        public static void Print(string str, ColorScheme scheme, bool endLine = true, bool colorTags = false)
-        {
-            Printer.Print(str, scheme, endLine);
-        }
-
-        public static void Print(FormattableString str, bool endLine = true, bool colorTags = false)
-        {
-            Printer.Print(str, endLine, colorTags);
-        }
-
-        public static void Print(FormattableString str, ConsoleColor color, bool endLine = true, bool colorTags = false)
-        {
-            Printer.Print(str, endLine, colorTags, color);
-        }
-
-        public static void Print(FormattableString str, ColorPalette palette, bool endLine = true)
-        {
-            Printer.Print(str, palette, endLine);
-        }
-
-        public static void Print(FormattableString str, ConsoleColor[] colors, bool endLine = true)
-        {
-            Printer.Print(str, colors, endLine);
-        }
+        
     }
 }

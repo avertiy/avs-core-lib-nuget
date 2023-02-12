@@ -25,7 +25,7 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
             }
             catch (Exception ex)
             {
-                PowerConsole.WriteError(ex);
+                PowerConsole.PrintError(ex);
             }
             return Task.CompletedTask;
         }

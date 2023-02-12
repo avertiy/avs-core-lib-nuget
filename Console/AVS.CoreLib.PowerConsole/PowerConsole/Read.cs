@@ -104,5 +104,10 @@ namespace AVS.CoreLib.PowerConsole
             }
         }
         #endregion
+
+        public static void SubscribeOnCancelKeyPressEvent(ConsoleCancelEventHandler handler)
+        {
+            Console.CancelKeyPress += handler;
+        }
     }
 }

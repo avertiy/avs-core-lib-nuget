@@ -1,9 +1,9 @@
 ﻿namespace AVS.CoreLib.REST.Projections
 {
     /// <summary>
-    /// Object Proxy is used by <see cref="ObjectProjection{T}"/>
-    /// in case json can't be deserialized into a certain object model directly, the proxy object (in this case ObjectBuilder)
-    /// could help with the deserialization, the corresponding ObjectProjection will call <see cref="Create"/> method to build the target object
+    /// ObjectProxy comes to the rescue when you deal with <see cref="ObjectProjection{T}"/>
+    /// In cases when json can't be deserialized into a certain object model directly, the proxy object (or object builder)
+    /// used for deserialization and then it produces (constructs) the target type (projection)
     /// </summary>
     public interface IObjectProxy<out T>
     {
@@ -20,9 +20,9 @@
     }
 
     /// <summary>
-    /// Array Proxy is used by <see cref="ArrayProjection{T,TItem}"/>
-    /// in case json represents an array but the target object model can't be deserialized directly
-    /// the builder object is used like a proxy to deserialize json into it and than build the target T object 
+    /// ArrayProxy comes to the rescue when you deal with <see cref="ArrayProjection{T,TItem}"/>
+    /// In cases when json can't be deserialized into a certain model directly, the proxy object is used to deserialize json into it, and then it produces
+    /// the target type (projection) 
     /// </summary>
     public interface IArrayProxy<out T, in TItem>
     {

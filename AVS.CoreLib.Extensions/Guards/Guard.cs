@@ -149,53 +149,86 @@ namespace AVS.CoreLib.Guards
                 throw new ArgumentException(message ?? $"'{str1}' expected to be equal '{str2}'");
         }
 
-        public static void MustBeWithinRange(int value, int from, int to, bool inclusiveRange = true, string name = "argument")
+        public static void MustBeWithinRange(int value, int from, int to, bool inclusiveRange = true,
+            string name = "argument")
         {
             if (inclusiveRange)
+            {
                 if (value < from || value > to)
                     throw new ArgumentOutOfRangeException($"{name} is out of range [{from};{to}]");
+            }
             else
+            {
                 if (value <= from || value >= to)
                     throw new ArgumentOutOfRangeException($"{name} is out of range ({from};{to})");
+            }
         }
 
         public static void MustBeWithinRange(double value, double from, double to, bool inclusiveRange = true, string name = "argument")
         {
             if (inclusiveRange)
+            {
                 if (value < from || value > to)
                     throw new ArgumentOutOfRangeException($"{name} is out of range [{from};{to}]");
+
+            }
             else
+            {
                 if (value <= from || value >= to)
                     throw new ArgumentOutOfRangeException($"{name} is out of range ({from};{to})");
+            }
         }
 
         public static void MustBeWithinRange(int value, (int from, int to) range, bool inclusiveRange = true, string name = "argument")
         {
             if (inclusiveRange)
+            {
                 if (value < range.from || value > range.to)
                     throw new ArgumentOutOfRangeException($"{name} is out of range [{range.from};{range.to}]");
+            }
             else
+            {
                 if (value <= range.from || value >= range.to)
                     throw new ArgumentOutOfRangeException($"{name} is out of range ({range.from};{range.to})");
-
+            }
         }
+
+        #region MustBePositive
+        public static void MustBePositive(int value, string name = "argument")
+        {
+            if (value <= 0)
+                throw new ArgumentException($"{name} must be positive number (value:{value})");
+        }
+
+        public static void MustBePositive(decimal value, string name = "argument")
+        {
+            if (value <= 0)
+                throw new ArgumentException($"{name} must be positive number (value:{value})");
+        }
+
+        public static void MustBePositive(double value, string name = "argument")
+        {
+            if (value <= 0)
+                throw new ArgumentException($"{name} must be positive number (value:{value})");
+        } 
+        #endregion
 
         public static void MustBeGreaterThan(int value, int number = 0, string name = "argument")
         {
             if (value <= number)
-                throw new ArgumentException($"{name} must be greater than {value}");
+                throw new ArgumentException($"{name} must be greater than {number}");
         }
 
         public static void MustBeGreaterThan(double value, double number = 0, string name = "argument")
         {
             if (value <= number)
-                throw new ArgumentException($"{name} must be greater than {value}");
+                throw new ArgumentException($"{name} must be greater than {number}");
         }
 
         public static void MustBeGreaterThan(decimal value, decimal number = 0, string name = "argument")
         {
             if (value <= number)
-                throw new ArgumentException($"{name} must be greater than {value}");
+                throw new ArgumentException($"{name} must be greater than {number}");
         }
 
         public static string MustBeOneOf(string value, params string[] values)

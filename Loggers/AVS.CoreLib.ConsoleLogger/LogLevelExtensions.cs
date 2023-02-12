@@ -12,15 +12,15 @@ public static class LogLevelExtensions
         switch (lvl)
         {
             case LogLevel.Trace:
-                return new ColorScheme(background, ConsoleColor.DarkGray);
+                return new ColorScheme(ConsoleColor.DarkGray, background);
             case LogLevel.Debug:
-                return new ColorScheme(background, ConsoleColor.Gray);
+                return new ColorScheme(ConsoleColor.Gray, background);
             case LogLevel.Information:
-                return new ColorScheme(background, ConsoleColor.Green);
+                return new ColorScheme(ConsoleColor.Green, background);
             case LogLevel.Warning:
-                return new ColorScheme(background, ConsoleColor.DarkYellow);
+                return new ColorScheme(ConsoleColor.DarkYellow, background);
             case LogLevel.Error:
-                return new ColorScheme(background, ConsoleColor.Red);
+                return new ColorScheme(ConsoleColor.Red, background);
             case LogLevel.Critical:
                 return new ColorScheme(ConsoleColor.DarkRed, ConsoleColor.White);
             default:

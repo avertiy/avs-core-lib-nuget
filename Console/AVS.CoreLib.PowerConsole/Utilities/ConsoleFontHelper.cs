@@ -36,9 +36,8 @@ namespace AVS.CoreLib.PowerConsole.Utilities
             if (!SetCurrentConsoleFontEx(ConsoleOutputHandle, false, ref fontInfo))
             {
                 var er = Marshal.GetLastWin32Error();
-                var ex = new System.ComponentModel.Win32Exception(er,
-                    $"Unable to set font {fontInfo}");
-                PowerConsole.WriteError(ex, false);
+                var ex = new System.ComponentModel.Win32Exception(er, $"Unable to set font {fontInfo}");
+                PowerConsole.PrintError(ex,$"{nameof(SetFont)} failed", false);
             }
         }
 

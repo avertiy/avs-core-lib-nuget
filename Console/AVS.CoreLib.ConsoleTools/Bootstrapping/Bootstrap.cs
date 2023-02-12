@@ -89,12 +89,12 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
                 startup.ConfigureServices(host.Services);
 
                 if (!windowsService)
-                    Console.WriteDebug("host is built");
+                    Console.PrintDebug("host is built");
                 return host;
             }
             catch (Exception ex)
             {
-                Console.WriteError(ex);
+                Console.PrintError(ex);
                 return null;
             }
         }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using AVS.CoreLib.Json;
 using AVS.CoreLib.REST.Json;
@@ -6,6 +7,9 @@ using Newtonsoft.Json.Linq;
 
 namespace AVS.CoreLib.REST.Projections
 {
+    /// <summary>
+    /// basically this type is just a synonym of <see cref="ArrayProjection{T,TItem}"/>
+    /// </summary>
     public class ListProjection<T, TItem> : ArrayProjection<T, TItem> where T : class
     {
         [DebuggerStepThrough]
@@ -13,6 +17,7 @@ namespace AVS.CoreLib.REST.Projections
         {
         }
 
+        [Obsolete("Seems MapResult could be avoided, so it will be removed")]
         public virtual MapResult MapResult<TProjection>() where TProjection : TItem, new()
         {
             var result = CreateMapResult<List<TItem>>();
@@ -28,8 +33,5 @@ namespace AVS.CoreLib.REST.Projections
 
             return result;
         }
-
-
-
     }
 }

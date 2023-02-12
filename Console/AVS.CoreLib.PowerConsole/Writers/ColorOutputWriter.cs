@@ -3,6 +3,7 @@ using System.IO;
 using AVS.CoreLib.Console.ColorFormatting;
 using AVS.CoreLib.Console.ColorFormatting.Tags;
 using AVS.CoreLib.PowerConsole.Extensions;
+using AVS.CoreLib.PowerConsole.Printers;
 using AVS.CoreLib.PowerConsole.Utilities;
 
 namespace AVS.CoreLib.PowerConsole.Writers
@@ -13,35 +14,10 @@ namespace AVS.CoreLib.PowerConsole.Writers
         {
         }
 
-        public override void Write(string str, bool endLine, bool? containsCTags, ConsoleColor? color)
+        public override void WriteColored(string str, PrintOptions options)
         {
-            if (color.HasValue)
-            {
-                var coloredStr = color.Value.Colorize(str);
-                base.Write(coloredStr, endLine, containsCTags);
-            }
-            else
-            {
-                Write(str, endLine, containsCTags);
-            }
-        }
-
-        public override void Write(string str, bool endLine, bool? containsCTags, CTag tag)
-        {
-            var coloredStr = tag.Colorize(str);
-            base.Write(coloredStr, endLine, containsCTags);
-        }
-
-        public override void Write(string str, bool endLine, bool? containsCTags, ColorScheme scheme)
-        {
-            var coloredStr = scheme.Colorize(str);
-            base.Write(coloredStr, endLine, containsCTags);
-        }
-
-        public override void Write(string str, bool endLine, bool? containsCTags, Colors colors)
-        {
-            var coloredStr = colors.Colorize(str);
-            base.Write(coloredStr, endLine, containsCTags);
+            var coloredStr = Colorize(str, options);
+            base.WriteInternal(coloredStr, options.EndLine, options.ColorTags);
         }
 
         protected static TagProcessor GetDefaultTagsProcessor()
@@ -50,6 +26,31 @@ namespace AVS.CoreLib.PowerConsole.Writers
             tagProcessor.AddTagProcessor(new CTagProcessor());
             tagProcessor.AddTagProcessor(new RgbTagProcessor());
             return tagProcessor;
+        }
+
+        protected string Colorize(string text, PrintOptions options)
+        {
+            if (options.Color.HasValue)
+            {
+                return options.Color.Value.Colorize(text);
+            }
+
+            if (options.Scheme.HasValue)
+            {
+                return options.Scheme.Value.Colorize(text);
+            }
+
+            if (options.Colors.HasValue)
+            {
+                return options.Colors.Value.Colorize(text);
+            }
+
+            if (options.CTag.HasValue)
+            {
+                return options.CTag.Value.Colorize(text);
+            }
+
+            return text;
         }
     }
 }

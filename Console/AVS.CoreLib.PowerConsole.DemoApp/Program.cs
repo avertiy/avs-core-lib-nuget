@@ -12,7 +12,7 @@ namespace AVS.CoreLib.PowerConsole.DemoApp
     {
         public static void Main(string[] args)
         {
-            ColorScheme.ApplyScheme(ColorScheme.Classic);
+            //ColorScheme.ApplyScheme(ColorScheme.Classic);
             Bootstrap.ConfigureServices(delegate (ServiceCollection services)
                 {
                     services

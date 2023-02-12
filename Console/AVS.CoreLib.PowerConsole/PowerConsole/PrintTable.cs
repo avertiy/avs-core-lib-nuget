@@ -17,19 +17,24 @@ namespace AVS.CoreLib.PowerConsole
     using Console = System.Console;
     public static partial class PowerConsole
     {
-        public static void PrintColorStrings(params ColorString[] messages)
+        public static void PrintTable<T>(IEnumerable<T> data, PrintOptions? options = null)
         {
-            Printer.Print(messages);
+            var table = Table.Create(data);
+            PrintTable(table, options);
         }
 
-        public static void Print(IEnumerable<ColorString> messages)
+        public static void PrintTable<T>(IEnumerable<T> data,
+            Action<Table>? configure, PrintOptions? options = null)
         {
-            Printer.Print(messages);
+            var table = Table.Create(data);
+            configure?.Invoke(table);
+            PrintTable(table, options);
         }
 
-        public static void Print(ColorMarkupString str, PrintOptions? options = null)
+        public static void PrintTable(Table table, PrintOptions? options = null)
         {
-            Printer.Print(str, options ?? DefaultOptions);
+            options = options ?? DefaultOptions;
+            Printer.PrintTable(table, options);
         }
     }
 }

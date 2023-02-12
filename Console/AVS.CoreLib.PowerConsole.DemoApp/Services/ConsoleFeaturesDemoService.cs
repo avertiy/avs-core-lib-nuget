@@ -4,8 +4,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions;
 using AVS.CoreLib.Abstractions.Bootstrap;
+using AVS.CoreLib.Console.ColorFormatting;
 using AVS.CoreLib.Console.ColorFormatting.Tags;
 using AVS.CoreLib.PowerConsole.ConsoleTable;
+using AVS.CoreLib.PowerConsole.Enums;
+using AVS.CoreLib.PowerConsole.Printers;
 using AVS.CoreLib.PowerConsole.Utilities;
 using AVS.CoreLib.Text;
 using AVS.CoreLib.Text.FormatPreprocessors;
@@ -20,30 +23,60 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
             try
             {
                 //FormatPreprocessorTest();
-                PrintCTagsTest();
-                PrinterTest();
+                WriteTests();
+                WriteLineTests();
+                PrintTests();
+                CTagsTests();
+                ColorSchemeTests();
+
+                //format features tests
                 PrintHeader();
-                PrintColorScheme();
-                PrintAllColors();
-                PrintArray();
+                PrintArrayTests();
+                PrintTableTests();
+                //PrintColorPaletteTest();
+
+                PrintUtilitiesTests();
                 PrintTest();
+                PrintAllColors();
+                
+                
                 PrintTimeElapsed();
                 PrintFTests();
-                PrintTable();
+                
                 PrintColorString();
                 PrintTableFormattedString();
                 ClearLine();
-                WriteDebug();
-                WriteError();
+                
                 await PromptAsync();
                 await ReadLineAsync();
                 Fonts();
             }
             catch (Exception ex)
             {
-                PowerConsole.WriteError(ex);
+                PowerConsole.PrintError(ex);
             }
         }
+        private void PrintTests()
+        {
+            PowerConsole.PrintHeader($"Print tests");
+
+            PowerConsole.Print("print without parameters");
+            PowerConsole.Print("print without parameters <Red> color tags by default not handled</Red>");
+            PowerConsole.Print("print CTag.Blue parameter", CTag.Blue);
+            PowerConsole.Print("print colors parameter", Colors);
+            PowerConsole.Print("print options default", PrintOptions.Default);
+            PowerConsole.Print("print options inline", PrintOptions.Inline);
+            PowerConsole.Print(" continue inline", PrintOptions.NoTimestampInLine);
+            PowerConsole.Print(" continue no time stamp", PrintOptions.NoTimestamp);
+
+            PowerConsole.Print("print with options as tuple", (endLine: true, timeFormat: "HH:mm:ss"));
+            PowerConsole.Print("print with <Yellow>options as tuple</Yellow>", (endLine: true, colorTags: true, timeFormat: "HH:mm:ss"));
+
+            PowerConsole.Print("print <Cyan>color tags should be handled</Cyan>", PrintOptions.CTags());
+            PowerConsole.Print("print <Red>few color tags</Red> both <Cyan>should be handled</Cyan>", PrintOptions.CTags());
+            PowerConsole.Print("print in yellow color, <Cyan>color tags should be handled as well</Cyan>", PrintOptions.CTags(color: ConsoleColor.DarkYellow));
+        }
+
 
         private void FormatPreprocessorTest()
         {
@@ -54,21 +87,21 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
         }
 
 
-        private void PrintCTagsTest()
+        private void CTagsTests()
         {
-            PowerConsole.PrintHeader($" CTags Test");
+            PowerConsole.PrintHeader($"Color Tags tests");
 
-            PowerConsole.Print("text in yellow ctag", CTag.Yellow);
-            PowerConsole.Print("text with color tags <Cyan>cyan</Cyan>", colorTags: true);
-            PowerConsole.Print("text with <Red>a few tags</Red><Cyan>cyan</Cyan>", colorTags: true);
-            PowerConsole.Print("text with <Red>a few tags<Cyan>cyan</Cyan></Red>", colorTags: true);
+            PowerConsole.Print("text colorized by yellow ctag", CTag.Yellow);
+            PowerConsole.Print("text with color tags <Cyan>cyan</Cyan>", PrintOptions.CTags());
+            PowerConsole.Print("text with <Red>a few tags </Red><Cyan>cyan</Cyan>", PrintOptions.CTags());
+            PowerConsole.Print("text with <Red>a few tags <Cyan>cyan</Cyan></Red>", PrintOptions.CTags());
         }
 
-        private void PrinterTest()
+        private void PrintColorPaletteTest()
         {
-            PowerConsole.PrintHeader($" Printer Test");
-            PowerConsole.Print($"some text {TradeType.Buy} some other text {TradeType.Sell}", ColorPalette.RedGreen, true);
-            PowerConsole.Print($"some text {TradeType.Buy} some other text {TradeType.Sell}", new[] { ConsoleColor.DarkYellow, ConsoleColor.Cyan }, true);
+            PowerConsole.PrintHeader($"ColorPalette print test");
+            PowerConsole.PrintF($"some text {TradeType.Buy} some other text {TradeType.Sell}", ColorPalette.RedGreen);
+            PowerConsole.PrintF($"some text {TradeType.Buy} some other text {TradeType.Sell}", new[] { ConsoleColor.DarkYellow, ConsoleColor.Cyan });
         }
 
         public void PrintColorString()
@@ -83,18 +116,18 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
             PowerConsole.Print("this is regular text");
         }
 
-        public void PrintColorScheme()
+        public void ColorSchemeTests()
         {
-            PowerConsole.Print("this is (dark blue / white) color scheme", new ColorScheme(ConsoleColor.DarkBlue, ConsoleColor.White));
+            PowerConsole.Print("this is (dark blue / white) color scheme", new ColorScheme(ConsoleColor.White, ConsoleColor.DarkBlue));
         }
 
-        public void PrintArray()
+        public void PrintArrayTests()
         {
             PowerConsole.PrintHeader($"PrintArray");
             var array = new List<double> { 1.0, 2.999, -3000.001, 0, 10.99, 0.1234567890 };
             PowerConsole.PrintArray(array);
             PowerConsole.PrintHeader($"PrintArray with formatter");
-            PowerConsole.PrintArray(array,null,null, x => x + "m");
+            PowerConsole.PrintArray(array, formatter:x => x + "m");
         }
 
         public void PrintTest()
@@ -106,8 +139,7 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
 
         public void PrintTimeElapsed()
         {
-            PowerConsole.PrintHeader($"PrintTimeElapsed");
-            PowerConsole.PrintTimeElapsed(DateTime.Now.AddMilliseconds(-1999), "time elapsed");
+            PowerConsole.PrintTimeElapsed(DateTime.Now.AddMilliseconds(-1999), "time elapsed test");
         }
 
         public void ClearLine()
@@ -117,23 +149,53 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
             PowerConsole.Write("123456789");
             PowerConsole.ClearLine(4);
         }
-        public void WriteDebug()
+
+        public void WriteTests()
         {
-            PowerConsole.PrintHeader("WriteDebug test");
-            PowerConsole.WriteDebug("this is a debug message");
+            PowerConsole.PrintHeader($"write tests");
+            PowerConsole.Write("simple write");
+            PowerConsole.Write(" continue should be the same line");
+            PowerConsole.Write("\r\nwrite + ConsoleColor.Cyan", ConsoleColor.Cyan, true);
+            PowerConsole.Write("color scheme write", new ColorScheme(ConsoleColor.DarkRed, ConsoleColor.Gray), true);
+            PowerConsole.Write("print options write", new PrintOptions());
+            PowerConsole.Write("print options write with timestamp", new PrintOptions(timeFormat: "HH:mm:ss"));
+            PowerConsole.Write("print options color", new PrintOptions(color: ConsoleColor.Green));
+            PowerConsole.Write("print options with <Blue>color tags</Blue>", new PrintOptions(colorTags: true));
         }
 
-        public void WriteError()
+        public void PrintUtilitiesTests()
         {
-            PowerConsole.PrintHeader("WriteError test");
+            PowerConsole.PrintDebug("this is a debug message");
             try
             {
-                throw new Exception("test exception");
+                throw new Exception("exception");
             }
             catch (Exception ex)
             {
-                PowerConsole.WriteError(ex);
+                PowerConsole.PrintError(ex);
             }
+        }
+
+        Colors Colors => new Colors(ConsoleColor.DarkBlue, ConsoleColor.DarkYellow);
+
+        public void WriteLineTests()
+        {
+            PowerConsole.PrintHeader($"WriteLine tests");
+            PowerConsole.WriteLine("write line");
+            PowerConsole.WriteLine("write line ConsoleColor.DarkYellow", ConsoleColor.DarkYellow);
+            PowerConsole.WriteLine("write line print options from ColorScheme.Success", ColorScheme.Success);
+            PowerConsole.WriteLine("write line print options with time format", new PrintOptions(timeFormat:"HH:mm:ss"));
+            PowerConsole.WriteLine("write line print options from colors", Colors);
+
+            PowerConsole.PrintHeader($"WriteLine message status tests");
+            PowerConsole.WriteLine("write debug message", MessageLevel.Debug);
+            PowerConsole.WriteLine("write default message", MessageLevel.Default);
+            PowerConsole.WriteLine("write info message", MessageLevel.Info);
+            PowerConsole.WriteLine("write success message", MessageLevel.Success);
+            PowerConsole.WriteLine("write important message", MessageLevel.Important);
+            PowerConsole.WriteLine("write warning message", MessageLevel.Warning);
+            PowerConsole.WriteLine("write error message", MessageLevel.Error);
+            PowerConsole.WriteLine("write critical error", MessageLevel.Critical);
         }
 
         public async Task ReadLineAsync()
@@ -159,7 +221,6 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
 
         public void PrintAllColors()
         {
-            PowerConsole.PrintHeader($"PrintAllColors");
             PowerConsole.PrintAllColors();
         }
 
@@ -184,7 +245,7 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
             //PowerConsole.PrintF($"4) <square>5x5:`abc`</square>");
         }
 
-        public void PrintTable()
+        public void PrintTableTests()
         {
             PowerConsole.PrintHeader($"PrintTable");
             var arr = new[] {
@@ -208,7 +269,7 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
             PowerConsole.PrintTable(arr, ConsoleColor.DarkCyan);
             PowerConsole.WriteLine();
 
-            var table = Table.Create(new[] { "Buys", "Sells", "Column 3", "Column 4" }, new[] { ColorScheme.DarkGreen, ColorScheme.DarkRed });
+            var table = Table.Create(new[] { "Buys", "Sells", "Column 3", "Column 4" }, new[] { ColorScheme.Info, ColorScheme.Success });
             table.AddRow().AddCell("row 1 colspan = 4", 4);
             table.AddRow().AddCell("row 2 colspan = 3", 3).AddCell("Cell 4");
             table.AddRow().AddCell("row 3 cell 1").AddCell("Cell 2       -        3", 2).AddCell("cell 4");

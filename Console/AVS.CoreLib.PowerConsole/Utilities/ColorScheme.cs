@@ -10,14 +10,11 @@ namespace AVS.CoreLib.PowerConsole.Utilities
     {
         public static ColorScheme Default { get; internal set; }
 
-        /// <summary>
-        /// classic console colors: black / dark gray
-        /// </summary>
-        public static ColorScheme Classic => new ColorScheme(ConsoleColor.Black, ConsoleColor.DarkGray);
+        
 
         public static ColorScheme GetCurrentScheme()
         {
-            return new ColorScheme(Console.BackgroundColor, Console.ForegroundColor);
+            return new ColorScheme(Console.ForegroundColor, Console.BackgroundColor);
         }
 
         public ConsoleColor Background { get; set; }
@@ -29,7 +26,7 @@ namespace AVS.CoreLib.PowerConsole.Utilities
             Background = Console.BackgroundColor;
         }
 
-        public ColorScheme(ConsoleColor background, ConsoleColor foreground)
+        public ColorScheme(ConsoleColor foreground, ConsoleColor background)
         {
             Background = background;
             Foreground = foreground;
@@ -66,43 +63,44 @@ namespace AVS.CoreLib.PowerConsole.Utilities
             ApplyScheme(Default);
         }
 
-        #region Popular schemes
-        public static ColorScheme Blue => new ColorScheme(ConsoleColor.Blue);
-        public static ColorScheme DarkBlue => new ColorScheme(ConsoleColor.DarkBlue);
-        public static ColorScheme Red => new ColorScheme(ConsoleColor.Red);
-        public static ColorScheme DarkRed => new ColorScheme(ConsoleColor.DarkRed);
-        public static ColorScheme Green => new ColorScheme(ConsoleColor.Green);
-        public static ColorScheme DarkGreen => new ColorScheme(ConsoleColor.DarkGreen);
-        public static ColorScheme Yellow => new ColorScheme(ConsoleColor.Yellow);
-        public static ColorScheme DarkYellow => new ColorScheme(ConsoleColor.DarkYellow);
-        public static ColorScheme Gray => new ColorScheme(ConsoleColor.Gray);
+        /// <summary>
+        /// classic console colors: gray / black
+        /// </summary>
+        public static ColorScheme Classic => new ColorScheme(ConsoleColor.Gray, ConsoleColor.Black);
         public static ColorScheme DarkGray => new ColorScheme(ConsoleColor.DarkGray);
-        public static ColorScheme Magenta => new ColorScheme(ConsoleColor.Magenta);
-        public static ColorScheme Cyan => new ColorScheme(ConsoleColor.Cyan);
-        #endregion
 
+
+        public static ColorScheme Critical { get; set; } = new ColorScheme(ConsoleColor.White, ConsoleColor.DarkRed);
         public static ColorScheme Error { get; set; } = new ColorScheme(ConsoleColor.Red);
-        public static ColorScheme Warning { get; set; } = new ColorScheme(ConsoleColor.DarkYellow);
-        public static ColorScheme Info { get; set; } = new ColorScheme(ConsoleColor.Green);
+        public static ColorScheme Warning { get; set; } = new ColorScheme(ConsoleColor.Yellow);
+        public static ColorScheme Info { get; set; } = new ColorScheme(ConsoleColor.White);
+        public static ColorScheme Success { get; set; } = new ColorScheme(ConsoleColor.Green);
+        public static ColorScheme Important { get; set; } = new ColorScheme(ConsoleColor.White, ConsoleColor.DarkGray);
         public static ColorScheme Debug { get; set; } = new ColorScheme(ConsoleColor.DarkGray);
 
         /// <summary>
         /// Gets the color for specific message status enumeration value
         /// </summary>
-        /// <param name="status">Status of the message</param>
+        /// <param name="level">Status of the message</param>
         /// <returns>Console color for the passed message status enumeration value</returns>
-        internal static ColorScheme GetStatusColorScheme(MessageStatus status)
+        internal static ColorScheme GetColorScheme(MessageLevel level)
         {
-            switch (status)
+            switch (level)
             {
-                case MessageStatus.Debug:
+                case MessageLevel.Debug:
                     return Debug;
-                case MessageStatus.Info:
+                case MessageLevel.Info:
                     return Info;
-                case MessageStatus.Warning:
+                case MessageLevel.Success:
+                    return Success;
+                case MessageLevel.Important:
+                    return Important;
+                case MessageLevel.Warning:
                     return Warning;
-                case MessageStatus.Error:
+                case MessageLevel.Error:
                     return Error;
+                case MessageLevel.Critical:
+                    return Critical;
                 default:
                     return Default;
             }

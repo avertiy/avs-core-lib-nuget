@@ -5,6 +5,9 @@ using AVS.CoreLib.Abstractions.Messaging.PubSub;
 
 namespace AVS.CoreLib.Messaging.PubSub
 {
+    /// <summary>
+    /// resolve event consumer(s), if any registered in DI as <seealso cref="IEventConsumer{TEvent,TContext}"/>" 
+    /// </summary>
     internal sealed class EventConsumerFactory : IEventConsumerFactory
     {
         private readonly Dictionary<Type, IEventConsumer[]> _subscribers = new Dictionary<Type, IEventConsumer[]>();
@@ -15,6 +18,10 @@ namespace AVS.CoreLib.Messaging.PubSub
             _serviceFactory = serviceFactory;
         }
 
+        /// <summary>
+        /// Resolve event consumer(s), if any registered in DI as <seealso cref="IEventConsumer{TEvent,TContext}"/>" implementations 
+        /// </summary>
+        /// <param name="type">Type of consumer represented by a generic <see cref="IEventConsumer{TEvent,TContext}"/>"</param>
         public IEventConsumer[] ResolveAll(Type type)
         {
             if (_subscribers.ContainsKey(type))

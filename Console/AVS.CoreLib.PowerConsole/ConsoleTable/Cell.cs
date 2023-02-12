@@ -1,4 +1,5 @@
-﻿using AVS.CoreLib.PowerConsole.Extensions;
+﻿using AVS.CoreLib.Extensions;
+using AVS.CoreLib.PowerConsole.Extensions;
 using AVS.CoreLib.PowerConsole.Structs;
 using AVS.CoreLib.PowerConsole.Utilities;
 

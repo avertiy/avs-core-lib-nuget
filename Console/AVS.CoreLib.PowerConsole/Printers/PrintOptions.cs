@@ -1,0 +1,415 @@
+﻿using System;
+using System.Diagnostics;
+using AVS.CoreLib.Console.ColorFormatting;
+using AVS.CoreLib.Console.ColorFormatting.Tags;
+using AVS.CoreLib.PowerConsole.Enums;
+using AVS.CoreLib.PowerConsole.Utilities;
+
+namespace AVS.CoreLib.PowerConsole.Printers
+{
+    /// <summary>
+    /// Provide common parameters used in print methods,
+    /// Options configure various print aspects like end line, colors, color tags etc.
+    /// PrintOptions has various overloads for implicit conversion from tuples for usage convenience
+    /// e.g. Print("str", (endLine: true, timeFormat:"G")),
+    /// also predefined static props PrintOptions.Default, PrintOptions.Inline etc.
+    /// of course you can pass argument explicitly e.g. Print("str", new PrintOptions() { ... }),
+    /// </summary>
+    public class PrintOptions
+    {
+        /// <summary>
+        /// when not empty add timestamp prefix
+        /// </summary>
+        public string? TimeFormat { get; set; }
+
+        public MessageLevel Level { get; set; }
+        public bool EndLine { get; set; } = true;
+
+        public bool? ColorTags { get; set; }
+        public bool VoidEmptyLines { get; set; } = true;
+
+        /// <summary>
+        /// color for printed text
+        /// </summary>
+        public ConsoleColor? Color { get; set; }
+        /// <summary>
+        /// color scheme for printed text
+        /// </summary>
+        public ColorScheme? Scheme { get; set; }
+        /// <summary>
+        /// colors for printed text
+        /// </summary>
+        public Colors? Colors { get; set; }
+
+        public CTag? CTag { get; set; }
+
+        public bool HasColors => Color.HasValue || Scheme.HasValue || Colors.HasValue || CTag.HasValue;
+
+        public PrintOptions()
+        {
+        }
+
+        public PrintOptions(bool endLine = true, bool colorTags = false, string? timeFormat = null, ConsoleColor? color = null)
+        {
+            EndLine = endLine;
+            Color = color;
+            ColorTags = colorTags;
+            TimeFormat = timeFormat;
+        }
+
+
+        public Colors GetColors()
+        {
+            if (Color.HasValue)
+                return new Colors(Color, null);
+            if (Colors.HasValue)
+                return this.Colors.Value;
+
+            if (Scheme.HasValue)
+                return new Colors(Scheme.Value.Foreground, Scheme.Value.Background);
+
+            if (CTag.HasValue)
+                return CTag.Value.ToColors();
+
+            return AVS.CoreLib.Console.ColorFormatting.Colors.Empty;
+        }
+
+        #region UseXXX methods
+        public PrintOptions UseCTag(CTag tag)
+        {
+            CTag = tag;
+            return this;
+        }
+
+        public PrintOptions UseColor(ConsoleColor color)
+        {
+            Color = color;
+            return this;
+        }
+
+        public PrintOptions UseColorScheme(ColorScheme scheme)
+        {
+            Scheme = scheme;
+            return this;
+        }
+
+        public PrintOptions UseColors(Colors colors)
+        {
+            Colors = colors;
+            return this;
+        }
+
+        public PrintOptions WithCTags()
+        {
+            ColorTags = true;
+            return this;
+        }
+
+        public PrintOptions UseTimeStamp(string timeFormat = "HH:mm:ss")
+        {
+            TimeFormat = timeFormat;
+            return this;
+        }
+
+        public PrintOptions NoEndLine()
+        {
+            EndLine = false;
+            return this;
+        }
+
+        public PrintOptions NoTimeStamp()
+        {
+            TimeFormat = null;
+            return this;
+        } 
+        #endregion
+
+        public virtual PrintOptions Clone()
+        {
+            var copy = new PrintOptions()
+            {
+                EndLine = EndLine,
+                Color = Color,
+                Scheme = Scheme,
+                ColorTags = ColorTags,
+                TimeFormat = TimeFormat,
+                Level = Level,
+                VoidEmptyLines = VoidEmptyLines
+            };
+
+            return copy;
+        }
+
+
+        #region implicit conversions from tuples
+
+        [DebuggerStepThrough]
+        public static implicit operator PrintOptions((bool endLine, bool colorTags) options)
+        {
+            return new PrintOptions() { EndLine = options.endLine, ColorTags = options.colorTags };
+        }
+
+        [DebuggerStepThrough]
+        public static implicit operator PrintOptions((bool endLine, bool colorTags, string timeFormat) options)
+        {
+            return new PrintOptions()
+            {
+                EndLine = options.endLine,
+                ColorTags = options.colorTags,
+                TimeFormat = options.timeFormat
+            };
+        }
+
+        [DebuggerStepThrough]
+        public static implicit operator PrintOptions((bool endLine, bool colorTags, ConsoleColor color) options)
+        {
+            return new PrintOptions()
+            {
+                EndLine = options.endLine,
+                ColorTags = options.colorTags,
+                Color = options.color
+            };
+        }
+
+        [DebuggerStepThrough]
+        public static implicit operator PrintOptions((bool endLine, ConsoleColor color) options)
+        {
+            return new PrintOptions() { EndLine = options.endLine, Color = options.color };
+        }
+
+        [DebuggerStepThrough]
+        public static implicit operator PrintOptions((bool endLine, string timeFormat) options)
+        {
+            return new PrintOptions()
+            {
+                EndLine = options.endLine,
+                TimeFormat = options.timeFormat
+            };
+        }
+
+        [DebuggerStepThrough]
+        public static implicit operator PrintOptions((bool endLine, string timeFormat, ConsoleColor color) options)
+        {
+            return new PrintOptions() { EndLine = options.endLine, TimeFormat = options.timeFormat, Color = options.color };
+        }
+
+        [DebuggerStepThrough]
+        public static implicit operator PrintOptions((bool endLine, bool colorTags, string timeFormat, ConsoleColor color) options)
+        {
+            return new PrintOptions()
+            {
+                EndLine = options.endLine,
+                ColorTags = options.colorTags,
+                TimeFormat = options.timeFormat,
+                Color = options.color
+            };
+        }
+
+        [DebuggerStepThrough]
+        public static implicit operator PrintOptions((bool endLine, MessageLevel level) options)
+        {
+            return new PrintOptions() { EndLine = options.endLine, Level = options.level };
+        }
+
+        [DebuggerStepThrough]
+        public static implicit operator PrintOptions((bool endLine, ColorScheme scheme) options)
+        {
+            return new PrintOptions() { EndLine = options.endLine, Scheme = options.scheme };
+        }
+
+        #endregion
+
+        [DebuggerStepThrough]
+        public static implicit operator PrintOptions(ConsoleColor color)
+        {
+            return new PrintOptions().UseColor(color);
+        }
+
+        [DebuggerStepThrough]
+        public static implicit operator PrintOptions(CTag tag)
+        {
+            return new PrintOptions().UseCTag(tag);
+        }
+
+        [DebuggerStepThrough]
+        public static implicit operator PrintOptions(ColorScheme scheme)
+        {
+            return new PrintOptions().UseColorScheme(scheme);
+        }
+
+        [DebuggerStepThrough]
+        public static implicit operator PrintOptions(Colors colors)
+        {
+            return new PrintOptions().UseColors(colors);
+        }
+
+        [DebuggerStepThrough]
+        public static implicit operator PrintOptions(MessageLevel level)
+        {
+            var options = new PrintOptions
+            {
+                Level = level,
+                Scheme = ColorScheme.GetColorScheme(level)
+            };
+
+            return options;
+        }
+
+        public static explicit operator PrintOptions(bool endLine)
+        {
+            var options = new PrintOptions
+            {
+                EndLine = endLine
+            };
+
+            return options;
+        }
+
+        public static PrintOptions Default { get; set; } = new PrintOptions()
+        {
+            EndLine = true,
+            TimeFormat = "HH:mm:ss",
+            ColorTags = false
+        };
+
+        [DebuggerStepThrough]
+        public static PrintOptions Create(bool endLine = true, bool colorTags = false, string? timeFormat = "HH:mm:ss", ConsoleColor? color = null)
+        {
+            var options = new PrintOptions { ColorTags = colorTags, EndLine = endLine, TimeFormat = timeFormat, Color = color };
+            return options;
+        }
+
+        //[DebuggerStepThrough]
+        public static PrintOptions CTags(bool endLine = true, string? timeFormat = "HH:mm:ss", ConsoleColor? color = null)
+        {
+            var options = new PrintOptions
+            {
+                ColorTags = true,
+                EndLine = endLine,
+                TimeFormat = timeFormat,
+                Color = color
+            };
+            return options;
+        } 
+
+        public static PrintOptions Inline { get; set; } = new PrintOptions()
+        {
+            EndLine = false,
+            TimeFormat = "HH:mm:ss",
+            ColorTags = false
+        };
+
+        public static PrintOptions NoTimestamp { get; set; } = new PrintOptions()
+        {
+            EndLine = true,
+            ColorTags = false
+        };
+
+        public static PrintOptions NoTimestampInLine { get; set; } = new PrintOptions()
+        {
+            EndLine = false,
+            ColorTags = false
+        };
+
+        public static PrintOptions Debug { get; set; } = new PrintOptions()
+        {
+            EndLine = true,
+            TimeFormat = "HH:mm:ss",
+            ColorTags = false,
+            Level = MessageLevel.Debug,
+            Color = ConsoleColor.DarkGray,
+        };
+
+        public static PrintOptions Error { get; set; } = new PrintOptions()
+        {
+            Color = ConsoleColor.Red,
+            EndLine = true,
+            TimeFormat = "HH:mm:ss",
+            ColorTags = false,
+            Level = MessageLevel.Error
+        };
+
+        public static PrintOptions FromColor(ConsoleColor color, string? timeFormat = null, bool endLine = true)
+        {
+            return new PrintOptions()
+            {
+                Color = color,
+                TimeFormat = timeFormat,
+                EndLine = endLine,
+            };
+        }
+
+        public static PrintOptions FromColorScheme(ColorScheme scheme, string? timeFormat = null, bool endLine = true)
+        {
+            return new PrintOptions()
+            {
+                Scheme = scheme,
+                TimeFormat = timeFormat,
+                EndLine = endLine,
+            };
+        }
+    }
+
+    public class HeaderPrintOptions : PrintOptions
+    {
+        public string Template { get; set; } = "============";
+        public string LineIndentation { get; set; } = "\r\n";
+
+        public static HeaderPrintOptions Options { get; set; } = new HeaderPrintOptions()
+        {
+            EndLine = true,
+            Color = ConsoleColor.Cyan,
+            Template = "============",
+            LineIndentation = "\r\n",
+        };
+
+        public override PrintOptions Clone()
+        {
+            var copy = new HeaderPrintOptions()
+            {
+                LineIndentation = LineIndentation,
+                Template = Template,
+                EndLine = EndLine,
+                Color = Color,
+                Scheme = Scheme,
+                ColorTags = ColorTags,
+                TimeFormat = TimeFormat,
+                Level = Level,
+                VoidEmptyLines = VoidEmptyLines
+            };
+
+            return copy;
+        }
+    }
+
+    /// <summary>
+    /// colorize arguments of <see cref="FormattableString"/>
+    /// similar to auto-highlight feature in color formatter for console logging
+    /// </summary>
+    public class MultiColorPrintOptions : PrintOptions
+    {
+        public ColorPalette Palette { get; set; }
+
+        public MultiColorPrintOptions(bool endLine = true)
+        {
+            Palette = new ColorPalette();
+            EndLine = endLine;
+        }
+
+        public MultiColorPrintOptions(ConsoleColor[] colors, bool endLine = true)
+        {
+            Palette = new ColorPalette(colors);
+            EndLine = endLine;
+        }
+
+        public static implicit operator MultiColorPrintOptions(ColorPalette palette)
+        {
+            return new MultiColorPrintOptions() { Palette = palette };
+        }
+
+        public static implicit operator MultiColorPrintOptions(ConsoleColor[] colors)
+        {
+            return new MultiColorPrintOptions(colors);
+        }
+    }
+}
