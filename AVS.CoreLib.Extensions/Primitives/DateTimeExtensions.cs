@@ -19,6 +19,7 @@ namespace AVS.CoreLib.Extensions
             for (var day = from.Date; day.Date <= to.Date; day = day.AddDays(7))
                 yield return day;
         }
+
         public static IEnumerable<DateTime> EachMonth(this DateTime from, DateTime to)
         {
             for (var month = from.Date; month.Date <= to.Date || month.Month == to.Month; month = month.AddMonths(1))

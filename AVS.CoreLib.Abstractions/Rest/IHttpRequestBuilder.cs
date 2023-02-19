@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 
 namespace AVS.CoreLib.Abstractions.Rest
 {
@@ -8,8 +9,10 @@ namespace AVS.CoreLib.Abstractions.Rest
     /// </summary>
     public interface IHttpRequestBuilder
     {
-        IAuthenticator Authenticator { get; }
-        HttpWebRequest Build(IEndpoint endpoint, IPayload data = null);
         HttpWebRequest Build(IRequest request);
+        void SwitchKeys(string publicKey, string privateKey);
+
+        [Obsolete("Use Build(IRequest request)")]
+        HttpWebRequest Build(IEndpoint endpoint, IPayload data = null);
     }
 }

@@ -90,7 +90,7 @@ namespace AVS.CoreLib.REST.Projections
         protected Func<TItem, bool> _where;
         protected IArrayProxy<T, TItem> _proxy;
 
-        public ArrayProjection(string jsonText, string source = null) : base(jsonText, source)
+        public ArrayProjection(string jsonText, string source, string error = null) : base(jsonText, source, error)
         {
         }
 

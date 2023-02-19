@@ -22,7 +22,7 @@ namespace AVS.CoreLib.REST.Projections
         protected Func<string, bool> _whereKey = null;
         protected Func<string, TItem, bool> _where = null;
         protected IKeyedCollectionProxy<T, TItem> _proxy;
-        public KeyedProjection(string jsonText, string source = null) : base(jsonText, source)
+        public KeyedProjection(string jsonText, string source, string error = null) : base(jsonText, source, error)
         {
         }
 

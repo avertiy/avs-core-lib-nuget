@@ -12,7 +12,7 @@ namespace AVS.CoreLib.REST.Projections
     public class ListProjection<T, TItem> : ArrayProjection<T, TItem> where T : class
     {
         [DebuggerStepThrough]
-        public ListProjection(string jsonText, string source = null) : base(jsonText, source)
+        public ListProjection(string jsonText, string source, string error = null) : base(jsonText, source, error)
         {
         }
 

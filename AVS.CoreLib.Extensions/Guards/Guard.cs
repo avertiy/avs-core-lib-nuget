@@ -114,25 +114,25 @@ namespace AVS.CoreLib.Guards
 
         #endregion
 
-        public static void AgainstNullOrEmpty(string param, string name = "argument")
+        public static void AgainstNullOrEmpty(string? param, string name = "argument")
         {
             if (string.IsNullOrEmpty(param))
                 throw new ArgumentNullException($"{name} must be not null or empty");
         }
 
-        public static void AgainstNullOrEmpty(string param, bool allowNull, string name = "argument")
+        public static void AgainstNullOrEmpty(string? param, bool allowNull, string name = "argument")
         {
             if (string.IsNullOrEmpty(param) && !allowNull)
                 throw new ArgumentNullException($"{name} must be not null or empty");
         }
 
-        public static void AgainstNull(object param, string name = "argument")
+        public static void AgainstNull(object? param, string name = "argument")
         {
             if (param == null)
                 throw new ArgumentNullException($"{name} must be not null");
         }
 
-        public static void AgainstNull(object param, bool allowNull, string name = "argument")
+        public static void AgainstNull(object? param, bool allowNull, string name = "argument")
         {
             if (param == null && !allowNull)
                 throw new ArgumentNullException($"{name} must be not null");
@@ -144,9 +144,9 @@ namespace AVS.CoreLib.Guards
                 throw new ArgumentNullException($"{name} must be not a DateTime.MinValue");
         }
 
-        public static void MustBeEqual(string str1, string str2, string message = null)
+        public static void MustBeEqual(string? str1, string? str2, string? message = null)
         {
-            if (!str1.Equals(str2))
+            if (str1 == null || str2 == null || !str1.Equals(str2))
                 throw new ArgumentException(message ?? $"'{str1}' expected to be equal '{str2}'");
         }
 

@@ -112,6 +112,12 @@
         <member name="T:AVS.CoreLib.Trading.Enums.TimeFrame">
             <summary>Represents a time frame of a market.</summary>
         </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.S1">
+            <summary> interval of 1 second </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.S30">
+            <summary> interval of 30 seconds </summary>
+        </member>
         <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.M1">
             <summary>A time interval of 1 minute.</summary>
         </member>

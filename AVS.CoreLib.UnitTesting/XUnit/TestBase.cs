@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using AVS.CoreLib.UnitTesting.Helpers;
+using AVS.CoreLib.Configuration;
 using AVS.CoreLib.Utilities;
 using Microsoft.Extensions.Configuration;
 using Xunit.Abstractions;
@@ -15,7 +15,7 @@ namespace AVS.CoreLib.UnitTesting.xUnit
 
         /// <summary>
         /// use <see cref="ConfigurationAttribute"/> to set app name otherwise the AppName will be defined by entry assembly
-        /// ReSharperTestRunner or whatever  
+        /// ReSharperTestRunner or whatever
         /// </summary>
         protected IConfigurationRoot Configuration
         {
@@ -40,9 +40,14 @@ namespace AVS.CoreLib.UnitTesting.xUnit
 
         public TConfiguration GetSection<TConfiguration>(string sectionKey)
         {
+	        // load keys from custom user secrets file at 
+	        // %userprofile%/.secrets/AVS.Exchange.Core.Tests/secrets.json
             return Configuration.GetSection(sectionKey).Get<TConfiguration>();
         }
 
+        /// <summary>
+		/// load configuration from custom user secrets file at %userprofile%/.secrets/{AppName}/secrets.json 
+		/// </summary>
         private IConfigurationRoot LoadConfiguration()
         {
             var attribute = this.GetType().GetCustomAttributes<ConfigurationAttribute>().FirstOrDefault();

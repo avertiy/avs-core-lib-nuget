@@ -31,5 +31,13 @@ namespace AVS.CoreLib.Utilities
         {
             return DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString();
         }
+
+        /// <summary>
+        /// millisecond timestamp 
+        /// </summary>
+        public static long GetTimestamp()
+        {
+            return DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        }
     }
 }

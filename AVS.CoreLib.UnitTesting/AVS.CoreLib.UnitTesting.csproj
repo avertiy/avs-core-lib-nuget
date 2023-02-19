@@ -24,8 +24,11 @@
 
   <ItemGroup>
     <Compile Remove="Fixtures\**" />
+    <Compile Remove="Helpers\**" />
     <EmbeddedResource Remove="Fixtures\**" />
+    <EmbeddedResource Remove="Helpers\**" />
     <None Remove="Fixtures\**" />
+    <None Remove="Helpers\**" />
   </ItemGroup>
 
   <ItemGroup>    

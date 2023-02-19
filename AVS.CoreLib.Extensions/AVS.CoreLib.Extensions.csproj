@@ -20,4 +20,10 @@
     <Version>2.1.0.0</Version>
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Tasks\**" />
+    <EmbeddedResource Remove="Tasks\**" />
+    <None Remove="Tasks\**" />
+  </ItemGroup>
 </Project>

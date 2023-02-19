@@ -18,17 +18,15 @@ namespace AVS.CoreLib.REST.Clients
 
         public override string ToString()
         {
-            return $"{Method} {BaseUrl}{Path}{QueryString.From(Data)}";
+            var authType = AuthType == AuthType.ApiKey ? "SIGNED" : "";
+            return $"{authType} {Method} {BaseUrl}{Path}{QueryString.From(Data)}";
         }
-    }
 
-    public static class RequestExtensions
-    {
-        public static string GetFullUrl(this IRequest request)
+        public string GetFullUrl(bool orderParameters = true)
         {
-            var url = request.BaseUrl + request.Path;
-            if (request.Method == "GET" && request.Data != null && request.Data.Any())
-                url = UrlHelper.Combine(url, request.Data.ToHttpQueryString());
+            var url = BaseUrl + Path;
+            if (Method == "GET" && Data != null && Data.Any())
+                url = UrlHelper.Combine(url, Data.ToHttpQueryString(orderParameters));
             return url;
         }
     }

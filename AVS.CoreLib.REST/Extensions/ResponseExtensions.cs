@@ -7,7 +7,6 @@ using AVS.CoreLib.REST.Responses;
 
 namespace AVS.CoreLib.REST.Extensions
 {
-    //seems not used
     public static class ResponseExtensions
     {
         public static IResponse<T> OnSuccess<T>(this IResponse response, Func<T> func, string errorMessage = null)
@@ -25,6 +24,24 @@ namespace AVS.CoreLib.REST.Extensions
                 }
             }
             return newResponse;
+        }
+
+        public static void ThrowOnError(this IResponse response)
+        {
+            var error = response.Error;
+            if (string.IsNullOrEmpty(error))
+                return;
+
+            throw new ApiException(error) { Source = response.Source };
+        }
+
+        public static void OnError(this IResponse response, Action<string> action)
+        {
+            var error = response.Error;
+            if (string.IsNullOrEmpty(error))
+                return;
+
+            action(error);
         }
 
         public static async Task<IResponse<T>> OnSuccess<T>(this IResponse response, Func<Task<T>> func, string errorMessage = null)

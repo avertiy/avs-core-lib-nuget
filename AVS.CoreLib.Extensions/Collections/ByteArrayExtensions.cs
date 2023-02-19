@@ -1,18 +1,23 @@
 ﻿using System;
 using System.Globalization;
+using System.Text;
 
 namespace AVS.CoreLib.Extensions.Collections
 {
     public static class ByteArrayExtensions
     {
-        public static string ToHexString(this byte[] value)
+        /// <summary>
+        /// Since .NET 5.0 available Convert.ToHexString(hash) which should be faster
+        /// </summary>
+        public static string ToHexString(this byte[] bytes)
         {
-            var output = string.Empty;
-            for (var i = 0; i < value.Length; i++)
+            //BitConverter.ToString(bytes).Replace("-", "");
+            var sb = new StringBuilder(bytes.Length*2);
+            for (var i = 0; i < bytes.Length; i++)
             {
-                output += value[i].ToString("x2", CultureInfo.InvariantCulture);
+                sb.Append(bytes[i].ToString("x2"));
             }
-            return (output);
+            return sb.ToString();
         }
 
         public static string ToBase64String(this byte[] bytes)

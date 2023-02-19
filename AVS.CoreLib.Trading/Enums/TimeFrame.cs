@@ -4,7 +4,10 @@
     public enum TimeFrame
     {
         None = 0,
-
+        /// <summary> interval of 1 second </summary>
+        S1 = 1,
+        /// <summary> interval of 30 seconds </summary>
+        S30 = 30,
         /// <summary>A time interval of 1 minute.</summary>
         M1 = 60,
 

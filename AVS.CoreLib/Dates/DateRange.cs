@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Text.Json;
@@ -126,6 +127,7 @@ namespace AVS.CoreLib.Dates
             return From <= range.From && To >= range.To;
         }
 
+        #region statis methods
         /// <summary>
         /// returns all supported literals parseable into date range
         /// </summary>
@@ -133,19 +135,13 @@ namespace AVS.CoreLib.Dates
         {
             return new[]
             {
-                "Today",
                 "today",
-                "Yesterday",
                 "yesterday",
-                "Day",
                 "day",
                 "week",
                 "Week",
-                "Month",
                 "month",
-                "Quarter",
                 "quarter",
-                "Year",
                 "year",
                 "1m",
                 "5m",
@@ -162,13 +158,17 @@ namespace AVS.CoreLib.Dates
                 "1d",
                 "2d",
                 "3d",
+                "4d",
                 "7d",
                 "1w",
                 "2w",
                 "3w",
                 "4w",
                 "1M",
+                "2M",
                 "3M",
+                "4M",
+                "5M",
                 "6M",
                 "9M",
                 "12M",
@@ -185,13 +185,153 @@ namespace AVS.CoreLib.Dates
             };
         }
 
+        /// <summary>
+        /// parse date range almost from any possible literal:
+        /// number 1-999 + letter (s)econds, (m)inutes, (h)ours, (d)ays, (w)eeks, (m)onths, (q)uaters, (y)ears e.g. 10M - 10 months
+        /// literals such as day, week, month, quarter, year
+        /// exact ranges: 01/10/2019 - 02/11/2019, 01/10/2019;02/11/2019 or [01/10/2019;02/11/2019] <seealso cref="DateTime.TryParse(string?, IFormatProvider?, DateTimeStyles, out DateTime)"/> 
+        /// toDate modifier `-now` e.g. 2Q-now => [DateTime.Today.AddMonths(-6);DateTime.Now], by default it is till DateTime.Today 
+        /// </summary>
         public static bool TryParse(string str, out DateRange range)
         {
             range = new DateRange();
             if (string.IsNullOrEmpty(str))
                 return false;
 
-            switch (str.Trim())
+            var strToParse = str.Trim();
+            var toDate = DateTime.Today;
+
+            if (strToParse.EndsWith("-now", StringComparison.OrdinalIgnoreCase))
+            {
+                strToParse = strToParse.Substring(0, strToParse.Length - "-now".Length);
+                toDate = DateTime.Now;
+            }
+
+            if (strToParse.Length == 2 && int.TryParse(strToParse.Substring(0, 1), out var n))
+            {
+                range = CreateDateRange(n, strToParse[^1], toDate);
+                return true;
+            }
+            else if (strToParse.Length == 3 && int.TryParse(strToParse.Substring(0, 2), out var n2))
+            {
+                range = CreateDateRange(n2, strToParse[^1], toDate);
+                return true;
+            }
+            else if (strToParse.Length == 4 && int.TryParse(strToParse.Substring(0, 3), out var n3))
+            {
+                range = CreateDateRange(n3, strToParse[^1], toDate);
+                return true;
+            }
+            else
+            {
+                switch (strToParse.ToLower())
+                {
+                    case "today":
+                        range = new DateRange(DateTime.Today, DateTime.Now);
+                        return true;
+                    case "yesterday":
+                        range = new DateRange(DateTime.Today.AddDays(-1), toDate);
+                        return true;
+                    case "day":
+                        range = new DateRange(DateTime.Today.AddDays(-1), toDate);
+                        return true;
+                    case "week":
+                        range = new DateRange(DateTime.Today.AddDays(-7), toDate);
+                        return true;
+                    case "month":
+                        range = new DateRange(DateTime.Today.AddMonths(-1), toDate);
+                        return true;
+                    case "quarter":
+                        range = new DateRange(DateTime.Today.AddMonths(-3), toDate);
+                        return true;
+                    case "half a year":
+                    case "half year":
+                        range = new DateRange(DateTime.Today.AddMonths(-6), toDate);
+                        return true;
+                    case "year":
+                        range = new DateRange(DateTime.Today.AddMonths(-12), toDate);
+                        return true;
+                    default:
+                        {
+                            return TryParseExact(strToParse, out range);
+                        }
+                }
+            }
+        }
+
+        private static bool TryParseExact(string str, out DateRange range)
+        {
+            range = new DateRange();
+            string[] parts = null;
+
+            if (str.StartsWith('[') && str.EndsWith(']'))
+            {
+                str = str.Substring(1, str.Length - 2);
+            }
+
+            if (str.Contains('-') || str.Contains(';'))
+            {
+                //01/10/2019 - 02/11/2019
+                parts = str.Split(new[] { '-', ';', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length != 2)
+                    return false;
+            }
+
+            if (parts == null)
+                return false;
+
+            var parse1 = DateTime.TryParse(parts[0], CultureInfo.CurrentCulture, DateTimeStyles.None,
+                out var from);
+
+            var parse2 = DateTime.TryParse(parts[1], CultureInfo.CurrentCulture, DateTimeStyles.None,
+                out var to);
+
+            if (parse1 && parse2)
+            {
+                range = new DateRange(from, to);
+                return true;
+            }
+
+            return false;
+        }
+
+        private static DateRange CreateDateRange(int n, char letter, DateTime toDate)
+        {
+            return letter switch
+            {
+                'd' => new DateRange(DateTime.Today.AddDays(-n), toDate),
+                'D' => new DateRange(DateTime.Today.AddDays(-n), toDate),
+                'w' => new DateRange(DateTime.Today.AddDays(-n * 7), toDate),
+                'W' => new DateRange(DateTime.Today.AddDays(-n * 7), toDate),
+                'M' => new DateRange(DateTime.Today.AddMonths(-n), toDate),
+                'q' => new DateRange(DateTime.Today.AddMonths(-n * 3), toDate),
+                'Q' => new DateRange(DateTime.Today.AddMonths(-n * 3), toDate),
+                'y' => new DateRange(DateTime.Today.AddYears(-n), toDate),
+                'Y' => new DateRange(DateTime.Today.AddYears(-n), toDate),
+                's' => new DateRange(DateTime.Now.AddSeconds(-n), DateTime.Now),
+                'm' => new DateRange(DateTime.Now.AddMinutes(-n), DateTime.Now),
+                'h' => new DateRange(DateTime.Now.AddHours(-n), DateTime.Now),
+                'H' => new DateRange(DateTime.Now.AddHours(-n), DateTime.Now),
+                _ => throw new ArgumentException($"Unable to create DateRange from `{n}{letter}`")
+            };
+        }
+
+        public static bool TryParse0(string str, out DateRange range)
+        {
+            range = new DateRange();
+            if (string.IsNullOrEmpty(str))
+                return false;
+
+            var strToParse = str.Trim();
+            var toDate = DateTime.Today;
+
+            if (strToParse.EndsWith("-now", StringComparison.OrdinalIgnoreCase))
+            {
+                strToParse = strToParse.Substring(0, strToParse.Length - "-now".Length);
+                toDate = DateTime.Now;
+            }
+
+            switch (strToParse)
             {
                 case "Today":
                 case "today":
@@ -199,142 +339,140 @@ namespace AVS.CoreLib.Dates
                     return true;
                 case "Yesterday":
                 case "yesterday":
-                    range = new DateRange(DateTime.Today.AddDays(-1), DateTime.Now);
+                    range = new DateRange(DateTime.Today.AddDays(-1), toDate);
                     return true;
                 case "1m":
-                    range = new DateRange(DateTime.Now.AddMinutes(-1), DateTime.Now);
+                    range = new DateRange(DateTime.Now.AddMinutes(-1), toDate);
                     return true;
                 case "5m":
-                    range = new DateRange(DateTime.Now.AddMinutes(-5), DateTime.Now);
+                    range = new DateRange(DateTime.Now.AddMinutes(-5), toDate);
                     return true;
                 case "15m":
-                    range = new DateRange(DateTime.Now.AddMinutes(-15), DateTime.Now);
+                    range = new DateRange(DateTime.Now.AddMinutes(-15), toDate);
                     return true;
                 case "30m":
-                    range = new DateRange(DateTime.Now.AddMinutes(-30), DateTime.Now);
+                    range = new DateRange(DateTime.Now.AddMinutes(-30), toDate);
                     return true;
                 case "60m":
                 case "1h":
-                    range = new DateRange(DateTime.Now.AddMinutes(-60), DateTime.Now);
+                    range = new DateRange(DateTime.Now.AddMinutes(-60), toDate);
                     return true;
                 case "4h":
-                    range = new DateRange(DateTime.Now.AddHours(-4), DateTime.Now);
+                    range = new DateRange(DateTime.Now.AddHours(-4), toDate);
                     return true;
                 case "12h":
-                    range = new DateRange(DateTime.Now.AddHours(-12), DateTime.Now);
+                    range = new DateRange(DateTime.Now.AddHours(-12), toDate);
                     return true;
                 case "24h":
-                    range = new DateRange(DateTime.Now.AddHours(-24), DateTime.Now);
+                    range = new DateRange(DateTime.Now.AddHours(-24), toDate);
                     return true;
                 case "Day":
                 case "day":
                 case "1d":
-                    range = new DateRange(DateTime.Today.AddDays(-1), DateTime.Now);
+                case "1D":
+                    range = new DateRange(DateTime.Today.AddDays(-1), toDate);
                     return true;
                 case "48h":
                 case "2d":
-                    range = new DateRange(DateTime.Today.AddDays(-2), DateTime.Now);
+                case "2D":
+                    range = new DateRange(DateTime.Today.AddDays(-2), toDate);
                     return true;
                 case "72h":
                 case "3d":
-                    range = new DateRange(DateTime.Today.AddDays(-3), DateTime.Now);
+                case "3D":
+                    range = new DateRange(DateTime.Today.AddDays(-3), toDate);
+                    return true;
+                case "4d":
+                case "4D":
+                    range = new DateRange(DateTime.Today.AddDays(-4), toDate);
+                    return true;
+                case "5d":
+                case "5D":
+                    range = new DateRange(DateTime.Today.AddDays(-5), toDate);
                     return true;
                 case "7d":
+                case "7D":
                 case "Week":
                 case "week":
                 case "1w":
-                    range = new DateRange(DateTime.Today.AddDays(-7), DateTime.Now);
+                case "1W":
+                    range = new DateRange(DateTime.Today.AddDays(-7), toDate);
+                    return true;
+                case "10d":
+                case "10D":
+                    range = new DateRange(DateTime.Today.AddDays(-10), toDate);
                     return true;
                 case "2w":
-                    range = new DateRange(DateTime.Today.AddDays(-7 * 2), DateTime.Now);
+                case "2W":
+                    range = new DateRange(DateTime.Today.AddDays(-7 * 2), toDate);
                     return true;
                 case "3w":
-                    range = new DateRange(DateTime.Today.AddDays(-7 * 3), DateTime.Now);
+                case "3W":
+                    range = new DateRange(DateTime.Today.AddDays(-7 * 3), toDate);
                     return true;
                 case "4w":
-                    range = new DateRange(DateTime.Today.AddDays(-7 * 4), DateTime.Now);
+                case "4W":
+                    range = new DateRange(DateTime.Today.AddDays(-7 * 4), toDate);
                     return true;
                 case "1M":
                 case "Month":
                 case "month":
-                    range = new DateRange(DateTime.Today.AddMonths(-1), DateTime.Now);
+                    range = new DateRange(DateTime.Today.AddMonths(-1), toDate);
+                    return true;
+                case "2M":
+                    range = new DateRange(DateTime.Today.AddMonths(-2), toDate);
                     return true;
                 case "3M":
                 case "Quarter":
                 case "quarter":
                 case "1Q":
-                    range = new DateRange(DateTime.Today.AddMonths(-3), DateTime.Now);
+                    range = new DateRange(DateTime.Today.AddMonths(-3), toDate);
+                    return true;
+                case "4M":
+                    range = new DateRange(DateTime.Today.AddMonths(-4), toDate);
+                    return true;
+                case "5M":
+                    range = new DateRange(DateTime.Today.AddMonths(-5), toDate);
                     return true;
                 case "6M":
                 case "2Q":
                 case "HalfYear":
-                    range = new DateRange(DateTime.Today.AddMonths(-6), DateTime.Now);
+                    range = new DateRange(DateTime.Today.AddMonths(-6), toDate);
                     return true;
                 case "9M":
                 case "3Q":
-                    range = new DateRange(DateTime.Today.AddMonths(-9), DateTime.Now);
+                    range = new DateRange(DateTime.Today.AddMonths(-9), toDate);
                     return true;
                 case "12M":
                 case "4Q":
                 case "Year":
                 case "year":
                 case "1Y":
-                    range = new DateRange(DateTime.Today.AddMonths(-12), DateTime.Now);
+                    range = new DateRange(DateTime.Today.AddMonths(-12), toDate);
                     return true;
                 case "18M":
-                    range = new DateRange(DateTime.Today.AddMonths(-18), DateTime.Now);
+                    range = new DateRange(DateTime.Today.AddMonths(-18), toDate);
                     return true;
                 case "24M":
                 case "2Y":
-                    range = new DateRange(DateTime.Today.AddYears(-2), DateTime.Now);
+                    range = new DateRange(DateTime.Today.AddYears(-2), toDate);
                     return true;
                 case "30M":
-                    range = new DateRange(DateTime.Today.AddMonths(-30), DateTime.Now);
+                    range = new DateRange(DateTime.Today.AddMonths(-30), toDate);
                     return true;
                 case "36M":
                 case "3Y":
-                    range = new DateRange(DateTime.Today.AddYears(-3), DateTime.Now);
+                    range = new DateRange(DateTime.Today.AddYears(-3), toDate);
                     return true;
                 case "5Y":
-                    range = new DateRange(DateTime.Today.AddYears(-5), DateTime.Now);
+                    range = new DateRange(DateTime.Today.AddYears(-5), toDate);
                     return true;
                 case "10Y":
-                    range = new DateRange(DateTime.Today.AddYears(-10), DateTime.Now);
+                    range = new DateRange(DateTime.Today.AddYears(-10), toDate);
                     return true;
                 default:
                     {
-                        string[] parts = null;
-
-                        if (str.StartsWith("[") && str.EndsWith("]") && str.Contains(";"))
-                        {
-                            parts = str.Split(';');
-                            if (parts.Length != 2)
-                                return false;
-                        }
-                        else if (str.Contains(" - "))
-                        {
-                            //01/10/2019 - 02/11/2019
-                            parts = str.Split(" - ");
-                            if (parts.Length != 2)
-                                return false;
-                        }
-
-                        if (parts == null)
-                            return false;
-
-                        var parse1 = DateTime.TryParse(parts[0], CultureInfo.CurrentCulture, DateTimeStyles.None,
-                            out DateTime from);
-
-                        var parse2 = DateTime.TryParse(parts[1], CultureInfo.CurrentCulture, DateTimeStyles.None,
-                            out DateTime to);
-
-                        if (parse1 && parse2)
-                        {
-                            range = new DateRange(from, to);
-                            return true;
-                        }
-
-                        return false;
+                        return TryParseExact(strToParse, out range);
                     }
             }
         }
@@ -365,7 +503,7 @@ namespace AVS.CoreLib.Dates
 
         public static DateRange FromToday(int days)
         {
-            if(days < 0)
+            if (days < 0)
                 return new DateRange(DateTime.Today.AddDays(days), DateTime.Today);
             else
                 return new DateRange(DateTime.Today, DateTime.Today.AddDays(days));
@@ -378,7 +516,31 @@ namespace AVS.CoreLib.Dates
         public static DateRange Month => new DateRange(DateTime.Today.AddMonths(-1), DateTime.Today);
         public static DateRange Quarter => new DateRange(DateTime.Today.AddMonths(-3), DateTime.Today);
         public static DateRange HalfYear => new DateRange(DateTime.Today.AddMonths(-6), DateTime.Today);
-        public static DateRange Year => new DateRange(DateTime.Today.AddYears(-1), DateTime.Today);
+        public static DateRange Year => new DateRange(DateTime.Today.AddYears(-1), DateTime.Today); 
+        #endregion
+    }
+
+    public static class DateRangeExtensions
+    {
+        public static IEnumerable<DateRange> Iterate(this DateRange range, int seconds)
+        {
+            for (var i = range.From; i <= range.To;)
+            {
+                var next = i.AddSeconds(seconds);
+                yield return new DateRange(i, next);
+                i = next;
+            }
+        }
+
+        public static IEnumerable<DateRange> IterateByDays(this DateRange range, int days)
+        {
+            for (var i = range.From; i <= range.To;)
+            {
+                var next = i.AddDays(days);
+                yield return new DateRange(i, next);
+                i = next;
+            }
+        }
     }
 
     public class DateRangeTypeConverter : TypeConverter
@@ -418,15 +580,59 @@ namespace AVS.CoreLib.Dates
 
     public class DateRangeJsonConverter : JsonConverter<DateRange>
     {
+        private DateRange ParseAsObject(ref Utf8JsonReader reader)
+        {
+            reader.Read();
+            var prop1Name = reader.GetString();
+            reader.Read();
+            var prop1Value = reader.GetString();
+
+            reader.Read();
+            var prop2Name = reader.GetString();
+            reader.Read();
+            var prop2Value = reader.GetString();
+
+           
+
+            if (prop1Name?.ToLower() != "from")
+                throw new JsonException($"Unable to parse {nameof(DateRange)} - expected prop name `from`");
+
+            if (!DateTime.TryParse(prop1Value, CultureInfo.CurrentCulture, DateTimeStyles.None, out var from))
+                throw new JsonException(
+                    $"Unable to parse {nameof(DateRange)} - `from` value `{prop1Value}` is invalid DateTime value");
+
+            if (prop2Name?.ToLower() != "to")
+                throw new JsonException($"Unable to parse {nameof(DateRange)} - expected prop name `to`");
+
+            if (!DateTime.TryParse(prop2Value, CultureInfo.CurrentCulture, DateTimeStyles.None, out var to))
+                throw new JsonException(
+                    $"Unable to parse {nameof(DateRange)} - `to` value `{prop2Value}` is invalid DateTime value");
+
+            reader.Read();
+            if (reader.TokenType != JsonTokenType.EndObject)
+                throw new JsonException($"Unable to parse {nameof(DateRange)} - end object token is expected at {reader.TokenStartIndex}");
+
+            return new DateRange(from, to);
+        }
+
         public override DateRange Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            var str = reader.GetString()!;
-            if (DateRange.TryParse(str, out var range))
+            if (reader.TokenType == JsonTokenType.String)
             {
-                return range;
+                var str = reader.GetString()!;
+                if (DateRange.TryParse(str, out var range))
+                {
+                    return range;
+                }
+
+                throw new JsonException($"Unable to parse {nameof(DateRange)} from `{str}`");
+            }
+            else if (reader.TokenType == JsonTokenType.StartObject)
+            {
+                return ParseAsObject(ref reader);
             }
 
-            throw new JsonException($"Unable to parse {nameof(DateRange)} from `{str}`");
+            throw new JsonException($"Unable to parse {nameof(DateRange)} - token type {reader.TokenType}");
         }
 
         public override void Write(Utf8JsonWriter writer, DateRange value, JsonSerializerOptions options)

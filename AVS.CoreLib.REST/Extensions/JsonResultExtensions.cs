@@ -10,6 +10,7 @@ namespace AVS.CoreLib.REST.Extensions
         {
             var response = result.Deserialize<BoolResponse>();
             response.Source = result.Source;
+            response.Error = result.Error;
             return response;
         }
 
@@ -17,36 +18,37 @@ namespace AVS.CoreLib.REST.Extensions
         {
             var response = result.Deserialize<Response<T>>();
             response.Source = result.Source;
+            response.Error = result.Error;
             return response;
         }
 
         public static ObjectProjection<T> AsObject<T>(this JsonResult result)
         {
-            return new ObjectProjection<T>(result.JsonText, result.Source);
+            return new ObjectProjection<T>(result.JsonText, result.Source, result.Error);
         }
 
         public static ObjectProjection<T, TProjection> AsObject<T, TProjection>(this JsonResult result)
             where TProjection : new()
         {
-            return new ObjectProjection<T, TProjection>(result.JsonText, result.Source);
+            return new ObjectProjection<T, TProjection>(result.JsonText, result.Source, result.Error);
         }
 
         public static ArrayProjection<TInterface, TItem> AsArray<TInterface, TItem>(this JsonResult result)
             where TInterface : class
         {
-            return new ArrayProjection<TInterface, TItem>(result.JsonText, result.Source);
+            return new ArrayProjection<TInterface, TItem>(result.JsonText, result.Source, result.Error);
         }
 
         public static ListProjection<List<T>, T> AsList<T>(this JsonResult result) where T : class
         {
-            return new ListProjection<List<T>, T>(result.JsonText, result.Source);
+            return new ListProjection<List<T>, T>(result.JsonText, result.Source, result.Error);
         }
 
         public static ListProjection<T, TItem> AsList<T, TItem>(this JsonResult result)
             where T : class
             where TItem : class
         {
-            return new ListProjection<T, TItem>(result.JsonText, result.Source);
+            return new ListProjection<T, TItem>(result.JsonText, result.Source, result.Error);
         }
 
         /// <summary>
@@ -56,7 +58,7 @@ namespace AVS.CoreLib.REST.Extensions
         /// <typeparam name="TValue">The type of values in the dictionary, it could be interface/abstraction, for example ICurrencyInfo</typeparam>
         public static DictionaryProjection<TKey, TValue> AsDictionary<TKey, TValue>(this JsonResult result) where TKey : class
         {
-            return new DictionaryProjection<TKey, TValue>(result.JsonText, result.Source);
+            return new DictionaryProjection<TKey, TValue>(result.JsonText, result.Source, result.Error);
         }
 
         /// <summary>
@@ -66,7 +68,7 @@ namespace AVS.CoreLib.REST.Extensions
         /// <typeparam name="TItem">The concrete type of item values in the collection, for example ExmoMarketData</typeparam>
         public static KeyedProjection<T, TItem> AsKeyedProjection<T, TItem>(this JsonResult result) where T : class
         {
-            return new KeyedProjection<T, TItem>(result.JsonText, result.Source);
+            return new KeyedProjection<T, TItem>(result.JsonText, result.Source, result.Error);
         }
     }
 }

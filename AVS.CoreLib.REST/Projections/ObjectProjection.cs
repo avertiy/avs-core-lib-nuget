@@ -20,7 +20,7 @@ namespace AVS.CoreLib.REST.Projections
         public IObjectProxy<T> Proxy { get; private set; }
 
         [DebuggerStepThrough]
-        public ObjectProjection(string jsonText, string source = null) : base(jsonText, source)
+        public ObjectProjection(string jsonText, string source, string error = null) : base(jsonText, source, error)
         {
         }
 
@@ -202,7 +202,7 @@ namespace AVS.CoreLib.REST.Projections
         protected IObjectProxy<T, TProjection> _proxy;
 
         [DebuggerStepThrough]
-        public ObjectProjection(string jsonText, string source = null) : base(jsonText, source)
+        public ObjectProjection(string jsonText, string source, string error = null) : base(jsonText, source, error)
         {
         }
 

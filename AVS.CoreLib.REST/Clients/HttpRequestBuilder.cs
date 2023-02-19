@@ -24,28 +24,37 @@ namespace AVS.CoreLib.REST.Clients
         public IWebProxy Proxy { get; set; }
         public bool AddCommandToRequestData { get; set; }
         public bool UseTonce { get; set; }
+        public bool OrderQueryStringParameters { get; set; }
 
         public HttpRequestBuilder(IAuthenticator authenticator)
         {
             Authenticator = authenticator;
         }
 
-        public virtual HttpWebRequest Build(IRequest request)
+        public HttpWebRequest Build(IRequest request)
         {
             try
             {
-                OnRequestCreating(request);
-
-                var url = request.GetFullUrl();
-                var httpRequest = WebRequestHelper.ConstructHttpWebRequest(request.Method, url, Proxy);
-
-                OnRequestCreated(httpRequest, request);
-                return httpRequest;
+                return CreateHttpRequest(request);
             }
             catch (Exception ex)
             {
                 throw new Exception("Constructing HttpWebRequest failed", ex);
             }
+        }
+
+        public void SwitchKeys(string publicKey, string privateKey)
+        {
+            Authenticator.SwitchKeys(publicKey, privateKey);
+        }
+
+        protected virtual HttpWebRequest CreateHttpRequest(IRequest request)
+        {
+            OnRequestCreating(request);
+            var url = request.GetFullUrl(OrderQueryStringParameters);
+            var httpRequest = WebRequestHelper.ConstructHttpWebRequest(request.Method, url, Proxy);
+            OnRequestCreated(httpRequest, request);
+            return httpRequest;
         }
 
         protected virtual void OnRequestCreating(IRequest request)
@@ -65,11 +74,15 @@ namespace AVS.CoreLib.REST.Clients
                     if (Authenticator == null)
                         throw new Exception("Authenticator must be initialized");
 
+
                     var signature = Authenticator.Sign(request.Data.ToHttpQueryString(), out var bytes);
                     httpRequest.Headers["Key"] = Authenticator.PublicKey;
                     httpRequest.Headers["Sign"] = signature.ToBase64String();
+                    //work around for stupid .net protocol violation check
+                    httpRequest.Method = "POST";
                     httpRequest.WriteBytes(bytes);
-                    break;
+                    httpRequest.Method = request.Method;
+                        break;
                 }
                 default:
                     if (httpRequest.Method != "GET")
@@ -82,6 +95,7 @@ namespace AVS.CoreLib.REST.Clients
         }
 
 
+        [Obsolete("Use Build(IRequest request)")]
         public virtual HttpWebRequest Build(IEndpoint endpoint, IPayload data = null)
         {
             try
@@ -113,6 +127,7 @@ namespace AVS.CoreLib.REST.Clients
         /// use OnRequestCreating to add something to each payload
         /// for example private endpoints require tonce/nonce to be provided in payload  
         /// </summary>
+        [Obsolete("Use Build(IRequest request)")]
         protected virtual void OnRequestCreating(IEndpoint endpoint, IPayload data)
         {
             if (endpoint.AuthType == AuthType.ApiKey)
@@ -133,6 +148,7 @@ namespace AVS.CoreLib.REST.Clients
         /// private endpoints require request headers to be provided
         /// by default sets Headers["Key"] = public_key; Headers["Sign"] = signature
         /// </summary>
+        [Obsolete("Use Build(IRequest request)")]
         protected virtual void OnRequestCreated(HttpWebRequest httpRequest, IEndpoint endpoint, IPayload data)
         {
             switch (endpoint.AuthType)
@@ -145,7 +161,10 @@ namespace AVS.CoreLib.REST.Clients
                         var signature = Authenticator.Sign(data.ToHttpQueryString(), out var bytes);
                         httpRequest.Headers["Key"] = Authenticator.PublicKey;
                         httpRequest.Headers["Sign"] = signature.ToBase64String();
+                        //work around for stupid .net protocol violation check
+                        httpRequest.Method = "POST";
                         httpRequest.WriteBytes(bytes);
+                        httpRequest.Method = endpoint.Method;
                         break;
                     }
                 default:
@@ -156,6 +175,104 @@ namespace AVS.CoreLib.REST.Clients
                     }
                     break;
             }
+        }
+    }
+
+    public class HttpRequestBuilder<TAuthenticator> : IHttpRequestBuilder
+        where TAuthenticator : IAuthenticator
+    {
+        public TAuthenticator Authenticator { get; }
+
+        /// <summary>
+        /// Gets or sets the proxy information of the <see cref="HttpWebRequest"/>
+        /// </summary>
+        public IWebProxy Proxy { get; set; }
+        public bool OrderQueryStringParameters { get; set; }
+        public string ContentType { get; set; } = "application/x-www-form-urlencoded";
+
+        public HttpRequestBuilder(TAuthenticator authenticator)
+        {
+            Authenticator = authenticator;
+        }
+
+        public HttpWebRequest Build(IRequest input)
+        {
+            try
+            {
+                return CreateRequest(input);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Constructing HttpWebRequest failed [input: {input}]", ex);
+            }
+
+        }
+
+        public void SwitchKeys(string publicKey, string privateKey)
+        {
+            Authenticator.SwitchKeys(publicKey, privateKey);
+        }
+
+        public HttpWebRequest Build(IEndpoint endpoint, IPayload data = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected virtual HttpWebRequest CreateRequest(IRequest input)
+        {
+            OnRequestCreating(input);
+            var httpRequest = CreateHttpWebRequest(input, OrderQueryStringParameters, Proxy, ContentType);
+            OnRequestCreated(httpRequest, input);
+            return httpRequest;
+        }
+
+        protected virtual void OnRequestCreating(IRequest input)
+        {
+        }
+
+        /// <summary>
+        /// write bytes (payload) if method is not GET i.e. POST/PUT etc.  
+        /// </summary>
+        protected virtual void OnRequestCreated(HttpWebRequest httpRequest, IRequest input)
+        {
+            switch (httpRequest.Method)
+            {
+                case "GET":
+                {
+                    // do nothing, payload is already in query string 
+                    break;
+                }
+                default:
+                {
+                    var bytes = Authenticator.Encoding.GetBytes(input.Data.ToHttpQueryString());
+                    httpRequest.WriteBytes(bytes);
+                    break;
+                }
+            }
+            //switch (input.AuthType)
+            //{
+            //    case AuthType.ApiKey:
+            //    {
+            //        if (Authenticator == null)
+            //            throw new Exception("Authenticator must be initialized");
+
+
+            //        var signature = Authenticator.Sign(input.Data.ToHttpQueryString(), out var bytes);
+            //        httpRequest.Headers["Key"] = Authenticator.PublicKey;
+            //        httpRequest.Headers["Sign"] = signature.ToBase64String();
+            //        //work around for stupid .net protocol violation check
+            //        httpRequest.Method = "POST";
+            //        httpRequest.WriteBytes(bytes);
+            //        httpRequest.Method = input.Method;
+            //        break;
+            //    }
+           
+        }
+
+        protected static HttpWebRequest CreateHttpWebRequest(IRequest input, bool orderQueryStringParameters, IWebProxy proxy,  string contentType)
+        {
+            var url = input.GetFullUrl(orderQueryStringParameters);
+            return WebRequestHelper.ConstructHttpWebRequest(input.Method, url, proxy, contentType);
         }
     }
 }
