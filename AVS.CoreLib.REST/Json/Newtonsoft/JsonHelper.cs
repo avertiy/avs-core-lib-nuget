@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace AVS.CoreLib.REST.Json
+namespace AVS.CoreLib.REST.Json.Newtonsoft
 {
     public static class JsonHelper
     {
@@ -12,10 +12,8 @@ namespace AVS.CoreLib.REST.Json
         public static bool IsSimpleType(Type type)
         {
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
-            {
                 // nullable type, check if the nested type is simple.
                 return IsSimpleType(type.GetGenericArguments()[0]);
-            }
             return type.IsPrimitive
                    || type.IsEnum
                    || type == typeof(string)
@@ -45,7 +43,7 @@ namespace AVS.CoreLib.REST.Json
             if (!jArray.HasValues)
                 return list;
 
-            foreach (JToken token in jArray)
+            foreach (var token in jArray)
             {
                 if (token.Type == JTokenType.Object)
                 {
@@ -77,7 +75,7 @@ namespace AVS.CoreLib.REST.Json
             if (!jObject.HasValues)
                 return list;
 
-            foreach (KeyValuePair<string, JToken> kp in jObject)
+            foreach (var kp in jObject)
             {
                 var item = convertFunc(kp.Key, kp.Value);
                 list.Add(item);
@@ -114,11 +112,10 @@ namespace AVS.CoreLib.REST.Json
             if (!jObject.HasValues)
                 return dictionary;
 
-            foreach (KeyValuePair<string, JToken> kp in jObject)
-            {
+            foreach (var kp in jObject)
                 if (kp.Value.Type == JTokenType.String)
                 {
-                    string value = ((JValue)kp.Value).Value<string>();
+                    var value = ((JValue)kp.Value).Value<string>();
                     dictionary.Add(keyFunc(kp.Key), valFunc(value));
                 }
                 else if (kp.Value.Type == JTokenType.Boolean)
@@ -141,7 +138,6 @@ namespace AVS.CoreLib.REST.Json
                     var obj = kp.Value.Value<object>();
                     dictionary.Add(keyFunc(kp.Key), valFunc(obj));
                 }
-            }
 
             return dictionary;
         }

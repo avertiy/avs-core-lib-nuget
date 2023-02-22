@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using AVS.CoreLib.REST.Json;
+using AVS.CoreLib.REST.Json.Newtonsoft;
 using Newtonsoft.Json.Linq;
 
 namespace AVS.CoreLib.REST.Projections

@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System;
+using System.Security.Cryptography;
 using System.Text;
 using AVS.CoreLib.Abstractions.Rest;
 
@@ -11,17 +12,25 @@ namespace AVS.CoreLib.REST
         public Encoding Encoding { get; set; } = Encoding.ASCII;
         protected TAlgorithm Encryptor { get; }
 
-        public Authenticator(string publicKey, string privateKey)
+        public Authenticator()
         {
-            PublicKey = publicKey;
             Encryptor = new TAlgorithm();
-            if (!string.IsNullOrEmpty(privateKey))
-                Encryptor.Key = Encoding.GetBytes(privateKey);
         }
 
-
-        public void SwitchKeys(string publicKey, string privateKey)
+        public Authenticator(string publicKey, string privateKey)
         {
+            Encryptor = new TAlgorithm();
+            SetKeys(publicKey, privateKey);
+        }
+
+        public void SetKeys(string publicKey, string privateKey)
+        {
+            if(string.IsNullOrEmpty(privateKey))
+                return;
+
+            if(PublicKey == publicKey)
+                return;
+
             PublicKey = publicKey;
             Encryptor.Key = Encoding.GetBytes(privateKey);
         }

@@ -1,10 +1,78 @@
 ﻿using System;
 using AVS.CoreLib.Trading.Enums;
+using AVS.CoreLib.Trading.FormatProviders;
 
 namespace AVS.CoreLib.Trading.Helpers
 {
     public static class ParseEnumHelper
     {
+        public static bool TryParse(string value, Type enumType, out object obj)
+        {
+            switch (enumType.Name)
+            {
+                case nameof(OrderSide):
+                {
+                    obj = ParseEnumHelper.ParseOrderSide(value);
+                    return true;
+                }
+                
+                case nameof(OrderState):
+                {
+                    obj = ParseEnumHelper.ParseOrderState(value);
+                    return true;
+                }
+
+                case nameof(OrderType):
+                {
+                    obj = ParseEnumHelper.ParseOrderType(value);
+                    return true;
+                }
+
+                case nameof(TimeInForce):
+                {
+                    obj = ParseEnumHelper.ParseTimeInForce(value);
+                    return true;
+                }
+                case nameof(TradeType):
+                {
+                    obj = ParseEnumHelper.ParseTradeType(value);
+                    return true;
+                }
+
+                case nameof(TradeCategory):
+                {
+                    obj = ParseEnumHelper.ParseTradeCategory(value);
+                    return true;
+                }
+                case nameof(AccountType):
+                {
+                    obj = ParseEnumHelper.ParseAccountType(value);
+                    return true;
+                }
+
+                default:
+                {
+                    obj = null;
+                    return false;
+                }
+            }
+        }
+
+        public static TimeInForce ParseTimeInForce(string value)
+        {
+            switch (value.ToUpper()[0])
+            {
+                case 'G':
+                    return TimeInForce.GTC;
+                case 'F':
+                    return TimeInForce.FOK;
+                case 'I':
+                    return TimeInForce.IOC;
+                default:
+                    throw new NotSupportedException($"Unknown {nameof(TimeInForce)} '{value}'");
+            }
+        }
+
         public static TradeType ParseTradeType(string value)
         {
             switch (value[0])
@@ -50,7 +118,7 @@ namespace AVS.CoreLib.Trading.Helpers
             throw new ArgumentOutOfRangeException($"{value} unknown OrderSide");
         }
 
-        public static OrderType ParseOrderKind(string value)
+        public static OrderType ParseOrderType(string value)
         {
             switch (value.ToUpper())
             {
@@ -66,18 +134,19 @@ namespace AVS.CoreLib.Trading.Helpers
 
                 case "FOK":
                 case "FILL_OR_KILL":
-                    return OrderType.FillOrKill;
+                    return OrderType.FOK;
                 case "GTC":
                 case "GOOD_TILL_CANCEL":
-                    return OrderType.GoodTillCanceled;
+                    return OrderType.GTC;
                 case "SL":
                 case "STOP_LIMIT":
                     return OrderType.StopLimit;
                 case "S":
                 case "STOP":
                     return OrderType.Stop;
+                case "OCO":
                 case "OCTO":
-                    return OrderType.OneCancelsTheOther;
+                    return OrderType.OCO;
             }
 
             throw new ArgumentOutOfRangeException($"{value} unknown kind of {nameof(OrderType)}");

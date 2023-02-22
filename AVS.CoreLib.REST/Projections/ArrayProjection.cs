@@ -3,72 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions.Collections;
-using AVS.CoreLib.REST.Json;
+using AVS.CoreLib.REST.Json.Newtonsoft;
 using AVS.CoreLib.REST.Responses;
 using Newtonsoft.Json.Linq;
 using Exception = System.Exception;
 
 namespace AVS.CoreLib.REST.Projections
 {
-
-    ///// <summary>
-    ///// 
-    ///// </summary>
-    //public class ArrayProjection<T> : Projection where T : class
-    //{
-    //    protected Action<T> _postProcessAction;
-    //    protected Action<T> _preProcessAction;
-    //    private dynamic _itemAction;
-
-    //    protected Type ItemType { get; set; }
-
-    //    public ArrayProjection(string jsonText, string source = null) : base(jsonText, source)
-    //    {
-    //        //1)
-    //        //var projection = jsonResult.AsArray<IChartData, IBar>();
-    //        //projection.Map<ChartData, BinanceBar>() 
-
-
-    //        //var projection = jsonResult.AsArray<IChartData, IBar>();
-    //        //(i).MapThroughWrapper<ChartData>()
-    //        //(ii).MapThroughWrapper<ChartData, BinanceBar>()
-    //        //.WithItem<IBar,BinanceBar>()
-    //        //projection.Map<ChartData, IBar>()  where TWrapper : T, IListWrapper<IBar>, new()
-    //        //
-    //        //.WithItem<TInterface,TItem>()
-    //    }
-
-    //    public ArrayProjection<T> PreProcess(Action<T> action)
-    //    {
-    //        _preProcessAction = action;
-    //        return this;
-    //    }
-
-    //    public ArrayProjection<T> PostProcess(Action<T> action)
-    //    {
-    //        _postProcessAction = action;
-    //        return this;
-    //    }
-
-    //    public Response<T> Map<TWrapper, TInterface, TImplementation>() where TWrapper : T, IListWrapper<TInterface>, new()
-    //    {
-
-    //    }
-
-    //    //public ArrayProjection<T> ForEach(Action<dynamic> action)
-    //    //{
-    //    //    _itemAction = action;
-    //    //    return this;
-    //    //}
-
-    //    //public ArrayProjection<T> Where<TItem>(Func<TItem, bool> predicate)
-    //    //{
-    //    //    _where = predicate;
-    //    //    return this;
-    //    //}
-
-    //}
-
     /// <summary>
     /// Array projection helps to map json of array type structure i.e. [...] into <see cref="T"/> projection.
     /// </summary>

@@ -45,7 +45,7 @@ namespace AVS.CoreLib.REST.Clients
 
         public void SwitchKeys(string publicKey, string privateKey)
         {
-            Authenticator.SwitchKeys(publicKey, privateKey);
+            Authenticator.SetKeys(publicKey, privateKey);
         }
 
         protected virtual HttpWebRequest CreateHttpRequest(IRequest request)
@@ -210,7 +210,7 @@ namespace AVS.CoreLib.REST.Clients
 
         public void SwitchKeys(string publicKey, string privateKey)
         {
-            Authenticator.SwitchKeys(publicKey, privateKey);
+            Authenticator.SetKeys(publicKey, privateKey);
         }
 
         public HttpWebRequest Build(IEndpoint endpoint, IPayload data = null)

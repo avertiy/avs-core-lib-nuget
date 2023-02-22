@@ -3,7 +3,7 @@ using AVS.CoreLib.Dates;
 using AVS.CoreLib.Utilities;
 using Newtonsoft.Json;
 
-namespace AVS.CoreLib.REST.Json.Converters
+namespace AVS.CoreLib.REST.Json.Newtonsoft.Converters
 {
     /// <summary>
     /// converts unix time in seconds to DateTime value
@@ -18,34 +18,32 @@ namespace AVS.CoreLib.REST.Json.Converters
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
             JsonSerializer serializer)
         {
-            var nullable = ReflectionUtils.IsNullable(objectType);
+           
             if (reader.TokenType == JsonToken.Null)
             {
-                if (!nullable)
-                {
-                    throw new JsonSerializationException($"Cannot convert null value to {objectType}.");
-                }
+                var nullable = ReflectionUtils.IsNullable(objectType);
+                if (nullable)
+                    return null;
 
-                return null;
+                throw new JsonSerializationException($"Cannot convert null value to {objectType.Name}.");
             }
 
             long seconds;
 
-            if (reader.TokenType == JsonToken.Integer)
+            switch (reader.TokenType)
             {
-                seconds = (long)reader.Value!;
-            }
-            else if (reader.TokenType == JsonToken.String)
-            {
-                if (!long.TryParse((string)reader.Value!, out seconds))
+                case JsonToken.Integer:
+                    seconds = (long)reader.Value!;
+                    break;
+                case JsonToken.String:
                 {
-                    throw new JsonSerializationException($"Unable to parse string token {reader.Value} into long.");
+                    if (!long.TryParse((string)reader.Value!, out seconds))
+                        throw new JsonSerializationException($"Unable to parse string token {reader.Value} into long.");
+                    break;
                 }
-            }
-            else
-            {
-                throw new JsonSerializationException(
-                    $"Unexpected token parsing date. Expected Integer or String, got {reader.TokenType}.");
+                default:
+                    throw new JsonSerializationException(
+                        $"Parse {objectType.Name} failed. Unexpected token type {reader.TokenType}.");
             }
 
             var timestamp = DateTimeHelper.FromUnixTimestamp(seconds);

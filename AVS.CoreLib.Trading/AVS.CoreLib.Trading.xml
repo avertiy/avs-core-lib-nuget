@@ -94,19 +94,29 @@
             например: текущая цена 500$ а мы ждем падения ниже линии до 400$ только тогда открываем шорт
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.TimeInForce.GTC">
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.FOK">
             <summary>
-            good till cancel
+            fill or kill
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.TimeInForce.IOC">
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.GTC">
             <summary>
-            immediate or cancel
+            good till canceled
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.TimeInForce.FOK">
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.OCO">
             <summary>
-            Fill or kill
+            one cancels the other
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.StopLimit">
+            <summary>
+            stop limit
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.Stop">
+            <summary>
+            stop by market price i.e. can squeeze
             </summary>
         </member>
         <member name="T:AVS.CoreLib.Trading.Enums.TimeFrame">
@@ -138,6 +148,21 @@
         </member>
         <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.D">
             <summary>A time interval of a day.</summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeInForce.GTC">
+            <summary>
+            good till cancel
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeInForce.IOC">
+            <summary>
+            immediate or cancel
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeInForce.FOK">
+            <summary>
+            Fill or kill
+            </summary>
         </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.DecimalExtensions.Deduct(System.Decimal,System.Decimal)">
             <summary>

@@ -9,7 +9,7 @@ namespace AVS.CoreLib.Abstractions.Rest
         /// <summary>
         /// switch (update) api keys for example to switch between accounts using the same client
         /// </summary>
-        void SwitchKeys(string publicKey, string privateKey);
+        void SetKeys(string publicKey, string privateKey);
         /// <summary>
         /// sign data an returns signature hash
         /// </summary>

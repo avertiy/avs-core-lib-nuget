@@ -24,8 +24,8 @@
 
   <ItemGroup>
     <Compile Remove="Extensions\Extensions.cs" />
-    <Compile Remove="Json\Converters\ResponseConverter.cs" />
-    <Compile Remove="Json\Converters\TimestampNanoSecondsConverter.cs" />
+    <Compile Remove="Json\Newtonsoft\Converters\ResponseConverter.cs" />
+    <Compile Remove="Json\Newtonsoft\Converters\TimestampNanoSecondsConverter.cs" />
   </ItemGroup>
 
   <ItemGroup>
