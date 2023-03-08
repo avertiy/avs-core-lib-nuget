@@ -6,10 +6,10 @@ namespace AVS.CoreLib.Caching
     /// <summary>
     /// Represents a manager for caching between HTTP requests (long term caching)
     /// </summary>
-    public interface ICacheManager : IDisposable
+    public interface IXCacheManager : IDisposable
     {
         /// <summary>
-        /// Get a cached item. If it's not in the cache yet, then load and cache it
+        /// Get a cached item. If it's not in the cache yet, then <see cref="acquire"/> and cache it
         /// </summary>
         /// <typeparam name="T">Type of cached item</typeparam>
         /// <param name="key">Cache key</param>
@@ -27,7 +27,7 @@ namespace AVS.CoreLib.Caching
         Task<CachedObject<T>> GetAsync<T>(CacheKey key, Func<Task<T>> acquire);
 
         /// <summary>
-        /// Get a cached item. If it's not in the cache yet, then load and cache it for a short term if cache key has no CacheTime
+        /// Get a cached item. If it's not in the cache yet, then load and cache it for a short term, if cache key has no CacheTime
         /// </summary>
         /// <typeparam name="T">Type of cached item</typeparam>
         /// <param name="key">Cache key</param>
@@ -45,30 +45,30 @@ namespace AVS.CoreLib.Caching
         Task<CachedObject<T>> GetShortTermAsync<T>(CacheKey key, Func<Task<T>> acquire);
 
         /// <summary>
-        /// Removes the value with the specified key from the cache
+        /// Puts the specified key and object to the cache
         /// </summary>
         /// <param name="key">Key of cached item</param>
-        void Remove(CacheKey key);
-
-        /// <summary>
-        /// Adds the specified key and object to the cache
-        /// </summary>
-        /// <param name="key">Key of cached item</param>
-        /// <param name="data">Value for caching</param>
+        /// <param name="value">Value for caching</param>
         /// <param name="shortTerm">when true caching options ShortTermCacheTime is used as a default caching time</param>
-        void Set(CacheKey key, object data, bool shortTerm = false);
+        void Set<T>(CacheKey key, T value, bool shortTerm = false);
 
         /// <summary>
         /// If value exists in cache update it, otherwise do nothing
         /// </summary>
-        void Refresh(CacheKey key, object data, bool shortTerm = false);
+        void Refresh<T>(CacheKey key, T value, bool shortTerm = false);
 
         /// <summary>
         /// Gets a value indicating whether the value associated with the specified key is cached
         /// </summary>
         /// <param name="key">Key of cached item</param>
         /// <returns>True if item already is in cache; otherwise false</returns>
-        bool IsSet(CacheKey key);
+        bool IsSet(string key);
+
+        /// <summary>
+        /// Removes the value with the specified key from the cache
+        /// </summary>
+        /// <param name="key">Key of cached item</param>
+        void Remove(string key);
 
         /// <summary>
         /// Removes items by key prefix

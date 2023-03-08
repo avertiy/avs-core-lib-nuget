@@ -53,6 +53,12 @@ namespace AVS.CoreLib.REST.Projections
             return this;
         }
 
+        public KeyedProjection<T, TItem> ForEach(Action<TItem> action)
+        {
+            _itemAction = (_, item) => action(item);
+            return this;
+        }
+
         public KeyedProjection<T, TItem> Where(Func<string, bool> predicate)
         {
             _whereKey = predicate;

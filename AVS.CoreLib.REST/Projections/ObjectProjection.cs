@@ -36,6 +36,13 @@ namespace AVS.CoreLib.REST.Projections
             return this;
         }
 
+        public ObjectProjection<T> PostProcess<TProjection>(Action<TProjection> action) 
+            where TProjection : T
+        {
+            _postProcessAction = x => action((TProjection)x);
+            return this;
+        }
+
         /// <summary>
         /// setup deserialization proxy object <see cref="IObjectProxy{T,TData}"/>
         /// </summary>
@@ -194,11 +201,15 @@ namespace AVS.CoreLib.REST.Projections
         }
     }
 
+    /// <summary>
+    /// requires proxy 
+    /// </summary>
     public class ObjectProjection<T, TProjection> : Projection
         where TProjection : new()
     {
-        protected Action<TProjection> _preProcessAction;
-        protected Action<T> _postProcessAction;
+        protected Action<TProjection> _preProcess;
+        protected Action<T> _postProcess;
+        protected Action<TProjection> _postProcessProjection;
         protected IObjectProxy<T, TProjection> _proxy;
 
         [DebuggerStepThrough]
@@ -208,13 +219,19 @@ namespace AVS.CoreLib.REST.Projections
 
         public ObjectProjection<T, TProjection> PreProcess(Action<TProjection> action)
         {
-            _preProcessAction = action;
+            _preProcess = action;
             return this;
         }
 
         public ObjectProjection<T, TProjection> PostProcess(Action<T> action)
         {
-            _postProcessAction = action;
+            _postProcess = action;
+            return this;
+        }
+
+        public ObjectProjection<T, TProjection> PostProcess(Action<TProjection> action)
+        {
+            _postProcessProjection = action;
             return this;
         }
 
@@ -227,15 +244,6 @@ namespace AVS.CoreLib.REST.Projections
             var proxy = new TProxy();
             initialize?.Invoke(proxy);
             _proxy = proxy;
-            return this;
-        }
-
-        [Obsolete("use UseProxy instead")]
-        public ObjectProjection<T, TProjection> UseBuilder<TBuilder>(Action<TBuilder> initialize = null) where TBuilder : class, IObjectProxy<T, TProjection>, new()
-        {
-            var builder = new TBuilder();
-            initialize?.Invoke(builder);
-            _proxy = builder;
             return this;
         }
 
@@ -271,7 +279,7 @@ namespace AVS.CoreLib.REST.Projections
             return MapAsyncInternal(Map);
         }
 
-        public virtual Response<T> Map()
+        public Response<T> Map()
         {
             EnsureProxyInitialized();
 
@@ -287,13 +295,14 @@ namespace AVS.CoreLib.REST.Projections
                     LoadToken<JObject, TProjection>(jObject =>
                     {
                         var projection = new TProjection();
-                        _preProcessAction?.Invoke(projection);
+                        _preProcess?.Invoke(projection);
                         JsonHelper.Populate(projection, jObject);
+                        _postProcessProjection?.Invoke(projection);
                         _proxy.Add(projection);
                     });
 
                     var data = _proxy.Create();
-                    _postProcessAction?.Invoke(data);
+                    _postProcess?.Invoke(data);
                     response.Data = data;
                 }
             });
@@ -301,7 +310,7 @@ namespace AVS.CoreLib.REST.Projections
             return response;
         }
 
-        public virtual Response<T> Map(Func<TProjection, T> map)
+        public Response<T> Map(Func<TProjection, T> map)
         {
             var response = Response.Create<T>();
             response.Source = Source;
@@ -310,7 +319,7 @@ namespace AVS.CoreLib.REST.Projections
             {
                 response.Data = map(new TProjection());
             }
-            else if (ContainsError(out string err))
+            else if (ContainsError(out var err))
             {
                 response.Error = err;
             }
@@ -319,10 +328,11 @@ namespace AVS.CoreLib.REST.Projections
                 LoadToken<JObject, TProjection>(jObject =>
                 {
                     var projection = new TProjection();
-                    _preProcessAction?.Invoke(projection);
+                    _preProcess?.Invoke(projection);
                     JsonHelper.Populate(projection, jObject);
                     var data = map(projection);
-                    _postProcessAction?.Invoke(data);
+                    _postProcessProjection?.Invoke(projection);
+                    _postProcess?.Invoke(data);
                     response.Data = data;
                 });
             }

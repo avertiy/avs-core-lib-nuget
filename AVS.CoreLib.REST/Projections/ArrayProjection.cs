@@ -10,6 +10,8 @@ using Exception = System.Exception;
 
 namespace AVS.CoreLib.REST.Projections
 {
+	//TO-DO rework ArrayProjection should map to array at the moment there is some confusion.. 
+
     /// <summary>
     /// Array projection helps to map json of array type structure i.e. [...] into <see cref="T"/> projection.
     /// </summary>
@@ -123,6 +125,8 @@ namespace AVS.CoreLib.REST.Projections
         {
             return base.MapAsyncInternal(Map);
         }
+
+        //private Response<T> Map
 
         public Response<T> Map()
         {

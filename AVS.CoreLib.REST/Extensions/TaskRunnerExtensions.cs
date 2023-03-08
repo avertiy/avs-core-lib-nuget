@@ -11,7 +11,7 @@ namespace AVS.CoreLib.REST.Extensions
 {
     public static class TaskRunnerExtensions
     {
-        [Obsolete("use ParallelExtensions util or TaskSet")]
+        [Obsolete("use ParallelFetch below or ParallelJobs from AVS.CoreLib.Extensions.Tasks")]
         public static Dictionary<T, Task<IResponse<TResult>>> ForEach<T, TResult>(this IEnumerable<T> enumerable, Func<T, Task<Response<TResult>>> func)
         {
             var tasks = new Dictionary<T, Task<IResponse<TResult>>>();

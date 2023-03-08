@@ -164,6 +164,11 @@
             Fill or kill
             </summary>
         </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeInForce.DAY">
+            <summary>
+            A day order remains in effect only for the given trading session (NYSE/Nasdaq)
+            </summary>
+        </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.DecimalExtensions.Deduct(System.Decimal,System.Decimal)">
             <summary>
             deducts specified percent from the value

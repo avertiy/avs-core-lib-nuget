@@ -109,12 +109,37 @@ namespace AVS.CoreLib.Dates
 
         public override string ToString()
         {
-            return $"[{From:g};{To:g}]";
+            return $"[{From:G};{To:G}]";
         }
 
-        public string ToString(string dateFormat)
+        /// <summary>
+        /// Format DateRange to a string [From;To].
+        /// Formatting date time values accordingly to the given date time format modifier
+        /// </summary>
+        /// <param name="format">support same format modifiers as for <see cref="DateTime.ToString()"/>:
+        ///   <list type="table">
+        ///     <item>
+        ///       <term>D</term>
+        ///       <description> - long date:  Friday, 18 April 2023</description>
+        ///     </item>
+        ///     <item>
+        ///       <term>d</term>
+        ///       <description> - short date:  04/18/2023</description>
+        ///     </item>
+        ///     <item>
+        ///       <term>G</term>
+        ///       <description> - general long:  04/18/2023 06:00:00</description>
+        ///     </item>
+        ///     <item>
+        ///       <term>g</term>
+        ///       <description> - general short:  04/18/2023 06:00 etc.</description>
+        ///     </item> 
+        ///   </list>
+        /// </param>
+        /// <returns></returns>
+        public string ToString(string format)
         {
-            return $"[{From.ToString(dateFormat)};{To.ToString(dateFormat)}]";
+            return $"[{From.ToString(format)};{To.ToString(format)}]";
         }
 
         public bool Contains(DateTime date)
@@ -244,8 +269,8 @@ namespace AVS.CoreLib.Dates
                     case "quarter":
                         range = new DateRange(DateTime.Today.AddMonths(-3), toDate);
                         return true;
-                    case "half a year":
                     case "half year":
+                    case "half-year":
                         range = new DateRange(DateTime.Today.AddMonths(-6), toDate);
                         return true;
                     case "year":
@@ -315,168 +340,7 @@ namespace AVS.CoreLib.Dates
                 _ => throw new ArgumentException($"Unable to create DateRange from `{n}{letter}`")
             };
         }
-
-        public static bool TryParse0(string str, out DateRange range)
-        {
-            range = new DateRange();
-            if (string.IsNullOrEmpty(str))
-                return false;
-
-            var strToParse = str.Trim();
-            var toDate = DateTime.Today;
-
-            if (strToParse.EndsWith("-now", StringComparison.OrdinalIgnoreCase))
-            {
-                strToParse = strToParse.Substring(0, strToParse.Length - "-now".Length);
-                toDate = DateTime.Now;
-            }
-
-            switch (strToParse)
-            {
-                case "Today":
-                case "today":
-                    range = new DateRange(DateTime.Today, DateTime.Now);
-                    return true;
-                case "Yesterday":
-                case "yesterday":
-                    range = new DateRange(DateTime.Today.AddDays(-1), toDate);
-                    return true;
-                case "1m":
-                    range = new DateRange(DateTime.Now.AddMinutes(-1), toDate);
-                    return true;
-                case "5m":
-                    range = new DateRange(DateTime.Now.AddMinutes(-5), toDate);
-                    return true;
-                case "15m":
-                    range = new DateRange(DateTime.Now.AddMinutes(-15), toDate);
-                    return true;
-                case "30m":
-                    range = new DateRange(DateTime.Now.AddMinutes(-30), toDate);
-                    return true;
-                case "60m":
-                case "1h":
-                    range = new DateRange(DateTime.Now.AddMinutes(-60), toDate);
-                    return true;
-                case "4h":
-                    range = new DateRange(DateTime.Now.AddHours(-4), toDate);
-                    return true;
-                case "12h":
-                    range = new DateRange(DateTime.Now.AddHours(-12), toDate);
-                    return true;
-                case "24h":
-                    range = new DateRange(DateTime.Now.AddHours(-24), toDate);
-                    return true;
-                case "Day":
-                case "day":
-                case "1d":
-                case "1D":
-                    range = new DateRange(DateTime.Today.AddDays(-1), toDate);
-                    return true;
-                case "48h":
-                case "2d":
-                case "2D":
-                    range = new DateRange(DateTime.Today.AddDays(-2), toDate);
-                    return true;
-                case "72h":
-                case "3d":
-                case "3D":
-                    range = new DateRange(DateTime.Today.AddDays(-3), toDate);
-                    return true;
-                case "4d":
-                case "4D":
-                    range = new DateRange(DateTime.Today.AddDays(-4), toDate);
-                    return true;
-                case "5d":
-                case "5D":
-                    range = new DateRange(DateTime.Today.AddDays(-5), toDate);
-                    return true;
-                case "7d":
-                case "7D":
-                case "Week":
-                case "week":
-                case "1w":
-                case "1W":
-                    range = new DateRange(DateTime.Today.AddDays(-7), toDate);
-                    return true;
-                case "10d":
-                case "10D":
-                    range = new DateRange(DateTime.Today.AddDays(-10), toDate);
-                    return true;
-                case "2w":
-                case "2W":
-                    range = new DateRange(DateTime.Today.AddDays(-7 * 2), toDate);
-                    return true;
-                case "3w":
-                case "3W":
-                    range = new DateRange(DateTime.Today.AddDays(-7 * 3), toDate);
-                    return true;
-                case "4w":
-                case "4W":
-                    range = new DateRange(DateTime.Today.AddDays(-7 * 4), toDate);
-                    return true;
-                case "1M":
-                case "Month":
-                case "month":
-                    range = new DateRange(DateTime.Today.AddMonths(-1), toDate);
-                    return true;
-                case "2M":
-                    range = new DateRange(DateTime.Today.AddMonths(-2), toDate);
-                    return true;
-                case "3M":
-                case "Quarter":
-                case "quarter":
-                case "1Q":
-                    range = new DateRange(DateTime.Today.AddMonths(-3), toDate);
-                    return true;
-                case "4M":
-                    range = new DateRange(DateTime.Today.AddMonths(-4), toDate);
-                    return true;
-                case "5M":
-                    range = new DateRange(DateTime.Today.AddMonths(-5), toDate);
-                    return true;
-                case "6M":
-                case "2Q":
-                case "HalfYear":
-                    range = new DateRange(DateTime.Today.AddMonths(-6), toDate);
-                    return true;
-                case "9M":
-                case "3Q":
-                    range = new DateRange(DateTime.Today.AddMonths(-9), toDate);
-                    return true;
-                case "12M":
-                case "4Q":
-                case "Year":
-                case "year":
-                case "1Y":
-                    range = new DateRange(DateTime.Today.AddMonths(-12), toDate);
-                    return true;
-                case "18M":
-                    range = new DateRange(DateTime.Today.AddMonths(-18), toDate);
-                    return true;
-                case "24M":
-                case "2Y":
-                    range = new DateRange(DateTime.Today.AddYears(-2), toDate);
-                    return true;
-                case "30M":
-                    range = new DateRange(DateTime.Today.AddMonths(-30), toDate);
-                    return true;
-                case "36M":
-                case "3Y":
-                    range = new DateRange(DateTime.Today.AddYears(-3), toDate);
-                    return true;
-                case "5Y":
-                    range = new DateRange(DateTime.Today.AddYears(-5), toDate);
-                    return true;
-                case "10Y":
-                    range = new DateRange(DateTime.Today.AddYears(-10), toDate);
-                    return true;
-                default:
-                    {
-                        return TryParseExact(strToParse, out range);
-                    }
-            }
-        }
-
+        
         public static DateRange FromNow(int seconds, bool useUtcTime = false)
         {
             var now = useUtcTime ? DateTime.UtcNow : DateTime.Now;
@@ -637,7 +501,15 @@ namespace AVS.CoreLib.Dates
 
         public override void Write(Utf8JsonWriter writer, DateRange value, JsonSerializerOptions options)
         {
-            writer.WriteStringValue(value.ToString());
+            //var json = $"{{ \"from\": \"{value.From:G}\", \"to\": \"{value.To:G}\" }}";
+            //writer.WriteStringValue(json);
+
+            writer.WriteStartObject();
+            writer.WritePropertyName("from");
+            writer.WriteStringValue(value.From.ToString("G"));
+            writer.WritePropertyName("to");
+            writer.WriteStringValue(value.To.ToString("G"));
+            writer.WriteEndObject();
         }
     }
 }

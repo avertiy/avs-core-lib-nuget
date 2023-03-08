@@ -1,4 +1,6 @@
-﻿namespace AVS.CoreLib.REST.Projections
+﻿using System.Collections.Generic;
+
+namespace AVS.CoreLib.REST.Projections
 {
     /// <summary>
     /// ObjectProxy comes to the rescue when you deal with <see cref="ObjectProjection{T}"/>
@@ -29,6 +31,17 @@
     {
         void Add(TItem item);
         T Create();
+    }
+
+    /// <summary>
+    /// ListProxy comes to the rescue when you deal with <see cref="ArrayProjection{TItem}"/>
+    /// In cases when json can't be deserialized into <see cref="List{T}"/> directly, the proxy object is used to deserialize json into proxy,
+    /// and then proxy creates the result <see cref="List{T}"/>
+    /// </summary>
+    public interface IListProxy<T>
+    {
+        void Add(T item);
+        List<T> Create();
     }
 
     /// <summary>

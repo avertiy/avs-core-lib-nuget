@@ -33,6 +33,14 @@ namespace AVS.CoreLib.REST.Extensions
             return new ObjectProjection<T, TProjection>(result.JsonText, result.Source, result.Error);
         }
 
+        /// <summary>
+        /// <see cref="ListProjection{T}"/> map json of array type structure into <see cref="List{TItem}"/>
+        /// </summary>
+        public static ListProjection<TItem> AsListProjection<TItem>(this JsonResult result) where TItem : class
+        {
+            return new ListProjection<TItem>(result.JsonText, result.Source, result.Error);
+        }
+
         public static ArrayProjection<TInterface, TItem> AsArray<TInterface, TItem>(this JsonResult result)
             where TInterface : class
         {

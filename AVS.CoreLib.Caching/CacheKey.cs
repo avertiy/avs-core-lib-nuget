@@ -1,13 +1,10 @@
 ﻿namespace AVS.CoreLib.Caching
 {
+    /// <summary>
+    /// represent a cache key with some extra parameters 
+    /// </summary>
     public readonly struct CacheKey
     {
-        /// <summary>
-        /// Cache time in minutes
-        /// when null <see cref="CachingOptions.DefaultCacheTime"/> or <seealso cref="CachingOptions.ShortTermCacheTime"/>
-        /// </summary>
-        public int? CacheTime { get; }
-
         /// <summary>
         /// Cache key
         /// </summary>
@@ -18,6 +15,19 @@
         /// </summary>
         public string Prefix { get; }
 
+        /// <summary>
+        /// Cache time in minutes
+        /// when 0 - force to acquire the value regardless the cache entry exists or not
+        /// when null - default cache time is used
+        /// <seealso cref="CachingOptions.DefaultCacheTime"/> and <seealso cref="CachingOptions.ShortTermCacheTime"/>
+        /// </summary>
+        public int? CacheTime { get; }
+
+        /// <summary>
+        /// force to acquire the value regardless the cache entry exists or not
+        /// </summary>
+        public bool ForceAcquire => CacheTime <= 0;
+
         public CacheKey(string cacheKey, string prefix = null, int? cacheTime = null)
         {
             CacheTime = cacheTime;
@@ -25,9 +35,9 @@
             Prefix = prefix;
         }
 
-        public static implicit operator CacheKey(string cacheKey)
-        {
-            return new CacheKey(cacheKey);
-        }
+        //public static implicit operator CacheKey(string cacheKey)
+        //{
+        //    return new CacheKey(cacheKey);
+        //}
     }
 }

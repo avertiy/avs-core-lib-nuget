@@ -58,6 +58,12 @@ namespace AVS.CoreLib.REST.Responses
 
         public T Data { get; set; }
 
+        public TResponse To<TResponse>()
+            where TResponse : IResponse<T>, new()
+        {
+            return new TResponse { Error = Error, Source = Source, Data = Data };
+        }
+
         public virtual TResponse To<TResponse>(Action<T, TResponse> onSuccess)
             where TResponse : IResponse, new()
         {

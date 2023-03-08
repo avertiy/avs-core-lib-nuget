@@ -9,49 +9,49 @@ namespace AVS.CoreLib.Guards
     public static class Guard
     {
         #region Array guards
-        public static void ArrayIndex<T>(T[] arr, int index, string name = "index")
+        /// <summary>
+        /// check array index, it should be in range [0,arr.Length] 
+        /// </summary>
+        public static void ArrayIndex<T>(T[] arr, int index, string? message = null)
         {
-            if (index < 0)
-                throw new ArgumentOutOfRangeException($"{name} [{index}] must be positive number");
-
-            if (index > arr.Length)
-                throw new ArgumentOutOfRangeException($"{name} [{index}] must not exceed the array length {arr.Length}");
+            if (index < 0 || index >= arr.Length)
+                throw new ArgumentOutOfRangeException(message ?? $"[{index}] should be within range [0; {arr.Length-1}]");
         }
 
-        public static void ArrayLength<T>(T[] arr, int length, string name = "array length")
+        public static void ArrayLength<T>(T[] arr, int length, string? message = null)
         {
             if (arr.Length != length)
-                throw new ArgumentOutOfRangeException($"{name} must be equal {length}");
+                throw new ArgumentOutOfRangeException(message ?? $"{length} element(s) expected");
         }
 
-        public static void ArrayLength<T>(IList<T> arr, int length, string name = "collection length")
+        public static void ArrayLength<T>(IList<T> arr, int length, string? message = null)
         {
             if (arr.Count != length)
-                throw new ArgumentOutOfRangeException($"{name} must be equal {length}");
+                throw new ArgumentOutOfRangeException(message ?? $"{length} element(s) expected");
         }
 
-        public static void ArrayMinLength<T>(T[] arr, int minLength, string name = "array length")
+        public static void ArrayMinLength<T>(T[] arr, int minLength, string? message = null)
         {
             if (arr.Length < minLength)
-                throw new ArgumentOutOfRangeException($"{name} must be at least {minLength}");
+                throw new ArgumentOutOfRangeException(message?? $"at least {minLength} element(s) required");
         }
 
-        public static void ArrayMinLength<T>(IList<T> arr, int minLength, string name = "collection length")
+        public static void ArrayMinLength<T>(IList<T> arr, int minLength, string? message = null)
         {
             if (arr.Count < minLength)
-                throw new ArgumentOutOfRangeException($"{name} must be at least {minLength}");
+                throw new ArgumentOutOfRangeException(message ?? $"At least {minLength} element(s) required");
         }
 
-        public static void ArrayMaxLength<T>(T[] arr, int maxLength, string name = "array length")
+        public static void ArrayMaxLength<T>(T[] arr, int maxLength, string? message = null)
         {
             if (arr.Length > maxLength)
-                throw new ArgumentOutOfRangeException($"{name} must be at least {maxLength}");
+                throw new ArgumentOutOfRangeException(message ?? $"Max {maxLength} element(s) allowed");
         }
 
-        public static void ArrayMaxLength<T>(IList<T> arr, int maxLength, string name = "collection length")
+        public static void ArrayMaxLength<T>(IList<T> arr, int maxLength, string? message = null)
         {
             if (arr.Count > maxLength)
-                throw new ArgumentOutOfRangeException($"{name} must be at least {maxLength}");
+                throw new ArgumentOutOfRangeException(message ?? $"Max {maxLength} element(s) allowed");
         }
 
         #endregion
