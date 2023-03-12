@@ -1,4 +1,6 @@
-﻿namespace AVS.CoreLib.Abstractions.Rest
+﻿using System;
+
+namespace AVS.CoreLib.Abstractions.Rest
 {
     public interface IFilter<T>
     {

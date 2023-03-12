@@ -1,7 +1,6 @@
 ﻿using System;
 using AVS.CoreLib.Text.FormatProviders;
 using AVS.CoreLib.Text.Formatters;
-using AVS.CoreLib.Trading.Extensions;
 
 namespace AVS.CoreLib.Trading.FormatProviders
 {

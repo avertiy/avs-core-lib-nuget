@@ -4,8 +4,65 @@ namespace AVS.CoreLib.Trading.Helpers
 {
     public static class CoinHelper
     {
-        private static Dictionary<string, string> _aliases;
+        public static List<string> StableCoins = new List<string>()
+        {
+            "USDT",
+            "USDC",
+            "BUSD",
+            "DAI",
+            "USDJ",
+            "TUSD"
+        };
 
+        public static List<string> Fiat = new List<string>()
+        {
+            "USD",
+            "UAH",
+            "EUR",
+            "RUB",
+            "GBP",
+            "AUD",
+            "CAD",
+            "SGD",
+            "INR",
+            "IDR",
+            "SNI",
+            "PHP"
+        };
+
+        public static List<string> Top = new List<string>()
+        {
+            "BTC",
+            "ETH",
+            "BNB",
+            "XRP",
+        };
+
+        //public static List<string> BigCap = new List<string>()
+        //{
+        //    "ADA",
+        //    "MATIC",
+        //    "DOT",
+        //    "LTC",
+        //    "TRX",
+        //    "AVAX",
+        //    "LINK",
+        //    "ATOM",
+        //};
+
+        //public static List<string> OverPriced = new List<string>()
+        //{
+        //    "DOGE",
+        //    "SHIB",
+        //    "TON",
+        //    "BCH",
+        //    "FIL",
+        //    "XLM",
+        //    "OKB",
+        //};
+
+
+        private static Dictionary<string, string> _aliases;
         public static Dictionary<string, string> Aliases
         {
             get
@@ -39,29 +96,12 @@ namespace AVS.CoreLib.Trading.Helpers
 
         public static bool IsStableCoin(string isoCode)
         {
-            return Stablecoins.IsStableCoin(isoCode);
+            return StableCoins.Contains(isoCode);
         }
 
         public static bool IsFiatCurrency(string iso)
         {
-            switch (iso)
-            {
-                case "USD":
-                case "EUR":
-                case "UAH":
-                case "RUB":
-                case "GBP":
-                case "AUD":
-                case "CAD":
-                case "SGD":
-                case "INR":
-                case "IDR":
-                case "SNI":
-                case "PHP":
-                    return true;
-                default:
-                    return false;
-            }
+            return Fiat.Contains(iso);
         }
 
         public static void RegisterAlias(string alias, string isoCode)
@@ -120,40 +160,6 @@ namespace AVS.CoreLib.Trading.Helpers
                     return "Ɖ";
                 default:
                     return isoCode;
-            }
-        }
-    }
-
-
-    public static class Stablecoins
-    {
-        public static List<string> GetAll()
-        {
-            var list = new List<string>()
-            {
-                "USDT",
-                "USDC",
-                "BUSD",
-                "DAI",
-                "TUSD",
-                "PAX"
-            };
-            return list;
-        }
-
-        public static bool IsStableCoin(string iso)
-        {
-            switch (iso)
-            {
-                case "USDT":
-                case "USDC":
-                case "BUSD":
-                case "TUSD":
-                case "DAI":
-                case "PAX":
-                    return true;
-                default:
-                    return false;
             }
         }
     }

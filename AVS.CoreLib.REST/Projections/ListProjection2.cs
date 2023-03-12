@@ -10,13 +10,13 @@ using Exception = System.Exception;
 
 namespace AVS.CoreLib.REST.Projections
 {
-	//TO-DO rework ArrayProjection should map to array at the moment there is some confusion.. 
+    //to-do this needs to be simplified may be split on 2 classes direct mapping and indirect cause it's quite complex and confusing
 
     /// <summary>
     /// Array projection helps to map json of array type structure i.e. [...] into <see cref="T"/> projection.
     /// </summary>
     /// <typeparam name="T">projection type</typeparam>
-    /// <typeparam name="TItem">array item type </typeparam>
+    /// <typeparam name="TItem">list item type </typeparam>
     /// <remarks>
     /// Projection could be either an interface or a concrete type, the same for <see cref="TItem"/>.
     /// In case projection is an interface(abstraction) the concrete type is needed
@@ -25,7 +25,8 @@ namespace AVS.CoreLib.REST.Projections
     /// or consider to use proxy (aka object builder) <see cref="UseProxy{TProxy}"/> in case you need to filter items or do other operations over items
     /// proxy might help to eliminate routine and memory consumption for large arrays fi you do filtering or processing items without a need to keep them as an object 
     /// </remarks>
-    public class ArrayProjection<T, TItem> : Projection where T : class
+    public class ListProjection<T, TItem> : Projection 
+        where T : class
     {
         protected Action<T> _postProcessAction;
         protected Action<T> _preProcessAction;
@@ -33,29 +34,29 @@ namespace AVS.CoreLib.REST.Projections
         protected Func<TItem, bool> _where;
         protected IArrayProxy<T, TItem> _proxy;
 
-        public ArrayProjection(string jsonText, string source, string error = null) : base(jsonText, source, error)
+        public ListProjection(string jsonText, string source, string error = null) : base(jsonText, source, error)
         {
         }
 
-        public ArrayProjection<T, TItem> PreProcess(Action<T> action)
+        public ListProjection<T, TItem> PreProcess(Action<T> action)
         {
             _preProcessAction = action;
             return this;
         }
 
-        public ArrayProjection<T, TItem> PostProcess(Action<T> action)
+        public ListProjection<T, TItem> PostProcess(Action<T> action)
         {
             _postProcessAction = action;
             return this;
         }
 
-        public ArrayProjection<T, TItem> ForEach(Action<TItem> action)
+        public ListProjection<T, TItem> ForEach(Action<TItem> action)
         {
             _itemAction = action;
             return this;
         }
 
-        public ArrayProjection<T, TItem> Where(Func<TItem, bool> predicate)
+        public ListProjection<T, TItem> Where(Func<TItem, bool> predicate)
         {
             _where = predicate;
             return this;
@@ -66,7 +67,7 @@ namespace AVS.CoreLib.REST.Projections
         /// <see cref="TProxy"/> comes to the rescue, it has to implement <see cref="IArrayProxy{T,TItem}"/>
         /// <see cref="TProxy"/> will hold array items and then will produce the projection type <see cref="T"/>. 
         /// </summary>
-        public ArrayProjection<T, TItem> UseProxy<TProxy>(Action<TProxy> initialize = null) 
+        public ListProjection<T, TItem> UseProxy<TProxy>(Action<TProxy> initialize = null) 
             where TProxy : class, IArrayProxy<T, TItem>, new()
         {
             var builder = new TProxy();
@@ -126,8 +127,6 @@ namespace AVS.CoreLib.REST.Projections
             return base.MapAsyncInternal(Map);
         }
 
-        //private Response<T> Map
-
         public Response<T> Map()
         {
             if (_proxy == null)
@@ -162,8 +161,6 @@ namespace AVS.CoreLib.REST.Projections
 
             return response;
         }
-
-        
 
         /// <summary>
         /// Map json into Response{T}. T is usually an interface, so we use <see cref="TWrapper"/> as <see cref="T"/> interface implementation,
@@ -313,13 +310,13 @@ namespace AVS.CoreLib.REST.Projections
         }
 
 
-        [Obsolete("use UseProxy method instead")]
-        public ArrayProjection<T, TItem> UseBuilder<TBuilder>(Action<TBuilder> initialize = null) where TBuilder : class, IArrayProxy<T, TItem>, new()
-        {
-            var builder = new TBuilder();
-            initialize?.Invoke(builder);
-            _proxy = builder;
-            return this;
-        }
+        //[Obsolete("use UseProxy method instead")]
+        //public ListProjection<T, TItem> UseBuilder<TBuilder>(Action<TBuilder> initialize = null) where TBuilder : class, IArrayProxy<T, TItem>, new()
+        //{
+        //    var builder = new TBuilder();
+        //    initialize?.Invoke(builder);
+        //    _proxy = builder;
+        //    return this;
+        //}
     }
 }

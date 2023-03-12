@@ -5,6 +5,7 @@ using AVS.CoreLib.Trading.Enums;
 
 namespace AVS.CoreLib.Trading.Helpers
 {
+    [Obsolete("not bad idea but seems needs to be reworked avoid using it")]
     public interface ITradingHelper
     {
         string[] GetAllExchanges();
@@ -16,6 +17,7 @@ namespace AVS.CoreLib.Trading.Helpers
         string[] GetCurrencies(CryptoCategory currencies = CryptoCategory.AllCrypto);
     }
 
+    [Obsolete("not bad idea but seems needs to be reworked avoid using it")]
     public class TradingHelper : ITradingHelper
     {
         public static ITradingHelper Instance = new TradingHelper();

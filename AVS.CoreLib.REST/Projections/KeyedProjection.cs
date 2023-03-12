@@ -11,14 +11,15 @@ namespace AVS.CoreLib.REST.Projections
     /// <summary>
     /// Represents a keyed projection of json object with key/value pairs
     /// </summary>
-    /// <typeparam name="T">The abstract/interface type of keyed collection, for example IBookTicker</typeparam>
-    /// <typeparam name="TItem">The concrete type of item values in the collection, for example ExmoMarketData</typeparam>
+    /// <typeparam name="T">abstraction/interface type of keyed collection, for example IBookTicker</typeparam>
+    /// <typeparam name="TItem">The concrete type of the item (value), for example ExmoMarketData</typeparam>
     public class KeyedProjection<T, TItem> : Projection
     {
         protected Action<T> _postProcessAction;
         protected Action<T> _preProcessAction;
         protected Func<string, string> _preprocessKey;
         protected Action<string, TItem> _itemAction;
+        protected Func<string, bool> _filterRawKey = null;
         protected Func<string, bool> _whereKey = null;
         protected Func<string, TItem, bool> _where = null;
         protected IKeyedCollectionProxy<T, TItem> _proxy;
@@ -56,6 +57,12 @@ namespace AVS.CoreLib.REST.Projections
         public KeyedProjection<T, TItem> ForEach(Action<TItem> action)
         {
             _itemAction = (_, item) => action(item);
+            return this;
+        }
+
+        public KeyedProjection<T, TItem> FilterRawKey(Func<string, bool> predicate)
+        {
+            _filterRawKey = predicate;
             return this;
         }
 
@@ -112,6 +119,9 @@ namespace AVS.CoreLib.REST.Projections
                         foreach (var kp in jObject)
                         {
                             var key = kp.Key;
+
+                            if(_filterRawKey != null && !_filterRawKey.Invoke(key))
+                                continue;
 
                             if (_preprocessKey != null)
                                 key = _preprocessKey.Invoke(kp.Key);
@@ -180,6 +190,8 @@ namespace AVS.CoreLib.REST.Projections
                     foreach (KeyValuePair<string, JToken> kp in jObject)
                     {
                         var key = kp.Key;
+                        if (_filterRawKey != null && !_filterRawKey.Invoke(key))
+                            continue;
 
                         if (_preprocessKey != null)
                             key = _preprocessKey.Invoke(kp.Key);
@@ -227,6 +239,9 @@ namespace AVS.CoreLib.REST.Projections
                     foreach (KeyValuePair<string, JToken> kp in jObject)
                     {
                         var key = kp.Key;
+
+                        if (_filterRawKey != null && !_filterRawKey.Invoke(key))
+                            continue;
 
                         if (_preprocessKey != null)
                             key = _preprocessKey.Invoke(kp.Key);

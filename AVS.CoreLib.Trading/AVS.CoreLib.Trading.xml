@@ -34,6 +34,11 @@
             the Add method implemented explicitly due to model binding mechanics 
             </summary>
         </member>
+        <member name="M:AVS.CoreLib.Trading.ServiceCollectionExtension.AddTradingCore(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Add trading formatters core services
+            </summary>
+        </member>
         <member name="F:AVS.CoreLib.Trading.Enums.BarSize.Small">
             <summary>
             short bar is a bar with a little price difference between Low and High
@@ -77,6 +82,66 @@
         <member name="F:AVS.CoreLib.Trading.Enums.CandleType.ShootingStar">
             <summary>
             ohlc.Low == ohlc.Close and ohlc.High - ohlc.Open > body * 2
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.CoinCap.BigCap">
+            <summary>
+            1+ billion ~ top 50 coins
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.CoinCap.MidCap">
+            <summary>
+            250M+ (rank 50 - 125)
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.CoinCap.SmallCap">
+            <summary>
+            50M - 250M (rank 125-375)
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.CoinCap.MicroCap">
+            <summary>
+            2M - 50M (rank 375-1200)
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.CoinCap.SeedCap">
+            <summary>
+            200k - 2M (rank 1200 - 2000)
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.AssetClass.Top">
+            <summary>
+            Top BTC;ETH;BNB;XRP
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.AssetClass.TopRelated">
+            <summary>
+            Ecosystem around Top asset for example: ETH-> UNI,AAVE, MKR; TRX -> SUN,JST,APENFT
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.AssetClass.SecondTier">
+            <summary>
+            DASH, XMR, EOS, BCH,FIL etc.
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.AssetClass.Other">
+            <summary>
+            3rd tier or other coins with not prominent even weak perspectives like XEM etc.
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.AssetClass.Blud">
+            <summary>
+            DOGE, SHIB, FLOKI etc.
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.AssetClass.DarkHorse">
+            <summary>
+            things like PARA, THETA etc.
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.AssetClass.Shit">
+            <summary>
+            dangerous things that has no or very poor fundamental, and might scam
             </summary>
         </member>
         <member name="F:AVS.CoreLib.Trading.Enums.OrderCondition.BuyIfAskRise">
@@ -233,11 +298,6 @@
             when tolerance is not provided, comparison relies on price meaningful digits
             </summary>
         </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.ServiceCollectionExtension.AddTradingCore(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
-            <summary>
-            Add trading formatters core services
-            </summary>
-        </member>
         <member name="T:AVS.CoreLib.Trading.Extensions.SymbolExtensions">
             <summary>
             supposed to deal with a normalized symbol like BTC_USDT (i.e. currencies are upper case, underscore separator)  
@@ -379,7 +439,7 @@
             <see cref="T:AVS.CoreLib.Trading.FormatProviders.PairStringFormatter"/>
             <see cref="T:AVS.CoreLib.Trading.FormatProviders.OhlcFormatter"/>
             used by X.Format util <seealso cref="T:AVS.CoreLib.Text.FormatProviders.XFormatProvider"/>
-            TradingFormatter is registered by <see cref="M:AVS.CoreLib.Trading.Extensions.ServiceCollectionExtension.AddTradingCore(Microsoft.Extensions.DependencyInjection.IServiceCollection)"/>
+            TradingFormatter is registered by <see cref="M:AVS.CoreLib.Trading.ServiceCollectionExtension.AddTradingCore(Microsoft.Extensions.DependencyInjection.IServiceCollection)"/>
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Trading.Helpers.IRankHelper.GetRank(System.Decimal,System.String)">
@@ -403,6 +463,32 @@
             <summary>
             these are indicative prices for purposes like ranking coins by value relative to other coins
             indicative means for example BTC is ~10 times bigger than ETH or ~100 times bigger than BCH, LTC etc. 
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Symbols.SymbolDescriptor">
+            <summary>
+            descriptors should help to classify coin-zoo 
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Symbols.SymbolDescriptor.Markets">
+            <summary>
+            what exchanges have trading pairs with this symbol possible values
+            - `*` - widely accepted listed on many exchanges e.g. LTC
+            - `Binance+` - listed on Binance and other markets
+            - `Binance!` - listed on Binance but not listed on other big markets usually new listings on Binance 
+            - `Gate` - listed on gate.io i.e. not listed on Binance
+            - `DEX` - listed on DEX only
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Symbols.SymbolDescriptor.Blud(System.String,System.Int32,System.String,AVS.CoreLib.Trading.Enums.CoinType)">
+            <summary>
+            Блудняк like DOGE, FLOKI etc.
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Symbols.SymbolDescriptorService.GetDescriptors(AVS.CoreLib.Abstractions.IQuery{AVS.CoreLib.Trading.Symbols.SymbolDescriptor})">
+            <summary>
+            Get descriptors filtered by <see cref="T:AVS.CoreLib.Abstractions.IQuery`1"/>
+            you can use <see cref="T:AVS.CoreLib.Trading.Symbols.SymbolDescriptorsQuery"/> or your own implementation
             </summary>
         </member>
         <member name="T:AVS.CoreLib.Trading.Types.CurrencyPair">

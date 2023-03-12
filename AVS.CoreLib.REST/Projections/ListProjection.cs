@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using AVS.CoreLib.REST.Json.Newtonsoft;
 using AVS.CoreLib.REST.Responses;
 using Newtonsoft.Json.Linq;
@@ -8,9 +7,13 @@ using Newtonsoft.Json.Linq;
 namespace AVS.CoreLib.REST.Projections
 {
     /// <summary>
-    /// Map json of array type structure i.e. [...] into <see cref="List{TItem}"/>.
+    /// Map json of array type structure into <see cref="List{TItem}"/>.
     /// </summary>
-    /// <typeparam name="TItem"></typeparam>
+    /// <typeparam name="TItem">could be either a concrete type or an interface </typeparam>
+    /// <example>
+    /// Response{List{BinanceMarketData}} response = jsonResult.AsList{BinanceMarketData}().Map();
+    /// Response{List{IMarketData}} response = jsonResult.AsList{IMarketData}().Map{BinanceMarketData}(); 
+    /// </example>
     public class ListProjection<TItem> : Projection where TItem : class
     {
         private Action<List<TItem>> _postProcessAction;
@@ -143,31 +146,31 @@ namespace AVS.CoreLib.REST.Projections
         }
     }
 
-    /// <summary>
-    /// this type is just a synonym of <see cref="ArrayProjection{T,TItem}"/>
-    /// </summary>
-    public class ListProjection<T, TItem> : ArrayProjection<T, TItem> where T : class
-    {
-        [DebuggerStepThrough]
-        public ListProjection(string jsonText, string source, string error = null) : base(jsonText, source, error)
-        {
-        }
+    ///// <summary>
+    ///// this type is just a synonym of <see cref="ArrayProjection{T,TItem}"/>
+    ///// </summary>
+    //public class ListProjection<T, TItem> : ArrayProjection<T, TItem> where T : class
+    //{
+    //    [DebuggerStepThrough]
+    //    public ListProjection(string jsonText, string source, string error = null) : base(jsonText, source, error)
+    //    {
+    //    }
 
-        [Obsolete("Seems MapResult could be avoided, so it will be removed")]
-        public virtual MapResult MapResult<TProjection>() where TProjection : TItem, new()
-        {
-            var result = CreateMapResult<List<TItem>>();
-            if (result.Success)
-            {
-                LoadToken<JArray, TProjection, TItem>(jArray =>
-                {
-                    _preProcessAction?.Invoke(result.Data as T);
-                    result.Data = JsonHelper.ParseList<TItem>(jArray, typeof(TProjection), _itemAction, _where);
-                    _postProcessAction?.Invoke(result.Data as T);
-                });
-            }
+    //    //[Obsolete("Seems MapResult could be avoided, so it will be removed")]
+    //    //public virtual MapResult MapResult<TProjection>() where TProjection : TItem, new()
+    //    //{
+    //    //    var result = CreateMapResult<List<TItem>>();
+    //    //    if (result.Success)
+    //    //    {
+    //    //        LoadToken<JArray, TProjection, TItem>(jArray =>
+    //    //        {
+    //    //            _preProcessAction?.Invoke(result.Data as T);
+    //    //            result.Data = JsonHelper.ParseList<TItem>(jArray, typeof(TProjection), _itemAction, _where);
+    //    //            _postProcessAction?.Invoke(result.Data as T);
+    //    //        });
+    //    //    }
 
-            return result;
-        }
-    }
+    //    //    return result;
+    //    //}
+    //}
 }
