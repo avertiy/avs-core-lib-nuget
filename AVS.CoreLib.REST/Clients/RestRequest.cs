@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using AVS.CoreLib.Abstractions.Rest;
-using AVS.CoreLib.Extensions;
-using AVS.CoreLib.Extensions.Web;
-using AVS.CoreLib.REST.Helpers;
 using AVS.CoreLib.Utilities;
 
 namespace AVS.CoreLib.REST.Clients
@@ -20,14 +17,6 @@ namespace AVS.CoreLib.REST.Clients
         {
             var authType = AuthType == AuthType.ApiKey ? "SIGNED" : "";
             return $"{authType} {Method} {BaseUrl}{Path}{QueryString.From(Data)}";
-        }
-
-        public string GetFullUrl(bool orderParameters = true)
-        {
-            var url = BaseUrl + Path;
-            if (Method == "GET" && Data != null && Data.Any())
-                url = UrlHelper.Combine(url, Data.ToHttpQueryString(orderParameters));
-            return url;
         }
     }
 }

@@ -1,22 +1,31 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AVS.CoreLib.Extensions.Collections;
+using AVS.CoreLib.Extensions.Stringify;
 
 namespace AVS.CoreLib.Extensions.Tasks;
 
 /// <summary>
 /// parallel runner helps to run multiple tasks (jobs) and combining results into List or Dictionary
 /// </summary>
-public class ParallelJobs<T,TResult> where T: notnull
+public sealed class ParallelJobs<T,TResult> : IEnumerable<T>
+    where T: notnull
 {
     /// <summary>
     /// delay (timeout) in milliseconds
     /// </summary>
-    private int _delay;
+    public int Timeout { get; private set; }
     private readonly IEnumerable<T> _enumerable;
 
     private readonly Func<T, Task<TResult>> _job;
+
+    private Func<TResult, string?>? _checkErrorFn = null;
+    public Dictionary<T, string>? Errors { get; private set; } = null;
+    public bool HasErrors => Errors != null && Errors.Any();
 
     public ParallelJobs(IEnumerable<T> enumerable, Func<T, Task<TResult>> job)
     {
@@ -43,15 +52,20 @@ public class ParallelJobs<T,TResult> where T: notnull
         await Task.WhenAll(tasks.Values).ConfigureAwait(false);
 
         var list = new List<TResult>();
+
         foreach (var kp in tasks)
         {
             if (ct.IsCancellationRequested)
                 break;
 
             var task = kp.Value;
+            var result = task.Result;
 
-            if (task.Result != null)
-                list.Add(task.Result);
+            if (HasError(kp.Key, result))
+                continue;
+
+            if (result != null)
+                list.Add(result);
         }
         return list;
     }
@@ -75,12 +89,17 @@ public class ParallelJobs<T,TResult> where T: notnull
         await Task.WhenAll(tasks.Values).ConfigureAwait(false);
 
         var dict = new Dictionary<T, TResult>();
+
         foreach (var kp in tasks)
         {
             if (ct.IsCancellationRequested)
                 break;
 
             var task = kp.Value;
+
+            if (HasError(kp.Key, task.Result))
+                continue;
+
             dict.Add(kp.Key, task.Result);
         }
         return dict;
@@ -119,6 +138,10 @@ public class ParallelJobs<T,TResult> where T: notnull
 
             var task = kp.Value;
             var result = task.Result;
+
+            if (HasError(kp.Key, result))
+                continue;
+
             var items = selector(kp.Key, result);
             
             if(items == null)
@@ -163,6 +186,10 @@ public class ParallelJobs<T,TResult> where T: notnull
 
             var task = kp.Value;
             var result = task.Result;
+
+            if (HasError(kp.Key, result))
+                continue;
+
             var items = selector(result);
             
             if (items == null)
@@ -173,30 +200,92 @@ public class ParallelJobs<T,TResult> where T: notnull
 
         return list;
     }
-    
+
+    private bool HasError(T key, TResult result)
+    {
+        if (_checkErrorFn == null)
+            return false;
+
+        var err = _checkErrorFn(result);
+        if (err == null)
+            return false;
+
+        Errors ??= new Dictionary<T, string>();
+        Errors.Add(key, err);
+        return true;
+    }
+
     public ParallelJobs<T, TResult> WithDelay(int delayInMilliseconds)
     {
-        _delay = delayInMilliseconds;
+        Timeout = delayInMilliseconds;
         return this;
+    }
+
+    /// <summary>
+    /// you can check whether <see cref="TResult"/> contains error, if any the result is ignored
+    /// and the error is recorded separately <see cref="Errors"/> 
+    /// </summary>
+    public ParallelJobs<T, TResult> WithErrorCheck(Func<TResult, string?> checkFn)
+    {
+        _checkErrorFn = checkFn;
+        return this;
+    }
+
+    public IEnumerator<T> GetEnumerator()
+    {
+        return _enumerable.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+
+    public Task<TResult> Execute(T arg)
+    {
+        return _job(arg);
     }
 
     private void Delay()
     {
-        if(_delay > 0)
-            Thread.Sleep(_delay);
+        if (Timeout > 0)
+            Thread.Sleep(Timeout);
     }
 
+    /// <summary>
+    /// return <see cref="Errors"/> joined into single string
+    /// if <see cref="distinct"/> and all errors are the same it return comma separated keys and error message
+    /// otherwise <see cref="Errors"/> are stringified with <seealso cref="StringifyExtensions"/>
+    /// </summary>
+    public string? GetErrorsCombined(bool distinct = true)
+    {
+        if (Errors == null || Errors.Count == 0)
+            return null;
 
-    //public TaskSet<T, TResult> CreateTaskSet()
-    //{
-    //    return TaskSet.Create(_enumerable, _job);
-    //}
+        if (!distinct) 
+            return Errors.Stringify();
 
+        var distinctErrors = Errors.Values.Distinct().ToArray();
+
+        return distinctErrors.Length == 1 ? 
+            $"{string.Join(",", Errors.Keys)}: {distinctErrors[0]}" :
+            Errors.Stringify();
+    }
 }
-
 
 public static class ParallelExtensions
 {
+    public static TResult Pipe<T, TResult>(this T value, Func<T, TResult> transform)
+    {
+        return transform(value);
+    }
+
+    public static T Let<T>(this T value, Action<T> action)
+    {
+        action(value);
+        return value;
+    }
+
     /// <summary>
     /// returns <see cref="ParallelJobs{T,TResult}"/> wrapper
     /// </summary>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace AVS.CoreLib.Extensions
 {
@@ -38,6 +39,25 @@ namespace AVS.CoreLib.Extensions
         public static DateTime StartOfMonth(this DateTime date)
         {
             return new DateTime(date.Year, date.Month, 1);
+        }
+
+        public static DateTime StartOfWeek(this DateTime date)
+        {
+            var week = GetWeekOfYear(date);
+            week--;
+            var prevWeek = new DateTime(date.Year, 1, 1);
+            return week == 0 ? prevWeek : prevWeek.AddDays(week*7);
+        }
+
+        public static int GetWeekOfYear(this DateTime date, DayOfWeek startOfWeek = DayOfWeek.Monday)
+        {
+            return CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(date, CalendarWeekRule.FirstDay, startOfWeek);
+        }
+
+        public static DateTime StartOfQuarter(this DateTime date)
+        {
+            var q = date.Month / 3;
+            return new DateTime(date.Year, q * 3,  1);
         }
 
         public static bool WithinRange(this DateTime value, DateTime? from, DateTime? to)

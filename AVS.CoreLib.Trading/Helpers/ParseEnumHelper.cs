@@ -167,7 +167,8 @@ namespace AVS.CoreLib.Trading.Helpers
 
         public static OrderState ParseOrderState(string value)
         {
-            switch (value.ToUpper()[0])
+            var str = value.ToUpper();
+            switch (str[0])
             {
                 case 'N':
                     return OrderState.New;
@@ -176,7 +177,14 @@ namespace AVS.CoreLib.Trading.Helpers
                 case 'F':
                     return OrderState.Filled;
                 default:
+                {
+                    if(str == "CLOSED")
+                        return OrderState.Filled;
+                    if (str is "C" or "CANCELLED")
+                        return OrderState.Canceled;
+
                     throw new NotSupportedException($"Unknown {nameof(OrderState)} '{value}'");
+                }
             }
         }
     }

@@ -2,9 +2,16 @@
 
 namespace AVS.CoreLib.Trading.Helpers
 {
-    public static class SymbolHelper
+    /// <summary>
+    /// helps to generate trading pairs (aka symbols) combining quote and base currencies
+    /// </summary>
+    public static class TradingPairHelper
     {
-        public static string[] Generate(string[] baseCurrencies, params string[] quoteCurrencies)
+        /// <summary>
+        /// combines all quote assets with all base assets
+        /// e.g. ["USDT","BUSD"] + ["BTC","XRP"] => ["BTC_USDT","BTC_BUSD", "XRP_USDT","XRP_BUSD"]
+        /// </summary>
+        public static string[] CombineAll(string[] quoteCurrencies, string[] baseCurrencies)
         {
             var symbols = new List<string>();
             foreach (var baseCurrency in baseCurrencies)
@@ -19,7 +26,11 @@ namespace AVS.CoreLib.Trading.Helpers
             return symbols.ToArray();
         }
 
-        public static string[] Generate(string baseCurrency, params string[] quoteCurrencies)
+        /// <summary>
+        /// combines base asset with quote asset(s)
+        /// e.g. "BTC" + ["USDT","BUSD"] => ["BTC_USDT","BTC_BUSD"]
+        /// </summary>
+        public static string[] CombineWithQuoteAssets(string baseCurrency, params string[] quoteCurrencies)
         {
             var symbols = new List<string>();
             foreach (var quoteCur in quoteCurrencies)
@@ -31,13 +42,18 @@ namespace AVS.CoreLib.Trading.Helpers
             return symbols.ToArray();
         }
 
-        public static string[] GenerateSymbols(string quoteCurrency, params string[] baseCurrencies)
+        /// <summary>
+        /// combine <see cref="quoteCurrency"/> with <see cref="baseCurrencies"/>
+        /// e.g. USDT + [BTC,ETH,XRP] => [BTC_USDT, ETH_USDT, XRP_USDT]
+        /// </summary>
+        public static string[] Combine(string quoteCurrency, params string[] baseCurrencies)
         {
             var symbols = new List<string>();
             foreach (var baseCurr in baseCurrencies)
             {
                 if (baseCurr == quoteCurrency)
                     continue;
+
                 symbols.Add(baseCurr + "_" + quoteCurrency);
             }
             return symbols.ToArray();

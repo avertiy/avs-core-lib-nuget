@@ -9,6 +9,5 @@ namespace AVS.CoreLib.Abstractions.Rest
         public string BaseUrl { get; set; }
         public string Path { get; set; }
         public Dictionary<string, object> Data { get; set; }
-        string GetFullUrl(bool orderParameters = true);
     }
 }

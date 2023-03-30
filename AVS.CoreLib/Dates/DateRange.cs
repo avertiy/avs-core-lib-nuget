@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using AVS.CoreLib.Extensions;
 
 namespace AVS.CoreLib.Dates
 {
@@ -152,63 +153,63 @@ namespace AVS.CoreLib.Dates
             return From <= range.From && To >= range.To;
         }
 
-        #region statis methods
-        /// <summary>
-        /// returns all supported literals parseable into date range
-        /// </summary>
-        public static string[] GetLiterals()
-        {
-            return new[]
-            {
-                "today",
-                "yesterday",
-                "day",
-                "week",
-                "Week",
-                "month",
-                "quarter",
-                "year",
-                "1m",
-                "5m",
-                "15m",
-                "30m",
-                "60m",
-                "1h",
-                "2h",
-                "4h",
-                "12h",
-                "24h",
-                "48h",
-                "72h",
-                "1d",
-                "2d",
-                "3d",
-                "4d",
-                "7d",
-                "1w",
-                "2w",
-                "3w",
-                "4w",
-                "1M",
-                "2M",
-                "3M",
-                "4M",
-                "5M",
-                "6M",
-                "9M",
-                "12M",
-                "36M",
-                "1Q",
-                "2Q",
-                "3Q",
-                "4Q",
-                "1Y",
-                "2Y",
-                "3Y",
-                "5Y",
-                "10Y"
-            };
-        }
+        #region static methods
+        ///// <summary>
+        ///// returns all supported literals parseable into date range
+        ///// </summary>
+        //public static string[] GetLiterals()
+        //{
+        //    return new[]
+        //    {
+        //        "today",
+        //        "yesterday",
+        //        "day",
+        //        "week",
+        //        "Week",
+        //        "month",
+        //        "quarter",
+        //        "year",
+        //        "1m",
+        //        "5m",
+        //        "15m",
+        //        "30m",
+        //        "60m",
+        //        "1h",
+        //        "2h",
+        //        "4h",
+        //        "12h",
+        //        "24h",
+        //        "48h",
+        //        "72h",
+        //        "1d",
+        //        "2d",
+        //        "3d",
+        //        "4d",
+        //        "7d",
+        //        "1w",
+        //        "2w",
+        //        "3w",
+        //        "4w",
+        //        "1M",
+        //        "2M",
+        //        "3M",
+        //        "4M",
+        //        "5M",
+        //        "6M",
+        //        "9M",
+        //        "12M",
+        //        "36M",
+        //        "1Q",
+        //        "2Q",
+        //        "3Q",
+        //        "4Q",
+        //        "1Y",
+        //        "2Y",
+        //        "3Y",
+        //        "5Y",
+        //        "10Y"
+        //    };
+        //}
 
         /// <summary>
         /// parse date range almost from any possible literal:
@@ -251,6 +252,9 @@ namespace AVS.CoreLib.Dates
             {
                 switch (strToParse.ToLower())
                 {
+                    case "recent":
+                        range = new DateRange(DateTime.Today.AddDays(-7), DateTime.Now);
+                        return true;
                     case "today":
                         range = new DateRange(DateTime.Today, DateTime.Now);
                         return true;
@@ -260,21 +264,35 @@ namespace AVS.CoreLib.Dates
                     case "day":
                         range = new DateRange(DateTime.Today.AddDays(-1), toDate);
                         return true;
+                    case "past-week":
+                        range = new DateRange(DateTime.Today.StartOfWeek(), DateTime.Now);
+                        return true;
+                    case "prev-week":
+                        range = DateRange.Create(DateTime.Today.StartOfWeek().AddDays(-7), 7);
+                        return true;
                     case "week":
                         range = new DateRange(DateTime.Today.AddDays(-7), toDate);
                         return true;
                     case "month":
                         range = new DateRange(DateTime.Today.AddMonths(-1), toDate);
                         return true;
+                    case "past-month":
+                        range = new DateRange(DateTime.Today.StartOfMonth().AddMonths(-1), DateTime.Today);
+                        return true;
+                    case "prev-month":
+                        range = DateRange.Create(DateTime.Today.StartOfMonth().AddMonths(-1), 30);
+                        return true;
                     case "quarter":
                         range = new DateRange(DateTime.Today.AddMonths(-3), toDate);
                         return true;
-                    case "half year":
                     case "half-year":
                         range = new DateRange(DateTime.Today.AddMonths(-6), toDate);
                         return true;
                     case "year":
                         range = new DateRange(DateTime.Today.AddMonths(-12), toDate);
+                        return true;
+                    case "prev-year":
+                        range = Create(DateTime.Today.StartOfYear().AddYears(-1), 365);
                         return true;
                     default:
                         {
@@ -358,6 +376,11 @@ namespace AVS.CoreLib.Dates
         {
             var now = useUtcTime ? DateTime.UtcNow : DateTime.Now;
             return new DateRange(from, now);
+        }
+
+        public static DateRange Create(DateTime from, int days)
+        {
+            return new DateRange(from, from.AddDays(days));
         }
 
         public static DateRange FromToday(DateTime from)

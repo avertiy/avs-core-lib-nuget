@@ -90,7 +90,7 @@ public class ColorOutputBuilder : OutputBuilder
         if (Error == null)
             return;
 
-        var error = Format(LogPart.Error, Error.ToString());
+        var error = Format(LogPart.Error, Error.ToString(ReductionFormat.None));
         Output.AppendLine(error);
     }
 

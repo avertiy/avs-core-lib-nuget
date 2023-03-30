@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 using AVS.CoreLib.Abstractions.Rest;
-using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Collections;
 using AVS.CoreLib.Extensions.Web;
 using AVS.CoreLib.REST.Extensions;
@@ -249,24 +247,6 @@ namespace AVS.CoreLib.REST.Clients
                     break;
                 }
             }
-            //switch (input.AuthType)
-            //{
-            //    case AuthType.ApiKey:
-            //    {
-            //        if (Authenticator == null)
-            //            throw new Exception("Authenticator must be initialized");
-
-
-            //        var signature = Authenticator.Sign(input.Data.ToHttpQueryString(), out var bytes);
-            //        httpRequest.Headers["Key"] = Authenticator.PublicKey;
-            //        httpRequest.Headers["Sign"] = signature.ToBase64String();
-            //        //work around for stupid .net protocol violation check
-            //        httpRequest.Method = "POST";
-            //        httpRequest.WriteBytes(bytes);
-            //        httpRequest.Method = input.Method;
-            //        break;
-            //    }
-           
         }
 
         protected static HttpWebRequest CreateHttpWebRequest(IRequest input, bool orderQueryStringParameters, IWebProxy proxy,  string contentType)

@@ -7,11 +7,12 @@ namespace AVS.CoreLib.Extensions.Collections
     public static class ByteArrayExtensions
     {
         /// <summary>
-        /// Since .NET 5.0 available Convert.ToHexString(hash) which should be faster
+        /// Since .NET 5.0 available Convert.ToHexString(hash) which should be faster 
         /// </summary>
+        /// <remarks>the same as BitConverter.ToString(signatureHash).Replace("-", "").ToLowerInvariant()</remarks>
         public static string ToHexString(this byte[] bytes)
         {
-            //BitConverter.ToString(bytes).Replace("-", "");
+	        //BitConverter.ToString(bytes).Replace("-", "");
             var sb = new StringBuilder(bytes.Length*2);
             for (var i = 0; i < bytes.Length; i++)
             {

@@ -23,7 +23,11 @@ namespace AVS.CoreLib.Extensions.Reflection
                 return type.Name;
 
             var args = type.GetGenericArguments();
-            var sb = new StringBuilder(type.Name);
+            var name = type.Name;
+            if (name.Contains('`'))
+                name = name.Substring(0, name.IndexOf('`'));
+
+            var sb = new StringBuilder(name);
             sb.Append("<");
             foreach (var typeArgument in args)
             {

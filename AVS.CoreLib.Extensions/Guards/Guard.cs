@@ -126,10 +126,10 @@ namespace AVS.CoreLib.Guards
                 throw new ArgumentNullException($"{name} must be not null or empty");
         }
 
-        public static void AgainstNull(object? param, string name = "argument")
+        public static void AgainstNull(object? arg, string? message = null)
         {
-            if (param == null)
-                throw new ArgumentNullException($"{name} must be not null");
+            if (arg == null)
+                throw new ArgumentNullException(message ?? $"must be not null");
         }
 
         public static void AgainstNull(object? param, bool allowNull, string name = "argument")

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions.Responses;
+using AVS.CoreLib.Extensions.Tasks;
 using AVS.CoreLib.REST.Responses;
 using AVS.CoreLib.REST.Utilities;
 
@@ -98,5 +99,50 @@ namespace AVS.CoreLib.REST.Extensions
 
             return results;
         }
+
+        //public static async Task<List<TItem>> FetchItemsAsync<T, TResponse, TItem>(this ParallelJobs<T, TResponse> jobs, 
+        //    Func<T, TResponse, IEnumerable<TItem>> selector, CancellationToken ct = default)
+        //where TResponse : IResponse
+        //{
+        //    var tasks = new Dictionary<T, Task<TResponse>>();
+        //    foreach (var key in jobs)
+        //    {
+        //        if (ct.IsCancellationRequested)
+        //            break;
+
+        //        var task = jobs.Execute(key);
+        //        tasks.Add(key, task);
+        //        if (jobs.Timeout > 0)
+        //            Thread.Sleep(jobs.Timeout);
+        //    }
+
+        //    await Task.WhenAll(tasks.Values).ConfigureAwait(false);
+
+        //    var list = new List<TItem>();
+        //    var errors = new Dictionary<T, string>();
+        //    foreach (var kp in tasks)
+        //    {
+        //        if (ct.IsCancellationRequested)
+        //            break;
+
+        //        var task = kp.Value;
+        //        var result = task.Result;
+
+        //        if (result.Success)
+        //        {
+        //            var items = selector(kp.Key, result);
+        //            if (items == null)
+        //                continue;
+
+        //            list.AddRange(items);
+        //        }
+        //        else
+        //        {
+        //            errors.Add(kp.Key, result.Error);
+        //        }
+        //    }
+
+        //    return list;
+        //}
     }
 }

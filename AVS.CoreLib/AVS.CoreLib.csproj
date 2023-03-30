@@ -46,7 +46,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AVS.CoreLib.Extensions" Version="2.1.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
@@ -55,6 +54,10 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
     <PackageReference Include="System.Text.Json" Version="6.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AVS.CoreLib.Extensions\AVS.CoreLib.Extensions.csproj" />
   </ItemGroup>
 
 </Project>

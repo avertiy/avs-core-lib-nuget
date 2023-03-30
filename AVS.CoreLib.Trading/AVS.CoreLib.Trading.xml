@@ -34,6 +34,13 @@
             the Add method implemented explicitly due to model binding mechanics 
             </summary>
         </member>
+        <member name="T:AVS.CoreLib.Trading.Configuration.Markets.Preset">
+            <summary>
+            Define base asset(s) list <see cref="T:AVS.CoreLib.Trading.Configuration.Markets.MarketConfig.Combination"/> that will be combined with quote asset(s) to make trading pairs list
+            <see cref="M:AVS.CoreLib.Trading.Configuration.Markets.MarketConfigExtensions.GetTradingPairs(AVS.CoreLib.Trading.Configuration.Markets.MarketConfig,AVS.CoreLib.Trading.Configuration.Markets.Preset)"/>
+            Preset helps to reduce the number of available instruments and focus on a certain list of symbols
+            </summary>
+        </member>
         <member name="M:AVS.CoreLib.Trading.ServiceCollectionExtension.AddTradingCore(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             Add trading formatters core services
@@ -442,11 +449,83 @@
             TradingFormatter is registered by <see cref="M:AVS.CoreLib.Trading.ServiceCollectionExtension.AddTradingCore(Microsoft.Extensions.DependencyInjection.IServiceCollection)"/>
             </summary>
         </member>
+        <member name="F:AVS.CoreLib.Trading.Helpers.CoinHelper.Top">
+            <summary>
+            BTC,ETH,BNB,XRP,TRX - i.e. symbols that might serve as quote asset in trading pairs
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Helpers.CoinLiteral">
+            <summary>
+            Literals for wide quote filter <see cref="M:AVS.CoreLib.Trading.Helpers.SymbolFilterExtensions.Filter(System.String[],System.String)"/>
+            e.g. USDT* means match either USDT/USDC/BUSD etc. 
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Helpers.CoinLiteral.ANY">
+            <summary>
+            * means any symbol is ok 
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Helpers.CoinLiteral.ANY_USD_LIKE">
+            <summary>
+            USD* means USD + USDT,USDC,BUSD,DAI etc. 
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Helpers.CoinLiteral.ANY_TOP">
+            <summary>
+            BTC* means BTC + ETH,BNB,TRX etc. i.e. any TOP symbol that might serve as a quote symbol in trading pairs
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Helpers.CoinLiteral.ANY_STABLE">
+            <summary>
+            USDT* means USDT + USDC,BUSD,USDJ,USDD,TUSD,VAI,DAI etc. i.e. any stable or pegged coin
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Helpers.CoinLiteral.ANY_FIAT">
+            <summary>
+            FIAT means USD,EUR,UAH etc. <see cref="T:AVS.CoreLib.Trading.Enums.Fiat"/>
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Helpers.SymbolFilterExtensions.Filter(System.String[],System.String)">
+            <summary>
+            filter symbols, the filter might be a concrete symbol(s) comma-separated or quote asset (e.g. BTC, USDT etc.) or wide quote assets <see cref="T:AVS.CoreLib.Trading.Helpers.CoinLiteral"/>
+            </summary>
+            <param name="symbols">symbols to filter</param>
+            <param name="filter">
+             - `XXX` - a certain asset e.g. BTC, UAH etc.
+             - `*` or `null` - return all <see cref="!:symbols"/>
+             - `USD*` - symbols with quote asset match either USD, USDT, BUSD, DAI etc.
+             - `BTC*`  - symbols with quote asset match <see cref="F:AVS.CoreLib.Trading.Helpers.CoinHelper.Top"/> currencies
+             - `FIAT`  - symbols with quote asset match <see cref="F:AVS.CoreLib.Trading.Helpers.CoinHelper.Fiat"/> currencies
+            </param>
+        </member>
         <member name="M:AVS.CoreLib.Trading.Helpers.IRankHelper.GetRank(System.Decimal,System.String)">
             <summary>
             estimates trade total rank
             was it a micro trade or a large one
             the greater rank the larger the trade was
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Helpers.TradingPairHelper">
+            <summary>
+            helps to generate trading pairs (aka symbols) combining quote and base currencies
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Helpers.TradingPairHelper.CombineAll(System.String[],System.String[])">
+            <summary>
+            combines all quote assets with all base assets
+            e.g. ["USDT","BUSD"] + ["BTC","XRP"] => ["BTC_USDT","BTC_BUSD", "XRP_USDT","XRP_BUSD"]
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Helpers.TradingPairHelper.CombineWithQuoteAssets(System.String,System.String[])">
+            <summary>
+            combines base asset with quote asset(s)
+            e.g. "BTC" + ["USDT","BUSD"] => ["BTC_USDT","BTC_BUSD"]
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Helpers.TradingPairHelper.Combine(System.String,System.String[])">
+            <summary>
+            combine <see cref="!:quoteCurrency"/> with <see cref="!:baseCurrencies"/>
+            e.g. USDT + [BTC,ETH,XRP] => [BTC_USDT, ETH_USDT, XRP_USDT]
             </summary>
         </member>
         <member name="P:AVS.CoreLib.Trading.Models.Balance.BalanceBook.Count">

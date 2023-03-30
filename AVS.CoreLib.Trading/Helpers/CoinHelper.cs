@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace AVS.CoreLib.Trading.Helpers
 {
@@ -9,9 +10,11 @@ namespace AVS.CoreLib.Trading.Helpers
             "USDT",
             "USDC",
             "BUSD",
-            "DAI",
             "USDJ",
-            "TUSD"
+            "TUSD",
+            "USDD",
+            "DAI",
+            "VAI"
         };
 
         public static List<string> Fiat = new List<string>()
@@ -30,37 +33,17 @@ namespace AVS.CoreLib.Trading.Helpers
             "PHP"
         };
 
+        /// <summary>
+        /// BTC,ETH,BNB,XRP,TRX - i.e. symbols that might serve as quote asset in trading pairs
+        /// </summary>
         public static List<string> Top = new List<string>()
         {
             "BTC",
             "ETH",
             "BNB",
             "XRP",
+            "TRX"
         };
-
-        //public static List<string> BigCap = new List<string>()
-        //{
-        //    "ADA",
-        //    "MATIC",
-        //    "DOT",
-        //    "LTC",
-        //    "TRX",
-        //    "AVAX",
-        //    "LINK",
-        //    "ATOM",
-        //};
-
-        //public static List<string> OverPriced = new List<string>()
-        //{
-        //    "DOGE",
-        //    "SHIB",
-        //    "TON",
-        //    "BCH",
-        //    "FIL",
-        //    "XLM",
-        //    "OKB",
-        //};
-
 
         private static Dictionary<string, string> _aliases;
         public static Dictionary<string, string> Aliases
@@ -107,6 +90,11 @@ namespace AVS.CoreLib.Trading.Helpers
         public static void RegisterAlias(string alias, string isoCode)
         {
             Aliases.Add(alias, isoCode);
+        }
+
+        public static bool MatchStablecoin(string symbol)
+        {
+            return StableCoins.Any(symbol.EndsWith);
         }
 
         public static bool MatchAlias(string pair, out string correctPair)

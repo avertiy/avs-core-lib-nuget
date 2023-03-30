@@ -1,6 +1,4 @@
 ﻿using System;
-using AVS.CoreLib.Extensions;
-using AVS.CoreLib.Extensions.Reflection;
 
 namespace AVS.CoreLib.REST.Projections
 {
@@ -15,29 +13,17 @@ namespace AVS.CoreLib.REST.Projections
         {
         }
 
-        public MapException(string message, Exception innerException) : base(message, innerException)
+        public MapException(string message, Exception error) : base(message, error)
         {
         }
 
         public override string ToString()
         {
-            return $"{base.ToString()}{Environment.NewLine}{Environment.NewLine}JsonText:{Environment.NewLine}{JsonText}";
-        }
-    }
+            var s = base.ToString();
+            if (string.IsNullOrEmpty(JsonText))
+                return s;
 
-    public class MapJsonException<T> : MapException
-    {
-        public MapJsonException(Exception innerException)
-            : base($"Map<{typeof(T).ToStringNotation()}> failed", innerException)
-        {
-        }
-    }
-
-    public class MapJsonException<T1, T2> : Exception
-    {
-        public MapJsonException(Exception innerException)
-            : base($"Map<{typeof(T1).ToStringNotation()},{typeof(T2).ToStringNotation()}> failed", innerException)
-        {
+            return $"{base.ToString()}{Environment.NewLine}{Environment.NewLine}JsonText: {JsonText}";
         }
     }
 }

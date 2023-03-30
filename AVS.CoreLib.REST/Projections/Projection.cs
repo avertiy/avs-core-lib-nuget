@@ -3,6 +3,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AVS.CoreLib.Extensions;
+using AVS.CoreLib.Extensions.Reflection;
 using AVS.CoreLib.REST.Extensions;
 using AVS.CoreLib.REST.Responses;
 using Newtonsoft.Json;
@@ -159,7 +160,8 @@ namespace AVS.CoreLib.REST.Projections
             }
             catch (Exception ex)
             {
-                throw new MapException("LoadToken failed", ex) {JsonText = JsonText };
+                throw;
+                //throw new MapException("LoadToken failed", ex) {JsonText = JsonText, Source = Source };
             }
         }
 
@@ -172,7 +174,8 @@ namespace AVS.CoreLib.REST.Projections
             }
             catch (Exception ex)
             {
-                throw new MapJsonException<T, TItem>(ex);
+                throw;
+                //throw new MapJsonException<T, TItem>(ex) { JsonText = JsonText, Source = Source };
             }
         }
 
@@ -185,7 +188,7 @@ namespace AVS.CoreLib.REST.Projections
             }
             catch (Exception ex)
             {
-                throw new MapJsonException<TProjection>(ex);
+                throw;
             }
         }
 
@@ -205,7 +208,7 @@ namespace AVS.CoreLib.REST.Projections
             catch (MapException) { throw; }
             catch (Exception ex)
             {
-                throw new MapException("Projection map failed", ex) { JsonText = JsonText };
+                throw new MapException($"{this.GetType().ToStringNotation()}::Map json failed.", ex) { JsonText = JsonText, Source = Source };
             }
         }
 
