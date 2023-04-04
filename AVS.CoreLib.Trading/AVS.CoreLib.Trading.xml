@@ -485,6 +485,22 @@
             FIAT means USD,EUR,UAH etc. <see cref="T:AVS.CoreLib.Trading.Enums.Fiat"/>
             </summary>
         </member>
+        <member name="M:AVS.CoreLib.Trading.Helpers.SymbolFilterExtensions.Match(System.String,System.String)">
+            <summary>
+            returns true if filter is <see cref="T:AVS.CoreLib.Trading.Helpers.CoinLiteral"/> that matches the symbol
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Helpers.SymbolFilterExtensions.Match(System.String[],System.String)">
+            <summary>
+            match symbol with symbols, if any match found returns true, otherwise false.
+            support
+            (i) normal symbols e.g. [`BTC_USDT`,`BTC_BUSD`] match `BTC_USDT` => true
+            (ii) wide symbols with `*` placeholder: e.g. `*_USDT`, `ATOM_*`
+             [`BTC_USDT`,`BTC_BUSD`] match `BTC_*` => true  or [`BTC_USDT`,`BTC_BUSD`] match `*_USDT` => true
+             [`BTC_*`,`*_BUSD`] match `BTC_USDT` => true 
+            (iii) coin literals e.g. `ATOM_USDT*`, `ATOM_FIAT` <see cref="T:AVS.CoreLib.Trading.Helpers.CoinLiteral"/>
+            </summary>
+        </member>
         <member name="M:AVS.CoreLib.Trading.Helpers.SymbolFilterExtensions.Filter(System.String[],System.String)">
             <summary>
             filter symbols, the filter might be a concrete symbol(s) comma-separated or quote asset (e.g. BTC, USDT etc.) or wide quote assets <see cref="T:AVS.CoreLib.Trading.Helpers.CoinLiteral"/>

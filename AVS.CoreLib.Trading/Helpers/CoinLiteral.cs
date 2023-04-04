@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using AVS.CoreLib.Trading.Enums;
-using AVS.CoreLib.Trading.Types;
 
 namespace AVS.CoreLib.Trading.Helpers
 {
@@ -49,6 +48,9 @@ namespace AVS.CoreLib.Trading.Helpers
 
     public static class SymbolFilterExtensions
     {
+        /// <summary>
+        /// returns true if filter is <see cref="CoinLiteral"/> that matches the symbol
+        /// </summary>
         public static bool Match(this string symbol, string filter)
         {
             return filter switch
@@ -60,6 +62,55 @@ namespace AVS.CoreLib.Trading.Helpers
                 CoinLiteral.ANY => true,
                 _ => false
             };
+        }
+
+        /// <summary>
+        /// match symbol with symbols, if any match found returns true, otherwise false.
+        /// support
+        /// (i) normal symbols e.g. [`BTC_USDT`,`BTC_BUSD`] match `BTC_USDT` => true
+        /// (ii) wide symbols with `*` placeholder: e.g. `*_USDT`, `ATOM_*`
+        ///  [`BTC_USDT`,`BTC_BUSD`] match `BTC_*` => true  or [`BTC_USDT`,`BTC_BUSD`] match `*_USDT` => true
+        ///  [`BTC_*`,`*_BUSD`] match `BTC_USDT` => true 
+        /// (iii) coin literals e.g. `ATOM_USDT*`, `ATOM_FIAT` <see cref="CoinLiteral"/>
+        /// </summary>
+        public static bool Match(this string[] symbols, string symbol)
+        {
+            if (symbol == "*")
+                return true;
+
+            if (CoinLiteral.IsLiteral(symbol) && symbols.Any(x => x.Match(symbol)))
+            {
+                return true;
+            }
+
+            foreach (var s in symbols)
+            {
+                if (s == symbol)
+                    return true;
+
+                if (!s.Contains('*'))
+                    continue;
+
+                var parts = s.Split('_');
+                if (parts.Length == 1 && parts[0] == "*")
+                    return true;
+
+                if (parts.Length != 2)
+                    continue;
+
+                if (parts[0] == "*" && symbol.EndsWith(parts[1]))
+                    return true;
+
+                if (parts[1] == "*" && symbol.StartsWith(parts[0]))
+                    return true;
+
+                if (CoinLiteral.IsLiteral(parts[1]) && symbol.Match(parts[1]))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>

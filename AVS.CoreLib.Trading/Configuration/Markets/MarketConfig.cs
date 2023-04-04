@@ -16,6 +16,7 @@ namespace AVS.CoreLib.Trading.Configuration.Markets
         {
             public string Quote { get; set; } = null!;
             public string BaseAssets { get; set; } = null!;
+            public string? Default { get; set; }
             public string? Preset1 { get; set; }
             public string? Preset2 { get; set; }
         }
@@ -31,6 +32,7 @@ namespace AVS.CoreLib.Trading.Configuration.Markets
         Default = 0,
         Preset1 = 1,
         Preset2 = 2,
+        All =3
     }
 
     public static class MarketConfigExtensions
@@ -55,6 +57,7 @@ namespace AVS.CoreLib.Trading.Configuration.Markets
         {
             var str = preset switch
             {
+                Preset.Default => combination.Default,
                 Preset.Preset1 => combination.Preset1,
                 Preset.Preset2 => combination.Preset2,
                 _ => combination.BaseAssets
