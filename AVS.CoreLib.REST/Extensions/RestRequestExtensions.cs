@@ -7,6 +7,11 @@ namespace AVS.CoreLib.REST.Extensions
 {
     public static class RestRequestExtensions
     {
+        public static string GetAbsolutePath(this IRequest request)
+        {
+            return request.BaseUrl + request.Path;
+        }
+
         public static string GetRequestBody(this IRequest request, bool orderParameters = false)
         {
             var requestBody = request.Method == "GET" ? "" : request.Data.ToHttpQueryString(orderParameters);
@@ -26,5 +31,20 @@ namespace AVS.CoreLib.REST.Extensions
                 url = UrlHelper.Combine(url, request.Data.ToHttpQueryString(orderParameters));
             return url;
         }
+
+        //public static string GetPayload(this IRequest request, string separator = "", bool orderParameters = false)
+        //{
+        //    string payload;
+        //    if (request.Method == "GET")
+        //    {
+        //        payload = $"{request.Method}{separator}{request.BaseUrl}{separator}{request.Path}?{request.Data.ToHttpQueryString(orderParameters)}";
+        //    }
+        //    else
+        //    {
+        //        payload = $"{request.Method}{separator}{request.BaseUrl}{separator}{request.Path}{separator}{request.Data.ToHttpQueryString(orderParameters)}";
+        //    }
+            
+        //    return payload;
+        //}
     }
 }

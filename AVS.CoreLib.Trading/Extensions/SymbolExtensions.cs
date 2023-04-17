@@ -2,31 +2,92 @@
 using System.Collections.Generic;
 using System.Linq;
 using AVS.CoreLib.Extensions;
-using AVS.CoreLib.Trading.FormatProviders;
+using AVS.CoreLib.Trading.Enums;
 using AVS.CoreLib.Trading.Helpers;
-using AVS.CoreLib.Trading.Types;
 
 namespace AVS.CoreLib.Trading.Extensions
 {
     /// <summary>
-    /// supposed to deal with a normalized symbol like BTC_USDT (i.e. currencies are upper case, underscore separator)  
+    /// supposed to deal with a normalized symbol like BTC_USDT (i.e. currencies are upper case, underscore separator)
     /// </summary>
-    public  static partial class SymbolExtensions
+    public static partial class SymbolExtensions
     {
         /// <summary>
         /// returns quote currency for BTC_USDT => USDT
         /// </summary>
-        public static string QuoteCurrency(this string symbol)
+        public static string QuoteCurrency(this string symbol, SymbolFormat format = SymbolFormat.Normalized)
         {
-            return symbol.Split('_')[1];
+            return format == SymbolFormat.Normalized ? symbol.Split('_')[1] : Normalize(symbol, format).Split('_')[1];
         }
 
         /// <summary>
         /// returns base currency for BTC_USDT => BTC
         /// </summary>
-        public static string BaseCurrency(this string symbol)
+        public static string BaseCurrency(this string symbol, SymbolFormat format = SymbolFormat.Normalized)
         {
-            return symbol.Split('_')[0];
+            return format == SymbolFormat.Normalized ? symbol.Split('_')[0] : Normalize(symbol, format).Split('_')[0];
+        }
+
+        /// <summary>
+        /// normalize symbol e.g. btcusdt => BTC_USDT
+        /// </summary>
+        public static string Normalize(this string symbol, SymbolFormat format = SymbolFormat.None)
+        {
+            var s = symbol.ToUpper();
+
+            if (!s.Contains('_')) //format.HasFlag(SymbolFormat.NoUnderscore)
+            {
+                s = InsertUnderscore(s);
+            }
+
+            if (format.HasFlag(SymbolFormat.Flipped))
+            {
+                s = s.Swap('_');
+            }
+
+            return s;
+        }
+
+        private static string InsertUnderscore(string symbol)
+        {
+            if (symbol.Length == 6)
+            {
+                symbol = symbol.Insert(3, "_");
+                return symbol;
+            }
+
+            var str = symbol.Substring(symbol.Length - 3);
+            var type = CoinHelper.GetCoinType(str);
+
+            if (type == CoinType.None)
+            {
+                str = symbol.Substring(symbol.Length - 4);
+                type = CoinHelper.GetCoinType(str);
+            }
+
+            if (type != CoinType.None)
+            {
+                symbol = symbol.Insert(symbol.Length - str.Length, "_");
+                return symbol;
+            }
+
+            str = symbol.Substring(0, 3);
+            type = CoinHelper.GetCoinType(str);
+
+            if (type == CoinType.None)
+            {
+                str = symbol.Substring(0, 4);
+                type = CoinHelper.GetCoinType(str);
+            }
+
+            // at the moment no need to support more variants..
+            if (type == CoinType.None)
+            {
+                throw new FormatException($"Unable to insert underscore into `{symbol}` symbol");
+            }
+
+            symbol = symbol.Insert(str.Length, "_");
+            return symbol;
         }
 
         /// <summary>

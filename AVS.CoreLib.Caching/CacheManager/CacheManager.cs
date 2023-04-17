@@ -18,7 +18,7 @@ namespace AVS.CoreLib.Caching
         {
         }
 
-        public async Task<T> GetAsync<T>(string key, Func<Task<T>> acquire, int? cacheDuration = null)
+        public async Task<T> GetAsync<T>(string key, Func<Task<T>> acquire, int? cacheDuration = null) //Func<T, bool> shouldCache, 
         {
             if (key == null)
                 throw new ArgumentNullException(nameof(key));

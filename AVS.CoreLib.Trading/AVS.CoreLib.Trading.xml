@@ -191,6 +191,26 @@
             stop by market price i.e. can squeeze
             </summary>
         </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.SymbolFormat.Normalized">
+            <summary>
+            BTC_USDT
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.SymbolFormat.NoUnderscore">
+            <summary>
+            BTCUSDT
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.SymbolFormat.LowerCase">
+            <summary>
+            btcusdt
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.SymbolFormat.Flipped">
+            <summary>
+            USDT_BTC
+            </summary>
+        </member>
         <member name="T:AVS.CoreLib.Trading.Enums.TimeFrame">
             <summary>Represents a time frame of a market.</summary>
         </member>
@@ -307,17 +327,22 @@
         </member>
         <member name="T:AVS.CoreLib.Trading.Extensions.SymbolExtensions">
             <summary>
-            supposed to deal with a normalized symbol like BTC_USDT (i.e. currencies are upper case, underscore separator)  
+            supposed to deal with a normalized symbol like BTC_USDT (i.e. currencies are upper case, underscore separator)
             </summary>
         </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolExtensions.QuoteCurrency(System.String)">
+        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolExtensions.QuoteCurrency(System.String,AVS.CoreLib.Trading.Enums.SymbolFormat)">
             <summary>
             returns quote currency for BTC_USDT => USDT
             </summary>
         </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolExtensions.BaseCurrency(System.String)">
+        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolExtensions.BaseCurrency(System.String,AVS.CoreLib.Trading.Enums.SymbolFormat)">
             <summary>
             returns base currency for BTC_USDT => BTC
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolExtensions.Normalize(System.String,AVS.CoreLib.Trading.Enums.SymbolFormat)">
+            <summary>
+            normalize symbol e.g. btcusdt => BTC_USDT
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.SymbolExtensions.Q(System.String,System.Boolean)">

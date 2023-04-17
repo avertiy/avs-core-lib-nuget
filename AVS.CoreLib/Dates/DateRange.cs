@@ -218,39 +218,50 @@ namespace AVS.CoreLib.Dates
         /// exact ranges: 01/10/2019 - 02/11/2019, 01/10/2019;02/11/2019 or [01/10/2019;02/11/2019] <seealso cref="DateTime.TryParse(string?, IFormatProvider?, DateTimeStyles, out DateTime)"/> 
         /// toDate modifier `-now` e.g. 2Q-now => [DateTime.Today.AddMonths(-6);DateTime.Now], by default it is till DateTime.Today 
         /// </summary>
-        public static bool TryParse(string str, out DateRange range)
+        public static bool TryParse(string period, out DateRange range)
         {
             range = new DateRange();
-            if (string.IsNullOrEmpty(str))
+            if (string.IsNullOrEmpty(period))
                 return false;
 
-            var strToParse = str.Trim();
+            var str = period.Trim();
+
+            if (str.StartsWith('[') && str.EndsWith(']'))
+            {
+                return TryParseExact(str.Substring(1, period.Length - 2), out range);
+            }
+
+            return TryParseFromLiterals(str, out range) || TryParseExact(str, out range);
+        }
+
+        private static bool TryParseFromLiterals(string str, out DateRange range)
+        {
             var toDate = DateTime.Today;
 
-            if (strToParse.EndsWith("-now", StringComparison.OrdinalIgnoreCase))
+            if (str.EndsWith("-now", StringComparison.OrdinalIgnoreCase))
             {
-                strToParse = strToParse.Substring(0, strToParse.Length - "-now".Length);
+                str = str.Substring(0, str.Length - "-now".Length);
                 toDate = DateTime.Now;
             }
 
-            if (strToParse.Length == 2 && int.TryParse(strToParse.Substring(0, 1), out var n))
+            if (str.Length == 2 && int.TryParse(str.Substring(0, 1), out var n))
             {
-                range = CreateDateRange(n, strToParse[^1], toDate);
+                range = CreateDateRange(n, str[^1], toDate);
                 return true;
             }
-            else if (strToParse.Length == 3 && int.TryParse(strToParse.Substring(0, 2), out var n2))
+            else if (str.Length == 3 && int.TryParse(str.Substring(0, 2), out var n2))
             {
-                range = CreateDateRange(n2, strToParse[^1], toDate);
+                range = CreateDateRange(n2, str[^1], toDate);
                 return true;
             }
-            else if (strToParse.Length == 4 && int.TryParse(strToParse.Substring(0, 3), out var n3))
+            else if (str.Length == 4 && int.TryParse(str.Substring(0, 3), out var n3))
             {
-                range = CreateDateRange(n3, strToParse[^1], toDate);
+                range = CreateDateRange(n3, str[^1], toDate);
                 return true;
             }
             else
             {
-                switch (strToParse.ToLower())
+                switch (str.ToLower())
                 {
                     case "recent":
                         range = new DateRange(DateTime.Today.AddDays(-7), DateTime.Now);
@@ -295,9 +306,10 @@ namespace AVS.CoreLib.Dates
                         range = Create(DateTime.Today.StartOfYear().AddYears(-1), 365);
                         return true;
                     default:
-                        {
-                            return TryParseExact(strToParse, out range);
-                        }
+                    {
+                        range = default;
+                        return false;
+                    }
                 }
             }
         }
@@ -306,11 +318,6 @@ namespace AVS.CoreLib.Dates
         {
             range = new DateRange();
             string[] parts = null;
-
-            if (str.StartsWith('[') && str.EndsWith(']'))
-            {
-                str = str.Substring(1, str.Length - 2);
-            }
 
             if (str.Contains('-') || str.Contains(';'))
             {

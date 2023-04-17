@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security;
 using System.Security.Cryptography;
 using System.Text;
 using AVS.CoreLib.Abstractions.Rest;
@@ -9,6 +10,8 @@ namespace AVS.CoreLib.REST
         where TAlgorithm : KeyedHashAlgorithm, new()
     {
         public string PublicKey { get; private set; }
+        public string PrivateKey { get; private set; }
+
         public Encoding Encoding { get; set; } = Encoding.ASCII;
         protected TAlgorithm Encryptor { get; }
 
@@ -32,6 +35,7 @@ namespace AVS.CoreLib.REST
                 return;
 
             PublicKey = publicKey;
+            PrivateKey = privateKey;
             Encryptor.Key = Encoding.GetBytes(privateKey);
         }
 

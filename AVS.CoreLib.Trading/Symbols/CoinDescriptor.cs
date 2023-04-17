@@ -73,7 +73,7 @@ namespace AVS.CoreLib.Trading.Symbols
             return new SymbolDescriptor() { Symbol = symbol, Blockchain = blockchain, Type = type, Rank = rank, Class = AssetClass.SecondTier, Cap = rank.GetCoinCapByRank() };
         }
 
-        public static SymbolDescriptor Other(string symbol, int rank, string? blockchain = null, CoinType type = CoinType.Undefined)
+        public static SymbolDescriptor Other(string symbol, int rank, string? blockchain = null, CoinType type = CoinType.None)
         {
             return new SymbolDescriptor() { Symbol = symbol, Blockchain = blockchain, Type = type, Rank = rank, Class = AssetClass.Other, Cap = rank.GetCoinCapByRank() };
         }

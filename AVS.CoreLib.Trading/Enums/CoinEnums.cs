@@ -2,12 +2,11 @@
 {
     public enum CoinType
     {
-        Undefined = 0,
+        None = 0,
         Fiat = 1,
         Blockchain = 2,
         StableCoin = 3,
         Token = 4,
-        
     }
 
     public enum TokenCategory

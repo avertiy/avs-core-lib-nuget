@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using AVS.CoreLib.Trading.Enums;
 
 namespace AVS.CoreLib.Trading.Helpers
 {
@@ -41,8 +42,29 @@ namespace AVS.CoreLib.Trading.Helpers
             "BTC",
             "ETH",
             "BNB",
+            "XRP"
+        };
+
+        public static List<string> Top25 = new List<string>()
+        {
+            "BTC",
+            "ETH",
+            "BNB",
             "XRP",
-            "TRX"
+            "DOGE",
+            "ADA",
+            "MATIC",
+            "SOL",
+            "DOT",
+            "LTC",
+            "TRX",
+            "AVAX",
+            "LINK",
+            "ATOM",
+            "UNI",
+            "XMR",
+            "XLM",
+            "BCH"
         };
 
         private static Dictionary<string, string> _aliases;
@@ -149,6 +171,20 @@ namespace AVS.CoreLib.Trading.Helpers
                 default:
                     return isoCode;
             }
+        }
+
+        public static CoinType GetCoinType(string isoCode)
+        {
+            if (StableCoins.Contains(isoCode))
+                return CoinType.StableCoin;
+
+            if (Fiat.Contains(isoCode))
+                return CoinType.Fiat;
+
+            if (Top25.Contains(isoCode))
+                return CoinType.Blockchain;
+
+            return CoinType.None;
         }
     }
 }
