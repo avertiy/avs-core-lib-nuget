@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
-using AVS.CoreLib.Console.ColorFormatting;
-using AVS.CoreLib.Console.ColorFormatting.Tags;
 using AVS.CoreLib.PowerConsole.Enums;
-using AVS.CoreLib.PowerConsole.Utilities;
+using AVS.CoreLib.PowerConsole.Extensions;
 using AVS.CoreLib.PowerConsole.Writers;
 
 namespace AVS.CoreLib.PowerConsole.Printers
@@ -37,25 +35,18 @@ namespace AVS.CoreLib.PowerConsole.Printers
 
         public void Print(FormattableString str, PrintOptions options)
         {
-            var formattedStr = FormatInternal(str);
-            Writer.Write(formattedStr, options);
-        }
+            string formattedStr;
 
-        public void Print(FormattableString str, MultiColorPrintOptions options)
-        {
-            var formattedStr = FormatInternal(str);
-            throw new NotImplementedException("");
-            //var arguments = str.GetArguments();
-            //var str2 = new FormattableString2(str.Format, arguments);
-            //var preprocessor = FormatPreprocessor;
+            if (options.ColorPalette != null)
+            {
+                var str2 = str.Colorize(options.ColorPalette.Colors);
+                formattedStr = FormatInternal(str2);
+            }
+            else
+            {
+                formattedStr = FormatInternal(str);
+            }
 
-            //if (preprocessor is ColorFormatPreprocessor colorFormatPreprocessor)
-            //    colorFormatPreprocessor.Palette = palette;
-
-            //var formattedString = str2.ToString(X.FormatProvider, printer.FormatPreprocessor, X.TextProcessor);
-            //var colorMarkupStr = new ColorMarkupString(formattedString);
-
-            //printer.Print(colorMarkupStr, endLine);
             Writer.Write(formattedStr, options);
         }
 

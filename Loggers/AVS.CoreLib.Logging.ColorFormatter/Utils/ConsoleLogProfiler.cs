@@ -2,6 +2,10 @@
 
 namespace AVS.CoreLib.Logging.ColorFormatter.Utils;
 
+/// <summary>
+/// utility class for profiling console logging i.e. keep printed on console logs in buffer
+/// useful for debugging or saving printed logs as text
+/// </summary>
 public static class ConsoleLogProfiler
 {
     public static bool Enabled { get; set; }

@@ -3,14 +3,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AVS.CoreLib.Guards;
+using AVS.CoreLib.Trading.Enums;
 
 namespace AVS.CoreLib.Trading.Configuration.Markets
 {
     public interface IMarketsConfigManager
     {
-        string[] GetQuoteAssets(string name);
-        string[] GetTradingPairs(string name, Preset preset = Preset.Default);
-        string[] GetBaseAssets(string name, Preset preset = Preset.Default, string? quote = null);
+        bool Contains(string name);
+        string[] GetTradingPairs(string name, AccountType account, Preset preset);
+        string[] GetQuoteAssets(string name, AccountType accountType);
+        string[] GetBaseAssets(string name, AccountType account, Preset preset, string? quote = null);
     }
 
     public class MarketsConfigManager : IMarketsConfigManager
@@ -55,24 +57,54 @@ namespace AVS.CoreLib.Trading.Configuration.Markets
             return _items.Values;
         }
 
-        public string[] GetTradingPairs(string name, Preset preset = Preset.Default)
+        public bool Contains(string name)
         {
-            return Get(name).GetTradingPairs(preset);
+            return _items.ContainsKey(name) || _items.Keys.Any(x => x.ToLower().Contains(name.ToLower()));
         }
 
-        public string[] GetQuoteAssets(string name)
+        /// <summary>
+        /// trading pairs for spot
+        /// </summary>
+        public string[] GetTradingPairs(string name, AccountType accountType = AccountType.Spot, Preset preset = Preset.Default)
         {
-            return Get(name).Combinations.Select(x => x.Quote).ToArray();
+            var combinations = Get(name, accountType);
+            return combinations?.GetPairs(preset) ?? Array.Empty<string>();
         }
 
-        public string[] GetBaseAssets(string name, Preset preset = Preset.Default, string? quote = null)
+        public string[] GetQuoteAssets(string name, AccountType accountType = AccountType.Spot)
         {
-            var config = Get(name);
-            if (quote == null)
-                return config.Combinations.SelectMany(x => x.GetBaseAssets(preset)).ToArray();
+            var combinations = Get(name, accountType);
+            return combinations?.Select(x => x.Quote).ToArray() ?? Array.Empty<string>();
+        }
 
-            var assets = config.Combinations.FirstOrDefault(x => x.Quote == quote)?.GetBaseAssets(preset);
+        public string[] GetBaseAssets(string name, AccountType accountType, Preset preset, string? quote = null)
+        {
+            var combinations = Get(name, accountType);
+
+            var assets = quote == null ?
+                combinations?.SelectMany(x => x.GetBaseAssets(preset)).ToArray() :
+                combinations?.FirstOrDefault(x => x.Quote == quote)?.GetBaseAssets(preset);
+
             return assets ?? Array.Empty<string>();
         }
+
+        private MarketConfig.Combination[]? Get(string name, AccountType account)
+        {
+            var config = Get(name);
+            var combinations = account == AccountType.Futures ? config.Futures : config.Spot;
+            return combinations;
+        }
+
+        /*
+        public string[] GetFuturesPairs(string name, Preset preset = Preset.Default)
+        {
+            var combinations = Get(name).Futures;
+            return combinations?.GetPairs(preset) ?? Array.Empty<string>();
+        }
+
+        public string[] GetFuturesQuoteAssets(string name)
+        {
+            return Get(name).Futures?.Select(x => x.Quote).ToArray() ?? Array.Empty<string>();
+        }*/
     }
 }

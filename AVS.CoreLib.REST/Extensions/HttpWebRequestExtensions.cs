@@ -40,6 +40,10 @@ namespace AVS.CoreLib.REST.Extensions
             try
             {
                 var response = await request.GetResponseAsync().ConfigureAwait(false);
+
+                if (response == null)
+                    throw new HttpRequestException($"Invalid request, ensure request uri {request.RequestUri} is valid");
+
                 return response as HttpWebResponse;
             }
             catch (WebException ex)
@@ -48,22 +52,28 @@ namespace AVS.CoreLib.REST.Extensions
             }
         }
 
-        public static async Task<HttpWebResponse> FetchHttpResponseAsync(this HttpWebRequest request, int maxAttempts = 2)
+        public static async Task<HttpWebResponse> FetchHttpResponseAsync(this HttpWebRequest request, int maxAttempts = 2, CancellationToken ct = default)
         {
             int attempt = 0;
             start:
             var response = await request.GetHttpResponseAsync().ConfigureAwait(false);
+
+            if (response == null)
+                throw new HttpRequestException($"Invalid request, ensure request uri {request.RequestUri} is valid");
+
             if (response.StatusCode == HttpStatusCode.UnprocessableEntity && attempt++ < maxAttempts)
             {
                 //try a few times
-                goto start;
+                if (!ct.IsCancellationRequested)
+                    goto start;
             }
 
             if (response.StatusCode == HttpStatusCode.TooManyRequests && attempt++ < maxAttempts)
             {
                 //try a few times
                 Thread.Sleep(1000);
-                goto start;
+                if (!ct.IsCancellationRequested)
+                    goto start;
             }
 
             return response;

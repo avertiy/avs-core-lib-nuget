@@ -416,6 +416,15 @@ namespace AVS.CoreLib.Dates
 
     public static class DateRangeExtensions
     {
+        /// <summary>
+        /// converts date range (from/to) to UTC time
+        /// </summary>
+        public static DateRange ToUniversalTime(this DateRange range)
+        {
+            var utc = new DateRange(range.From.ToUniversalTime(), range.To.ToUniversalTime());
+            return utc;
+        }
+
         public static IEnumerable<DateRange> Iterate(this DateRange range, int seconds)
         {
             for (var i = range.From; i <= range.To;)

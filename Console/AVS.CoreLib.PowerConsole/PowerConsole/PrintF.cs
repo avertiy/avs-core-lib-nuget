@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using AVS.CoreLib.Console.ColorFormatting.Tags;
-using AVS.CoreLib.PowerConsole.Extensions;
 using AVS.CoreLib.PowerConsole.Printers;
 using AVS.CoreLib.PowerConsole.Utilities;
-using AVS.CoreLib.Text;
 using AVS.CoreLib.Text.FormatProviders;
 using AVS.CoreLib.Text.Formatters.ColorMarkup;
 
@@ -31,17 +28,14 @@ namespace AVS.CoreLib.PowerConsole
             Printer.Print(str, options);
         }
 
-        /// <summary>
-        /// format and print string auto-highlighting arguments picking colors from color palette provided in <see cref="MultiColorPrintOptions"/>
-        /// </summary>
-        public static void PrintF(FormattableString str, MultiColorPrintOptions options)
+        public static void PrintF(FormattableString str, ColorPalette colorPalette)
         {
-            Printer.Print(str, options);
+            Printer.PrintF(str, PrintOptions.FromColorPalette(colorPalette));
         }
 
         public static void PrintF(FormattableString str, params ConsoleColor[] colors)
         {
-            Printer.Print(str, new MultiColorPrintOptions(colors));
+            Printer.PrintF(str, PrintOptions.FromColors(colors));
         }
 
         public static void PrintF(int posX, int posY, FormattableString str, PrintOptions? options = null)

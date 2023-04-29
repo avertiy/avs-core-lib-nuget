@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using AVS.CoreLib.Abstractions;
 using AVS.CoreLib.Abstractions.Bootstrap;
 using AVS.CoreLib.Console.ColorFormatting;
 using AVS.CoreLib.Console.ColorFormatting.Tags;
@@ -22,6 +21,8 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
         {
             try
             {
+                PowerConsole.SwitchColorMode(ColorMode.AnsiCodes);
+                
                 //FormatPreprocessorTest();
                 WriteTests();
                 WriteLineTests();
@@ -56,9 +57,12 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
                 PowerConsole.PrintError(ex);
             }
         }
+
         private void PrintTests()
         {
             PowerConsole.PrintHeader($"Print tests");
+
+            PowerConsole.PrintF($"test args coloring {10:C}, {"abc"}, {DateTime.Today:G} ", ConsoleColor.Red, ConsoleColor.Cyan, ConsoleColor.Green);
 
             PowerConsole.Print("print without parameters");
             PowerConsole.Print("print without parameters <Red> color tags by default not handled</Red>");

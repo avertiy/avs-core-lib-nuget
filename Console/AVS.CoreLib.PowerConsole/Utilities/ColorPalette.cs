@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using AVS.CoreLib.Text;
 
 namespace AVS.CoreLib.PowerConsole.Utilities
 {
+    /// <summary>
+    /// Represent a set of colors
+    /// </summary>
     public class ColorPalette : IEnumerable<ConsoleColor>
     {
         public static ColorPalette GrayRedGreen => new ColorPalette(ConsoleColor.DarkGray, ConsoleColor.DarkGreen, ConsoleColor.DarkRed);

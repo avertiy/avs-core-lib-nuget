@@ -119,7 +119,7 @@ namespace AVS.CoreLib.Extensions
                 var line = lines[k];//.Trim();
                 var ind = line.IndexOf("(", StringComparison.Ordinal);
                 var atIndex = line.IndexOf("at ", StringComparison.Ordinal);
-                if (ind == -1 || atIndex == -1)
+                if (ind == -1 || atIndex == -1 || atIndex+ind > line.Length)
                     continue;
                 
                 var ns = line.Substring(atIndex+3, ind - 3);

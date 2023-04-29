@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AVS.CoreLib.Abstractions.Rest
@@ -8,13 +9,12 @@ namespace AVS.CoreLib.Abstractions.Rest
     {
         string LastRequestedUrl { get; }
 
-        Task<HttpWebResponse> SendRequestAsync(IRequest request);
+        Task<HttpWebResponse> SendRequestAsync(IRequest request, CancellationToken ct);
 
         [Obsolete("use SendRequestAsync(IRequest) instead")]
         Task<string> QueryAsync(IEndpoint endpoint, IPayload data = null);
-
-        [Obsolete("use SendRequestAsync(IRequest) instead")]
-        Task<HttpWebResponse> SendRequestAsync(IEndpoint endpoint, IPayload data = null);
+        //[Obsolete("use SendRequestAsync(IRequest) instead")]
+        //Task<HttpWebResponse> SendRequestAsync(IEndpoint endpoint, IPayload data = null);
         void SwitchKeys(string publicKey, string privateKey);
     }
 }

@@ -4,7 +4,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Reflection;
-using AVS.CoreLib.REST.Extensions;
 using AVS.CoreLib.REST.Responses;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

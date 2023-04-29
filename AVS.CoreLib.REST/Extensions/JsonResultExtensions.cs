@@ -9,17 +9,19 @@ namespace AVS.CoreLib.REST.Extensions
     {
         public static BoolResponse ToBoolResponse(this JsonResult result)
         {
-            var response = result.Deserialize<BoolResponse>();
+            if (!result.TryDeserialize(out BoolResponse response, out var error))
+                response = new BoolResponse() { Error = error };
+
             response.Source = result.Source;
-            response.Error = result.Error;
             return response;
         }
 
         public static Response<T> ToResponse<T>(this JsonResult result)
         {
-            var response = result.Deserialize<Response<T>>();
+            if (!result.TryDeserialize(out Response<T> response, out var error))
+                response = new Response<T>() { Error = error };
+
             response.Source = result.Source;
-            response.Error = result.Error;
             return response;
         }
 

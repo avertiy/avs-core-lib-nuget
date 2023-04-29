@@ -67,7 +67,7 @@ namespace AVS.CoreLib.PowerConsole.Writers
             }
             else
             {
-                WriteInternal(text, options.EndLine, options.ColorTags);
+                WriteTextWithColorTags(text, options.EndLine, options.ColorTags);
             }
         }
 
@@ -83,7 +83,7 @@ namespace AVS.CoreLib.PowerConsole.Writers
                 NewLineFlag = str.EndsWith('\n');
         }
 
-        protected void WriteInternal(string str, bool endLine, bool? containsCTags)
+        protected void WriteTextWithColorTags(string str, bool endLine, bool? containsCTags)
         {
             var text = PreProcessText(str, containsCTags);
             WriteInternal(text, endLine);

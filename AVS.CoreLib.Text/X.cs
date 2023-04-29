@@ -5,7 +5,6 @@ using AVS.CoreLib.Text.FormatProviders;
 using AVS.CoreLib.Text.Formatters;
 using AVS.CoreLib.Text.Formatters.ColorMarkup;
 using AVS.CoreLib.Text.Formatters.GenericFormatter;
-using AVS.CoreLib.Text.Formatters.GenericTypeFormatter;
 using AVS.CoreLib.Text.TextProcessors;
 
 namespace AVS.CoreLib.Text
@@ -53,6 +52,10 @@ namespace AVS.CoreLib.Text
         /// <summary>
         /// applies format modifier before string format and there after process the result with <see cref="TextExpressionProcessor"/>
         /// </summary>
+        /// <remarks>
+        /// X format provider extends standard .NET string format modifiers like `N2`, `d`, `C` etc. with custom modifiers
+        /// example: X.Format($"order: {type:+}{amount:0.00}{symbol:Q}"); `+` and `Q` are custom modifiers
+        /// </remarks>
         public static string Format(FormattableString str, IFormatPreprocessor preprocessor)
         {
             if (!(str is FormattableString2 str2))

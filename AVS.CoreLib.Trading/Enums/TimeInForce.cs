@@ -18,6 +18,10 @@
         /// A day order remains in effect only for the given trading session (NYSE/Nasdaq)
         /// </summary>
         DAY = 3,
+        /// <summary>
+        /// Good Till Crossing (Post Only) 
+        /// </summary>
+        GTX = 4,
         ///// <summary>
         ///// market open price (NYSE/Nasdaq)
         ///// </summary>

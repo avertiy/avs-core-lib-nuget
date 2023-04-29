@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using AVS.CoreLib.Abstractions.Text;
-using AVS.CoreLib.Text.TextProcessors;
 
 namespace AVS.CoreLib.Text
 {
@@ -73,7 +72,8 @@ namespace AVS.CoreLib.Text
         }
 
         /// <summary>
-        /// Preprocess format of arguments before formatting string, format string and process the result with text processor 
+        /// Preprocess format of arguments before formatting string, format string
+        /// then process the result string with text processor 
         /// </summary>
         public string ToString(IFormatProvider formatProvider,
             IFormatPreprocessor preprocessor,

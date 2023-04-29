@@ -165,7 +165,8 @@
         </member>
         <member name="M:AVS.CoreLib.Text.FormattableString2.ToString(System.IFormatProvider,AVS.CoreLib.Abstractions.Text.IFormatPreprocessor,AVS.CoreLib.Abstractions.Text.ITextProcessor)">
             <summary>
-            Preprocess format of arguments before formatting string, format string and process the result with text processor 
+            Preprocess format of arguments before formatting string, format string
+            then process the result string with text processor 
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Text.FormattableString2.GetEnumerator">
@@ -498,6 +499,10 @@
             <summary>
             applies format modifier before string format and there after process the result with <see cref="T:AVS.CoreLib.Text.TextProcessors.TextExpressionProcessor"/>
             </summary>
+            <remarks>
+            X format provider extends standard .NET string format modifiers like `N2`, `d`, `C` etc. with custom modifiers
+            example: X.Format($"order: {type:+}{amount:0.00}{symbol:Q}"); `+` and `Q` are custom modifiers
+            </remarks>
         </member>
         <member name="M:AVS.CoreLib.Text.X.Format(AVS.CoreLib.Text.FormattableString2,AVS.CoreLib.Abstractions.Text.IFormatPreprocessor)">
             <summary>

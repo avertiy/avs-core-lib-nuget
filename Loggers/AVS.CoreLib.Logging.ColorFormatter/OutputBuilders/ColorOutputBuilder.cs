@@ -1,5 +1,4 @@
-﻿using System.Text;
-using AVS.CoreLib.Console.ColorFormatting.Extensions;
+﻿using AVS.CoreLib.Console.ColorFormatting.Extensions;
 using AVS.CoreLib.Console.ColorFormatting.Tags;
 using AVS.CoreLib.Logging.ColorFormatter.Enums;
 using AVS.CoreLib.Logging.ColorFormatter.Extensions;
@@ -12,21 +11,11 @@ namespace AVS.CoreLib.Logging.ColorFormatter.OutputBuilders;
 
 public class ColorOutputBuilder : OutputBuilder
 {
-    public IColorsProvider ColorsProvider { get; set; }
+    public IColorProvider ColorProvider { get; set; }
 
     protected override void InitMessage<T>(in LogEntry<T> logEntry)
     {
-        var message = logEntry.Formatter?.Invoke(logEntry.State, logEntry.Exception);
-
-        if (Options.ArgsColorFormat == ArgsColorFormat.Auto)
-        {
-            // formatter not only adds color tags to highlight arguments but also makes extended args formatting:  
-            // e.g. LogInformation("{arg:C}", 1.022); => <Green>$1.02</Green>
-            var formatter = new ArgsColorFormatter(message, logEntry.State) { ColorsProvider = ColorsProvider };
-            message = formatter.FormatMessage();
-        }
-
-        Message = message;
+        Message = logEntry.GetMessage(Options.ArgsColorFormat, ColorProvider);
     }
 
     protected override void AddTimestamp()
@@ -94,8 +83,6 @@ public class ColorOutputBuilder : OutputBuilder
         Output.AppendLine(error);
     }
 
-
-
     protected override void ProcessTags()
     {
         if (Options.TagsBehavior == TagsBehavior.Disabled)
@@ -135,7 +122,7 @@ public class ColorOutputBuilder : OutputBuilder
         if (Options.TagsBehavior != TagsBehavior.Enabled)
             return text;
 
-        var colors = ColorsProvider.GetColorsFor(part, LogLevel);
+        var colors = ColorProvider.GetColorsFor(part, LogLevel);
         return colors.FormatWithTags(text);
     }
 }

@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
-using AVS.CoreLib.Abstractions;
+using System.Collections.Immutable;
+using System.Linq;
 using AVS.CoreLib.Abstractions.Bootstrap;
-using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Stringify;
 using AVS.CoreLib.Logging.ColorFormatter.Utils;
 using AVS.CoreLib.PowerConsole.Extensions;
-using AVS.CoreLib.Text.Extensions;
 using Microsoft.Extensions.Logging;
 
 namespace AVS.CoreLib.Loggers.TestApp
@@ -23,9 +21,12 @@ namespace AVS.CoreLib.Loggers.TestApp
             _service = service;
         }
 
+    
+
         public override void Test()
         {
             ConsoleLogProfiler.Enabled = true;
+            TestArgsColorFormatter();
             ArgsFormatTests();
 
             //Console.ForegroundColor = ConsoleColor.DarkGray;
@@ -38,6 +39,25 @@ namespace AVS.CoreLib.Loggers.TestApp
             ArgHighlightTests();
 
             var log = ConsoleLogProfiler.Flush();
+        }
+
+        private void TestArgsColorFormatter()
+        {
+            _logger.LogInformation("string:{arg1}; currency:{arg2:C}", "my-str", 10.21m);
+            var dict = new Dictionary<string, object>();
+            dict.Add("arg1", "my-str");
+            dict.Add("arg2", 10.21m);
+            dict.Add("{OriginalFormat}", "string:{arg1}; currency:{arg2:C}");
+
+            var str = "string:my-str; currency:$10.21";
+            var state = dict.ToList();
+            var formatter = new ArgsColorFormatter() { Message = str};
+            formatter.Init(state);
+            var msg = formatter.FormatMessage(new ColorProvider());
+
+            //var msg2 = str.FormatMessage(state, new ColorsProvider());
+            //Assert.True(msg,msg2);
+
         }
 
         private void TagFormattingTests()

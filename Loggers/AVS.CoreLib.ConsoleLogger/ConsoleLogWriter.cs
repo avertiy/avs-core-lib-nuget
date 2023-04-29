@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Globalization;
 using AVS.CoreLib.AbstractLogger;
+using AVS.CoreLib.PowerConsole.Printers;
 using AVS.CoreLib.PowerConsole.Utilities;
 using AVS.CoreLib.Text.Formatters.ColorMarkup;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Console = AVS.CoreLib.PowerConsole.PowerConsole;
+using Console1 = AVS.CoreLib.PowerConsole.PowerConsole;
 namespace AVS.CoreLib.ConsoleLogger
 {
     public class ConsoleLogWriter : ILogWriter
@@ -16,14 +17,14 @@ namespace AVS.CoreLib.ConsoleLogger
             Options = options;
         }
 
-        public void WriteLine(bool combineEmptyLines = true)
+        public void WriteLine(bool voidEmptyLines = true)
         {
-            Console.WriteLine(combineEmptyLines);
+            Console1.WriteLine(voidEmptyLines ? PrintOptions.EmptyLinesVoided : PrintOptions.EmptyLinesAllowed);
         }
 
         public void Write(string str, bool endLine = true)
         {
-            Console.Print(str, endLine);
+            Console1.Write(str, endLine ? PrintOptions.Default : PrintOptions.Inline);
         }
 
         public void Write(string logger, EventId eventId, LogLevel logLevel, string message, Exception exception = null)
@@ -39,10 +40,10 @@ namespace AVS.CoreLib.ConsoleLogger
                 PrintLoggerType(logger);
 
                 var str = new ColorMarkupString(message);
-                Console.Print(str);
+                Console1.Print(str);
                 if (exception != null)
                 {
-                    Console.WriteError(exception, true);
+                    Console1.PrintError(exception, printStackTrace: true);
                 }
 
                 ColorScheme.ApplyScheme(schemeBackup);
@@ -53,7 +54,7 @@ namespace AVS.CoreLib.ConsoleLogger
         {
             if (Options.CurrentValue.PrintLoggerName)
             {
-                Console.Print($" {logger} ", ConsoleColor.DarkGray, false);
+                Console1.Print($" {logger} ", PrintOptions.FromColor(ConsoleColor.DarkGray, endLine: false));
             }
         }
 
@@ -61,16 +62,16 @@ namespace AVS.CoreLib.ConsoleLogger
         {
             var scheme = logLevel.GetColorScheme();
             var options = Options.CurrentValue;
-            Console.WriteLine();
+            Console1.WriteLine();
             if (string.IsNullOrEmpty(options.TimestampFormat))
             {
-                Console.Print(logLevel.GetLogLevelText(), scheme, !options.SingleLine);
+                Console1.Print(logLevel.GetLogLevelText(), PrintOptions.FromColorScheme(scheme, endLine: !options.SingleLine));
             }
             else
             {
                 var timestamp = DateTimeOffset.Now.ToLocalTime()
                     .ToString(options.TimestampFormat, CultureInfo.InvariantCulture);
-                Console.Print($"{logLevel.GetLogLevelText()} {timestamp}", scheme, !options.SingleLine);
+                Console1.Print($"{logLevel.GetLogLevelText()} {timestamp}", PrintOptions.FromColorScheme(scheme, endLine: !options.SingleLine));
             }
         }
 
@@ -79,11 +80,11 @@ namespace AVS.CoreLib.ConsoleLogger
             WriteLine(false);
             if (addCurlyBraces)
             {
-                Console.Print($"{scope}\r\n {{", ConsoleColor.Cyan);
+                Console1.Print($"{scope}\r\n {{", ConsoleColor.Cyan);
             }
             else
             {
-                Console.Print($" ===== begin scope: {scope} =====\r\n", ConsoleColor.Cyan);
+                Console1.Print($" ===== begin scope: {scope} =====\r\n", ConsoleColor.Cyan);
             }
             WriteLine(false);
         }
@@ -93,11 +94,11 @@ namespace AVS.CoreLib.ConsoleLogger
             WriteLine(false);
             if (addCurlyBraces)
             {
-                Console.Print($" }}", ConsoleColor.Cyan);
+                Console1.Print($" }}", ConsoleColor.Cyan);
             }
             else
             {
-                Console.Print($" ===== end scope =====\r\n", ConsoleColor.Cyan);
+                Console1.Print($" ===== end scope =====\r\n", ConsoleColor.Cyan);
             }
             WriteLine(false);
         }

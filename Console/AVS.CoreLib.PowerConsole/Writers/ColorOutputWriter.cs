@@ -17,7 +17,7 @@ namespace AVS.CoreLib.PowerConsole.Writers
         public override void WriteColored(string str, PrintOptions options)
         {
             var coloredStr = Colorize(str, options);
-            base.WriteInternal(coloredStr, options.EndLine, options.ColorTags);
+            base.WriteTextWithColorTags(coloredStr, options.EndLine, options.ColorTags);
         }
 
         protected static TagProcessor GetDefaultTagsProcessor()

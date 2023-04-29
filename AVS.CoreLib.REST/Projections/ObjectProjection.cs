@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using AVS.CoreLib.REST.Json.Newtonsoft;
 using AVS.CoreLib.REST.Responses;
 using Newtonsoft.Json.Linq;
@@ -65,11 +64,6 @@ namespace AVS.CoreLib.REST.Projections
             return this;
         }
 
-        public Task<Response<T>> MapAsync()
-        {
-            return MapAsyncInternal(Map);
-        }
-
         private void EnsureProxyInitialized()
         {
             if (Proxy == null)
@@ -103,7 +97,7 @@ namespace AVS.CoreLib.REST.Projections
         /// <remarks>
         /// if the Map method fails, try inspect deserialization <see cref="InspectDeserialization"/> 
         /// </remarks>
-        public virtual Response<T> Map()
+        public Response<T> Map()
         {
             EnsureProxyInitialized();
 
@@ -274,10 +268,11 @@ namespace AVS.CoreLib.REST.Projections
                 throw new AppException("Proxy is not initialized", "You might need to use UseProxy<TProxy>() method first");
         }
 
-        public Task<Response<T>> MapAsync()
-        {
-            return MapAsyncInternal(Map);
-        }
+        //[Obsolete]
+        //public Task<Response<T>> MapAsync()
+        //{
+        //    return MapAsyncInternal(Map);
+        //}
 
         public Response<T> Map()
         {

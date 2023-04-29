@@ -135,6 +135,20 @@ namespace AVS.CoreLib.Trading.Extensions
 
             return isBaseCurrencyFirst ? s : s.Swap('_');
         }
+
+        public static bool IsSingleSymbol(this string symbol, bool ensureNormalized = true)
+        {
+            if(symbol.Length < 6 || symbol.Length > 9)
+                return false;
+
+            if (symbol.Contains(',') || symbol.Contains('*'))
+                return false;
+
+            if(ensureNormalized && !symbol.Contains('_'))
+                return false;
+
+            return true;
+        }
     }
 
     public  static partial class SymbolExtensions

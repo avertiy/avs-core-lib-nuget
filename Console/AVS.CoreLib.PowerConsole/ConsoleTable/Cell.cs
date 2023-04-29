@@ -1,6 +1,4 @@
 ﻿using AVS.CoreLib.Extensions;
-using AVS.CoreLib.PowerConsole.Extensions;
-using AVS.CoreLib.PowerConsole.Structs;
 using AVS.CoreLib.PowerConsole.Utilities;
 
 namespace AVS.CoreLib.PowerConsole.ConsoleTable
@@ -27,7 +25,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
             return new Cell<T>() { Value = obj, Column = column, Row = row, ColorScheme = scheme };
         }
 
-        public string ToString()
+        public override string ToString()
         {
             var row = Row;
             var width = Width;

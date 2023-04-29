@@ -34,8 +34,7 @@ public class OutputBuilder : IOutputBuilder
 
     protected virtual void InitMessage<T>(in LogEntry<T> logEntry)
     {
-        Message = logEntry.Formatter?.Invoke(logEntry.State, logEntry.Exception);
-        //Message = Message.StripColorMarkup().StripEndLineColorMarkup();
+        Message = logEntry.GetMessage(ArgsColorFormat.None, null);
     }
 
     public override string ToString()

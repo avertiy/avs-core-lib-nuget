@@ -1,6 +1,6 @@
 ﻿using System;
 using AVS.CoreLib.Trading.Enums;
-using AVS.CoreLib.Trading.FormatProviders;
+using AVS.CoreLib.Trading.Enums.Futures;
 
 namespace AVS.CoreLib.Trading.Helpers
 {
@@ -50,6 +50,27 @@ namespace AVS.CoreLib.Trading.Helpers
                     return true;
                 }
 
+                case nameof(PositionSide):
+                {
+                    obj = ParseEnumHelper.ParsePositionSide(value);
+                    return true;
+                }
+                case nameof(FuturesOrderType):
+                {
+                    obj = ParseEnumHelper.ParseFuturesOrderType(value);
+                    return true;
+                }
+                case nameof(WorkingType):
+                {
+                    obj = ParseEnumHelper.ParseWorkingType(value);
+                    return true;
+                }
+                case nameof(MarginType):
+                {
+                    obj = ParseEnumHelper.ParseMarginType(value);
+                    return true;
+                }
+
                 default:
                 {
                     obj = null;
@@ -58,15 +79,45 @@ namespace AVS.CoreLib.Trading.Helpers
             }
         }
 
+        private static MarginType ParseMarginType(string value)
+        {
+            switch (value.ToUpper())
+            {
+                case "ISOLATED":
+                    return MarginType.Isolated;
+                case "CROSS":
+                    return MarginType.Cross;
+                default:
+                    throw new NotSupportedException($"Unknown {nameof(MarginType)} '{value}'");
+            }
+        }
+
+        private static WorkingType ParseWorkingType(string value)
+        {
+            switch (value.ToUpper())
+            {
+                case "CONTRACT":
+                case "CONTRACT_PRICE":
+                    return WorkingType.Contract;
+                case "MARK":
+                case "MARK_PRICE":
+                    return WorkingType.Mark;
+                default:
+                    throw new NotSupportedException($"Unknown {nameof(WorkingType)} '{value}'");
+            }
+        }
+
         public static TimeInForce ParseTimeInForce(string value)
         {
-            switch (value.ToUpper()[0])
+            switch (value.ToUpper())
             {
-                case 'G':
+                case "GTC":
                     return TimeInForce.GTC;
-                case 'F':
+                case "GTX":
+                    return TimeInForce.GTX;
+                case "FOK":
                     return TimeInForce.FOK;
-                case 'I':
+                case "IOC":
                     return TimeInForce.IOC;
                 default:
                     throw new NotSupportedException($"Unknown {nameof(TimeInForce)} '{value}'");
@@ -116,6 +167,55 @@ namespace AVS.CoreLib.Trading.Helpers
                     return OrderSide.Sell;
             }
             throw new ArgumentOutOfRangeException($"{value} unknown OrderSide");
+        }
+
+        public static PositionSide ParsePositionSide(string value)
+        {
+            switch (value[0])
+            {
+                case 'l':
+                case 'L':
+                    return PositionSide.Long;
+                case 's':
+                case 'S':
+                    return PositionSide.Short;
+                case 'b':
+                case 'B':
+                    return PositionSide.Both;
+            }
+            throw new ArgumentOutOfRangeException($"{value} unknown OrderSide");
+        }
+
+        public static FuturesOrderType ParseFuturesOrderType(string value)
+        {
+            switch (value.ToUpper())
+            {
+                case "M":
+                case "MARKET":
+                    return FuturesOrderType.Market;
+                case "L":
+                case "LIMIT":
+                    return FuturesOrderType.Limit;
+                case "S":
+                case "STOP":
+                    return FuturesOrderType.Stop;
+                case "SM":
+                case "STOP_MARKET":
+                    return FuturesOrderType.StopMarket;
+                case "TP":
+                case "TAKE_PROFIT":
+                    return FuturesOrderType.TakeProfit;
+                case "TPM":
+                case "TAKE_PROFIT_MARKET":
+                    return FuturesOrderType.TakeProfitMarket;
+                case "TSM":
+                case "TRAILING_STOP_MARKET":
+                    return FuturesOrderType.TrailingStopMarket;
+                case "LIQUIDATION":
+                    return FuturesOrderType.Liquidation;
+            }
+
+            throw new ArgumentOutOfRangeException($"{value} unknown kind of {nameof(OrderType)}");
         }
 
         public static OrderType ParseOrderType(string value)

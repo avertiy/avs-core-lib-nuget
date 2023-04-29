@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Dynamic;
+using AVS.CoreLib.Abstractions.Text;
 using AVS.CoreLib.Console.ColorFormatting;
-using AVS.CoreLib.Console.ColorFormatting.Extensions;
 using AVS.CoreLib.Console.ColorFormatting.Tags;
 using AVS.CoreLib.PowerConsole.Enums;
 using AVS.CoreLib.PowerConsole.Printers;
 using AVS.CoreLib.PowerConsole.Utilities;
 using AVS.CoreLib.PowerConsole.Writers;
-using AVS.CoreLib.Text.FormatProviders;
+using AVS.CoreLib.Text;
+using AVS.CoreLib.Text.Formatters;
 
 namespace AVS.CoreLib.PowerConsole
 {
@@ -31,6 +31,22 @@ namespace AVS.CoreLib.PowerConsole
         {
             get => _printer ??= new PowerConsolePrinter(System.Console.Out);
             set => _printer = value;
+        }
+
+        /// <summary> 
+        /// Format string if any text preprocessors are configured
+        /// <see cref="X.Format(FormattableString,IFormatPreprocessor)"/>
+        /// <seealso cref="X.FormatPreprocessor"/>
+        /// </summary>
+        /// /// <remarks>
+        /// X.Format extends standard .NET string format modifiers with custom modifiers
+        /// (<see cref="CustomFormatter"/> which is base class to implement custom formatter, example implementation see PriceFormatter in AVS.CoreLib.Trading package)
+        /// usage example: X.Format($"order: {type:+} {symbol:Q}"); `+` and `Q` are custom modifiers
+        /// or PowerConsole.XFormat($"order: {type:+} {symbol:Q}");
+        /// </remarks>
+        public static string XFormat(FormattableString str)
+        {
+            return Printer is XPrinter printer ? printer.XFormatInternal(str) : X.Format(str, X.FormatPreprocessor);
         }
 
         /// <summary>

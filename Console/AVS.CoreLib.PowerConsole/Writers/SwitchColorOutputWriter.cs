@@ -68,12 +68,24 @@ namespace AVS.CoreLib.PowerConsole.Writers
             PowerConsole.ApplyColors(colors);
 
             if (options.ColorTags is false)
-                base.WriteInternal(str, options.EndLine);
+                WriteInternal(str, options.EndLine);
             else
-                base.WriteInternal(str, options.EndLine, options.ColorTags);
+                WriteTextWithColorTags(str, options.EndLine);
 
             // restore scheme
             PowerConsole.ApplyColorScheme(backup);
+        }
+
+        protected void WriteTextWithColorTags(string str, bool endLine)
+        {
+            Writer.Write(str);
+            if (endLine)
+            {
+                Writer.WriteLine();
+                NewLineFlag = true;
+            }
+            else
+                NewLineFlag = str.EndsWith('\n');
         }
     }
 }

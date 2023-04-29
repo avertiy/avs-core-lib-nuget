@@ -4,14 +4,14 @@ using AVS.CoreLib.Logging.ColorFormatter.Extensions;
 using Microsoft.Extensions.Logging;
 
 namespace AVS.CoreLib.Logging.ColorFormatter.Utils;
-public interface IColorsProvider
+public interface IColorProvider
 {
     Colors GetColorsForArgument(ArgType kind);
     Colors GetColorsForArgument(ObjType type, FormatFlags flags);
     Colors GetColorsFor(LogPart part, LogLevel logLevel = LogLevel.None);
 }
 
-public class ColorsProvider : IColorsProvider
+public class ColorProvider : IColorProvider
 {
     public Colors GetColorsForArgument(ArgType kind)
     {

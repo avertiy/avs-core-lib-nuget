@@ -26,10 +26,10 @@
     <Compile Remove="Extensions\Extensions.cs" />
     <Compile Remove="Json\Newtonsoft\Converters\ResponseConverter.cs" />
     <Compile Remove="Json\Newtonsoft\Converters\TimestampNanoSecondsConverter.cs" />
+    <Compile Remove="Responses\CodeResponse.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AVS.CoreLib.Extensions" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>

@@ -4,7 +4,9 @@ using AVS.CoreLib.Extensions;
 namespace AVS.CoreLib.Console.ColorFormatting
 {
     /// <summary>
-    /// Colors helps to deal with string color format modifiers e.g. "some text {arg:-Red -bgGray}"
+    /// Foreground/Background colors
+    /// used for colorizing text (either ansi codes or color tags markup) 
+    /// {arg:-Red -bgGray} means Red - foreground color, Gray - background color
     /// </summary>
     public readonly struct Colors
     {

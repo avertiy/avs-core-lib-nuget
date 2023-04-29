@@ -1,5 +1,4 @@
-﻿using AVS.CoreLib.Logging.ColorFormatter.Extensions;
-using AVS.CoreLib.Logging.ColorFormatter.OutputBuilders;
+﻿using AVS.CoreLib.Logging.ColorFormatter.OutputBuilders;
 using AVS.CoreLib.Logging.ColorFormatter.Utils;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -12,7 +11,7 @@ public class ColorFormatter : ConsoleFormatter, IDisposable
 {
     private readonly IDisposable _optionsReloadToken;
     protected ColorFormatterOptions _options;
-    public static IColorsProvider ColorsProvider = new ColorsProvider();
+    public static IColorProvider ColorProvider = new ColorProvider();
     public ColorFormatter(IOptionsMonitor<ColorFormatterOptions> options)
         : base(nameof(ColorFormatter))
     {
@@ -27,7 +26,11 @@ public class ColorFormatter : ConsoleFormatter, IDisposable
         var outputBuilder = GetOutputBuilder();
         outputBuilder.Init(logEntry, scopeProvider);
         var message = outputBuilder.Build();
+
+        // write message to memory buffer if profiling enabled
         ConsoleLogProfiler.Write(message);
+
+        // write message to console stream
         textWriter.Write(message);
         return;
     }
@@ -44,7 +47,7 @@ public class ColorFormatter : ConsoleFormatter, IDisposable
         }
         else
         {
-            builder = new ColorOutputBuilder() { ColorsProvider = ColorsProvider, Options = _options };
+            builder = new ColorOutputBuilder() { ColorProvider = ColorProvider, Options = _options };
         }
         return builder;
     }

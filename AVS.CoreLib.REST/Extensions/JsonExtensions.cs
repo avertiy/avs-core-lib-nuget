@@ -83,17 +83,36 @@ namespace AVS.CoreLib.REST.Extensions
 
         public static T Deserialize<T>(this JsonResult jsonResult)
         {
-            using (var stringReader = new StringReader(jsonResult.JsonText))
-                using (var jsonTextReader = new JsonTextReader(stringReader))
-                    try
-                    {
-                        var serializer = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore };
-                        return (T)serializer.Deserialize(jsonTextReader, typeof(T));
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new Exception($"Deserialization of type {typeof(T).Name} failed", ex);
-                    }
+            using var stringReader = new StringReader(jsonResult.JsonText);
+            using var jsonTextReader = new JsonTextReader(stringReader);
+            try
+            {
+                var serializer = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore };
+                return (T)serializer.Deserialize(jsonTextReader, typeof(T));
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Deserialization of type {typeof(T).Name} failed", ex);
+            }
+        }
+
+        public static bool TryDeserialize<T>(this JsonResult jsonResult, out T value, out string error)
+        {
+            using var stringReader = new StringReader(jsonResult.JsonText);
+            using var jsonTextReader = new JsonTextReader(stringReader);
+            try
+            {
+                var serializer = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore };
+                value = (T)serializer.Deserialize(jsonTextReader, typeof(T));
+                error = null;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                value = default;
+                error = ex.Message;
+                return false;
+            }
         }
     }
 }

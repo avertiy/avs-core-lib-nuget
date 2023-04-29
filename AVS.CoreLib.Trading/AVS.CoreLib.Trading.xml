@@ -37,8 +37,13 @@
         <member name="T:AVS.CoreLib.Trading.Configuration.Markets.Preset">
             <summary>
             Define base asset(s) list <see cref="T:AVS.CoreLib.Trading.Configuration.Markets.MarketConfig.Combination"/> that will be combined with quote asset(s) to make trading pairs list
-            <see cref="M:AVS.CoreLib.Trading.Configuration.Markets.MarketConfigExtensions.GetTradingPairs(AVS.CoreLib.Trading.Configuration.Markets.MarketConfig,AVS.CoreLib.Trading.Configuration.Markets.Preset)"/>
+            <see cref="M:AVS.CoreLib.Trading.Configuration.Markets.MarketConfigExtensions.GetPairs(AVS.CoreLib.Trading.Configuration.Markets.MarketConfig.Combination[],AVS.CoreLib.Trading.Configuration.Markets.Preset)"/>
             Preset helps to reduce the number of available instruments and focus on a certain list of symbols
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Configuration.Markets.MarketsConfigManager.GetTradingPairs(System.String,AVS.CoreLib.Trading.Enums.AccountType,AVS.CoreLib.Trading.Configuration.Markets.Preset)">
+            <summary>
+            trading pairs for spot
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Trading.ServiceCollectionExtension.AddTradingCore(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
@@ -151,6 +156,238 @@
             dangerous things that has no or very poor fundamental, and might scam
             </summary>
         </member>
+        <member name="T:AVS.CoreLib.Trading.Enums.Futures.ContractType">
+            <summary>
+            Type of contract
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ContractType.Perpetual">
+            <summary>
+            Perpetual
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ContractType.CurrentMonth">
+            <summary>
+            Current month
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ContractType.CurrentQuarter">
+            <summary>
+            Current quarter
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ContractType.CurrentQuarterDelivering">
+            <summary>
+            Current quarter delivering
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ContractType.NextQuarter">
+            <summary>
+            Next quarter
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ContractType.NextQuarterDelivering">
+            <summary>
+            Next quarter delivering
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ContractType.NextMonth">
+            <summary>
+            Next month
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ContractType.Unknown">
+            <summary>
+            Unknown
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Enums.Futures.FuturesOrderType">
+            <summary>
+            Order type for a futures order
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.FuturesOrderType.Limit">
+            <summary>
+            Limit orders will be placed at a specific price. If the price isn't available in the order book for that asset the order will be added in the order book for someone to fill.
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.FuturesOrderType.Market">
+            <summary>
+            Market order will be placed without a price. The order will be executed at the best price available at that time in the order book.
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.FuturesOrderType.Stop">
+            <summary>
+            Stop order. Execute a limit order when price reaches a specific Stop price
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.FuturesOrderType.StopMarket">
+            <summary>
+            Stop market order. Execute a market order when price reaches a specific Stop price
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.FuturesOrderType.TakeProfit">
+            <summary>
+            Take profit order. Will execute a limit order when the price rises above a price to sell and therefor take a profit
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.FuturesOrderType.TakeProfitMarket">
+            <summary>
+            Take profit market order. Will execute a market order when the price rises above a price to sell and therefor take a profit
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.FuturesOrderType.TrailingStopMarket">
+            <summary>
+            A trailing stop order will execute an order when the price drops below a certain percentage from its all time high since the order was activated
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.FuturesOrderType.Liquidation">
+            <summary>
+            A liquidation order
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Enums.Futures.IncomeType">
+            <summary>
+            Type of futures income
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.Transfer">
+            <summary>
+            Transfer into account
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.WelcomeBonus">
+            <summary>
+            Futures welcome bonus
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.RealizedPnl">
+            <summary>
+            Futures realized profit
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.FundingFee">
+            <summary>
+            Futures funding fee
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.Commission">
+            <summary>
+            Futures trading commission
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.InsuranceClear">
+            <summary>
+            Insurance clear
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.ReferralKickback">
+            <summary>
+            Referral kickback
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.CommissionRebate">
+            <summary>
+            Commission rebate
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.ApiRebate">
+            <summary>
+            Api rebate
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.ContestReward">
+            <summary>
+            Contest reward
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.CrossCollateralTransfer">
+            <summary>
+            Cross collateral transfer
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.OptionsPremiumFee">
+            <summary>
+            Options premium fee
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.OptionsSettleProfit">
+            <summary>
+            Options settle profit
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.InternalTransfer">
+            <summary>
+            Internal transfer
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.AutoExchange">
+            <summary>
+            Auto exchange
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.DeliveredSettlement">
+            <summary>
+            Delivered settlement
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.CoinSwapDeposit">
+            <summary>
+            Coin swap deposit
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.CoinSwapWithdraw">
+            <summary>
+            Coin swap withdraw
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.PositionLimitIncreaseFee">
+            <summary>
+            Position limit increase fee
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Enums.Futures.PositionSide">
+            <summary>
+            Position side
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.PositionSide.Both">
+            <summary>
+            Both for one-way mode when placing an order
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.PositionSide.Short">
+            <summary>
+            Short used in two-way (hedge) mode
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.PositionSide.Long">
+            <summary>
+            Long used in two-way (hedge) mode
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Enums.Futures.WorkingType">
+            <summary>
+            Type of working
+            Stop price is triggered by: "MARK_PRICE" or "CONTRACT_PRICE". Default "CONTRACT_PRICE") 
+            </summary>
+            <remarks>
+            MARK PRICE refers to an estimated true value of a contract, it takes into consideration the fair value of an asset
+            to prevent unnecessary liquidations during a volatile market
+            Calculated as an average of the Last Price and the underlying asset’s Spot Price to avoid price manipulation of a single order book or exchange.
+            (проливы и пампы и даже тыки цены на минутке все равно стопы рвёт так что сглаживание ну такое себе, хотя может потому что by default is Contract price)
+            </remarks>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.WorkingType.Contract">
+            <summary>
+            Contract price type
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.WorkingType.Mark">
+            <summary>
+            Mark price type
+            </summary>
+        </member>
         <member name="F:AVS.CoreLib.Trading.Enums.OrderCondition.BuyIfAskRise">
             <summary>
             когда мы собираемся войти в рынок в long как только будет преодолена трендовая линия
@@ -164,6 +401,26 @@
             когда мы собираемся войти в рынок в short при падении ниже трендовой линии
             но текущая цена пока выше и не понятно будет ли дальнейшее снижение
             например: текущая цена 500$ а мы ждем падения ниже линии до 400$ только тогда открываем шорт
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Enums.OrderResponseType">
+            <summary>
+            Response type
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderResponseType.Acknowledge">
+            <summary>
+            Ack only
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderResponseType.Result">
+            <summary>
+            Resulting order
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderResponseType.Full">
+            <summary>
+            Full order info, only valid on SPOT orders  
             </summary>
         </member>
         <member name="F:AVS.CoreLib.Trading.Enums.OrderType.FOK">
@@ -183,12 +440,27 @@
         </member>
         <member name="F:AVS.CoreLib.Trading.Enums.OrderType.StopLimit">
             <summary>
-            stop limit
+            Stop loss order. Will execute a limit order when the price drops below a price to sell and therefor limit the loss
             </summary>
         </member>
         <member name="F:AVS.CoreLib.Trading.Enums.OrderType.Stop">
             <summary>
-            stop by market price i.e. can squeeze
+            Stop loss order. Will execute a market order when the price drops below a price to sell and therefor limit the loss
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.TakeProfit">
+            <summary>
+            Take profit order. Will execute a market order when the price rises above a price to sell and therefor take a profit
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.TakeProfitLimit">
+            <summary>
+            Take profit limit order. Will execute a limit order when the price rises above a price to sell and therefor take a profit
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.LimitMaker">
+            <summary>
+            Same as a limit order, however it will fail if the order would immediately match, therefor preventing taker orders
             </summary>
         </member>
         <member name="F:AVS.CoreLib.Trading.Enums.SymbolFormat.Normalized">
@@ -259,6 +531,11 @@
         <member name="F:AVS.CoreLib.Trading.Enums.TimeInForce.DAY">
             <summary>
             A day order remains in effect only for the given trading session (NYSE/Nasdaq)
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeInForce.GTX">
+            <summary>
+            Good Till Crossing (Post Only) 
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.DecimalExtensions.Deduct(System.Decimal,System.Decimal)">

@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
-using AVS.CoreLib.Console.ColorFormatting;
-using AVS.CoreLib.Console.ColorFormatting.Tags;
 using AVS.CoreLib.PowerConsole.Enums;
-using AVS.CoreLib.PowerConsole.Utilities;
-using AVS.CoreLib.PowerConsole.Writers;
+using AVS.CoreLib.PowerConsole.Extensions;
 using AVS.CoreLib.Text;
-using AVS.CoreLib.Text.TextProcessors;
 
 namespace AVS.CoreLib.PowerConsole.Printers
 {
@@ -25,8 +21,19 @@ namespace AVS.CoreLib.PowerConsole.Printers
 
         public void PrintF(FormattableString str, PrintOptions options)
         {
-            var text = XFormatInternal(str);
-            Writer.Write(text, options);
+            string formattedStr;
+
+            if (options.ColorPalette != null)
+            {
+                var str2 = str.Colorize(options.ColorPalette.Colors);
+                formattedStr = XFormatInternal(str2);
+            }
+            else
+            {
+                formattedStr = XFormatInternal(str);
+            }
+
+            Writer.Write(formattedStr, options);
         }
 
         public void SetCustomFormatter(Func<FormattableString, string> formatter, bool printF = true)
@@ -37,7 +44,7 @@ namespace AVS.CoreLib.PowerConsole.Printers
                 Format = formatter;
         }
 
-        protected string XFormatInternal(FormattableString str)
+        internal string XFormatInternal(FormattableString str)
         {
             //1. x-formatted string might contain color formatting: {text:-Color --BackgroundColor}
             //Table/Square/Header tag formatters are not implemented yet

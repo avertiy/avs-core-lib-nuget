@@ -29,17 +29,22 @@ namespace AVS.CoreLib.PowerConsole.Printers
         public bool VoidEmptyLines { get; set; } = true;
 
         /// <summary>
-        /// color for printed text
+        /// use color to colorize printed text in a certain color
         /// </summary>
         public ConsoleColor? Color { get; set; }
         /// <summary>
-        /// color scheme for printed text
+        /// use color scheme to colorize printed text (foreground/background colors)
         /// </summary>
         public ColorScheme? Scheme { get; set; }
         /// <summary>
-        /// colors for printed text
+        /// use colors to colorize printed text its quite similar to color scheme 
         /// </summary>
         public Colors? Colors { get; set; }
+
+        /// <summary>
+        /// use color palette to colorize <see cref="FormattableString"/> arguments in different colors
+        /// </summary>
+        public ColorPalette? ColorPalette { get; set; }
 
         public CTag? CTag { get; set; }
 
@@ -290,7 +295,19 @@ namespace AVS.CoreLib.PowerConsole.Printers
                 Color = color
             };
             return options;
-        } 
+        }
+
+        public static PrintOptions EmptyLinesVoided { get; set; } = new PrintOptions()
+        {
+            VoidEmptyLines = true,
+            EndLine = true
+        };
+
+        public static PrintOptions EmptyLinesAllowed { get; set; } = new PrintOptions()
+        {
+            VoidEmptyLines = false,
+            EndLine = true
+        };
 
         public static PrintOptions Inline { get; set; } = new PrintOptions()
         {
@@ -328,6 +345,26 @@ namespace AVS.CoreLib.PowerConsole.Printers
             ColorTags = false,
             Level = MessageLevel.Error
         };
+
+        public static PrintOptions FromColors(ConsoleColor[] colors, string? timeFormat = null, bool endLine = true)
+        {
+            return new PrintOptions()
+            {
+                ColorPalette = new ColorPalette(colors),
+                TimeFormat = timeFormat,
+                EndLine = endLine,
+            };
+        }
+
+        public static PrintOptions FromColorPalette(ColorPalette palette, string? timeFormat = null, bool endLine = true)
+        {
+            return new PrintOptions()
+            {
+                ColorPalette = palette,
+                TimeFormat = timeFormat,
+                EndLine = endLine,
+            };
+        }
 
         public static PrintOptions FromColor(ConsoleColor color, string? timeFormat = null, bool endLine = true)
         {
@@ -379,37 +416,6 @@ namespace AVS.CoreLib.PowerConsole.Printers
             };
 
             return copy;
-        }
-    }
-
-    /// <summary>
-    /// colorize arguments of <see cref="FormattableString"/>
-    /// similar to auto-highlight feature in color formatter for console logging
-    /// </summary>
-    public class MultiColorPrintOptions : PrintOptions
-    {
-        public ColorPalette Palette { get; set; }
-
-        public MultiColorPrintOptions(bool endLine = true)
-        {
-            Palette = new ColorPalette();
-            EndLine = endLine;
-        }
-
-        public MultiColorPrintOptions(ConsoleColor[] colors, bool endLine = true)
-        {
-            Palette = new ColorPalette(colors);
-            EndLine = endLine;
-        }
-
-        public static implicit operator MultiColorPrintOptions(ColorPalette palette)
-        {
-            return new MultiColorPrintOptions() { Palette = palette };
-        }
-
-        public static implicit operator MultiColorPrintOptions(ConsoleColor[] colors)
-        {
-            return new MultiColorPrintOptions(colors);
         }
     }
 }

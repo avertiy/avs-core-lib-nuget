@@ -10,8 +10,6 @@ namespace AVS.CoreLib.PowerConsole.Utilities
     {
         public static ColorScheme Default { get; internal set; }
 
-        
-
         public static ColorScheme GetCurrentScheme()
         {
             return new ColorScheme(Console.ForegroundColor, Console.BackgroundColor);

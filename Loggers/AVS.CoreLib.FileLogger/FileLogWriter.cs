@@ -30,7 +30,7 @@ namespace AVS.CoreLib.FileLogger
             }
         }
 
-        public void WriteLine(bool combineEmptyLines = true)
+        public void WriteLine(bool voidEmptyLines = true)
         {
             if (!_newLineFlag)
             {

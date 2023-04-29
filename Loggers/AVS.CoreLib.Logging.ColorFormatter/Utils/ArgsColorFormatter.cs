@@ -1,30 +1,33 @@
-﻿using System.Text;
+﻿using System.Globalization;
+using System.Text;
+using System.Text.RegularExpressions;
 using AVS.CoreLib.Console.ColorFormatting;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Logging.ColorFormatter.Enums;
 using AVS.CoreLib.Logging.ColorFormatter.Extensions;
-using Microsoft.VisualBasic.CompilerServices;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace AVS.CoreLib.Logging.ColorFormatter.Utils;
 
+/// <summary>
+/// extracts 
+/// format arguments and wrap them in color tags (highlight arguments feature)
+/// </summary>
+/// <example>
+/// logger.LogInformation("{arg:C}", 1.022); => "<Green>$1.02</Green>"
+/// i.e. arg=1.022 is formatted as currency with `C` modifier and wrapped into color tags
+/// </example>
 public class ArgsColorFormatter
 {
-    public IColorsProvider ColorsProvider { get; set; }
     public string Message { get; set; }
-    public IReadOnlyList<KeyValuePair<string, object>> State { get; set; }
-    public string Format { get; set; }
-    public string[] Keys { get; set; }
-    public string[] Values { get; set; }
-    public string Output { get; set; }
+    public IReadOnlyList<KeyValuePair<string, object>> State { get; private set; }
+    public string Format { get; private set; }
+    public string[] Keys { get; private set; }
+    public string[] Values { get; private set; }
+    public string Output { get; private set; }
 
-    public ArgsColorFormatter(string message, object state)
+    public void Init(IReadOnlyList<KeyValuePair<string, object>> state)
     {
-        Init(message, state as IReadOnlyList<KeyValuePair<string, object>>);
-    }
-
-    private void Init(string message, IReadOnlyList<KeyValuePair<string, object>> state)
-    {
-        Message = message;
         State = state;
         Keys = new string[state.Count - 1];
         Values = new string[state.Count - 1];
@@ -37,7 +40,7 @@ public class ArgsColorFormatter
             var key = kp.Key;
             var val = kp.Value;
 
-            var ind = Format.IndexOf('{'+key, startInd, StringComparison.Ordinal)+1;
+            var ind = Format.IndexOf('{' + key, startInd, StringComparison.Ordinal) + 1;
             var closeArgInd = Format.IndexOf('}', ind);
             var len = closeArgInd - ind;
 
@@ -63,6 +66,14 @@ public class ArgsColorFormatter
         }
     }
 
+    public static string Process(string message, IReadOnlyList<KeyValuePair<string, object>> state, IColorProvider colorProvider)
+    {
+        var formatter = new ArgsColorFormatter() { Message = message };
+        formatter.Init(state);
+        var str = formatter.FormatMessage(colorProvider);
+        return str;
+    }
+
     private string CustomFormat(object val, string format)
     {
         if (val is string str)
@@ -76,7 +87,7 @@ public class ArgsColorFormatter
         return string.Format($"{{0:{parts[0]}}}", val);
     }
 
-    public string FormatMessage()
+    public string FormatMessage(IColorProvider colorProvider)
     {
         var sb = new StringBuilder(Format);
 
@@ -97,7 +108,8 @@ public class ArgsColorFormatter
             {
                 var obj = State[i].Value;
                 var (type, flags) = obj.GetTypeAndFlags(value);
-                colors = GetColors(key, type, flags);
+
+                colors = colorProvider.GetColorsForArgument(type, flags); //GetColors(key, type, flags);
 
                 if (type == ObjType.Integer)
                 {
@@ -119,10 +131,10 @@ public class ArgsColorFormatter
         return Output;
     }
 
-    private Colors GetColors(string argKey, ObjType type, FormatFlags flags)
-    {
-        var colorProvider = ColorsProvider ?? new ColorsProvider();
-        var colors = colorProvider.GetColorsForArgument(type, flags);
-        return colors;
-    }
+    //private Colors GetColors(string argKey, ObjType type, FormatFlags flags)
+    //{
+    //    var colorProvider = ColorProvider ?? new ColorProvider();
+    //    var colors = colorProvider.GetColorsForArgument(type, flags);
+    //    return colors;
+    //}
 }

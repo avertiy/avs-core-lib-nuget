@@ -1,8 +1,5 @@
 ﻿using System;
-using AVS.CoreLib.Console.ColorFormatting;
-using AVS.CoreLib.Console.ColorFormatting.Tags;
 using AVS.CoreLib.PowerConsole.Enums;
-using AVS.CoreLib.PowerConsole.Utilities;
 using AVS.CoreLib.Text.TextProcessors;
 
 namespace AVS.CoreLib.PowerConsole.Printers
@@ -18,8 +15,6 @@ namespace AVS.CoreLib.PowerConsole.Printers
         void Print(string str, PrintOptions options);
 
         void Print(FormattableString str, PrintOptions options);
-
-        void Print(FormattableString str, MultiColorPrintOptions options);
 
         void SwitchMode(ColorMode mode);
     }

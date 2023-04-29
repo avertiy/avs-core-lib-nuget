@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.REST.Extensions;
@@ -30,18 +31,18 @@ namespace AVS.CoreLib.REST.Clients
             HttpRequestBuilder.SwitchKeys(publicKey, privateKey);
         }
 
-        public Task<HttpWebResponse> SendRequestAsync(IRequest request)
+        public Task<HttpWebResponse> SendRequestAsync(IRequest request, CancellationToken ct = default)
         {
             var httpRequest = HttpRequestBuilder.Build(request);
-            return httpRequest.FetchHttpResponseAsync();
+            return httpRequest.FetchHttpResponseAsync(maxAttempts: 2, ct);
         }
 
-        [Obsolete("Use SendRequestAsync(IRequest request)")]
-        public Task<HttpWebResponse> SendRequestAsync(IEndpoint endpoint, IPayload data = null)
-        {
-            var request = HttpRequestBuilder.Build(endpoint, data);
-            return request.FetchHttpResponseAsync();
-        }
+        //[Obsolete("Use SendRequestAsync(IRequest request)")]
+        //public Task<HttpWebResponse> SendRequestAsync(IEndpoint endpoint, IPayload data = null)
+        //{
+        //    var request = HttpRequestBuilder.Build(endpoint, data);
+        //    return request.FetchHttpResponseAsync();
+        //}
 
         [Obsolete("Use SendRequestAsync(IRequest request)")]
         public Task<string> QueryAsync(IEndpoint endpoint, IPayload data = null)
