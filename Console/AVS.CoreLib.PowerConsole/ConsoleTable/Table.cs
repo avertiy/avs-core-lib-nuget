@@ -19,7 +19,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
 
         public void CalculateWidth(bool force = false)
         {
-            if (TotalWidth > 0 && !force)
+            if (TotalWidth > 0 && force == false)
                 return;
 
             TotalWidth = 0;
@@ -51,7 +51,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
                     if (string.IsNullOrEmpty(cell.Text))
                         continue;
 
-                    if (cell.Text.Length > column.Width)
+                    if (cell.Text.Length+1 > column.Width)
                     {
                         var diff = cell.Text.Length - column.Width;
                         if (TotalWidth + diff + 2 < MAX_WIDTH)
@@ -113,7 +113,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
         public override string ToString()
         {
             if (AutoWidth)
-                CalculateWidth();
+                CalculateWidth(force: true);
             var sb = new StringBuilder();
 
             var line = this.GetBorderLine();
@@ -163,7 +163,12 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
             if (width.HasValue && width > minWidth)
                 colWidth = width.Value;
 
-            Columns.Add(new Column() { Title = title, Width = colWidth, ColorScheme = scheme });
+            Columns.Add(new Column()
+            {
+                Title = title, 
+                Width = colWidth, 
+                ColorScheme = scheme
+            });
         }
 
         public Row AddRow(ColorScheme? scheme = null)
@@ -202,6 +207,11 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
             return table;
         }
 
+        /// <summary>
+        /// Create table from columns 
+        /// </summary>
+        /// <param name="columns">columns</param>
+        /// <param name="schemes">seems not working at the moment</param>
         public static Table Create(string[] columns, ColorScheme[] schemes = null)
         {
             var table = new Table();

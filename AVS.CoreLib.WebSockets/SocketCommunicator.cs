@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Net;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
@@ -11,10 +10,19 @@ using AVS.CoreLib.WebSockets.Extensions;
 
 namespace AVS.CoreLib.WebSockets
 {
+    /// <summary>
+    ///  An abstraction layer over <see cref=" System.Net.WebSockets.ClientWebSocket"/>
+    ///  SocketCommunicator encapsulates the necessary routine:
+    ///   - opening web socket connection,
+    ///   - managing web socket state,
+    ///   - receiving messages loop in a background thread
+    ///   - firing events: ConnectionClosed, ConnectionError, MessageArrived / MessageArrivedAsync (async one is invoked with Task.Run to avoid blocking the listening thread) 
+    /// </summary>
     public class SocketCommunicator : ISocketCommunicator
     {
         private bool _disposing = false;
         private ClientWebSocket _webSocket;
+
         public WebSocketState State => _webSocket.State;
 
         /// <summary>
@@ -23,6 +31,7 @@ namespace AVS.CoreLib.WebSockets
         public int ConnectionTimeout { get; set; } = 180000;
 
         /// <summary>
+        /// Shortcut to <see cref="ClientWebSocketOptions.KeepAliveInterval"/>
         /// Default keep alive interval is 30 sec. <see cref="WebSocket.DefaultKeepAliveInterval"/>
         /// </summary>
         public TimeSpan KeepAliveInterval
@@ -38,7 +47,7 @@ namespace AVS.CoreLib.WebSockets
             _webSocket = new ClientWebSocket();
         }
 
-        public async Task<bool> ConnectAsync(Uri uri, CancellationToken cancellationToken)
+        public async Task<bool> ConnectAsync(Uri uri, CancellationToken ct)
         {
             start:
             if (_disposing)
@@ -54,42 +63,14 @@ namespace AVS.CoreLib.WebSockets
                 goto start;
             }
 
-            await _webSocket.ConnectAsync(uri, cancellationToken)
+            await _webSocket.ConnectAsync(uri, ct)
                 .ConfigureAwait(false);
 
-            _ = RunReceiveMessages(cancellationToken);
+            _ = RunReceiveMessages(ct);
 
             
             return State == WebSocketState.Open;
         }
-
-        //public async Task Test(Uri uri, string commandMessage, CancellationToken cancellationToken)
-        //{
-        //    await ConnectAsync(uri, cancellationToken).ConfigureAwait(false);
-        //    Console.WriteLine($"WebSocket state:{State}");
-        //    await SendAsync(commandMessage, cancellationToken).ConfigureAwait(false);
-        //    Console.WriteLine($"command has been sent");
-        //    Console.WriteLine($"Closing web socket");
-        //    Thread.Sleep(2500);
-        //    await CloseAsync().ConfigureAwait(false);
-        //    Thread.Sleep(100);
-        //    _webSocket.Dispose();
-        //    Console.WriteLine($"web socket is Disposed!");
-        //    _webSocket = new ClientWebSocket();
-        //    Console.WriteLine($"New web socket created");
-        //    await ConnectAsync(uri, cancellationToken).ConfigureAwait(false);
-        //    Console.WriteLine($"WebSocket state:{State}");
-        //    await SendAsync(commandMessage, cancellationToken).ConfigureAwait(false);
-        //    Thread.Sleep(2500);
-        //    Console.WriteLine($"Closing web socket");
-        //    await CloseAsync().ConfigureAwait(false);
-        //    Console.WriteLine($"web socket closed!");
-        //    Thread.Sleep(500);
-        //    _webSocket.Dispose();
-        //    Console.WriteLine($"web socket is Disposed!");
-        //    _webSocket = new ClientWebSocket();
-        //    Console.WriteLine($"New web socket created");
-        //}
 
         public async Task SendAsync(string commandMessage, CancellationToken cancellationToken)
         {
@@ -146,8 +127,8 @@ namespace AVS.CoreLib.WebSockets
                         goto start;
                     case WebSocketState.Open:
                         {
-                            await ReceiveMessagesLoopAsync(cancellationToken).ConfigureAwait(false);
-                            FireConnectionClosed();
+                            var reason = await ReceiveMessagesLoopAsync(cancellationToken).ConfigureAwait(false);
+                            FireConnectionClosed(reason);
                             break;
                         }
                 }
@@ -158,7 +139,7 @@ namespace AVS.CoreLib.WebSockets
             }
         }
 
-        private async Task ReceiveMessagesLoopAsync(CancellationToken cancellationToken)
+        private async Task<string> ReceiveMessagesLoopAsync(CancellationToken cancellationToken)
         {
             /*We define a certain constant which will represent
               size of received data. It is established by us and 
@@ -171,13 +152,19 @@ namespace AVS.CoreLib.WebSockets
             var receivedDataBuffer = new ArraySegment<byte>(new byte[maxMessageSize]);
 
             var memoryStream = new MemoryStream();
-
+            string reason = null;
             //var i = 1;
             // Check WebSocket state.
-            while (State == WebSocketState.Open && !_disposing)
+            while (true)
             {
+                if (_disposing)
+                {
+                    reason = "Disposing";
+                }
+
                 if (cancellationToken.IsCancellationRequested)
                 {
+                    reason = "CancellationRequested";
                     await CloseAsync();
                     break;
                 }
@@ -192,11 +179,19 @@ namespace AVS.CoreLib.WebSockets
                 if (webSocketReceiveResult.MessageType == WebSocketMessageType.Close)
                 {
                     await CloseAsync();
+                    reason = "MessageTypeClose";
                     break;
                 }
 
                 var message = await ReadMessageAsync(memoryStream);
                 FireMessageArrived(message);
+
+
+                if (State != WebSocketState.Open)
+                {
+                    reason = $"WebSocketState:{State}";
+                    break;
+                }
 
                 //if (i++ % 100 == 0)
                 //{
@@ -204,6 +199,8 @@ namespace AVS.CoreLib.WebSockets
                 //    throw new SocketCommunicatorException("test exception");
                 //}
             }
+
+            return reason;
         }
 
         private async Task CloseAsync()
@@ -225,7 +222,7 @@ namespace AVS.CoreLib.WebSockets
 
         public event Action<string> MessageArrived;
         public event Action<string> MessageArrivedAsync;
-        public event Action ConnectionClosed;
+        public event Action<string> ConnectionClosed;
         public event Action<Exception> ConnectionError;
 
         /// <summary>
@@ -246,9 +243,9 @@ namespace AVS.CoreLib.WebSockets
         /// <summary>
         /// Fire ConnectionClosed event
         /// </summary>
-        protected virtual void FireConnectionClosed()
+        protected virtual void FireConnectionClosed(string reason)
         {
-            ConnectionClosed?.Invoke();
+            ConnectionClosed?.Invoke(reason);
         }
 
         /// <summary>
@@ -266,5 +263,33 @@ namespace AVS.CoreLib.WebSockets
             _webSocket.Dispose();
             _webSocket = null;
         }
+
+        //public async Task Test(Uri uri, string commandMessage, CancellationToken cancellationToken)
+        //{
+        //    await ConnectAsync(uri, cancellationToken).ConfigureAwait(false);
+        //    Console.WriteLine($"WebSocket state:{State}");
+        //    await SendAsync(commandMessage, cancellationToken).ConfigureAwait(false);
+        //    Console.WriteLine($"command has been sent");
+        //    Console.WriteLine($"Closing web socket");
+        //    Thread.Sleep(2500);
+        //    await CloseAsync().ConfigureAwait(false);
+        //    Thread.Sleep(100);
+        //    _webSocket.Dispose();
+        //    Console.WriteLine($"web socket is Disposed!");
+        //    _webSocket = new ClientWebSocket();
+        //    Console.WriteLine($"New web socket created");
+        //    await ConnectAsync(uri, cancellationToken).ConfigureAwait(false);
+        //    Console.WriteLine($"WebSocket state:{State}");
+        //    await SendAsync(commandMessage, cancellationToken).ConfigureAwait(false);
+        //    Thread.Sleep(2500);
+        //    Console.WriteLine($"Closing web socket");
+        //    await CloseAsync().ConfigureAwait(false);
+        //    Console.WriteLine($"web socket closed!");
+        //    Thread.Sleep(500);
+        //    _webSocket.Dispose();
+        //    Console.WriteLine($"web socket is Disposed!");
+        //    _webSocket = new ClientWebSocket();
+        //    Console.WriteLine($"New web socket created");
+        //}
     }
 }

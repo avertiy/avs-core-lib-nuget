@@ -36,7 +36,35 @@ namespace AVS.CoreLib.REST.Extensions
         }
 
         /// <summary>
-        /// create <see cref="ObjectProjection{T}"/>
+        /// Create object projection <see cref="ObjectProjection{T}"/> to map json object to type <see cref="T"/> 
+        /// <code>
+        /// <see cref="JsonResult.JsonText"/> should represent a json object, e.g.:
+        /// {
+        ///     "prop1" = 123,
+        ///     "prop2" = [],
+        ///     "prop3" = { ... }
+        /// }
+        /// </code>
+        /// A concrete type projection examples:
+        /// <code>
+        ///    //direct mapping 
+        ///    var projection = jsonResult.AsObject`MyObject`()
+        ///    Response`MyObject` response = projection.Map();
+        /// 
+        ///    //indirect mapping:
+        ///    var projection = jsonResult.AsObject{MyObject}().UseProxy`MyProxy{MyObject}`();
+        ///    Response`MyObject` response = projection.Map();
+        /// </code>
+        /// An interface projection (<seealso cref="AsObject{T, TProjection}"/> could be more convenient for interface projection): 
+        /// <code>
+        ///    //interface projection (direct mapping):
+        ///    var projection = jsonResult.AsObject{IMyObject}()
+        ///    Response`IMyObject` response = projection.Map{MyObject}();
+        ///
+        ///    //interface projection (indirect mapping):
+        ///    var projection = jsonResult.AsObject{IMyObject}().UseProxy`MyProxy`();
+        ///    Response`IMyObject` response = projection.Map`MyProjection`(); //here MyProxy create IMyObject from MyProjection
+        /// </code>
         /// </summary>
         public static ObjectProjection<T> AsObject<T>(this JsonResult result)
         {
@@ -44,7 +72,14 @@ namespace AVS.CoreLib.REST.Extensions
         }
 
         /// <summary>
-        /// create <see cref="ObjectProjection{T,TProjection}"/>
+        /// Create object projection <see cref="ObjectProjection{T,TProjection}"/> to map a json object to type <see cref="TProjection"/>.
+        /// but return result as a <see cref="Response{T}"/>
+        /// It is case of indirect mapping, when <see cref="TProjection"/> neither implement, neither inherit type <see cref="T"/>.
+        /// The <see cref="ObjectProjection{T,TProjection}.UseProxy{TProxy}"/> is required, the proxy creates <see cref="T"/> from <see cref="TProjection"/>:
+        /// <code>
+        ///    var projection = jsonResult.AsObject{IMyObject, ProjectionType}().UseProxy`MyProxy{IMyObject}`();
+        ///    Response`IMyObject` response = projection.Map();
+        /// </code>
         /// </summary>
         public static ObjectProjection<T, TProjection> AsObject<T, TProjection>(this JsonResult result)
             where TProjection : new()

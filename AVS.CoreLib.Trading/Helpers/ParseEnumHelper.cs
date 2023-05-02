@@ -70,6 +70,16 @@ namespace AVS.CoreLib.Trading.Helpers
                     obj = ParseEnumHelper.ParseMarginType(value);
                     return true;
                 }
+                case nameof(AccountUpdateReason):
+                {
+                    obj = ParseEnumHelper.ParseAccountUpdateReason(value);
+                    return true;
+                }
+                case nameof(ExecutionType):
+                {
+                    obj = ParseEnumHelper.ParseExecutionType(value);
+                    return true;
+                }
 
                 default:
                 {
@@ -78,6 +88,74 @@ namespace AVS.CoreLib.Trading.Helpers
                 }
             }
         }
+
+        private static ExecutionType ParseExecutionType(string value)
+        {
+            switch (value.ToUpper())
+            {
+                case "NEW":
+                    return ExecutionType.New;
+                case "CANCELED":
+                    return ExecutionType.Canceled;
+                case "REPLACED":
+                    return ExecutionType.Replaced;
+                case "REJECTED":
+                    return ExecutionType.Rejected;
+                case "TRADE":
+                    return ExecutionType.Trade;
+                case "EXPIRED":
+                    return ExecutionType.Expired;
+                case "AMENDMENT":
+                    return ExecutionType.Amendment;
+                default:
+                    throw new NotSupportedException($"Unknown {nameof(ExecutionType)} '{value}'");
+            }
+        }
+
+        private static AccountUpdateReason ParseAccountUpdateReason(string value)
+        {
+            switch (value.ToUpper())
+            {
+                case "DEPOSIT":
+                    return AccountUpdateReason.Deposit;
+                case "WITHDRAW":
+                    return AccountUpdateReason.Withdraw;
+                case "COIN_SWAP_DEPOSIT":
+                    return AccountUpdateReason.CoinSwapDeposit;
+                case "COIN_SWAP_WITHDRAW":
+                    return AccountUpdateReason.CoinSwapWithdraw;
+                case "ADMIN_DEPOSIT":
+                    return AccountUpdateReason.AdminDeposit;
+                case "ADMIN_WITHDRAW":
+                    return AccountUpdateReason.AdminWithdraw;
+                case "ORDER":
+                    return AccountUpdateReason.Order;
+                case "FUNDING_FEE":
+                    return AccountUpdateReason.FundingFee;
+                case "ADJUSTMENT":
+                    return AccountUpdateReason.Adjustment;
+                case "WITHDRAW_REJECT":
+                    return AccountUpdateReason.WithdrawReject;
+
+                case "INSURANCE_CLEAR":
+                    return AccountUpdateReason.InsuranceClear;
+                case "MARGIN_TRANSFER":
+                    return AccountUpdateReason.MarginTransfer;
+                case "MARGIN_TYPE_CHANGE":
+                    return AccountUpdateReason.MarginTypeChange;
+                case "ASSET_TRANSFER":
+                    return AccountUpdateReason.AssetTransfer;
+                case "OPTIONS_PREMIUM_FEE":
+                    return AccountUpdateReason.OptionsPremiumFee;
+                case "OPTIONS_SETTLE_PROFIT":
+                    return AccountUpdateReason.OptionsSettleProfit;
+                //case "AUTO_EXCHANGE":
+                //    return AccountUpdateReason.CoinSwapWithdraw;
+                default:
+                    throw new NotSupportedException($"Unknown {nameof(AccountUpdateReason)} '{value}'");
+            }
+        }
+
 
         private static MarginType ParseMarginType(string value)
         {
@@ -280,7 +358,7 @@ namespace AVS.CoreLib.Trading.Helpers
                 {
                     if(str == "CLOSED")
                         return OrderState.Filled;
-                    if (str is "C" or "CANCELLED")
+                    if (str is "C" or "CANCELED")
                         return OrderState.Canceled;
 
                     throw new NotSupportedException($"Unknown {nameof(OrderState)} '{value}'");

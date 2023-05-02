@@ -8,105 +8,92 @@ using Microsoft.Extensions.Logging;
 
 namespace AVS.CoreLib.WebSockets
 {
+    /// <summary>
+    /// An abstraction layer on websocket client, help to deal with a certain websocket api url, subscribing on channel(s)/stream(s)
+    /// </summary>
     public class ChannelManager : IChannelManager
     {
         private readonly ILogger _logger;
         private readonly IMessageProcessor _messageProcessor;
         private readonly Dictionary<string, string> _channels = new Dictionary<string, string>();
 
-        public bool AutoReconnect => _channels.Any();
+        #region props
 
-        public bool DiagnosticEnabled
-        {
-            get => WebSocketClient.DiagnosticEnabled; 
-            set => WebSocketClient.DiagnosticEnabled = value;
-        }
+        public bool AutoReconnect { get; set; }
 
-        public TimeSpan KeepAliveInterval
-        {
-            get => WebSocketClient.KeepAliveInterval;
-            set => WebSocketClient.KeepAliveInterval = value;
-        }
+        public int Count => _channels.Count;
 
-        public Uri Uri
-        {
-            get => WebSocketClient.Uri;
-            set => WebSocketClient.Uri = value;
-        }
+        public string BaseAddress { get; set; }
 
-        public WebSocketClient WebSocketClient { get; }
+        public IWebSocketClient Client { get; } 
+        #endregion
 
-        public event Action<string> MessageArrived;
-        public event Action<Exception> ConnectionClosed;
+        public event Action<string> ConnectionClosed;
 
         public ChannelManager(ILogger logger, IMessageProcessor messageProcessor) : this(logger, messageProcessor, new WebSocketClient(logger))
         {
         }
 
-        public ChannelManager(ILogger logger, IMessageProcessor messageProcessor, string wssUrl) 
-            : this(logger, messageProcessor, new WebSocketClient(logger) { Uri = new Uri(wssUrl) })
-        {
-        }
-
-        public ChannelManager(ILogger logger, IMessageProcessor messageProcessor, WebSocketClient client)
+        public ChannelManager(ILogger logger, IMessageProcessor messageProcessor, IWebSocketClient client)
         {
             _logger = logger;
             _messageProcessor = messageProcessor;
-            WebSocketClient = client;
-            WebSocketClient.ConnectionClosed += OnConnectionClosed;
-            WebSocketClient.MessageArrived += OnMessageArrived;
+            Client = client;
+            Client.ConnectionClosed += OnConnectionClosed;
+            Client.MessageArrived += OnMessageArrived;
         }
 
         protected void OnMessageArrived(string message)
         {
             _messageProcessor.ProcessMessage(message);
-            MessageArrived?.Invoke(message);
         }
 
-        private async void OnConnectionClosed(Exception error)
+        private async void OnConnectionClosed(string reason)
         {
-            if (AutoReconnect)
+            if (AutoReconnect && _channels.Any())
             {
-                await WebSocketClient.ReconnectAsync().ConfigureAwait(false);
-                
-                if (WebSocketClient.State == WebSocketState.Open)
-                {
-                    _logger.LogError("{class}::{method}: reconnect was not successful",
-                        nameof(ChannelManager), nameof(OnConnectionClosed));
-                }
-                else
+                await Client.ReconnectAsync().ConfigureAwait(false);
+
+                if (Client.State == WebSocketState.Open)
                 {
                     // re-subscribe on channels
                     foreach (var kp in _channels)
                     {
-                        await WebSocketClient.SendAsync(kp.Value);
+                        await Client.SendAsync(BaseAddress, kp.Value);
                     }
+
                     return;
                 }
             }
 
-            ConnectionClosed?.Invoke(error);
+            _logger.LogInformation("{class}: websocket connection `{address}` has been closed [{error}]",
+                nameof(ChannelManager), BaseAddress, reason);
+
+            ConnectionClosed?.Invoke(reason);
         }
 
-        public async Task Subscribe(string channel, string command, bool autoReconnect = false)
+        public async Task Subscribe(string channelName, string command, bool autoReconnect = false)
         {
-            await WebSocketClient.SendAsync(command);
+            await Client.SendAsync(BaseAddress, command);
             
             if(autoReconnect)
-                _channels.Add(channel, command);
+                _channels.Add(channelName, command);
         }
 
-        public async Task UnSubscribe(string channel, string command)
+        public async Task UnSubscribe(string channelName, string command)
         {
-            await WebSocketClient.SendAsync(command);
+            await Client.SendAsync(BaseAddress, command);
 
-            if (_channels.ContainsKey(channel))
-                _channels.Remove(channel);
+            // remove channel from auto-reconnect list
+            if (_channels.ContainsKey(channelName))
+            {
+                _channels.Remove(channelName);
+            }
         }
         
         public void Dispose()
         {
-            WebSocketClient?.Dispose();
+            Client?.Dispose();
         }
 
         public void ClearChannels()

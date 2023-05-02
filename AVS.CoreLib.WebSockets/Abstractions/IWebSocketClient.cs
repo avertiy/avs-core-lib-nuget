@@ -10,14 +10,12 @@ namespace AVS.CoreLib.WebSockets.Abstractions
         WebSocketState State { get; }
         ClientWebSocketOptions Options { get; }
         bool DiagnosticEnabled { get; set; }
-        Uri Uri { get; set; }
         TimeSpan KeepAliveInterval { get; set; }
 
-        event Action<Exception> ConnectionClosed;
-        event Action<string> MessageArrived;
-
-        Task SendAsync(string command);
-
+        Task SendAsync(string url, string command);
         Task ReconnectAsync();
+
+        event Action<string> ConnectionClosed;
+        event Action<string> MessageArrived;
     }
 }

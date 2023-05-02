@@ -25,7 +25,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
         public static ColorMarkupString ToColorFormattedString(this Table table, bool useAutoWidth = true)
         {
             if (useAutoWidth)
-                table.CalculateWidth();
+                table.CalculateWidth(force: true);
             var sb = new StringBuilder();
 
             var line = table.GetBorderLine();

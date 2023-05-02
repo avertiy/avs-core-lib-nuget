@@ -1,14 +1,9 @@
-﻿using System;
-using AVS.CoreLib.Abstractions;
-using AVS.CoreLib.Abstractions.Bootstrap;
+﻿using AVS.CoreLib.Abstractions.Bootstrap;
 using AVS.CoreLib.ConsoleLogger;
 using AVS.CoreLib.ConsoleTools.Bootstrapping;
-using AVS.CoreLib.Logging.ColorFormatter;
 using AVS.CoreLib.Logging.ColorFormatter.Extensions;
-using AVS.CoreLib.Logging.ColorFormatter.Utils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace AVS.CoreLib.Loggers.TestApp;
 
@@ -45,8 +40,7 @@ internal class Program
 
     private static IServiceCollection AddConsoleFormatter(IServiceCollection services)
     {
-        return services
-            .AddLogging(builder =>
+        return services.AddLogging(builder =>
             {
                 builder
                     .AddConsoleWithColorFormatter(x =>

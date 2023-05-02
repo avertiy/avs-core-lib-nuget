@@ -6,7 +6,12 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
     public class Column
     {
         public string Title { get; set; }
-        public int Width { get; set; }
+
+        public int Width
+        {
+            get; 
+            set;
+        }
         public ColorScheme? ColorScheme { get; set; }
         public override string ToString()
         {

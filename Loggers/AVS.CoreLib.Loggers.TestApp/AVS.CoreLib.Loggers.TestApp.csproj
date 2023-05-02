@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\AVS.CoreLib.Extensions\AVS.CoreLib.Extensions.csproj" />
     <ProjectReference Include="..\..\AVS.CoreLib\AVS.CoreLib.csproj" />
     <ProjectReference Include="..\..\Console\AVS.CoreLib.ConsoleTools\AVS.CoreLib.ConsoleTools.csproj" />
     <ProjectReference Include="..\AVS.CoreLib.ConsoleLogger\AVS.CoreLib.ConsoleLogger.csproj" />

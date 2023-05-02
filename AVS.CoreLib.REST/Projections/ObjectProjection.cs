@@ -6,6 +6,33 @@ using Newtonsoft.Json.Linq;
 
 namespace AVS.CoreLib.REST.Projections
 {
+    /// <summary>
+    /// create object projection to map json to type <see cref="T"/>
+    /// expected json that represent an object e.g. { "prop1" = 123, "prop2" = [], ... }
+    /// 
+    /// <code>
+    ///    //use it with concrete type projection:
+    ///    //direct mapping 
+    ///    var projection = jsonResult.AsObject`MyObject`()
+    ///    Response`MyObject` response = projection.Map();
+    /// 
+    ///    //indirect mapping:
+    ///    var projection = jsonResult.AsObject{MyObject}().UseProxy`MyProxy{MyObject}`();
+    ///    Response`MyObject` response = projection.Map();
+    /// </code>
+    ///  An interface projection is also possible: 
+    /// <code>
+    ///    //interface projection (direct mapping):
+    ///    var projection = jsonResult.AsObject{IMyObject}()
+    ///    Response`IMyObject` response = projection.Map{MyObject}();
+    /// </code>
+    ///  An interface projection (indirect mapping)
+    ///  <seealso cref="ObjectProjection{T, TProjection}"/> could be more convenient for this
+    /// <code>
+    ///    var projection = jsonResult.AsObject{IMyObject}().UseProxy`MyProxy`();
+    ///    Response`IMyObject` response = projection.Map`MyProjection`(); //here MyProxy create IMyObject from MyProjection
+    /// </code>
+    /// </summary>
     public class ObjectProjection<T> : Projection
     {
         protected Action<T> _postProcessAction;
@@ -196,7 +223,15 @@ namespace AVS.CoreLib.REST.Projections
     }
 
     /// <summary>
-    /// requires proxy 
+    /// Create object projection to map a json object to type <see cref="TProjection"/>
+    /// but return result as a <see cref="Response{T}"/>
+    /// 
+    /// It is case of indirect mapping, when <see cref="TProjection"/> neither implement, neither inherit type <see cref="T"/>
+    /// The <see cref="UseProxy{TProxy}"/> is required, the proxy creates <see cref="T"/> from <see cref="TProjection"/>:
+    /// <code>
+    ///    var projection = jsonResult.AsObject{IMyObject, ProjectionType}().UseProxy`MyProxy{IMyObject}`();
+    ///    Response`IMyObject` response = projection.Map();
+    /// </code>
     /// </summary>
     public class ObjectProjection<T, TProjection> : Projection
         where TProjection : new()
@@ -267,12 +302,6 @@ namespace AVS.CoreLib.REST.Projections
             if (_proxy == null)
                 throw new AppException("Proxy is not initialized", "You might need to use UseProxy<TProxy>() method first");
         }
-
-        //[Obsolete]
-        //public Task<Response<T>> MapAsync()
-        //{
-        //    return MapAsyncInternal(Map);
-        //}
 
         public Response<T> Map()
         {

@@ -7,9 +7,12 @@ using Microsoft.Extensions.Logging;
 
 namespace AVS.CoreLib.WebSockets
 {
-    /// <summary>
-    /// Represents base web socket client that utilize <seealso cref="ISocketCommunicator"/> to subscribe on wss channel
-    /// with auto reconnect option
+    /// <summary> 
+    /// WebSocketClient represent the 2nd layer of abstraction over <see cref="System.Net.WebSockets.ClientWebSocket"/>
+    /// It is based on <see cref="ISocketCommunicator"/> which is the 1st layer of abstraction.
+    /// The idea is to provide a more simple interface encapsulating routine for reconnection, sending a command/message, disposing websocket and handling the communicator events.
+    /// The client wrap socket communicator events forwarding only <see cref="MessageArrived"/> and <see cref="ConnectionClosed"/>.
+    /// Also when <see cref="DiagnosticEnabled"/> is set to true enables logging that helps to identify websocket communication issues
     /// </summary>
     public class WebSocketClient : IWebSocketClient
     {
@@ -28,16 +31,19 @@ namespace AVS.CoreLib.WebSockets
 
         public bool IsConnected => State == WebSocketState.Open;
 
+        /// <summary>
+        /// shortcut to <see cref="ClientWebSocketOptions.KeepAliveInterval"/>
+        /// </summary>
         public TimeSpan KeepAliveInterval
         {
-            get => _communicator.KeepAliveInterval;
-            set => _communicator.KeepAliveInterval = value;
+            get => _communicator.Options.KeepAliveInterval;
+            set => _communicator.Options.KeepAliveInterval = value;
         }
 
         public ClientWebSocketOptions Options => _communicator.Options;
 
 
-        public Uri Uri
+        private Uri Uri
         {
             get => _uri == null ? throw new InvalidOperationException("Uri was not initialized") : _uri;
             set => _uri = value;
@@ -45,12 +51,10 @@ namespace AVS.CoreLib.WebSockets
 
         #endregion
 
-        public event Action<Exception> ConnectionClosed;
-
-        /// <summary>
-        /// use MessageArrived event if WebSocketClient is used directly, if it is inherited override ProcessMessage
-        /// </summary>
-        public event Action<string> MessageArrived;
+        #region events
+        public event Action<string> ConnectionClosed;
+        public event Action<string> MessageArrived; 
+        #endregion
 
         public WebSocketClient(ILogger logger): this(new SocketCommunicator(), logger)
         {
@@ -67,8 +71,12 @@ namespace AVS.CoreLib.WebSockets
             _cancellationToken = _cancellationTokenSource.Token;
         }
 
-        public async Task SendAsync(string command)
+        public async Task SendAsync(string url, string command)
         {
+            Uri = _uri == null || State is WebSocketState.Closed or WebSocketState.None
+                ? new Uri(url)
+                : throw new ArgumentException($"WebSocket state {State} does not allow to switch uri. Multiple websocket connections not supported yet.");
+
             await EnsureConnected().ConfigureAwait(false);
             await SendCommandAsync(command).ConfigureAwait(false);
         }
@@ -112,8 +120,6 @@ namespace AVS.CoreLib.WebSockets
                 throw;
             }
         }
-
-
         protected virtual void OnMessageArrived(string message)
         {
             if (DiagnosticEnabled)
@@ -132,27 +138,27 @@ namespace AVS.CoreLib.WebSockets
                 _logger.LogError(error, "{class}::{method}: socket connection error", nameof(WebSocketClient), nameof(OnSocketConnectionError));
             }
 
-            FireConnectionClosed(error);
+            FireConnectionClosed(error.Message);
         }
 
-        protected virtual void OnSocketConnectionClosed()
+        protected virtual void OnSocketConnectionClosed(string reason)
         {
             if (DiagnosticEnabled)
             {
-                _logger.LogInformation("{class}::{method}: socket connection closed [reconnect: {reconnect}]",
-                    nameof(WebSocketClient), nameof(OnSocketConnectionClosed), !IsDisposing);
+                _logger.LogInformation("{class}:Socket connection closed [reason: {reason}, reconnect: {reconnect}]",
+                    nameof(WebSocketClient), reason, !IsDisposing);
             }
 
-            FireConnectionClosed();
+            FireConnectionClosed(reason);
         }
 
         protected virtual void ProcessMessage(string message)
         {
         }
 
-        protected void FireConnectionClosed(Exception error = null)
+        protected void FireConnectionClosed(string reason)
         {
-            ConnectionClosed?.Invoke(error);
+            ConnectionClosed?.Invoke(reason);
         }
 
         public async Task ReconnectAsync()
@@ -162,10 +168,11 @@ namespace AVS.CoreLib.WebSockets
 
             var attempt = 0;
             connect:
+
             if (DiagnosticEnabled)
             {
-                _logger.LogInformation("{class}::{method}: trying to reconnect",
-                    nameof(WebSocketClient), nameof(ReconnectAsync));
+                _logger.LogInformation("{class}::{method}: trying to reconnect [uri: {uri}]",
+                    nameof(WebSocketClient), nameof(ReconnectAsync), Uri);
             }
 
             try
@@ -175,6 +182,12 @@ namespace AVS.CoreLib.WebSockets
             }
             catch (SocketCommunicatorException ex)
             {
+                if (DiagnosticEnabled)
+                {
+                    _logger.LogInformation(ex, "{class}::{method}: reconnect failed [uri: {uri}, attempt #{attempt}, error: {error}]",
+                        nameof(WebSocketClient), nameof(ReconnectAsync), Uri, attempt, ex.Message);
+                }
+
                 // try a few times before throw
                 attempt++;
                 if (attempt < 10)
@@ -184,7 +197,7 @@ namespace AVS.CoreLib.WebSockets
                     goto connect;
                 }
 
-                FireConnectionClosed();
+                FireConnectionClosed(ex.Message);
             }
         }
 
@@ -197,15 +210,6 @@ namespace AVS.CoreLib.WebSockets
             _communicator.Dispose();
             _communicator = null;
         }
-
-        //private async Task TestWebSocket(string commandMessage)
-        //{
-        //    _logger.LogInformation("{class}::{method}: Test websocket",
-        //        nameof(WebSocketClient), nameof(TestWebSocket), _uri, State);
-        //    await _communicator.Test(_uri, commandMessage, _cancellationToken);
-        //    _logger.LogInformation("{class}::{method}: Test completed",
-        //        nameof(WebSocketClient), nameof(TestWebSocket), _uri, State);
-        //}
     }
 
 }

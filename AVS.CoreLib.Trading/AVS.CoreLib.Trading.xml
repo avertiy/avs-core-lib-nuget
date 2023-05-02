@@ -156,6 +156,91 @@
             dangerous things that has no or very poor fundamental, and might scam
             </summary>
         </member>
+        <member name="T:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason">
+            <summary>
+            Account update reason
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.Deposit">
+            <summary>
+            Deposit
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.Withdraw">
+            <summary>
+            Withdraw
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.Order">
+            <summary>
+            Order
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.FundingFee">
+            <summary>
+            Funding Fee
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.WithdrawReject">
+            <summary>
+            Withdraw Reject
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.Adjustment">
+            <summary>
+            Adjustment
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.InsuranceClear">
+            <summary>
+            Insurance Clear
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.AdminDeposit">
+            <summary>
+            Admin Deposit
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.AdminWithdraw">
+            <summary>
+            Admin Withdraw
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.MarginTransfer">
+            <summary>
+            Margin Transfer
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.MarginTypeChange">
+            <summary>
+            Margin Type Change
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.AssetTransfer">
+            <summary>
+             Asset Transfer
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.OptionsPremiumFee">
+            <summary>
+            Options Premium Fee
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.OptionsSettleProfit">
+            <summary>
+            Options Settle Profit
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.CoinSwapWithdraw">
+            <summary>
+            Coin swap withdraw
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.CoinSwapDeposit">
+            <summary>
+            Coin swap deposit
+            </summary>
+        </member>
         <member name="T:AVS.CoreLib.Trading.Enums.Futures.ContractType">
             <summary>
             Type of contract
@@ -199,6 +284,51 @@
         <member name="F:AVS.CoreLib.Trading.Enums.Futures.ContractType.Unknown">
             <summary>
             Unknown
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Enums.Futures.ExecutionType">
+            <summary>
+            The type of execution
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ExecutionType.New">
+            <summary>
+            New
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ExecutionType.Canceled">
+            <summary>
+            Canceled
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ExecutionType.Replaced">
+            <summary>
+            Replaced
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ExecutionType.Rejected">
+            <summary>
+            Rejected
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ExecutionType.Trade">
+            <summary>
+            Trade
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ExecutionType.Expired">
+            <summary>
+            Expired
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ExecutionType.Amendment">
+            <summary>
+            Amendment
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ExecutionType.TradePrevention">
+            <summary>
+            Self trade prevented
             </summary>
         </member>
         <member name="T:AVS.CoreLib.Trading.Enums.Futures.FuturesOrderType">

@@ -22,7 +22,9 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
             try
             {
                 PowerConsole.SwitchColorMode(ColorMode.AnsiCodes);
-                
+
+                PrintTableTests();
+
                 //FormatPreprocessorTest();
                 WriteTests();
                 WriteLineTests();
@@ -33,7 +35,7 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
                 //format features tests
                 PrintHeader();
                 PrintArrayTests();
-                PrintTableTests();
+                
                 //PrintColorPaletteTest();
 
                 PrintUtilitiesTests();
@@ -251,7 +253,16 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
 
         public void PrintTableTests()
         {
-            PowerConsole.PrintHeader($"PrintTable");
+            PowerConsole.PrintHeader($"PrintTable tests");
+
+            var tbl = Table.Create(new[] { "Col1", "Col2" },
+                new ColorScheme[] { ColorScheme.Success, ColorScheme.Info });
+            tbl.AddRow(new object[] { "1203", 1234567890 });
+            tbl.AddRow(new object[] { 9876543210, 12.1234567890123m });
+            tbl.CalculateWidth(true);
+            PowerConsole.PrintTable(tbl);
+
+            
             var arr = new[] {
                 new
                 {

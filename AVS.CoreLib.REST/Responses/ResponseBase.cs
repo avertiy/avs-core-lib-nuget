@@ -38,9 +38,12 @@ namespace AVS.CoreLib.REST.Responses
             return (Success ? "Response - OK " : $"Response - Fail [{Error}]").Append(Source, "[Source: {0}]");
         }
 
-        public static implicit operator bool(ResponseBase foo)
+        /// <summary>
+        /// Overwrite bool check so you can use if(response) instead of if(response.Success)
+        /// </summary>
+        public static implicit operator bool(ResponseBase response)
         {
-            return foo.Success;
+            return response is { Success: true };
         }
     }
 }

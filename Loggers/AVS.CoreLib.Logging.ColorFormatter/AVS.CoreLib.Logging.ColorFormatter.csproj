@@ -38,8 +38,6 @@
     <Compile Remove="Utils\LogValuesFormatter.cs" />
   </ItemGroup>
  <ItemGroup>
-    <PackageReference Include="AVS.CoreLib.Console.ColorFormatting" Version="2.1.0" />
-    <PackageReference Include="AVS.CoreLib.Extensions" Version="2.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="6.0.0" />
@@ -49,6 +47,7 @@
   </ItemGroup>
  <ItemGroup>
    <ProjectReference Include="..\..\AVS.CoreLib.Extensions\AVS.CoreLib.Extensions.csproj" />
+   <ProjectReference Include="..\..\Console\AVS.CoreLib.Console.ColorFormatting\AVS.CoreLib.Console.ColorFormatting.csproj" />
  </ItemGroup>
 
 </Project>

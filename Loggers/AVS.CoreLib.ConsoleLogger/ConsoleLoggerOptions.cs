@@ -6,7 +6,8 @@
         public bool PrintLoggerName { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets format string used to format timestamp in logging messages. Defaults to <c>null</c>.
+        /// Gets or sets format string used to format timestamp in logging messages.
+        /// Defaults to <c>null</c>.
         /// </summary>
         public string TimestampFormat { get; set; }
 
