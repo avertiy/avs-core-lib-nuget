@@ -8,13 +8,19 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
     public static class ServiceCollectionExtension
     {
         /// <summary>
-        /// register singleton TOptions type 
+        /// register singleton TOptions type
+        /// <code>
+        ///     //usage example:
+        ///     services.AddOptions&lt;MyOptions&gt;(config);
+        ///     //DI injection
+        ///     MyService(IOptions&lt;MyOptions&gt; options);
+        ///     MyService(IOptionsMonitor&lt;MyOptions&gt; options);
+        /// </code> 
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/> to add the service to.</param>
         /// <param name="configuration">The <see cref="IConfiguration"/> to get config section.</param>
-        /// <param name="name">The Name to register named options (leave blank to register as a default) [optional]</param>
+        /// <param name="name">Name to register named options [optional], if null the options type name will be used</param>
         /// <param name="configure">The configure options action [optional]</param>
-        /// <returns></returns>
         public static IServiceCollection AddOptions<TOptions>(this IServiceCollection services,
             IConfiguration configuration,
             string name = null,
@@ -39,7 +45,18 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
             return services;
         }
 
-        public static IServiceCollection AddOptions<TOptions>(this IServiceCollection services, Action<TOptions> configureOptions, string name = null)
+        /// <summary>
+        /// register singleton TOptions type
+        /// <code>
+        ///     //usage example:
+        ///     services.AddOptions&lt;MyOptions&gt;(config);
+        ///     //DI injection
+        ///     MyService(IOptions&lt;MyOptions&gt; options);
+        ///     MyService(IOptionsMonitor&lt;MyOptions&gt; options);
+        /// </code> 
+        /// </summary>
+        public static IServiceCollection AddOptions<TOptions>(this IServiceCollection services, Action<TOptions> configureOptions,
+            string name = null)
             where TOptions : class
         {
             if (services == null)

@@ -57,6 +57,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AVS.CoreLib.Abstractions\AVS.CoreLib.Abstractions.csproj" />
     <ProjectReference Include="..\AVS.CoreLib.Extensions\AVS.CoreLib.Extensions.csproj" />
   </ItemGroup>
 

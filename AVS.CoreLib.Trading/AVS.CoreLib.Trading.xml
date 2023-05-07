@@ -623,25 +623,43 @@
             <summary> interval of 30 seconds </summary>
         </member>
         <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.M1">
-            <summary>A time interval of 1 minute.</summary>
+            <summary>A time interval of 1 minute</summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.M3">
+            <summary>A time interval of 3 minutes</summary>
         </member>
         <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.M5">
-            <summary>A time interval of 5 minutes.</summary>
+            <summary>A time interval of 5 minutes</summary>
         </member>
         <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.M15">
-            <summary>A time interval of 15 minutes.</summary>
+            <summary>A time interval of 15 minutes</summary>
         </member>
         <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.M30">
-            <summary>A time interval of 30 minutes.</summary>
+            <summary>A time interval of 30 minutes</summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.H1">
+            <summary>A time interval of 1 hour</summary>
         </member>
         <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.H2">
-            <summary>A time interval of 2 hours.</summary>
+            <summary>A time interval of 2 hours</summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.H3">
+            <summary>A time interval of 3 hours</summary>
         </member>
         <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.H4">
-            <summary>A time interval of 4 hours.</summary>
+            <summary>A time interval of 4 hours</summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.H12">
+            <summary>A time interval of 12 hours</summary>
         </member>
         <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.D">
-            <summary>A time interval of a day.</summary>
+            <summary>A time interval of a day</summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.Week">
+            <summary>A time interval of 7 days</summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.Month">
+            <summary>A time interval of 30 days</summary>
         </member>
         <member name="F:AVS.CoreLib.Trading.Enums.TimeInForce.GTC">
             <summary>
@@ -666,6 +684,21 @@
         <member name="F:AVS.CoreLib.Trading.Enums.TimeInForce.GTX">
             <summary>
             Good Till Crossing (Post Only) 
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Enums.TraderSide">
+            <summary>
+            trader side (Maker/Taker) usually influence an exchange's trade fees
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TraderSide.Maker">
+            <summary>
+            trader played a limit order 
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TraderSide.Taker">
+            <summary>
+            trader placed a market order
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.DecimalExtensions.Deduct(System.Decimal,System.Decimal)">

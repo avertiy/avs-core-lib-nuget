@@ -1,4 +1,5 @@
 ﻿using System;
+using AVS.CoreLib.Abstractions;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace AVS.CoreLib.Caching
@@ -20,12 +21,12 @@ namespace AVS.CoreLib.Caching
         /// <summary>
         /// indicates whether <see cref="Data"/> is taken from cache or been just acquired
         /// </summary>
-        public bool FromCache => (DateTime.UtcNow - Timestamp).TotalMilliseconds > 500;
+        public bool FromCache => (DateTimeProvider.GetTime() - Timestamp).TotalMilliseconds > 500;
         public bool IsNullOrEmpty => Data == null || Data.Equals(default);
         public CachedObject(T data)
         {
             Data = data;
-            Timestamp = DateTime.UtcNow;
+            Timestamp = DateTimeProvider.GetTime();
         }
 
         public static implicit operator T(CachedObject<T> result)

@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions.Messaging;
 using AVS.CoreLib.Abstractions.Messaging.PubSub;
 
@@ -10,7 +11,7 @@ namespace AVS.CoreLib.Messaging.PubSub
         {
         }
 
-        public Task PublishAsync(IEvent @event, IPublishContext context)
+        public Task PublishAsync(IEvent @event, IPublishContext context, CancellationToken ct = default)
         {
             return Task.CompletedTask;
         }

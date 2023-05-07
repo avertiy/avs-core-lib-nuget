@@ -1,4 +1,7 @@
-﻿using AVS.CoreLib.Abstractions.Messaging.PubSub;
+﻿using System;
+using AVS.CoreLib.Abstractions;
+using AVS.CoreLib.Abstractions.Messaging;
+using AVS.CoreLib.Abstractions.Messaging.PubSub;
 
 namespace AVS.CoreLib.Messaging.PubSub
 {
@@ -6,5 +9,15 @@ namespace AVS.CoreLib.Messaging.PubSub
     {
         public bool Mandatory { get; set; }
         public bool Isolated { get; set; }
+    }
+
+    public class Event : IEvent
+    {
+        public Guid Id { get; set; } = Guid.NewGuid();
+        public DateTime Timestamp { get; set; }
+        public override string ToString()
+        {
+            return $"{this.GetType().Name} #{Id}";
+        }
     }
 }

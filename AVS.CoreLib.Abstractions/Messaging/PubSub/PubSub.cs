@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace AVS.CoreLib.Abstractions.Messaging.PubSub
@@ -37,7 +38,7 @@ namespace AVS.CoreLib.Abstractions.Messaging.PubSub
         /// does not require the event to be consumed
         /// does not throw an exception if the event isn't consumed.
         /// </remarks>
-        Task PublishAsync(IEvent @event, IPublishContext context);
+        Task PublishAsync(IEvent @event, IPublishContext context, CancellationToken ct = default);
     }
 
     public interface IEventConsumer

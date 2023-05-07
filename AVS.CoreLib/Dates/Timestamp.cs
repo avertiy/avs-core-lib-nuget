@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AVS.CoreLib.Utilities
+namespace AVS.CoreLib.Dates
 {
     public static class Timestamp
     {

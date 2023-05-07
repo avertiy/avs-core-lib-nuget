@@ -14,38 +14,43 @@ namespace AVS.CoreLib.WebSockets
     public class ChannelManager : IChannelManager
     {
         private readonly ILogger _logger;
-        private readonly IMessageProcessor _messageProcessor;
+        private Action<string> _messageHandler;
+        private Action<string> _connectionClosedHandler;
         private readonly Dictionary<string, string> _channels = new Dictionary<string, string>();
 
         #region props
 
         public bool AutoReconnect { get; set; }
-
-        public int Count => _channels.Count;
-
         public string BaseAddress { get; set; }
+        public IWebSocketClient Client { get; }
 
-        public IWebSocketClient Client { get; } 
+        /// <summary>channels count</summary>
+        public int Count => _channels.Count;
         #endregion
 
-        public event Action<string> ConnectionClosed;
-
-        public ChannelManager(ILogger logger, IMessageProcessor messageProcessor) : this(logger, messageProcessor, new WebSocketClient(logger))
-        {
-        }
-
-        public ChannelManager(ILogger logger, IMessageProcessor messageProcessor, IWebSocketClient client)
+        public ChannelManager(string wssUrl, Action<string> messageHandler, ILogger logger, IWebSocketClient client = null)
         {
             _logger = logger;
-            _messageProcessor = messageProcessor;
-            Client = client;
+            _messageHandler = messageHandler;
+            BaseAddress = wssUrl;
+            Client = client ?? new WebSocketClient(logger);
             Client.ConnectionClosed += OnConnectionClosed;
             Client.MessageArrived += OnMessageArrived;
         }
 
+        public void SetMessageHandler(Action<string> handler)
+        {
+            _messageHandler = handler;
+        }
+
+        public void SetConnectionClosedHandler(Action<string> handler)
+        {
+            _connectionClosedHandler = handler;
+        }
+
         protected void OnMessageArrived(string message)
         {
-            _messageProcessor.ProcessMessage(message);
+            _messageHandler.Invoke(message);
         }
 
         private async void OnConnectionClosed(string reason)
@@ -69,10 +74,10 @@ namespace AVS.CoreLib.WebSockets
             _logger.LogInformation("{class}: websocket connection `{address}` has been closed [{error}]",
                 nameof(ChannelManager), BaseAddress, reason);
 
-            ConnectionClosed?.Invoke(reason);
+            _connectionClosedHandler?.Invoke(reason);
         }
 
-        public async Task Subscribe(string channelName, string command, bool autoReconnect = false)
+        public async Task Subscribe(string channelName, string command, bool autoReconnect = true)
         {
             await Client.SendAsync(BaseAddress, command);
             

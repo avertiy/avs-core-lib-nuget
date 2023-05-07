@@ -31,4 +31,8 @@
     <Folder Include="Extensions\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\AVS.CoreLib.Abstractions\AVS.CoreLib.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>

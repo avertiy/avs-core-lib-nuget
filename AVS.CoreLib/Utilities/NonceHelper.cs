@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Numerics;
+using AVS.CoreLib.Abstractions;
 using AVS.CoreLib.Dates;
 
 namespace AVS.CoreLib.Utilities
@@ -20,7 +21,7 @@ namespace AVS.CoreLib.Utilities
         /// <returns></returns>
         public static string GetNonce()
         {
-            var totalms = DateTime.UtcNow.Subtract(UnixEpoch.Start).TotalMilliseconds;
+            var totalms = DateTimeProvider.GetTime().Subtract(UnixEpoch.Start).TotalMilliseconds;
             var newHttpPostNonce = new BigInteger(Math.Round(totalms * 1000, MidpointRounding.AwayFromZero));
             if (newHttpPostNonce > CurrentHttpPostNonce)
             {

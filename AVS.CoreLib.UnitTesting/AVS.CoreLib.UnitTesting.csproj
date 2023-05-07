@@ -32,9 +32,6 @@
   </ItemGroup>
 
   <ItemGroup>    
-    <PackageReference Include="AVS.CoreLib" Version="2.1.0" />    
-    <PackageReference Include="AVS.CoreLib.Abstractions" Version="2.1.0" />    
-    <PackageReference Include="AVS.CoreLib.Extensions" Version="2.1.0" />    
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />    
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />    
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="6.0.0" />    
@@ -45,6 +42,12 @@
     <PackageReference Include="Moq" Version="4.18.2" />
     <PackageReference Include="xunit.abstractions" Version="2.0.3" />
     <PackageReference Include="xunit.assert" Version="2.4.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AVS.CoreLib.Abstractions\AVS.CoreLib.Abstractions.csproj" />
+    <ProjectReference Include="..\AVS.CoreLib.Extensions\AVS.CoreLib.Extensions.csproj" />
+    <ProjectReference Include="..\AVS.CoreLib\AVS.CoreLib.csproj" />
   </ItemGroup>
 
 </Project>

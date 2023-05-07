@@ -80,12 +80,71 @@ namespace AVS.CoreLib.Trading.Helpers
                     obj = ParseEnumHelper.ParseExecutionType(value);
                     return true;
                 }
+                case nameof(TimeFrame):
+                {
+                    obj = ParseEnumHelper.ParseTimeFrame(value);
+                    return true;
+                }
 
                 default:
                 {
                     obj = null;
                     return false;
                 }
+            }
+        }
+
+        private static TimeFrame ParseTimeFrame(string value)
+        {
+            switch (value.ToUpper())
+            {
+                case "1":
+                case "S1":
+                    return TimeFrame.S1;
+                case "30":
+                case "S30":
+                    return TimeFrame.S30;
+                case "60":
+                case "M1":
+                    return TimeFrame.M1;
+                case "180":
+                case "M3":
+                    return TimeFrame.M3;
+                case "300":
+                case "M5":
+                    return TimeFrame.M5;
+                case "900":
+                case "M15":
+                    return TimeFrame.M15;
+                case "1800":
+                case "M30":
+                    return TimeFrame.M30;
+                case "3600":
+                case "H1":
+                    return TimeFrame.H1;
+                case "7200":
+                case "H2":
+                    return TimeFrame.H2;
+                case "10800":
+                case "H3":
+                    return TimeFrame.H3;
+                case "14400":
+                case "H4":
+                    return TimeFrame.H4;
+                case "43200":
+                case "H12":
+                    return TimeFrame.H12;
+                case "86400":
+                case "D":
+                    return TimeFrame.D;
+                case "604800":
+                case "W":
+                case "WEEK":
+                    return TimeFrame.Week;
+                case "MONTH":
+                    return TimeFrame.Month;
+                default:
+                    throw new NotSupportedException($"Unknown {nameof(TimeFrame)} '{value}'");
             }
         }
 

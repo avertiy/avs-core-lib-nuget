@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using AVS.CoreLib.Abstractions;
 
 namespace AVS.CoreLib.Caching
 {
@@ -11,20 +12,22 @@ namespace AVS.CoreLib.Caching
     {
         private readonly List<string> _keys = new List<string>();
         private readonly ICacheManager _cacheManager;
+        private readonly IDateTimeProvider _dateTimeProvider;
+        private DateTime _updated;
 
-        private DateTime _updated = DateTime.UtcNow;
-
-        public CacheKeysBookkeeper(ICacheManager cacheManager)
+        public CacheKeysBookkeeper(ICacheManager cacheManager, IDateTimeProvider dateTimeProvider = null)
         {
             if (cacheManager is IKeysBookkeeper kb)
             {
                 kb.KeysBookkeeper = this;
             }
 
+            _dateTimeProvider = dateTimeProvider ?? DateTimeProvider.Instance;
+            _updated = _dateTimeProvider.GetSystemTime();
             _cacheManager = cacheManager;
         }
 
-        private TimeSpan TimeSinceLastUpdate => DateTime.UtcNow - _updated;
+        private TimeSpan TimeSinceLastUpdate => _dateTimeProvider.GetSystemTime() - _updated;
 
         /// <summary>
         /// in minutes
@@ -55,7 +58,7 @@ namespace AVS.CoreLib.Caching
                     _keys.Remove(key);
             }
 
-            _updated = DateTime.UtcNow;
+            _updated = _dateTimeProvider.GetSystemTime();
         }
 
         public IEnumerable<string> GetKeys()
@@ -71,7 +74,7 @@ namespace AVS.CoreLib.Caching
                 yield return key;
             }
 
-            _updated = DateTime.UtcNow;
+            _updated = _dateTimeProvider.GetSystemTime();
         }
     }
 }

@@ -51,7 +51,7 @@ namespace AVS.CoreLib.Messaging.PubSub
             }
         }
 
-        public async Task PublishAsync(IEvent @event, IPublishContext context)
+        public async Task PublishAsync(IEvent @event, IPublishContext context, CancellationToken ct = default)
         {
             //get all event consumers
             var type = typeof(IEventConsumer<,>);
@@ -66,7 +66,7 @@ namespace AVS.CoreLib.Messaging.PubSub
             {
                 try
                 {
-                    var task = Task.Run(() => consumer.Handle(@event, context), CancellationToken.None);
+                    var task = Task.Run(() => consumer.Handle(@event, context), ct);
                     tasks.Add(task);
                 }
                 catch (Exception ex)

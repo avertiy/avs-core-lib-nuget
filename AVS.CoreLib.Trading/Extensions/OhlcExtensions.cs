@@ -190,7 +190,11 @@ namespace AVS.CoreLib.Trading.Extensions
 
         public static bool HasLongShadow(this IOhlc candle)
         {
-            return candle.GetLength() / candle.GetBodyLength() > 2;
+            var len = candle.GetBodyLength();
+            if (len == 0)
+                return true;
+
+            return candle.GetLength() / len > 2;
         }
 
         public static bool IsGrowing(this IOhlc candle)

@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using AVS.CoreLib.Extensions;
 
 namespace AVS.CoreLib.Dates
 {
@@ -14,6 +13,7 @@ namespace AVS.CoreLib.Dates
     /// </summary>
     [TypeConverter(typeof(DateRangeTypeConverter))]
     [JsonConverter(typeof(DateRangeJsonConverter))]
+    [Description("Represent a date range [from;to] where from and to are DateTime values. For a convenience DateRange can be parsed from a string literals, short literals like 3h - 3 hours, 999D - 999 days etc. and text literals like : recent, today, yesterday, past-week, etc.")]
     public readonly struct DateRange
     {
         public DateTime From { get; }
@@ -42,6 +42,16 @@ namespace AVS.CoreLib.Dates
         {
             From = other.From;
             To = other.To;
+        }
+
+        public bool Contains(DateTime date)
+        {
+            return From <= date && To >= date;
+        }
+
+        public bool Contains(DateRange range)
+        {
+            return From <= range.From && To >= range.To;
         }
 
         #region implicit conversions
@@ -143,15 +153,7 @@ namespace AVS.CoreLib.Dates
             return $"[{From.ToString(format)};{To.ToString(format)}]";
         }
 
-        public bool Contains(DateTime date)
-        {
-            return From <= date && To >= date;
-        }
-
-        public bool Contains(DateRange range)
-        {
-            return From <= range.From && To >= range.To;
-        }
+        
 
         #region static methods
         ///// <summary>
@@ -226,123 +228,13 @@ namespace AVS.CoreLib.Dates
 
             var str = period.Trim();
 
+            //[01/01/2023;01/03/2023]
             if (str.StartsWith('[') && str.EndsWith(']'))
             {
-                return TryParseExact(str.Substring(1, period.Length - 2), out range);
+                return DateRangeHelper.TryParseExact(str.Substring(1, period.Length - 2), out range);
             }
 
-            return TryParseFromLiterals(str, out range) || TryParseExact(str, out range);
-        }
-
-        private static bool TryParseFromLiterals(string str, out DateRange range)
-        {
-            var toDate = DateTime.Today;
-
-            if (str.EndsWith("-now", StringComparison.OrdinalIgnoreCase))
-            {
-                str = str.Substring(0, str.Length - "-now".Length);
-                toDate = DateTime.Now;
-            }
-
-            if (str.Length == 2 && int.TryParse(str.Substring(0, 1), out var n))
-            {
-                range = CreateDateRange(n, str[^1], toDate);
-                return true;
-            }
-            else if (str.Length == 3 && int.TryParse(str.Substring(0, 2), out var n2))
-            {
-                range = CreateDateRange(n2, str[^1], toDate);
-                return true;
-            }
-            else if (str.Length == 4 && int.TryParse(str.Substring(0, 3), out var n3))
-            {
-                range = CreateDateRange(n3, str[^1], toDate);
-                return true;
-            }
-            else
-            {
-                switch (str.ToLower())
-                {
-                    case "recent":
-                        range = new DateRange(DateTime.Today.AddDays(-7), DateTime.Now);
-                        return true;
-                    case "today":
-                        range = new DateRange(DateTime.Today, DateTime.Now);
-                        return true;
-                    case "yesterday":
-                        range = new DateRange(DateTime.Today.AddDays(-1), toDate);
-                        return true;
-                    case "day":
-                        range = new DateRange(DateTime.Today.AddDays(-1), toDate);
-                        return true;
-                    case "past-week":
-                        range = new DateRange(DateTime.Today.StartOfWeek(), DateTime.Now);
-                        return true;
-                    case "prev-week":
-                        range = DateRange.Create(DateTime.Today.StartOfWeek().AddDays(-7), 7);
-                        return true;
-                    case "week":
-                        range = new DateRange(DateTime.Today.AddDays(-7), toDate);
-                        return true;
-                    case "month":
-                        range = new DateRange(DateTime.Today.AddMonths(-1), toDate);
-                        return true;
-                    case "past-month":
-                        range = new DateRange(DateTime.Today.StartOfMonth().AddMonths(-1), DateTime.Today);
-                        return true;
-                    case "prev-month":
-                        range = DateRange.Create(DateTime.Today.StartOfMonth().AddMonths(-1), 30);
-                        return true;
-                    case "quarter":
-                        range = new DateRange(DateTime.Today.AddMonths(-3), toDate);
-                        return true;
-                    case "half-year":
-                        range = new DateRange(DateTime.Today.AddMonths(-6), toDate);
-                        return true;
-                    case "year":
-                        range = new DateRange(DateTime.Today.AddMonths(-12), toDate);
-                        return true;
-                    case "prev-year":
-                        range = Create(DateTime.Today.StartOfYear().AddYears(-1), 365);
-                        return true;
-                    default:
-                    {
-                        range = default;
-                        return false;
-                    }
-                }
-            }
-        }
-
-        private static bool TryParseExact(string str, out DateRange range)
-        {
-            range = new DateRange();
-            string[] parts = null;
-
-            if (str.Contains('-') || str.Contains(';'))
-            {
-                //01/10/2019 - 02/11/2019
-                parts = str.Split(new[] { '-', ';', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length != 2)
-                    return false;
-            }
-
-            if (parts == null)
-                return false;
-
-            var parse1 = DateTime.TryParse(parts[0], CultureInfo.CurrentCulture, DateTimeStyles.None,
-                out var from);
-
-            var parse2 = DateTime.TryParse(parts[1], CultureInfo.CurrentCulture, DateTimeStyles.None,
-                out var to);
-
-            if (parse1 && parse2)
-            {
-                range = new DateRange(from, to);
-                return true;
-            }
-
-            return false;
+            return DateRangeHelper.TryParseFromLiterals(str, out range) || DateRangeHelper.TryParseExact(str, out range);
         }
 
         private static DateRange CreateDateRange(int n, char letter, DateTime toDate)
@@ -358,10 +250,10 @@ namespace AVS.CoreLib.Dates
                 'Q' => new DateRange(DateTime.Today.AddMonths(-n * 3), toDate),
                 'y' => new DateRange(DateTime.Today.AddYears(-n), toDate),
                 'Y' => new DateRange(DateTime.Today.AddYears(-n), toDate),
-                's' => new DateRange(DateTime.Now.AddSeconds(-n), DateTime.Now),
-                'm' => new DateRange(DateTime.Now.AddMinutes(-n), DateTime.Now),
-                'h' => new DateRange(DateTime.Now.AddHours(-n), DateTime.Now),
-                'H' => new DateRange(DateTime.Now.AddHours(-n), DateTime.Now),
+                's' => new DateRange(toDate.AddSeconds(-n), toDate),
+                'm' => new DateRange(toDate.AddMinutes(-n), toDate),
+                'h' => new DateRange(toDate.AddHours(-n), toDate),
+                'H' => new DateRange(toDate.AddHours(-n), toDate),
                 _ => throw new ArgumentException($"Unable to create DateRange from `{n}{letter}`")
             };
         }
@@ -403,16 +295,16 @@ namespace AVS.CoreLib.Dates
                 return new DateRange(DateTime.Today, DateTime.Today.AddDays(days));
         }
 
-        public static DateRange Empty => new DateRange(DateTime.MinValue, DateTime.MinValue);
-        public static DateRange Day => new DateRange(DateTime.Now.AddDays(-1), DateTime.Now);
-        public static DateRange Week => new DateRange(DateTime.Today.AddDays(-7), DateTime.Today);
-        public static DateRange TwoWeeks => new DateRange(DateTime.Today.AddDays(-14), DateTime.Today);
-        public static DateRange Month => new DateRange(DateTime.Today.AddMonths(-1), DateTime.Today);
-        public static DateRange Quarter => new DateRange(DateTime.Today.AddMonths(-3), DateTime.Today);
-        public static DateRange HalfYear => new DateRange(DateTime.Today.AddMonths(-6), DateTime.Today);
-        public static DateRange Year => new DateRange(DateTime.Today.AddYears(-1), DateTime.Today); 
+        public static DateRange Empty => new(DateTime.MinValue, DateTime.MinValue);
+        public static DateRange Day => new(DateTime.Today.AddDays(-1), DateTime.Today);
+        public static DateRange Week => new(DateTime.Today.AddDays(-7), DateTime.Today);
+        public static DateRange TwoWeeks => new(DateTime.Today.AddDays(-14), DateTime.Today);
+        public static DateRange Month => new(DateTime.Today.AddMonths(-1), DateTime.Today);
+        public static DateRange Quarter => new(DateTime.Today.AddMonths(-3), DateTime.Today);
+        public static DateRange Year => new(DateTime.Today.AddYears(-1), DateTime.Today);
         #endregion
     }
+
 
     public static class DateRangeExtensions
     {
