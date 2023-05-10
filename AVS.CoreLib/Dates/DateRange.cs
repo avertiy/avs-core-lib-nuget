@@ -104,10 +104,29 @@ namespace AVS.CoreLib.Dates
         {
             return dateRange.TotalSeconds <= compare.TotalSeconds;
         }
+        public static bool operator >(DateRange dateRange, DateRange compare)
+        {
+            return dateRange.TotalSeconds > compare.TotalSeconds;
+        }
+
+        public static bool operator <(DateRange dateRange, DateRange compare)
+        {
+            return dateRange.TotalSeconds < compare.TotalSeconds;
+        }
 
         public static bool operator >=(DateRange dateRange, int periodInSeconds)
         {
             return dateRange.TotalSeconds >= periodInSeconds;
+        }
+
+        public static bool operator >(DateRange dateRange, int periodInSeconds)
+        {
+            return dateRange.TotalSeconds > periodInSeconds;
+        }
+
+        public static bool operator <(DateRange dateRange, int periodInSeconds)
+        {
+            return dateRange.TotalSeconds < periodInSeconds;
         }
 
         public static bool operator <=(DateRange dateRange, int periodInSeconds)
@@ -437,9 +456,9 @@ namespace AVS.CoreLib.Dates
 
             writer.WriteStartObject();
             writer.WritePropertyName("from");
-            writer.WriteStringValue(value.From.ToString("G"));
+            writer.WriteStringValue(value.From.ToString("G", CultureInfo.InvariantCulture));
             writer.WritePropertyName("to");
-            writer.WriteStringValue(value.To.ToString("G"));
+            writer.WriteStringValue(value.To.ToString("G", CultureInfo.InvariantCulture));
             writer.WriteEndObject();
         }
     }

@@ -202,7 +202,7 @@ namespace AVS.CoreLib.Dates
 
         internal static Modifier GetModifier(this string str)
         {
-            if (str.EndsWith("/now", StringComparison.OrdinalIgnoreCase))
+            if (str.EndsWith("/now", StringComparison.OrdinalIgnoreCase) || str.EndsWith("-now", StringComparison.OrdinalIgnoreCase))
             {
                 return Modifier.Now;
             }

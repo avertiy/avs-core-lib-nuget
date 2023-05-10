@@ -1,5 +1,5 @@
-﻿using System;
-using AVS.CoreLib.Trading.Enums;
+﻿#nullable enable
+using System;
 
 namespace AVS.CoreLib.Trading.Abstractions
 {

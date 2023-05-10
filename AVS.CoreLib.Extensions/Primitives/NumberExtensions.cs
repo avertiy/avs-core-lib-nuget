@@ -147,6 +147,26 @@ namespace AVS.CoreLib.Extensions
             return (decimal)Math.Sqrt((double)(value));
         }
 
+        public static decimal GetGreaterValue(this (decimal, decimal) tuple)
+        {
+            return tuple.Item1 >= tuple.Item2 ? tuple.Item1 : tuple.Item2;
+        }
+
+        public static decimal GetSmallerValue(this (decimal, decimal) tuple)
+        {
+            return tuple.Item1 <= tuple.Item2 ? tuple.Item1 : tuple.Item2;
+        }
+
+        public static decimal GetGreaterValue(this decimal value, decimal value2)
+        {
+            return value >= value2 ? value : value2;
+        }
+
+        public static decimal GetSmallerValue(this decimal value, decimal value2)
+        {
+            return value <= value2 ? value : value2;
+        }
+
         #endregion
 
         #region int

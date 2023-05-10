@@ -53,4 +53,8 @@
     <ProjectReference Include="..\AVS.CoreLib.Text\AVS.CoreLib.Text.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="TA\" />
+  </ItemGroup>
+
 </Project>

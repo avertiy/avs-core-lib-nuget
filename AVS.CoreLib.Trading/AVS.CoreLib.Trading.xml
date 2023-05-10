@@ -19,6 +19,26 @@
             total is an amount of quote currency
             </summary>
         </member>
+        <member name="P:AVS.CoreLib.Trading.Abstractions.IMovingAverage.Distance">
+            <summary>
+            distance from Close price to MA
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Abstractions.IXBar">
+            <summary>
+            Bar with extra properties lengths, avg price, indicators etc.
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Abstractions.IXBar.Avg">
+            <summary>
+            (Open+Close)/2
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Abstractions.IXBar.Mid">
+            <summary>
+            (High+Low)/2
+            </summary>
+        </member>
         <member name="M:AVS.CoreLib.Trading.Collections.CurrencyCollection.System#Collections#Generic#ICollection{System#String}#Add(System.String)">
             <summary>
             the Add method implemented explicitly due to model binding mechanics 
@@ -51,14 +71,19 @@
             Add trading formatters core services
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.BarSize.Small">
+        <member name="F:AVS.CoreLib.Trading.Enums.BarSize.Short">
             <summary>
             short bar is a bar with a little price difference between Low and High
             </summary>
         </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.BarSize.Long">
+            <summary>
+            Long bar is a bar with a significant a few (2-3) times bigger than average bar
+            </summary>
+        </member>
         <member name="F:AVS.CoreLib.Trading.Enums.BarSize.Paranormal">
             <summary>
-            Big or paranormal bar is a bar with a significant length several times bigger than average bar
+            Extreme big or paranormal bar is a bar with a significant length several times bigger than average bar
             </summary>
         </member>
         <member name="F:AVS.CoreLib.Trading.Enums.CandleType.Doji">
@@ -613,6 +638,11 @@
             USDT_BTC
             </summary>
         </member>
+        <member name="T:AVS.CoreLib.Trading.Enums.TA.MAColor">
+            <summary>
+            MA has a green color when it climbs up, and red color when it looks down, neutral when its direction is undefined 
+            </summary>
+        </member>
         <member name="T:AVS.CoreLib.Trading.Enums.TimeFrame">
             <summary>Represents a time frame of a market.</summary>
         </member>
@@ -661,6 +691,31 @@
         <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.Month">
             <summary>A time interval of 30 days</summary>
         </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrameType.Micro">
+            <summary>
+            less then 5 minutes
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrameType.Small">
+            <summary>
+            5M / 15M / 30M
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrameType.Intraday">
+            <summary>
+            1H / 4H  (from 1 hour but less than 1D)
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrameType.Day">
+            <summary>
+            1D
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrameType.Week">
+            <summary>
+            Week
+            </summary>
+        </member>
         <member name="F:AVS.CoreLib.Trading.Enums.TimeInForce.GTC">
             <summary>
             good till cancel
@@ -699,6 +754,31 @@
         <member name="F:AVS.CoreLib.Trading.Enums.TraderSide.Taker">
             <summary>
             trader placed a market order
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.BarExtensions.Contains(AVS.CoreLib.Trading.Abstractions.IOhlc,System.Decimal,System.Boolean)">
+            <summary>
+            determines whether price is within (Low, High) range;
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.BarLengthExtensions.GetLength(AVS.CoreLib.Trading.Abstractions.IOhlc,System.Int32)">
+            <summary>
+            Get candle length in % formula: (High - Low)/Low * 100
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.BarLengthExtensions.GetShadowLength(AVS.CoreLib.Trading.Abstractions.IOhlc,System.Int32)">
+            <summary>
+            for bullish candles return upper shadow, for bearish - lower
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.BarLengthExtensions.HasLongShadow(AVS.CoreLib.Trading.Abstractions.IOhlc,System.Int32)">
+            <summary>
+            long shadow means bar length is a <see cref="!:k"/> times bigger than body length
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.BarLengthExtensions.GetBarSize(AVS.CoreLib.Trading.Abstractions.IOhlc,AVS.CoreLib.Trading.Enums.TimeFrame)">
+            <summary>
+            without avg we can assume avg bar length by time frame, that's approximate classification but it works for top crypto coins
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.DecimalExtensions.Deduct(System.Decimal,System.Decimal)">
@@ -747,16 +827,6 @@
         <member name="M:AVS.CoreLib.Trading.Extensions.OhlcExtensions.GetCandleType(AVS.CoreLib.Trading.Abstractions.IOhlc)">
             <summary>
             not implemented to classify all candle types but some basic candle classification is possible
-            </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.OhlcExtensions.GetLength(AVS.CoreLib.Trading.Abstractions.IOhlc)">
-            <summary>
-            Get candle length in % formula: (High - Low)/Low * 100
-            </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.OhlcExtensions.Contains(AVS.CoreLib.Trading.Abstractions.IOhlc,System.Decimal,System.Boolean)">
-            <summary>
-            determines whether price is within (Low, High) range;
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.PriceExtensions.IsAboutTheSame(System.Decimal,System.Decimal,System.Nullable{System.Decimal})">
@@ -812,11 +882,6 @@
         <member name="P:AVS.CoreLib.Trading.FormatProviders.CurrencySymbolFormatter.GetQualifiers">
             <summary>
             qualifiers: "$|symbol; i|iso"
-            </summary>
-        </member>
-        <member name="T:AVS.CoreLib.Trading.FormatProviders.OhlcFormatter">
-            <summary>
-            
             </summary>
         </member>
         <member name="P:AVS.CoreLib.Trading.FormatProviders.OhlcFormatter.GetQualifiers">

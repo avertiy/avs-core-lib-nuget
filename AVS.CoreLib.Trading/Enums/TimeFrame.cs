@@ -42,4 +42,28 @@
         /// <summary>A time interval of 30 days</summary>
         Month = 86400 * 30
     }
+
+    public enum TimeFrameType
+    {
+        /// <summary>
+        /// less then 5 minutes
+        /// </summary>
+        Micro,
+        /// <summary>
+        /// 5M / 15M / 30M
+        /// </summary>
+        Small,
+        /// <summary>
+        /// 1H / 4H  (from 1 hour but less than 1D)
+        /// </summary>
+        Intraday,
+        /// <summary>
+        /// 1D
+        /// </summary>
+        Day,
+        /// <summary>
+        /// Week
+        /// </summary>
+        Week,
+    }
 }

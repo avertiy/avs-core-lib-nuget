@@ -5,9 +5,6 @@ using AVS.CoreLib.Trading.Extensions;
 
 namespace AVS.CoreLib.Trading.FormatProviders
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public class OhlcFormatter : CustomFormatter
     {
         /// <summary>
@@ -35,13 +32,13 @@ namespace AVS.CoreLib.Trading.FormatProviders
                             return ohlc.Close.FormatAsPrice();
                         case "h":
                         case "height":
-                            return $"{ohlc.CandleHeight():P}";
+                            return $"{ohlc.GetLength():P}";
                         case "t":
                         case "type":
                             return ohlc.GetCandleType().ToString();
                         case "c":
                         case "color":
-                            return ohlc.GetCandleColor().ToString();
+                            return ohlc.GetColor().ToString();
                         case "ohlc":
                         case "OHLC":
                             return string.Format("{0} {1} {2} {3}",
