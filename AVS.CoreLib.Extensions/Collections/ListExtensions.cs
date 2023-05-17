@@ -37,16 +37,58 @@ namespace AVS.CoreLib.Extensions.Collections
             return result;
         }
 
-        public static void Merge<T, TKey>(this IList<T> target, IList<T> source, Func<T, TKey> selector,
-            Func<T, bool> predicate)
+        /// <summary>
+        /// Merge by key target list with a second list, returns the target list
+        /// </summary>
+        public static IList<T> Merge<T, TKey>(this IList<T> target, IEnumerable<T> second, Func<T, TKey> selector)
         {
             var knownKeys = new HashSet<TKey>(target.Select(selector));
 
-            foreach (var item in source)
+            foreach (var item in second)
             {
-                if (predicate(item) && knownKeys.Add(selector(item)))
+                var added = knownKeys.Add(selector(item));
+                if (added)
                     target.Add(item);
             }
+
+            return target;
+        }
+
+        /// <summary>
+        /// Merge by key source list with the second list, returns the result list
+        /// </summary>
+        public static IEnumerable<T> Merge<T, TKey>(this IEnumerable<T> source, IEnumerable<T> second, Func<T, TKey> selector)
+        {
+            var knownKeys = new HashSet<TKey>();
+
+            foreach (var item in source)
+            {
+                knownKeys.Add(selector(item));
+                yield return item;
+            }
+
+            foreach (var item in second)
+            {
+                var added = knownKeys.Add(selector(item));
+                if (added)
+                    yield return item;
+            }
+        }
+
+        /// <summary>
+        /// Merge by key target list with a second list, items form the second list should also match predicate condition, returns the target list
+        /// </summary>
+        public static IList<T> Merge<T, TKey>(this IList<T> target, IEnumerable<T> second, Func<T, TKey> keySelector, Func<T, bool> predicate)
+        {
+            var knownKeys = new HashSet<TKey>(target.Select(keySelector));
+
+            foreach (var item in second)
+            {
+                if (predicate(item) && knownKeys.Add(keySelector(item)))
+                    target.Add(item);
+            }
+
+            return target;
         }
 
         public static IList<T> Shrink<T>(this IList<T> items, Func<T, double> selector, double threshold = 0.0)

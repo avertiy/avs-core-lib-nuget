@@ -28,11 +28,11 @@ namespace AVS.CoreLib.Trading.Abstractions.Bars
         public IMovingAverage MA50 { get; set; }
         public IHullMA MA14 { get; set; }
         public IBollingerBands BB { get; set; }
-        public IBarExtension[] GetAll()
-        {
-            ITopIndicators i;
-            i.MA.
-            return new IBarExtension[] { MA14, MA21, MA50, BB };
-        }
+        //public IBarExtension[] GetAll()
+        //{
+        //    ITopIndicators i;
+        //    i.MA.
+        //    return new IBarExtension[] { MA14, MA21, MA50, BB };
+        //}
     }
 }

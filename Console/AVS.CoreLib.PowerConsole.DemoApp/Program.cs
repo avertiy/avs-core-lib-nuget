@@ -1,8 +1,6 @@
-﻿using AVS.CoreLib.Abstractions;
-using AVS.CoreLib.Abstractions.Bootstrap;
+﻿using AVS.CoreLib.Abstractions.Bootstrap;
 using AVS.CoreLib.PowerConsole.Bootstrapping;
 using AVS.CoreLib.PowerConsole.DemoApp.Services;
-using AVS.CoreLib.PowerConsole.Utilities;
 using AVS.CoreLib.Trading;
 using Microsoft.Extensions.DependencyInjection;
 

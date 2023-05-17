@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace AVS.CoreLib.Mapper
 {
@@ -17,6 +18,7 @@ namespace AVS.CoreLib.Mapper
     /// </summary>
     public interface IMapper
     {
+        void Register<TSource, TModel>(Func<TSource, TModel> func);
         TModel Map<TSource, TModel>(TSource source);
         IEnumerable<TModel> MapAll<TSource, TModel>(IEnumerable<TSource> source);
     }

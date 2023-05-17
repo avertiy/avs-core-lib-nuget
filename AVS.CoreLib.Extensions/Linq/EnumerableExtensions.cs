@@ -1,0 +1,49 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using AVS.CoreLib.Enums;
+
+namespace AVS.CoreLib.Extensions.Linq
+{
+    public static class EnumerableExtensions
+    {
+        public static void ForEach<T>(this IEnumerable<T> items, Action<T> action)
+        {
+            foreach (var item in items)
+                action(item);
+        }
+
+        public static IEnumerable<TResult> ConvertAll<T, TResult>(this IEnumerable<T> items, Func<T, TResult> func)
+        {
+            var res = new List<TResult>();
+            foreach (var item in items)
+                res.Add(func(item));
+            return res;
+        }
+
+        public static IEnumerable<T> OrderBy<T, Key>(this IEnumerable<T> source, Func<T, Key> selector, OrderBy orderBy)
+        {
+            if (orderBy == Enums.OrderBy.None)
+                return source;
+
+            return orderBy == Enums.OrderBy.Asc ? source.OrderBy(selector) : source.OrderByDescending(selector);
+        }
+
+        public static IEnumerable<T> OrderBy2<T, Key>(this IEnumerable<T> source, Func<T, Key> selector, OrderBy orderBy)
+        {
+            if (orderBy == Enums.OrderBy.None)
+                return source;
+
+            return orderBy == Enums.OrderBy.Asc ? source.OrderBy(selector) : source.OrderByDescending(selector);
+        }
+
+        public static IEnumerable<T> ThenBy<T, Key>(this IOrderedEnumerable<T> source, Func<T, Key> selector, OrderBy orderBy)
+        {
+            if (orderBy == Enums.OrderBy.None)
+                return source;
+
+            return orderBy == Enums.OrderBy.Asc ? source.ThenBy(selector) : source.ThenByDescending(selector);
+        }
+
+    }
+}

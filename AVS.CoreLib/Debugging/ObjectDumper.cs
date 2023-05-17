@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using AVS.CoreLib.Extensions.Reflection;
 
 namespace AVS.CoreLib.Debugging
 {
@@ -35,14 +36,22 @@ namespace AVS.CoreLib.Debugging
         {
             if (element == null || element is ValueType || element is string)
             {
-                Write(FormatValue(element));
+                var str = FormatValue(element);
+                if (str.Length < 12)
+                {
+                    WriteInline(str+",");
+                }
+                else
+                {
+                    Write(str+",");
+                }
             }
             else
             {
                 var objectType = element.GetType();
                 if (!typeof(IEnumerable).IsAssignableFrom(objectType))
                 {
-                    Write("{{{0}}}", objectType.FullName);
+                    Write("`{0}`", objectType.GetReadableName());
                     _hashListOfFoundElements.Add(element.GetHashCode());
                     _level++;
                 }
@@ -50,6 +59,8 @@ namespace AVS.CoreLib.Debugging
                 var enumerableElement = element as IEnumerable;
                 if (enumerableElement != null)
                 {
+                    Write("[");
+                    _level++;
                     foreach (object item in enumerableElement)
                     {
                         if (item is IEnumerable && !(item is string))
@@ -66,9 +77,22 @@ namespace AVS.CoreLib.Debugging
                                 Write("{{{0}}} <-- bidirectional reference found", item.GetType().FullName);
                         }
                     }
+                    _level--;
+                    if (_stringBuilder[^1] == ',')
+                    {
+                        _stringBuilder.Length--;
+                        WriteInline("],");
+                        _stringBuilder.AppendLine();
+                    }
+                    else
+                    {
+                        Write("],");
+                    }
                 }
                 else
                 {
+                    Write("{");
+                    _level++;
                     MemberInfo[] members = element.GetType().GetMembers(BindingFlags.Public | BindingFlags.Instance);
                     foreach (var memberInfo in members)
                     {
@@ -85,28 +109,35 @@ namespace AVS.CoreLib.Debugging
 
                         if (type.IsValueType || type == typeof(string))
                         {
-                            Write("{0}: {1}", memberInfo.Name, FormatValue(value));
+                            Write("{0}: {1},", memberInfo.Name, FormatValue(value));
                         }
                         else
                         {
                             var isEnumerable = typeof(IEnumerable).IsAssignableFrom(type);
-                            Write("{0}: {1}", memberInfo.Name, isEnumerable ? "..." : "{ }");
+                            Write("{0}:", memberInfo.Name);
 
                             var alreadyTouched = !isEnumerable && AlreadyTouched(value);
                             _level++;
                             if (!alreadyTouched)
+                            {
                                 DumpElement(value);
+                            }
                             else
-                                Write("{{{0}}} <-- bidirectional reference found", value.GetType().FullName);
+                                Write("`{0}` <-- bidirectional reference found", value.GetType().GetReadableName());
                             _level--;
                         }
                     }
+                    _level--;
+                    Write("},");
                 }
 
                 if (!typeof(IEnumerable).IsAssignableFrom(objectType))
                 {
                     _level--;
                 }
+
+                if (_stringBuilder[^1] == ',')
+                    _stringBuilder.Length--;
             }
 
             return _stringBuilder.ToString();
@@ -126,11 +157,24 @@ namespace AVS.CoreLib.Debugging
             return false;
         }
 
+        private void WriteInline(string value, params object[] args)
+        {
+            if (_stringBuilder.Length > 3 &&  (_stringBuilder[^3] == '[' || _stringBuilder[^3] == '{'))
+            {
+                _stringBuilder.Length -= 2;
+            }
+
+            if (args != null && args.Length > 0)
+                value = string.Format(value, args);
+
+            _stringBuilder.Append(' '+ value);
+        }
+
         private void Write(string value, params object[] args)
         {
             var space = new string(' ', _level * _indentSize);
 
-            if (args != null)
+            if (args != null && args.Length > 0)
                 value = string.Format(value, args);
 
             _stringBuilder.AppendLine(space + value);

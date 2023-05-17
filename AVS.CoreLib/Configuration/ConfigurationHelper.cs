@@ -25,7 +25,7 @@ namespace AVS.CoreLib.Configuration
 
         public static IConfigurationRoot LoadConfiguration(ConfigurationAttribute attribute)
         {
-            Guard.AgainstNull(attribute);
+            Guard.Against.Null(attribute);
             var builder = new ConfigurationBuilder();
             builder.AddAppSettingsJson(attribute.Environment, attribute.ReloadOnChange);
 

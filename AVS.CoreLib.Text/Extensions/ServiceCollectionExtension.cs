@@ -15,7 +15,7 @@ namespace AVS.CoreLib.Text.Extensions
         /// 
         /// </summary>
         public static IServiceCollection AddCustomFormatters(this IServiceCollection services,
-            params CustomFormatter[] formatters)
+            params Formatters.CustomFormatter[] formatters)
         {
             foreach (var customFormatter in formatters)
             {
@@ -28,7 +28,7 @@ namespace AVS.CoreLib.Text.Extensions
         /// <summary>
         /// 
         /// </summary>
-        public static IServiceCollection AddCustomFormatter<T>(this IServiceCollection services) where T : CustomFormatter, new()
+        public static IServiceCollection AddCustomFormatter<T>(this IServiceCollection services) where T : Formatters.CustomFormatter, new()
         {
             X.FormatProvider.AppendFormatter(new T());
             return services;

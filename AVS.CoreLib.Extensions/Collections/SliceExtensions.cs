@@ -7,8 +7,8 @@ namespace AVS.CoreLib.Extensions.Collections
     {
         public static T[] Slice<T>(this T[] source, int startIndex, int endIndex)
         {
-            Guard.MustBeWithinRange(startIndex, 0, endIndex);
-            Guard.MustBeWithinRange(endIndex, startIndex, source.Length);
+            Guard.MustBe.WithinRange(startIndex, 0, endIndex);
+            Guard.MustBe.WithinRange(endIndex, startIndex, source.Length);
 
             var list = new List<T>(endIndex - startIndex);
             for (var i = startIndex; i < endIndex; i++)
@@ -21,8 +21,8 @@ namespace AVS.CoreLib.Extensions.Collections
 
         public static IList<T> Slice<T>(this IList<T> source, int startIndex, int endIndex)
         {
-            Guard.MustBeWithinRange(startIndex, 0, endIndex);
-            Guard.MustBeWithinRange(endIndex, startIndex, source.Count);
+            Guard.MustBe.WithinRange(startIndex, 0, endIndex);
+            Guard.MustBe.WithinRange(endIndex, startIndex, source.Count);
 
             var list = new List<T>(endIndex - startIndex);
             for (var i = startIndex; i < endIndex; i++)

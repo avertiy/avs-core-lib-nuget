@@ -22,6 +22,12 @@
         /// Good Till Crossing (Post Only) 
         /// </summary>
         GTX = 4,
+
+        /// <summary>
+        /// GTE seems good till expire, GTC good till cancel
+        /// </summary>
+        GTE_GTC = 5,
+
         ///// <summary>
         ///// market open price (NYSE/Nasdaq)
         ///// </summary>

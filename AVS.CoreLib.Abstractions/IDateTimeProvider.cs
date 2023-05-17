@@ -25,7 +25,7 @@ namespace AVS.CoreLib.Abstractions
         }
 
         #region static
-        private static IDateTimeProvider _instance;
+        private static IDateTimeProvider? _instance;
 
         public static IDateTimeProvider Instance
         {
@@ -38,7 +38,7 @@ namespace AVS.CoreLib.Abstractions
         /// </summary>
         public static DateTime GetTime()
         {
-            return _instance.GetSystemTime();
+            return Instance.GetSystemTime();
         } 
         #endregion
     }

@@ -7,6 +7,7 @@ using AVS.CoreLib.PowerConsole.Utilities;
 
 namespace AVS.CoreLib.PowerConsole.ConsoleTable
 {
+    //to-do code is quite dirty and need some refactoring but at least i made it work 
     public class Table
     {
         private const int MAX_WIDTH = 160;
@@ -77,7 +78,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
                 {
                     if (cell.Colspan == 1)
                     {
-                        cell.Width = cell.Column.Width;
+                        cell.Width = cell.Column?.Width?? 0;
                         index++;
                         continue;
                     }
@@ -94,20 +95,6 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
                     index += cell.Colspan;
                 }
             }
-
-            //for (var i = 0; i < Columns.Count; i++)
-            //{
-            //    var column = Columns[i];
-            //    foreach (var row in Rows)
-            //    {
-            //        if (i >= row.Cells.Count)
-            //            continue;
-
-            //        var cell = row[i];
-            //        cell.Width = column.Width;
-            //    }
-            //}
-
         }
 
         public override string ToString()
@@ -171,6 +158,13 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
             });
         }
 
+        public Row AddRow(Row row)
+        {
+            row.Table = this;
+            Rows.Add(row);
+            return row;
+        }
+
         public Row AddRow(ColorScheme? scheme = null)
         {
             var row = new Row() { ColorScheme = scheme, Table = this };
@@ -227,5 +221,12 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
 
             return table;
         }
+    }
+
+    public enum ColumnOptions
+    {
+        Auto=0,
+        Vertical =1,
+        Horizontal =2,
     }
 }

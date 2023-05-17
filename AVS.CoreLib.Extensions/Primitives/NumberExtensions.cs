@@ -69,6 +69,15 @@ namespace AVS.CoreLib.Extensions
         #endregion
 
         #region deciamls
+
+        public static decimal Divide(this decimal value, decimal divider, decimal @default = 0, int? roundDecimals = null)
+        {
+            if (divider == 0)
+                return @default;
+
+            return (value / divider).Round(roundDecimals);
+        }
+
         public static decimal Round(this decimal value, int decimals)
         {
             return Math.Round(value, decimals, MidpointRounding.AwayFromZero);

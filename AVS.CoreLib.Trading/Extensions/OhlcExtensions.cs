@@ -6,20 +6,6 @@ namespace AVS.CoreLib.Trading.Extensions
 {
     public static class OhlcExtensions
     {
-        //[Obsolete("Method does not look as common/generic purpose, so it will be removed")]
-        //public static void UpdateOhlc(this IOhlc ohlc, decimal price)
-        //{
-        //    if (ohlc.Open <= 0)
-        //        ohlc.Open = price;
-        //    else
-        //        ohlc.Close = price;
-
-        //    if (price > ohlc.High)
-        //        ohlc.High = price;
-        //    else if (price < ohlc.Low || ohlc.Low <= 0)
-        //        ohlc.Low = price;
-        //}
-
         /// <summary>
         /// not implemented to classify all candle types but some basic candle classification is possible
         /// </summary>

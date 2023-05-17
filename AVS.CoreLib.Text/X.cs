@@ -29,7 +29,7 @@ namespace AVS.CoreLib.Text
         /// <summary>
         /// allows to preprocess/modify argument's format 
         /// </summary>
-        public static FormatPreprocessor FormatPreprocessor { get; set; } = new FormatPreprocessor();
+        public static FormatPreprocessor FormatPreprocessor { get; set; } = new();
 
         /// <summary>
         /// Format string using <see cref="XFormatProvider"/>
@@ -93,5 +93,10 @@ namespace AVS.CoreLib.Text
             var result = str2.ToString(FormatProvider, preprocessor, textProcessor);
             return TextProcessor.Process(result);
         }
+
+        //public static string FormatByKey(string key, object obj)
+        //{
+
+        //}
     }
 }

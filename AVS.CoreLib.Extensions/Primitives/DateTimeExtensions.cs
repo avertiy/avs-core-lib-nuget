@@ -60,6 +60,16 @@ namespace AVS.CoreLib.Extensions
             return new DateTime(date.Year, q * 3,  1);
         }
 
+        public static DateTime TakeEarliest(this DateTime date, DateTime other)
+        {
+            return date > other ? other : date;
+        }
+
+        public static DateTime TakeLatest(this DateTime date, DateTime other)
+        {
+            return date > other ? date : other;
+        }
+
         public static bool WithinRange(this DateTime value, DateTime? from, DateTime? to)
         {
             if (from.HasValue && value < from.Value)

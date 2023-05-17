@@ -16,7 +16,7 @@ namespace AVS.CoreLib.Text.FormatProviders
         /// <summary>
         /// Formatter returned by <seealso cref="GetFormat"/>
         /// </summary>
-        protected CustomFormatter Formatter { get; set; }
+        protected Formatters.CustomFormatter Formatter { get; set; }
 
         private GenericTypeFormatter GenericTypeFormatter { get; set; }
 
@@ -33,7 +33,7 @@ namespace AVS.CoreLib.Text.FormatProviders
         /// <summary>
         /// Append custom formatter
         /// </summary>
-        public void AppendFormatter(CustomFormatter formatter)
+        public void AppendFormatter(Formatters.CustomFormatter formatter)
         {
             Formatter.AppendFormatter(formatter);
         }
@@ -49,7 +49,7 @@ namespace AVS.CoreLib.Text.FormatProviders
         /// <inheritdoc />
         public object GetFormat(Type formatType)
         {
-            if (formatType == typeof(ICustomFormatter))
+            if (formatType == typeof(System.ICustomFormatter))
                 return Formatter;
             return null;
         }

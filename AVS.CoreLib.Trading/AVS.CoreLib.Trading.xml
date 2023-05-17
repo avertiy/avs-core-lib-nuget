@@ -4,6 +4,42 @@
         <name>AVS.CoreLib.Trading</name>
     </assembly>
     <members>
+        <member name="T:AVS.CoreLib.Trading.Abstractions.Bars.IBarExtension">
+            <summary>
+            Represent an extension for bar properties
+            for example we can calc moving average value at this bar, bollinger bands etc. 
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Abstractions.Bars.ITopIndicators">
+            <summary>
+            Top indicators
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Abstractions.Bars.TopIndicators">
+            <summary>
+            these are my indicators: 3MAs + BB + RSI
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Abstractions.Bars.IMovingAverage.Distance">
+            <summary>
+            distance from Close price to MA
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Abstractions.Bars.IXBar">
+            <summary>
+            Bar with extra properties lengths, avg price, indicators etc.
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Abstractions.Bars.IXBar.Avg">
+            <summary>
+            (Open+Close)/2
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Abstractions.Bars.IXBar.Mid">
+            <summary>
+            (High+Low)/2
+            </summary>
+        </member>
         <member name="T:AVS.CoreLib.Trading.Abstractions.IBar">
             <summary>
             represent a bar chart unit (synonym candle or simply bar)  
@@ -17,26 +53,6 @@
         <member name="P:AVS.CoreLib.Trading.Abstractions.IBar.Total">
             <summary>
             total is an amount of quote currency
-            </summary>
-        </member>
-        <member name="P:AVS.CoreLib.Trading.Abstractions.IMovingAverage.Distance">
-            <summary>
-            distance from Close price to MA
-            </summary>
-        </member>
-        <member name="T:AVS.CoreLib.Trading.Abstractions.IXBar">
-            <summary>
-            Bar with extra properties lengths, avg price, indicators etc.
-            </summary>
-        </member>
-        <member name="P:AVS.CoreLib.Trading.Abstractions.IXBar.Avg">
-            <summary>
-            (Open+Close)/2
-            </summary>
-        </member>
-        <member name="P:AVS.CoreLib.Trading.Abstractions.IXBar.Mid">
-            <summary>
-            (High+Low)/2
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Trading.Collections.CurrencyCollection.System#Collections#Generic#ICollection{System#String}#Add(System.String)">
@@ -503,22 +519,25 @@
         </member>
         <member name="T:AVS.CoreLib.Trading.Enums.Futures.PositionSide">
             <summary>
-            Position side
+            Position mode
+            1. One-way mode [DEFAULT] - you can only hold positions in one direction under one contract.
+               Opening positions in both directions would cancel one another out or reduce their sizes.
+            
+            2. Hedge mode - you can simultaneously hold positions in both long and short directions under the same contract.
+               If you open long position on higher TF, but anticipate that in short term the price will move down, you want to open a short position as well
             </summary>
+            <remarks>
+            Hedge mode is a trading strategy used by futures traders to mitigate their risk exposure to the market. It involves opening two opposite positions, a long and a short, to profit from any market movement while minimizing potential losses.
+            </remarks>
         </member>
         <member name="F:AVS.CoreLib.Trading.Enums.Futures.PositionSide.Both">
             <summary>
-            Both for one-way mode when placing an order
+            In ONE-WAY mode they return BOTH i.e. you can identify the actual long/short direction by amount sign
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.Futures.PositionSide.Short">
+        <member name="T:AVS.CoreLib.Trading.Enums.Futures.PositionDirection">
             <summary>
-            Short used in two-way (hedge) mode
-            </summary>
-        </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.Futures.PositionSide.Long">
-            <summary>
-            Long used in two-way (hedge) mode
+            clearly defines position direction SHORT / LONG
             </summary>
         </member>
         <member name="T:AVS.CoreLib.Trading.Enums.Futures.WorkingType">
@@ -739,6 +758,11 @@
         <member name="F:AVS.CoreLib.Trading.Enums.TimeInForce.GTX">
             <summary>
             Good Till Crossing (Post Only) 
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeInForce.GTE_GTC">
+            <summary>
+            GTE seems good till expire, GTC good till cancel
             </summary>
         </member>
         <member name="T:AVS.CoreLib.Trading.Enums.TraderSide">

@@ -7,6 +7,10 @@ namespace AVS.CoreLib.WebSockets.MessageProcessing
     public abstract class MessageHandler<T, TContext> : IMessageHandler<T, TContext>
     {
         protected bool ProcessAsync { get; set; } = true;
+        /// <summary>
+        /// Set IsDebug true to handle messages in a sync way
+        /// by default for each message Task.Run(() => HandleMessageAsync(...)) is used 
+        /// </summary>
         public bool IsDebug { get; set; }
 
         public void Handle(T message, TContext context = default)

@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Reflection;
 using System.Text;
-using AVS.CoreLib.PowerConsole.Extensions;
 using AVS.CoreLib.PowerConsole.Structs;
 using AVS.CoreLib.Text.Formatters.ColorMarkup;
 

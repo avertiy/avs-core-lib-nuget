@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using AVS.CoreLib.Enums;
 
 namespace AVS.CoreLib.Extensions
 {
@@ -32,20 +30,20 @@ namespace AVS.CoreLib.Extensions
             }
         }
 
-        public static IEnumerable<T> OrderBy<T,Key>(this IEnumerable<T> source, Func<T,Key> selector, OrderBy orderBy)
-        {
-            if(orderBy == Enums.OrderBy.None)
-                return source;
+        //public static IEnumerable<T> OrderBy<T,Key>(this IEnumerable<T> source, Func<T,Key> selector, OrderBy orderBy)
+        //{
+        //    if(orderBy == Enums.OrderBy.None)
+        //        return source;
 
-            return orderBy == Enums.OrderBy.Asc ? source.OrderBy(selector) : source.OrderByDescending(selector);
-        }
+        //    return orderBy == Enums.OrderBy.Asc ? source.OrderBy(selector) : source.OrderByDescending(selector);
+        //}
 
-        public static IEnumerable<T> ThenBy<T, Key>(this IOrderedEnumerable<T> source, Func<T, Key> selector, OrderBy orderBy)
-        {
-            if (orderBy == Enums.OrderBy.None)
-                return source;
+        //public static IEnumerable<T> ThenBy<T, Key>(this IOrderedEnumerable<T> source, Func<T, Key> selector, OrderBy orderBy)
+        //{
+        //    if (orderBy == Enums.OrderBy.None)
+        //        return source;
 
-            return orderBy == Enums.OrderBy.Asc ? source.ThenBy(selector) : source.ThenByDescending(selector);
-        }
+        //    return orderBy == Enums.OrderBy.Asc ? source.ThenBy(selector) : source.ThenByDescending(selector);
+        //}
     }
 }

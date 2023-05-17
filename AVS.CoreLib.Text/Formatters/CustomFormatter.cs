@@ -6,7 +6,7 @@ namespace AVS.CoreLib.Text.Formatters
     /// <summary>
     /// base abstract class for custom format providers
     /// </summary>
-    public abstract class CustomFormatter : IFormatProvider, ICustomFormatter
+    public abstract class CustomFormatter : IFormatProvider, System.ICustomFormatter
     {
         /// <summary>
         /// points to the next formatter when few formatters are combined into one 
@@ -108,7 +108,7 @@ namespace AVS.CoreLib.Text.Formatters
         [DebuggerStepThrough]
         public object GetFormat(Type formatType)
         {
-            if (formatType == typeof(ICustomFormatter))
+            if (formatType == typeof(System.ICustomFormatter))
                 return this;
             return null;
         }

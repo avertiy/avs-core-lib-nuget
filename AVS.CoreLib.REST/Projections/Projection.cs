@@ -207,7 +207,7 @@ namespace AVS.CoreLib.REST.Projections
             catch (MapException) { throw; }
             catch (Exception ex)
             {
-                throw new MapException($"{this.GetType().ToStringNotation()}::Map json failed.", ex) { JsonText = JsonText, Source = Source };
+                throw new MapException($"{this.GetType().GetReadableName()}::Map json failed.", ex) { JsonText = JsonText, Source = Source };
             }
         }
 

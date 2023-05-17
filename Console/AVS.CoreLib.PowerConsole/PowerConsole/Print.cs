@@ -40,7 +40,7 @@ namespace AVS.CoreLib.PowerConsole
         /// </summary>
         /// /// <remarks>
         /// X.Format extends standard .NET string format modifiers with custom modifiers
-        /// (<see cref="CustomFormatter"/> which is base class to implement custom formatter, example implementation see PriceFormatter in AVS.CoreLib.Trading package)
+        /// (<see cref="Text.Formatters.CustomFormatter"/> which is base class to implement custom formatter, example implementation see PriceFormatter in AVS.CoreLib.Trading package)
         /// usage example: X.Format($"order: {type:+} {symbol:Q}"); `+` and `Q` are custom modifiers
         /// or PowerConsole.XFormat($"order: {type:+} {symbol:Q}");
         /// </remarks>

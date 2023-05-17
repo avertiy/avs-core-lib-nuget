@@ -12,6 +12,7 @@
     <Copyright>Artem Vertii</Copyright>
     <Authors>Artem Vertii</Authors>
     <Description>Simple, light &amp; easy to use type mapper</Description>
+    <RepositoryUrl>https://github.com/avertiy/avs-core-lib-nuget/tree/main/AVS.CoreLib.Mapper</RepositoryUrl>
   </PropertyGroup>
 
 </Project>

@@ -17,8 +17,9 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
         {
             var colspan = Cells.Sum(x => x.Colspan);
             var cols = colspan + cell.Colspan;
-            if (cols > Table.Columns.Count)
-                throw new ArgumentOutOfRangeException($"Unable to add another cell. Row colspan #{cols} will exceed the number of columns #{Table.Columns.Count}");
+
+            //if (cols > Table.Columns.Count)
+            //    throw new ArgumentOutOfRangeException($"Unable to add another cell. Row colspan #{cols} will exceed the number of columns #{Table.Columns.Count}");
 
             cell.ColorScheme ??= ColorScheme;
             cell.Column = GetColumn(colspan > 0 ? colspan : 0);
@@ -32,9 +33,19 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
             return string.Join(" | ", Cells);
         }
 
-        private Column GetColumn(int index)
+        private Column? GetColumn(int index)
         {
-            return Table.Columns[index];
+            return Table.Columns.Count > 0 ? Table.Columns[index] : null;
+        }
+
+        public static Row Create(Table table, params string[] values)
+        {
+            var row = new Row() { Table = table };
+            foreach (var value in values)
+            {
+                row.AddCellWithValue(value);
+            }
+            return row;
         }
     }
 

@@ -64,6 +64,14 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
         {
             PowerConsole.PrintHeader($"Print tests");
 
+            var arr = new object[] { "1", 2, 3.0m, ConsoleColor.Cyan, 6 };
+            var obj = new { Prop1 = "abc", EntryPrice = 17.255m, DateProp = DateTime.Now, Arr =arr , Prop5 = new List<int>(), Prop6 = new string[]{} };
+
+            PowerConsole.PrintObject(obj);
+
+
+
+            PowerConsole.Print($"test args coloring {10:C}, {"abc"}, {DateTime.Today:G} ", PrintOptions.FromColors(ConsoleColor.Red, ConsoleColor.Cyan, ConsoleColor.Green));
             PowerConsole.PrintF($"test args coloring {10:C}, {"abc"}, {DateTime.Today:G} ", ConsoleColor.Red, ConsoleColor.Cyan, ConsoleColor.Green);
 
             PowerConsole.Print("print without parameters");

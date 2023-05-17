@@ -275,7 +275,7 @@ namespace AVS.CoreLib.REST.Projections
                         catch (Exception ex)
                         {
                             var msg =
-                                $"ParseDictionary<{typeof(TKey).Name},{typeof(TValue).ToStringNotation()}> with projection of {typeof(TProjection).ToStringNotation()}> failed";
+                                $"ParseDictionary<{typeof(TKey).Name},{typeof(TValue).GetReadableName()}> with projection of {typeof(TProjection).GetReadableName()}> failed";
                             throw new MapException(msg, ex) { JsonText = JsonText };
                         }
 
@@ -360,7 +360,7 @@ namespace AVS.CoreLib.REST.Projections
                         }
                         catch (Exception ex)
                         {
-                            throw new MapException($"ParseDictionary<{typeof(TKey).Name},{typeof(TValue).ToStringNotation()}> with projection of {typeof(TProjection).ToStringNotation()}> failed", ex) { JsonText = JsonText };
+                            throw new MapException($"ParseDictionary<{typeof(TKey).Name},{typeof(TValue).GetReadableName()}> with projection of {typeof(TProjection).GetReadableName()}> failed", ex) { JsonText = JsonText };
                         }
                     }
                     else
@@ -485,7 +485,7 @@ namespace AVS.CoreLib.REST.Projections
                 }
                 catch (Exception ex)
                 {
-                    throw new JsonException($"unable deserialize JToken [{token.ToString()}] into {itemType.ToStringNotation()} ", ex);
+                    throw new JsonException($"unable deserialize JToken [{token.ToString()}] into {itemType.GetReadableName()} ", ex);
                 }
             }
 

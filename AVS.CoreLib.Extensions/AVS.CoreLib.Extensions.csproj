@@ -31,5 +31,6 @@
     <Compile Include="Tasks\ParallelExtensions.cs" />
     <Compile Include="Tasks\ParallelJobs.cs" />
     <Compile Include="Tasks\ParallelTasks.cs" />
+    <Compile Include="Tasks\TaskExtensions.cs" />
   </ItemGroup>
 </Project>

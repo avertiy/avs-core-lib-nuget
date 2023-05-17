@@ -55,6 +55,11 @@ namespace AVS.CoreLib.Trading.Helpers
                     obj = ParseEnumHelper.ParsePositionSide(value);
                     return true;
                 }
+                //case nameof(PositionMode):
+                //{
+                //    obj = ParseEnumHelper.ParsePositionMode(value);
+                //    return true;
+                //}
                 case nameof(FuturesOrderType):
                 {
                     obj = ParseEnumHelper.ParseFuturesOrderType(value);
@@ -256,6 +261,10 @@ namespace AVS.CoreLib.Trading.Helpers
                     return TimeInForce.FOK;
                 case "IOC":
                     return TimeInForce.IOC;
+                case "DAY":
+                    return TimeInForce.DAY;
+                case "GTE_GTC":
+                    return TimeInForce.GTE_GTC;
                 default:
                     throw new NotSupportedException($"Unknown {nameof(TimeInForce)} '{value}'");
             }
@@ -322,6 +331,23 @@ namespace AVS.CoreLib.Trading.Helpers
             }
             throw new ArgumentOutOfRangeException($"{value} unknown OrderSide");
         }
+
+        //public static PositionMode ParsePositionMode(string value)
+        //{
+        //    switch (value[0])
+        //    {
+        //        case 'l':
+        //        case 'L':
+        //            return PositionMode.Long;
+        //        case 's':
+        //        case 'S':
+        //            return PositionMode.Short;
+        //        case 'b':
+        //        case 'B':
+        //            return PositionMode.Both;
+        //    }
+        //    throw new ArgumentOutOfRangeException($"{value} unknown OrderSide");
+        //}
 
         public static FuturesOrderType ParseFuturesOrderType(string value)
         {

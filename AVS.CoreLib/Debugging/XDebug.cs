@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Text;
+using AVS.CoreLib.Extensions.Reflection;
 
 namespace AVS.CoreLib.Debugging
 {
@@ -8,10 +9,10 @@ namespace AVS.CoreLib.Debugging
     {
         public static string Dump<T>(this T obj, bool printToConsole = false)
         {
-
-            var type = obj.GetType();
             var sb = new StringBuilder();
-            sb.AppendLine(type.FullName);
+            var type = obj.GetType();
+
+            //sb.AppendLine($"Dump of {type.GetReadableName()}:");
 
             var dump = ObjectDumper.Dump(obj);
             sb.AppendLine(dump);

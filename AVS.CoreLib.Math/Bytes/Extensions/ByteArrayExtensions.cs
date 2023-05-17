@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Runtime.InteropServices;
-using AVS.CoreLib.Extensions.Collections;
 using AVS.CoreLib.Guards;
 
 namespace AVS.CoreLib.Math.Bytes.Extensions
@@ -235,13 +233,11 @@ namespace AVS.CoreLib.Math.Bytes.Extensions
 
         public static byte[] Swap(this byte[] arr, int index1 = 0, int? index2 = null)
         {
-            Guard.ArrayIndex(arr, index1);
+            Guard.Array.CheckIndex(arr, index1);
             var ind2 = index2.GetValueOrDefault(arr.Length-1); 
-            Guard.ArrayIndex(arr, ind2);
+            Guard.Array.CheckIndex(arr, ind2);
 
-            var b = arr[index1];
-            arr[index1] = arr[ind2];
-            arr[ind2] = b;
+            (arr[index1], arr[ind2]) = (arr[ind2], arr[index1]);
 
             return arr;
         }

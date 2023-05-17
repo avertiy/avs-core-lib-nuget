@@ -346,6 +346,18 @@ namespace AVS.CoreLib.PowerConsole.Printers
             Level = MessageLevel.Error
         };
 
+        /// <summary>
+        /// Note: multiple colors works with PrintF methods it does not work with Print methods
+        /// </summary>
+        public static PrintOptions FromColors(params ConsoleColor[] colors)
+        {
+            return new PrintOptions()
+            {
+                ColorPalette = new ColorPalette(colors),
+                EndLine = true,
+            };
+        }
+
         public static PrintOptions FromColors(ConsoleColor[] colors, string? timeFormat = null, bool endLine = true)
         {
             return new PrintOptions()

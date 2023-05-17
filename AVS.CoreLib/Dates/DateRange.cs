@@ -2,8 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using AVS.CoreLib.Enums;
+using AVS.CoreLib.Extensions;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace AVS.CoreLib.Dates
 {
@@ -301,6 +305,13 @@ namespace AVS.CoreLib.Dates
             return new DateRange(from, from.AddDays(days));
         }
 
+        public static DateRange FromSource<T>(IList<T> source, Func<T,DateTime> selector)
+        {
+            var from = source.Min(selector);
+            var to = source.Max(selector);
+            return new DateRange(from, to);
+        }
+
         public static DateRange FromToday(DateTime from)
         {
             return new DateRange(from, DateTime.Today);
@@ -336,6 +347,14 @@ namespace AVS.CoreLib.Dates
             return utc;
         }
 
+        /// <summary>
+        /// combine both ranges, taking the earliest From  and the latest To
+        /// </summary>
+        public static DateRange Combine(this DateRange range, DateRange other)
+        {
+            return new DateRange(range.From.TakeEarliest(other.From), range.To.TakeLatest(other.To));
+        }
+
         public static IEnumerable<DateRange> Iterate(this DateRange range, int seconds)
         {
             for (var i = range.From; i <= range.To;)
@@ -346,13 +365,41 @@ namespace AVS.CoreLib.Dates
             }
         }
 
-        public static IEnumerable<DateRange> IterateByDays(this DateRange range, int days)
+        public static IEnumerable<DateRange> IterateByDays(this DateRange range, int days, OrderBy orderBy = OrderBy.Asc)
         {
-            for (var i = range.From; i <= range.To;)
+            if (orderBy == OrderBy.Asc)
             {
-                var next = i.AddDays(days);
-                yield return new DateRange(i, next);
-                i = next;
+                var i = range.From;
+                while (true)
+                {
+                    var next = i.AddDays(days);
+
+                    if (next > range.To)
+                    {
+                        yield return new DateRange(i, range.To);
+                        break;
+                    }
+
+                    yield return new DateRange(i, next);
+                    i = next;
+                }
+            }
+            else
+            {
+                var i = range.To;
+                while (true)
+                {
+                    var prev = i.AddDays(-days);
+
+                    if (prev < range.From)
+                    {
+                        yield return new DateRange(range.From, i);
+                        break;
+                    }
+
+                    yield return new DateRange(prev, i);
+                    i = prev;
+                }
             }
         }
     }

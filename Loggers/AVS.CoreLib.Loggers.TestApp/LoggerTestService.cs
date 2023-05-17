@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using AVS.CoreLib.Abstractions.Bootstrap;
+using AVS.CoreLib.Debugging;
 using AVS.CoreLib.Extensions.Stringify;
 using AVS.CoreLib.Logging.ColorFormatter.Utils;
 using AVS.CoreLib.PowerConsole.Extensions;
@@ -25,6 +26,12 @@ namespace AVS.CoreLib.Loggers.TestApp
 
         public override void Test()
         {
+            var arr = new object[] { "1", 2, 3.0m, 54, 6 };
+            var list = new List<object>() {"|", "123213", new object(), new {RRR =11 }};
+            var obj = new { Prop1 = "abc", Price = 252.2, Prop3 = arr, Prop4= list };
+            var str = XDebug.Dump(obj);
+
+            _logger.LogInformation("Dump object test {obj} => {str}", obj, str);
             ConsoleLogProfiler.Enabled = true;
             TestArgsColorFormatter();
             ArgsFormatTests();

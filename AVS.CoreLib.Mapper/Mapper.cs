@@ -17,7 +17,7 @@ namespace AVS.CoreLib.Mapper
     /// </code>
     public class Mapper : IMapper
     {
-        private readonly Dictionary<string, Delegate> _mappings = new();
+        protected readonly Dictionary<string, Delegate> _mappings = new();
 
         /// <summary>
         /// Register type mapping  delegate
@@ -65,6 +65,37 @@ namespace AVS.CoreLib.Mapper
             var del = _mappings[mappingKey];
             var func = (Func<TSource, TModel>)del;
             return source.Select(x => func(x));
+        }
+
+        
+    }
+
+    public static class MapperExtensions
+    {
+        public static void Register<TSource>(this IMapper mapper, Func<TSource, TSource> func)
+        {
+            mapper.Register(func);
+        }
+
+        /// <summary>
+        /// Create a copy of the source object
+        /// </summary>
+        /// <param name="mapper">mapper instance</param>
+        /// <param name="source">source object</param>
+        /// <param name="modify">optional parameter in case you need to modify the copy</param>
+        /// <returns>copy of the source object</returns>
+        public static TSource Copy<TSource>(this IMapper mapper, TSource source, Action<TSource>? modify = null)
+        {
+            var copy = mapper.Map<TSource, TSource>(source);
+            modify?.Invoke(copy);
+            return copy;
+        }
+
+        public static TModel Map<TSource, TModel>(this IMapper mapper, TSource source, Action<TModel>? modify = null)
+        {
+            var model = mapper.Map<TSource, TModel>(source);
+            modify?.Invoke(model);
+            return model;
         }
     }
 }

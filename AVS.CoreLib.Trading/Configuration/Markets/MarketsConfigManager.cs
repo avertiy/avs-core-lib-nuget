@@ -33,7 +33,7 @@ namespace AVS.CoreLib.Trading.Configuration.Markets
 
         protected void Add(MarketConfig config)
         {
-            Guard.AgainstNullOrEmpty(config.Name, "Market name must be not empty [e.g. Binance or Binance:main]");
+            Guard.Against.NullOrEmpty(config.Name, "Market name must be not empty [e.g. Binance or Binance:main]");
             _items.Add(config.Name, config);
         }
 

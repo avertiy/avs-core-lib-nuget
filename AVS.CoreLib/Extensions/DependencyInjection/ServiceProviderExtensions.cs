@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using AVS.CoreLib.Guards;
-using AVS.CoreLib.Utilities;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -27,7 +24,7 @@ namespace AVS.CoreLib.Extensions.DependencyInjection
             var snapshot = sp.GetService<IOptionsMonitor<TOptions>>();
             var options = snapshot.Get(name);
             if (required)
-                Guard.AgainstNull(options, $"{typeof(TOptions).Name}:{name} has not been configured.");
+                Guard.Against.Null(options, $"{typeof(TOptions).Name}:{name} has not been configured.");
             return options;
         }
 

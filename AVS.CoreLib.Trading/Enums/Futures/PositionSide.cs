@@ -1,21 +1,38 @@
 ﻿namespace AVS.CoreLib.Trading.Enums.Futures
 {
     /// <summary>
-    /// Position side
+    /// Position mode
+    /// 1. One-way mode [DEFAULT] - you can only hold positions in one direction under one contract.
+    ///    Opening positions in both directions would cancel one another out or reduce their sizes.
+    /// 
+    /// 2. Hedge mode - you can simultaneously hold positions in both long and short directions under the same contract.
+    ///    If you open long position on higher TF, but anticipate that in short term the price will move down, you want to open a short position as well
     /// </summary>
+    /// <remarks>
+    /// Hedge mode is a trading strategy used by futures traders to mitigate their risk exposure to the market. It involves opening two opposite positions, a long and a short, to profit from any market movement while minimizing potential losses.
+    /// </remarks>
     public enum PositionSide
     {
         /// <summary>
-        /// Both for one-way mode when placing an order
+        /// In ONE-WAY mode they return BOTH i.e. you can identify the actual long/short direction by amount sign
         /// </summary>
         Both = 0,
-        /// <summary>
-        /// Short used in two-way (hedge) mode
-        /// </summary>
-        Short,
-        /// <summary>
-        /// Long used in two-way (hedge) mode
-        /// </summary>
-        Long
+        Short = 1,
+        Long =2
+    }
+    
+    public enum PositionMode
+    {
+        OneWay = 0,
+        Hedge
+    }
+
+    /// <summary>
+    /// clearly defines position direction SHORT / LONG
+    /// </summary>
+    public enum PositionDirection
+    {
+        Short = 1,
+        Long = 2
     }
 }

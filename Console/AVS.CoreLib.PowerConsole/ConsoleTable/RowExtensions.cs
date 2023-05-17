@@ -1,4 +1,5 @@
 ﻿using System;
+using AVS.CoreLib.Extensions.Stringify;
 using AVS.CoreLib.PowerConsole.Utilities;
 using AVS.CoreLib.Text;
 
@@ -14,9 +15,26 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
             return row;
         }
 
+        public static Row AddCellWithValue(this Row row, string value, int colspan = 1, ColorScheme? scheme = null)
+        {
+            var cell = new Cell()
+            {
+                Text = value,
+                ColorScheme = scheme,
+                Colspan = colspan
+            };
+            return row.AddCell(cell);
+        }
+
         public static Row AddCellWithValue<T>(this Row row, T value, int colspan = 1, ColorScheme? scheme = null)
         {
-            var cell = new Cell<T>() { Value = value, ColorScheme = scheme, Colspan = colspan };
+            var cell = new Cell()
+            {
+                Value = value, 
+                Text = value?.Stringify(),
+                ColorScheme = scheme,
+                Colspan = colspan
+            };
             return row.AddCell(cell);
         }
 

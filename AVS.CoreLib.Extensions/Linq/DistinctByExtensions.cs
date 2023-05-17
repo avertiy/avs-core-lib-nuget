@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AVS.CoreLib.Extensions.Collections
+namespace AVS.CoreLib.Extensions.Linq
 {
     public static class DistinctByExtensions
     {
-        public static IEnumerable<TSource> DistinctBy<TSource, TKey>
-        (this IEnumerable<TSource> source,
-            Func<TSource, TKey> keySelector)
-        {
-            return source.DistinctBy(keySelector, null);
-        }
+        //public static IEnumerable<TSource> DistinctBy<TSource, TKey>
+        //(this IEnumerable<TSource> source,
+        //    Func<TSource, TKey> keySelector)
+        //{
+        //    return source.DistinctBy(keySelector, null);
+        //}
 
         public static IEnumerable<TSource> DistinctBy<TSource, TKey>
         (this IEnumerable<TSource> source,

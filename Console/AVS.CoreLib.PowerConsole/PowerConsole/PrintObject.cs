@@ -1,20 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using AVS.CoreLib.Console.ColorFormatting;
-using AVS.CoreLib.Extensions;
-using AVS.CoreLib.Extensions.Stringify;
+using AVS.CoreLib.Guards;
 using AVS.CoreLib.PowerConsole.ConsoleTable;
 using AVS.CoreLib.PowerConsole.Extensions;
 using AVS.CoreLib.PowerConsole.Printers;
-using AVS.CoreLib.PowerConsole.Structs;
-using AVS.CoreLib.PowerConsole.Utilities;
-using AVS.CoreLib.Text.Extensions;
-using AVS.CoreLib.Text.Formatters.ColorMarkup;
 
 namespace AVS.CoreLib.PowerConsole
 {
-    using Console = System.Console;
     public static partial class PowerConsole
     {
         public static void PrintJson<T>(T obj, JsonPrintOptions? options = null)
@@ -29,6 +20,18 @@ namespace AVS.CoreLib.PowerConsole
         {
             Printer.PrintJson<T>(obj, options ?? JsonPrintOptions.JsonIndented);
         }
+
+        /// <summary>
+        /// print object as table 
+        /// </summary>
+        public static void PrintObject<T>(T obj, ColumnOptions options = ColumnOptions.Auto, params string[] excludeProps)
+        {
+            Guard.Against.Null(obj);
+            var builder = new TableBuilder { ColumnOptions = options, ExcludeProperties = excludeProps }; ;
+            var tbl = builder.CreateTable(obj);
+            Printer.PrintTable(tbl, PrintOptions.NoTimestamp);
+        }
+
     }
 
     public class JsonPrintOptions : PrintOptions
