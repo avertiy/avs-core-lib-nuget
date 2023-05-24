@@ -17,7 +17,7 @@ namespace AVS.CoreLib.PowerConsole
 
     // 4. Printer should delegate formatting object & coloring it to some  AutoFormatProvider.Format(key, obj)
 
-    //PowerConsole.Print features:
+    //PowerConsole.Print base features:
     //PowerConsole.Print("{arg:Green C} some text {arg2:Red N3}"); // explicit format modifiers and colors
     //PowerConsole.Print("{arg:C}"); //similar to LogInformation("{arg:C}", 1.022); => <Green>$1.02</Green> - colors is determined based on formatted value (currency value -> green)
     //PowerConsole.Print("<Blue>{arg1:-Green C} blue text</Blue> {arg2:Red N3}");
@@ -26,7 +26,7 @@ namespace AVS.CoreLib.PowerConsole
 
     // print complex structures
     // (format and color with AutoFormatProvider)
-    //PowerConsole.Printer.PrintArray(..)  also it might have a shortcut(s): PowerConsole.PrintArray(..)
+    //PowerConsole.Printer.PrintArray(..)  also it might have a shortcut(s): PowerConsole.PrintArray(..) all these methods could be extensions
     //PowerConsole.Printer.PrintDictionary(..)
     //PowerConsole.Printer.PrintJson(obj)
     //PowerConsole.Printer.PrintList(..)

@@ -47,21 +47,7 @@ namespace AVS.CoreLib.Console.ColorFormatting
             return text;
         }
 
-        public string Colorize(string text)
-        {
-            if (Foreground.HasValue && Background.HasValue)
-                return $"{AnsiCodes.Color(Foreground.Value)}{AnsiCodes.BgColor(Background.Value)}{text}{AnsiCodes.RESET}";
-
-            if (Foreground.HasValue)
-                return $"{AnsiCodes.Color(Foreground.Value)}{text}{AnsiCodes.RESET}";
-
-            if (Background.HasValue)
-                return $"{AnsiCodes.BgColor(Background.Value)}{text}{AnsiCodes.RESET}";
-
-            return text;
-        }    
-
-        public static Colors Empty => new Colors(null, null);
+        public static Colors Empty { get; } = new Colors(null, null);
 
         /// <summary>
         /// supported formats:
@@ -122,6 +108,63 @@ namespace AVS.CoreLib.Console.ColorFormatting
             }
 
             return color.HasValue || bgColor.HasValue;
+        }
+
+        /// <summary>
+        /// converts strings in format -Color or --Color into ColorScheme
+        /// </summary>
+        public static implicit operator Colors(ConsoleColor color)
+        {
+            return new Colors(color, null);
+        }
+
+        #region Equality operators 
+        public static bool operator ==(Colors a, Colors b)
+        {
+            return a.Foreground == b.Foreground && a.Background == b.Background;
+        }
+
+        public static bool operator !=(Colors a, Colors b)
+        {
+            return !(a == b);
+        }
+
+        public bool Equals(Colors other)
+        {
+            return Background == other.Background && Foreground == other.Foreground;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return false;
+            return obj is Colors other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (397 * (int)Background.GetValueOrDefault()) ^ (int)Foreground.GetValueOrDefault();
+            }
+        }
+        #endregion
+    }
+
+    public static class ColorsExtensions
+    {
+        public static string Colorize(this Colors colors, string text)
+        {
+            if (colors.Foreground.HasValue && colors.Background.HasValue)
+                return $"{AnsiCodes.Color(colors.Foreground.Value)}{AnsiCodes.BgColor(colors.Background.Value)}{text}{AnsiCodes.RESET}";
+
+            if (colors.Foreground.HasValue)
+                return $"{AnsiCodes.Color(colors.Foreground.Value)}{text}{AnsiCodes.RESET}";
+
+            if (colors.Background.HasValue)
+                return $"{AnsiCodes.BgColor(colors.Background.Value)}{text}{AnsiCodes.RESET}";
+
+            return text;
         }
     }
 }

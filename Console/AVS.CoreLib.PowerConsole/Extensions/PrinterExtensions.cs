@@ -100,8 +100,7 @@ namespace AVS.CoreLib.PowerConsole.Extensions
             PrintOptions options)
         {
             var type = ex.GetType().Name;
-
-            var str = message == null ? $"{ex.Message} ({type})" : $"{message} - {ex.Message} ({type})";
+            var str = message == null ? $"[{type}:{ex.Message}]" : $"{message} [{type}:{ex.Message}]";
             printer.Print(str, options);
 
             if (printStackTrace)

@@ -10,6 +10,9 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
             builder.AddJsonFile(path, optional: true, reloadOnChange);
         }
 
+        /// <summary>
+        /// require 2 packages: Microsoft.Extensions.Configuration.EnvironmentVariables and Microsoft.Extensions.Configuration.Json
+        /// </summary>
         public static void AddAppSettings(this IConfigurationBuilder builder, string environment, bool reloadOnChange = false)
         {
             builder

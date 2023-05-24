@@ -9,16 +9,15 @@ namespace AVS.CoreLib.PowerConsole.Printers
 {
     public class Printer : IPrinter
     {
+        public ColorMode ColorMode { get; private set; }
+        public virtual DateTime SystemTime => DateTime.Now;
+        public string TimeFormat { get; set; } = "HH:mm:ss";
+
         protected IOutputWriter Writer { get; set; }
         protected Func<FormattableString, string> Format { get; set; } = str => str.ToString(CultureInfo.CurrentCulture);
 
         private readonly TextWriter _textWriter;
-        public ColorMode ColorMode { get; private set; }
-
-        public DateTime SystemTime => DateTime.Now;
-
-        public string TimeFormat { get; set; } = "HH:mm:ss";
-
+        
         public Printer(TextWriter textWriter, ColorMode mode)
         {
             Writer = OutputWriter.Create(textWriter, mode);

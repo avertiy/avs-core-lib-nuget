@@ -1,9 +1,10 @@
-﻿using AVS.CoreLib.Abstractions.Bootstrap;
+﻿using AVS.CoreLib.BootstrapTools;
+using AVS.CoreLib.BootstrapTools.Extensions;
 using AVS.CoreLib.ConsoleLogger;
-using AVS.CoreLib.ConsoleTools.Bootstrapping;
 using AVS.CoreLib.Logging.ColorFormatter.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using ITestService = AVS.CoreLib.Abstractions.Bootstrap.ITestService;
 
 namespace AVS.CoreLib.Loggers.TestApp;
 

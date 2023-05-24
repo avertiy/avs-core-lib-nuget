@@ -7,11 +7,6 @@ namespace AVS.CoreLib.PowerConsole.Bootstrapping
 {
     public static class ServiceProviderExtensions
     {
-        public static void PressEnterToExit(this IServiceProvider _)
-        {
-            PowerConsole.PressEnterToExit();
-        }
-
         public static IServiceProvider RunAsync<TService>(this IServiceProvider sp, Func<TService, Task> action) where TService : notnull
         {
             var service = sp.GetRequiredService<TService>();

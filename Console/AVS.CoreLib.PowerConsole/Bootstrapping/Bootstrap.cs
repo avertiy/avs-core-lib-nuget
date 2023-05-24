@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace AVS.CoreLib.PowerConsole.Bootstrapping
 {
+    
     /// <summary>
     /// Console utility to quickly bootstrap your console app with DI
     /// (Microsoft.Extensions.DependencyInjection) without getting into burden of the .NET core Host/WebHost builder complexities. 
@@ -17,6 +18,7 @@ namespace AVS.CoreLib.PowerConsole.Bootstrapping
     /// </code>
     /// <seealso cref="StartupServiceBase"/>
     /// </summary>
+    [Obsolete("Use Bootstrap from AVS.CoreLib.BootstrapTools package")]
     public class Bootstrap
     {
         /// <summary>
@@ -49,6 +51,12 @@ namespace AVS.CoreLib.PowerConsole.Bootstrapping
         /// Bootstrap set for you DarkGray console color scheme, a default en-US current culture, build <see cref="IServiceProvider"/>
         /// and run <see cref="IStartupService.Start"/> method
         /// Also configure DI and run Main() are wrapped in try catch blocks for you
+        /// <code>    
+        ///     Bootstrap.Start&lt;StartupService&gt;(services =>
+        ///     {
+        ///         services.AddXXX(..)
+        ///     });
+        /// </code>
         /// </summary>
         public static void Start<TStartupService>(Action<IServiceCollection> register, Action<IServiceProvider>? configure = null, string culture = "en-US")
             where TStartupService : class, IStartupService, new()

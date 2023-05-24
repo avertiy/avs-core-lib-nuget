@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <StartupObject>AVS.CoreLib.Loggers.TestApp.Program</StartupObject>
   </PropertyGroup>
 
@@ -11,9 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\AVS.CoreLib.Bootstrap\AVS.CoreLib.Bootstrap.csproj" />
     <ProjectReference Include="..\..\AVS.CoreLib.Extensions\AVS.CoreLib.Extensions.csproj" />
     <ProjectReference Include="..\..\AVS.CoreLib\AVS.CoreLib.csproj" />
-    <ProjectReference Include="..\..\Console\AVS.CoreLib.ConsoleTools\AVS.CoreLib.ConsoleTools.csproj" />
     <ProjectReference Include="..\AVS.CoreLib.ConsoleLogger\AVS.CoreLib.ConsoleLogger.csproj" />
     <ProjectReference Include="..\AVS.CoreLib.FileLogger\AVS.CoreLib.FileLogger.csproj" />
     <ProjectReference Include="..\AVS.CoreLib.Logging.ColorFormatter\AVS.CoreLib.Logging.ColorFormatter.csproj" />

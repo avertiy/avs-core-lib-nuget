@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <ApplicationIcon />
     <StartupObject />
     <LangVersion>9</LangVersion>
@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\AVS.CoreLib.Bootstrap\AVS.CoreLib.Bootstrap.csproj" />
     <ProjectReference Include="..\..\AVS.CoreLib.Trading\AVS.CoreLib.Trading.csproj" />
     <ProjectReference Include="..\AVS.CoreLib.PowerConsole\AVS.CoreLib.PowerConsole.csproj" />
   </ItemGroup>

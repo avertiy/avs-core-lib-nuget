@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Reflection;
-using AVS.CoreLib.Abstractions;
 using AVS.CoreLib.Abstractions.Bootstrap;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-
 namespace AVS.CoreLib.ConsoleTools.Bootstrapping
 {
     public abstract class StartupBase : IStartup
