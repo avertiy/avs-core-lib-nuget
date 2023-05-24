@@ -15,6 +15,10 @@ namespace AVS.CoreLib.PowerConsole.Printers
         private readonly TextWriter _textWriter;
         public ColorMode ColorMode { get; private set; }
 
+        public DateTime SystemTime => DateTime.Now;
+
+        public string TimeFormat { get; set; } = "HH:mm:ss";
+
         public Printer(TextWriter textWriter, ColorMode mode)
         {
             Writer = OutputWriter.Create(textWriter, mode);
@@ -24,9 +28,18 @@ namespace AVS.CoreLib.PowerConsole.Printers
 
         #region Print methods
 
-        public void Print(string str, PrintOptions options)
+        public void Print(string message, PrintOptions options)
         {
-            Writer.Write(str, options);
+            var text = options.TimeFormat == null ? message : this.AddTimestamp(message, SystemTime, options.TimeFormat);
+            Writer.Write(text, options);
+        }
+
+        public void Print(string message, PrintOptions2 options)
+        {
+            var text = options.HasFlag(PrintOptions2.NoTimestamp) ? message : this.AddTimestamp(message, SystemTime, TimeFormat);
+            var endLine = !options.HasFlag(PrintOptions2.Inline);
+            var colorTags = !options.HasFlag(PrintOptions2.NoCTags);
+            Writer.Write(text, endLine, colorTags);
         }
 
         #endregion
@@ -35,19 +48,20 @@ namespace AVS.CoreLib.PowerConsole.Printers
 
         public void Print(FormattableString str, PrintOptions options)
         {
-            string formattedStr;
+            string message;
 
             if (options.ColorPalette != null)
             {
                 var str2 = str.Colorize(options.ColorPalette.Colors);
-                formattedStr = FormatInternal(str2);
+                message = FormatInternal(str2);
             }
             else
             {
-                formattedStr = FormatInternal(str);
+                message = FormatInternal(str);
             }
 
-            Writer.Write(formattedStr, options);
+            var text = options.TimeFormat == null ? message : this.AddTimestamp(message, SystemTime, options.TimeFormat);
+            Writer.Write(text, options);
         }
 
         #endregion
@@ -63,9 +77,10 @@ namespace AVS.CoreLib.PowerConsole.Printers
             Writer.Write(str, new PrintOptions() { EndLine = endLine, Color = color });
         }
 
-        public void Write(string str, PrintOptions options)
+        public void Write(string message, PrintOptions options)
         {
-            Writer.Write(str, options);
+            var text = options.TimeFormat == null ? message : this.AddTimestamp(message, SystemTime, options.TimeFormat);
+            Writer.Write(text, options);
         }
 
         public void WriteLine(bool voidMultipleEmptyLines = true)

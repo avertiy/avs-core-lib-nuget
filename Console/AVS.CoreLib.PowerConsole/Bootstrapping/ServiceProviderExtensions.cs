@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using AVS.CoreLib.Abstractions;
 using AVS.CoreLib.Abstractions.Bootstrap;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -8,6 +7,48 @@ namespace AVS.CoreLib.PowerConsole.Bootstrapping
 {
     public static class ServiceProviderExtensions
     {
+        public static void PressEnterToExit(this IServiceProvider _)
+        {
+            PowerConsole.PressEnterToExit();
+        }
+
+        public static IServiceProvider RunAsync<TService>(this IServiceProvider sp, Func<TService, Task> action) where TService : notnull
+        {
+            var service = sp.GetRequiredService<TService>();
+
+            var task = Task.Run(async () =>
+            {
+                try
+                {
+                    await action(service);
+                }
+                catch (Exception ex)
+                {
+                    PowerConsole.Write($"RunAsync<{typeof(TService).Name}>() failed");
+                    PowerConsole.PrintError(ex);
+                }
+            });
+
+            Task.WaitAny(task);
+            return sp;
+        }
+
+        public static IServiceProvider Run<TService>(this IServiceProvider sp, Action<TService> action) where TService : notnull
+        {
+            var service = sp.GetRequiredService<TService>();
+            try
+            {
+                action(service);
+            }
+            catch (Exception ex)
+            {
+                PowerConsole.Write($"Run<{typeof(TService).Name}>() failed");
+                PowerConsole.PrintError(ex);
+            }
+
+            return sp;
+        }
+
         public static IServiceProvider Run(this IServiceProvider sp, Action<IServiceProvider> action)
         {
             try
@@ -23,25 +64,38 @@ namespace AVS.CoreLib.PowerConsole.Bootstrapping
             return sp;
         }
 
+        public static IServiceProvider RunTest<TService>(this IServiceProvider sp) where TService : ITestService
+        {
+            try
+            {
+                var service = sp.GetRequiredService<TService>();
+                service.Test();
+            }
+            catch (Exception ex)
+            {
+                PowerConsole.Write($"{typeof(TService).Name}.Test() failed");
+                PowerConsole.PrintError(ex);
+                throw;
+            }
+
+            return sp;
+        }
+
         public static IServiceProvider RunAllDemo(this IServiceProvider sp)
         {
             var services = sp.GetServices<IDemoService>();
-            var task = Task.Run(async () =>
+            foreach (var demoService in services)
             {
-                foreach (var demoService in services)
+                try
                 {
-                    try
-                    {
-                        await demoService.DemoAsync();
-                    }
-                    catch (Exception ex)
-                    {
-                        PowerConsole.Write($"{demoService.GetType().Name}.DemoAsync() failed");
-                        PowerConsole.PrintError(ex);
-                    }
+                    demoService.Demo();
                 }
-            });
-            Task.WaitAny(task);
+                catch (Exception ex)
+                {
+                    PowerConsole.Write($"{demoService.GetType().Name}.DemoAsync() failed");
+                    PowerConsole.PrintError(ex);
+                }
+            }
             return sp;
         }
 
@@ -63,39 +117,12 @@ namespace AVS.CoreLib.PowerConsole.Bootstrapping
             return sp;
         }
 
-        public static IServiceProvider RunTest<TService>(this IServiceProvider sp) where TService : ITestService
+        public static IServiceProvider RunDemo<TService>(this IServiceProvider sp) where TService : IDemoService
         {
-            var service = sp.GetService<TService>();
-            if (service == null)
-            {
-                throw new ArgumentException($"{typeof(TService).Name} is null");
-            }
-
             try
             {
-                service.Test();
-            }
-            catch (Exception ex)
-            {
-                PowerConsole.Write($"{typeof(TService).Name}.Test() failed");
-                PowerConsole.PrintError(ex);
-                throw;
-            }
-
-            return sp;
-        }
-
-        public static async Task<IServiceProvider> RunDemoAsync<TService>(this IServiceProvider sp) where TService : IDemoService
-        {
-            var service = sp.GetService<TService>();
-            if (service == null)
-            {
-                throw new ArgumentException($"{typeof(TService).Name} is null");
-            }
-
-            try
-            {
-                await service.DemoAsync();
+                var service = sp.GetRequiredService<TService>();
+                service.Demo();
             }
             catch (Exception ex)
             {

@@ -1,13 +1,13 @@
-﻿using System;
-using System.IO;
-using AVS.CoreLib.Console.ColorFormatting;
+﻿using System.IO;
 using AVS.CoreLib.Console.ColorFormatting.Tags;
 using AVS.CoreLib.PowerConsole.Extensions;
 using AVS.CoreLib.PowerConsole.Printers;
-using AVS.CoreLib.PowerConsole.Utilities;
 
 namespace AVS.CoreLib.PowerConsole.Writers
 {
+    /// <summary>
+    /// writer based on ansi codes coloring text approach
+    /// </summary>
     public class ColorOutputWriter: OutputWriter
     {
         public ColorOutputWriter(TextWriter writer, TagProcessor? tagProcessor = null) : base(writer, tagProcessor ?? GetDefaultTagsProcessor())

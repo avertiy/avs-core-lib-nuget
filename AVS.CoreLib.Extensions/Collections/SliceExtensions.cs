@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 using AVS.CoreLib.Guards;
 
 namespace AVS.CoreLib.Extensions.Collections
@@ -31,6 +34,30 @@ namespace AVS.CoreLib.Extensions.Collections
             }
 
             return list;
+        }
+
+        public static IEnumerable<T[]> Slice<T>(this IList<T> source, int n)
+        {
+            Guard.MustBe.GreaterThan(n, 0);
+            var startIndex = 0;
+            while (startIndex < source.Count)
+            {
+                var arr = source.Skip(startIndex).Take(n).ToArray();
+                yield return arr;
+                startIndex += n;
+            }
+        }
+
+        public static IEnumerable<KeyValuePair<TKey, TValue>[]> Slice<TKey, TValue>(this IDictionary<TKey,TValue> source, int n)
+        {
+            Guard.MustBe.GreaterThan(n, 0);
+            var startIndex = 0;
+            while (startIndex < source.Count)
+            {
+                var arr = source.Skip(startIndex).Take(n).ToArray();
+                yield return arr;
+                startIndex += n;
+            }
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using AVS.CoreLib.Console.ColorFormatting;
 using AVS.CoreLib.Console.ColorFormatting.Tags;
 using AVS.CoreLib.PowerConsole.Printers;
 using AVS.CoreLib.PowerConsole.TagProcessors;

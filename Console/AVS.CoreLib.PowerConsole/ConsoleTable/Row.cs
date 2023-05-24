@@ -10,20 +10,23 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
         public Table Table { get; set; }
         public IList<Cell> Cells { get; set; } = new List<Cell>();
         public ColorScheme? ColorScheme { get; set; }
+        /// <summary>
+        /// Similar to column Width indicates how many lines row is needed
+        /// </summary>
+        public int Height { get; set; }
 
         public Cell this[int i] => Cells[i];
 
         public Row AddCell(Cell cell)
         {
-            var colspan = Cells.Sum(x => x.Colspan);
-            var cols = colspan + cell.Colspan;
-
-            //if (cols > Table.Columns.Count)
-            //    throw new ArgumentOutOfRangeException($"Unable to add another cell. Row colspan #{cols} will exceed the number of columns #{Table.Columns.Count}");
-
+            //var colspan = Cells.Sum(x => x.Colspan);
             cell.ColorScheme ??= ColorScheme;
-            cell.Column = GetColumn(colspan > 0 ? colspan : 0);
+            //cell.Column = GetColumn(colspan > 0 ? colspan : 0);
             cell.Row = this;
+            
+            if (Height < cell.Height)
+                Height = cell.Height;
+
             Cells.Add(cell);
             return this;
         }
@@ -35,7 +38,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
 
         private Column? GetColumn(int index)
         {
-            return Table.Columns.Count > 0 ? Table.Columns[index] : null;
+            return Table.Columns.Any() ? Table.Columns[index] : null;
         }
 
         public static Row Create(Table table, params string[] values)
@@ -43,7 +46,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
             var row = new Row() { Table = table };
             foreach (var value in values)
             {
-                row.AddCellWithValue(value);
+                row.AddCell(value);
             }
             return row;
         }

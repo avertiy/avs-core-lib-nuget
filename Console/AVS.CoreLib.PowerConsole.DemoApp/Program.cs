@@ -10,13 +10,11 @@ namespace AVS.CoreLib.PowerConsole.DemoApp
     {
         public static void Main(string[] args)
         {
-            //ColorScheme.ApplyScheme(ColorScheme.Classic);
-            Bootstrap.ConfigureServices(delegate (ServiceCollection services)
+            Bootstrap.ConfigureServices(services => 
                 {
                     services
                         //.AddLogging(x => x.AddConsoleLogger())
                         .AddTradingCore()
-                        //.AddTransient<ITestService, FileLoggerTestService>()
                         .AddTransient<IDemoService, XFormatDemoService>()
                         .AddTransient<IDemoService, ConsoleFeaturesDemoService>();
                 })

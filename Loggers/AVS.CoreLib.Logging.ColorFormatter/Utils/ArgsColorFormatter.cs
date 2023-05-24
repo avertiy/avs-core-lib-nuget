@@ -1,11 +1,8 @@
-﻿using System.Globalization;
-using System.Text;
-using System.Text.RegularExpressions;
+﻿using System.Text;
 using AVS.CoreLib.Console.ColorFormatting;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Logging.ColorFormatter.Enums;
 using AVS.CoreLib.Logging.ColorFormatter.Extensions;
-using Microsoft.Extensions.Logging.Abstractions;
 
 namespace AVS.CoreLib.Logging.ColorFormatter.Utils;
 
@@ -13,10 +10,10 @@ namespace AVS.CoreLib.Logging.ColorFormatter.Utils;
 /// extracts 
 /// format arguments and wrap them in color tags (highlight arguments feature)
 /// </summary>
-/// <example>
+/// <code>
 /// logger.LogInformation("{arg:C}", 1.022); => "<Green>$1.02</Green>"
 /// i.e. arg=1.022 is formatted as currency with `C` modifier and wrapped into color tags
-/// </example>
+/// </code>
 public class ArgsColorFormatter
 {
     public string Message { get; set; }
@@ -64,14 +61,6 @@ public class ArgsColorFormatter
             i++;
             startInd = closeArgInd;
         }
-    }
-
-    public static string Process(string message, IReadOnlyList<KeyValuePair<string, object>> state, IColorProvider colorProvider)
-    {
-        var formatter = new ArgsColorFormatter() { Message = message };
-        formatter.Init(state);
-        var str = formatter.FormatMessage(colorProvider);
-        return str;
     }
 
     private string CustomFormat(object val, string format)
@@ -130,11 +119,4 @@ public class ArgsColorFormatter
         Output = sb.ToString();
         return Output;
     }
-
-    //private Colors GetColors(string argKey, ObjType type, FormatFlags flags)
-    //{
-    //    var colorProvider = ColorProvider ?? new ColorProvider();
-    //    var colors = colorProvider.GetColorsForArgument(type, flags);
-    //    return colors;
-    //}
 }

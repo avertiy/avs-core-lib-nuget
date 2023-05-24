@@ -27,13 +27,15 @@ namespace AVS.CoreLib.Extensions.Reflection
                 if (!propertyInfo.CanRead)
                     continue;
 
+                var attrImp = propertyInfo.GetCustomAttribute<ImportantAttribute>();
+
                 var attrIgnore = propertyInfo.GetCustomAttribute<IgnoreAttribute>();
-                if (attrIgnore != null)
+                if (attrImp == null && attrIgnore != null)
                     continue;
 
                 var value = propertyInfo.GetValue(obj);
 
-                if(predicate != null && predicate.Invoke(propertyInfo.Name, value))
+                if(attrImp == null && predicate != null && !predicate.Invoke(propertyInfo.Name, value))
                     continue;
 
                 dict.Add(propertyInfo.Name, value);

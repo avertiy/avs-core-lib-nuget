@@ -1,7 +1,9 @@
-﻿using AVS.CoreLib.Extensions;
+﻿using System;
+using System.Linq;
+using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Stringify;
-using AVS.CoreLib.PowerConsole.Extensions;
 using AVS.CoreLib.PowerConsole.Utilities;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace AVS.CoreLib.PowerConsole.ConsoleTable
 {
@@ -10,27 +12,24 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
         public object? Value { get; set; }
         public string? Text { get; set; }
         public int Width { get; set; }
+        public int Height { get; set; }
         public int Colspan { get; set; } = 1;
 
-        public bool IsEmpty => string.IsNullOrEmpty(Text);
-
         public ColorScheme? ColorScheme { get; set; }
-        public Column? Column { get; set; }
-        public Row Row { get; set; }
+
+        public Row Row { get; set; } = null!;
+
 
         public static Cell Create(string text, Column column, Row row, ColorScheme? scheme = null)
         {
-            return new Cell() { Text = text, Column = column, Row = row, ColorScheme = scheme };
-        }
-
-        public static Cell Create<T>(T obj, Column column, Row row, ColorScheme? scheme = null)
-        {
+            var (width, height) = text.GetWidthAndHeight();
             return new Cell()
             {
-                Text = obj?.Stringify(),
-                Column = column, 
+                Text = text, 
                 Row = row, 
-                ColorScheme = scheme
+                ColorScheme = scheme,
+                Width = width+2,
+                Height = height,
             };
         }
 
@@ -61,5 +60,57 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
 
             return text;
         }
+    }
+
+    public static class CellExtensions
+    {
+        internal static (int width, int height) GetWidthAndHeight(this string str)
+        {
+            var arr = str.Split(Environment.NewLine);
+            var height = arr.Length;
+            var width = arr.Max(x => x.Length);
+            return (width, height);
+        }
+
+        internal static int GetHeight(this string str)
+        {
+            return str.Count(Environment.NewLine) + 1;
+        }
+
+        public static int CalcWidth(this Cell cell, int index, int columnWidth)
+        {
+            var width = cell.Width;
+            width = width > 0 ? width : cell.Text?.Length + 2 ?? 0;
+            var colspan = cell.Colspan;
+
+            if (colspan == 1)
+            {
+                width = columnWidth >= width ? columnWidth : width;
+            }
+            else
+            {
+                var columns = cell.Row.Table.Columns;
+                for (var i = 0; i < colspan; i++)
+                {
+                    var ind = index + i;
+                    if (ind >= columns.Count)
+                        break;
+
+                    width += columns[ind].Width;
+                }
+
+                width += colspan - 1;
+            }
+            
+            cell.Width = width;
+            return width;
+        }
+
+        public static bool IsEmpty(this Cell cell)
+        {
+            return string.IsNullOrEmpty(cell.Text);
+        }
+
+
     }
 }

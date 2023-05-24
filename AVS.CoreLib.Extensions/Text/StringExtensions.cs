@@ -254,5 +254,17 @@ namespace AVS.CoreLib.Extensions
             return str;
         }
 
+        public static int Count(this string text, string str)
+        {
+            var count = 0;
+            var index = 0;
+            while ((index = text.IndexOf(str, index, StringComparison.Ordinal)) != -1)
+            {
+                count++;
+                index += str.Length;
+            }
+            return count;
+        }
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using AVS.CoreLib.Console.ColorFormatting;
 
 namespace AVS.CoreLib.PowerConsole.Extensions

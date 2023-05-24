@@ -69,6 +69,11 @@ namespace AVS.CoreLib.PowerConsole
             Printer.Print(str, options ?? DefaultOptions);
         }
 
+        public static void Print(string str, PrintOptions2 options)
+        {
+            Printer.Print(str, options);
+        }
+
         public static void Print(string str, Action<PrintOptions> configureOptions)
         {
             var options = DefaultOptions.Clone();

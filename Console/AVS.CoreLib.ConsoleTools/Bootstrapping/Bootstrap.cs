@@ -68,7 +68,7 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
         {
             try
             {
-                Bootstrap.SetCulture("en-US");
+                SetCulture("en-US");
                 var hostBuilder = (HostBuilder)Host.CreateDefaultBuilder(args);
                 var startup = new TStartup();
                 hostBuilder.ConfigureServices(startup.RegisterServices);

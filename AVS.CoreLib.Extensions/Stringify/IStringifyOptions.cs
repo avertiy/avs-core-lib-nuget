@@ -15,5 +15,5 @@ public class StringifyOptions : IStringifyOptions
     public string KeyValueSeparator { get; set; } = ":";
     public StringifyFormat Format { get; set; } = StringifyFormat.Default;
 
-    public static StringifyOptions Default { get; set; } = new StringifyOptions() { MaxLength = 256 };
+    public static StringifyOptions Default { get; set; } = new StringifyOptions() { MaxLength = 512 };
 }

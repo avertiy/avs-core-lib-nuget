@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Reflection;
 using AVS.CoreLib.Guards;
 using AVS.CoreLib.PowerConsole.ConsoleTable;
 using AVS.CoreLib.PowerConsole.Extensions;
@@ -8,69 +8,54 @@ namespace AVS.CoreLib.PowerConsole
 {
     public static partial class PowerConsole
     {
-        public static void PrintJson<T>(T obj, JsonPrintOptions? options = null)
-        {
-            Printer.PrintJson<T>(obj, options ?? JsonPrintOptions.Json);
-        }
-
-        /// <summary>
-        /// synonym of <see cref="PrintJson{T}"/>
-        /// </summary>
-        public static void Dump<T>(T obj, JsonPrintOptions? options = null)
-        {
-            Printer.PrintJson<T>(obj, options ?? JsonPrintOptions.JsonIndented);
-        }
-
-        /// <summary>
-        /// print object as table 
-        /// </summary>
-        public static void PrintObject<T>(T obj, ColumnOptions options = ColumnOptions.Auto, params string[] excludeProps)
+        public static void PrintObject(string message, object obj, ObjectFormat format = ObjectFormat.Default, PrintOptions? options = null)
         {
             Guard.Against.Null(obj);
-            var builder = new TableBuilder { ColumnOptions = options, ExcludeProperties = excludeProps }; ;
-            var tbl = builder.CreateTable(obj);
+            Printer.PrintObject(obj, message, format, options ?? DefaultOptions);
+        }
+
+        public static void PrintJson(object obj, bool indented = false, PrintOptions? options = null)
+        {
+            Guard.Against.Null(obj);
+            Printer.PrintJson(obj, indented, options ?? DefaultOptions);
+        }
+
+        public static void PrintTable(object obj, ColumnOptions options = ColumnOptions.Auto, params string[] excludeProps)
+        {
+            Guard.Against.Null(obj);
+            var tbl = obj.ToTable(options, excludeProps);
             Printer.PrintTable(tbl, PrintOptions.NoTimestamp);
         }
-
     }
 
-    public class JsonPrintOptions : PrintOptions
+    public enum ObjectFormat
     {
-        public bool Indented { get; set; }
-
-        public static JsonPrintOptions Json { get; set; } = new JsonPrintOptions()
-        {
-            ColorTags = false,
-            EndLine = true,
-            Color = ConsoleColor.Cyan,
-        };
-
-        public static JsonPrintOptions JsonIndented { get; set; } = new JsonPrintOptions()
-        {
-            ColorTags = false,
-            EndLine = true,
-            Color = ConsoleColor.Cyan,
-            Indented = true
-        };
-
-        public static JsonPrintOptions Create(bool indented = true, ConsoleColor? color = ConsoleColor.Cyan,  bool endLine = true, bool? colorTags = false)
-        {
-            return new JsonPrintOptions()
-            {
-                ColorTags = colorTags,
-                EndLine = endLine,
-                Color = color,
-                Indented = indented
-            };
-        }
-        public static implicit operator JsonPrintOptions(ConsoleColor color)
-        {
-            return new JsonPrintOptions()
-            {
-                ColorTags = false,
-                EndLine = true,
-                Color = color,
-            };
-        }
+        /// <summary>
+        /// by default object will be printed as json
+        /// </summary>
+        Default = 0,
+        /// <summary>
+        /// Use obj.ToJsonString() (<see cref="System.Text.Json.JsonSerializer"/>)
+        /// </summary>
+        Json = 1,
+        /// <summary>
+        /// Use obj.ToJsonString() (<see cref="System.Text.Json.JsonSerializer"/>) 
+        /// </summary>
+        JsonIndented = 2,
+        /// <summary>
+        /// Use obj.ToTableString() (<see cref="AVS.CoreLib.PowerConsole.ConsoleTable.Table"/>) 
+        /// </summary>
+        Table = 3,
+        /// <summary>
+        /// Use obj.ToTableString() (<see cref="AVS.CoreLib.PowerConsole.ConsoleTable.Table"/>)
+        /// Horizontal instructs <see cref="TableBuilder"/> to build table into width 
+        /// </summary>
+        TableHorizontal = 4,
+        /// <summary>
+        /// Use obj.ToTableString() (<see cref="AVS.CoreLib.PowerConsole.ConsoleTable.Table"/>)
+        /// Vertical instructs <see cref="TableBuilder"/> to build table in two 2 columns: Property Name, Property Value
+        /// </summary>
+        TableVertical = 5,
+        ToString = 6,
     }
 }

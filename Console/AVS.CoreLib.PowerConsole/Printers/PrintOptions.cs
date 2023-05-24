@@ -62,23 +62,6 @@ namespace AVS.CoreLib.PowerConsole.Printers
             TimeFormat = timeFormat;
         }
 
-
-        public Colors GetColors()
-        {
-            if (Color.HasValue)
-                return new Colors(Color, null);
-            if (Colors.HasValue)
-                return this.Colors.Value;
-
-            if (Scheme.HasValue)
-                return new Colors(Scheme.Value.Foreground, Scheme.Value.Background);
-
-            if (CTag.HasValue)
-                return CTag.Value.ToColors();
-
-            return AVS.CoreLib.Console.ColorFormatting.Colors.Empty;
-        }
-
         #region UseXXX methods
         public PrintOptions UseCTag(CTag tag)
         {
@@ -104,7 +87,7 @@ namespace AVS.CoreLib.PowerConsole.Printers
             return this;
         }
 
-        public PrintOptions WithCTags()
+        public PrintOptions UseCTags()
         {
             ColorTags = true;
             return this;
@@ -129,7 +112,7 @@ namespace AVS.CoreLib.PowerConsole.Printers
         } 
         #endregion
 
-        public virtual PrintOptions Clone()
+        public virtual PrintOptions Clone(Action<PrintOptions>? configure = null)
         {
             var copy = new PrintOptions()
             {
@@ -141,10 +124,47 @@ namespace AVS.CoreLib.PowerConsole.Printers
                 Level = Level,
                 VoidEmptyLines = VoidEmptyLines
             };
-
+            configure?.Invoke(copy);
             return copy;
         }
 
+        #region implicit conversions
+        [DebuggerStepThrough]
+        public static implicit operator PrintOptions(ConsoleColor color)
+        {
+            return new PrintOptions().UseColor(color);
+        }
+
+        [DebuggerStepThrough]
+        public static implicit operator PrintOptions(CTag tag)
+        {
+            return new PrintOptions().UseCTag(tag);
+        }
+
+        [DebuggerStepThrough]
+        public static implicit operator PrintOptions(ColorScheme scheme)
+        {
+            return new PrintOptions().UseColorScheme(scheme);
+        }
+
+        [DebuggerStepThrough]
+        public static implicit operator PrintOptions(Colors colors)
+        {
+            return new PrintOptions().UseColors(colors);
+        }
+
+        [DebuggerStepThrough]
+        public static implicit operator PrintOptions(MessageLevel level)
+        {
+            var options = new PrintOptions
+            {
+                Level = level,
+                Scheme = ColorScheme.GetColorScheme(level)
+            };
+
+            return options;
+        }
+        #endregion
 
         #region implicit conversions from tuples
 
@@ -224,42 +244,7 @@ namespace AVS.CoreLib.PowerConsole.Printers
 
         #endregion
 
-        [DebuggerStepThrough]
-        public static implicit operator PrintOptions(ConsoleColor color)
-        {
-            return new PrintOptions().UseColor(color);
-        }
-
-        [DebuggerStepThrough]
-        public static implicit operator PrintOptions(CTag tag)
-        {
-            return new PrintOptions().UseCTag(tag);
-        }
-
-        [DebuggerStepThrough]
-        public static implicit operator PrintOptions(ColorScheme scheme)
-        {
-            return new PrintOptions().UseColorScheme(scheme);
-        }
-
-        [DebuggerStepThrough]
-        public static implicit operator PrintOptions(Colors colors)
-        {
-            return new PrintOptions().UseColors(colors);
-        }
-
-        [DebuggerStepThrough]
-        public static implicit operator PrintOptions(MessageLevel level)
-        {
-            var options = new PrintOptions
-            {
-                Level = level,
-                Scheme = ColorScheme.GetColorScheme(level)
-            };
-
-            return options;
-        }
-
+        
         public static explicit operator PrintOptions(bool endLine)
         {
             var options = new PrintOptions
@@ -270,13 +255,6 @@ namespace AVS.CoreLib.PowerConsole.Printers
             return options;
         }
 
-        public static PrintOptions Default { get; set; } = new PrintOptions()
-        {
-            EndLine = true,
-            TimeFormat = "HH:mm:ss",
-            ColorTags = false
-        };
-
         [DebuggerStepThrough]
         public static PrintOptions Create(bool endLine = true, bool colorTags = false, string? timeFormat = "HH:mm:ss", ConsoleColor? color = null)
         {
@@ -284,8 +262,14 @@ namespace AVS.CoreLib.PowerConsole.Printers
             return options;
         }
 
-        //[DebuggerStepThrough]
-        public static PrintOptions CTags(bool endLine = true, string? timeFormat = "HH:mm:ss", ConsoleColor? color = null)
+        /// <summary>
+        /// Instructs printer to treat message as containing color tags
+        /// usage example:
+        /// <code>
+        /// PowerConsole.Print("no color <Red>text in red</Red>", PrintOptions.WithCTags(...));
+        /// </code>
+        /// </summary>
+        public static PrintOptions WithCTags(bool endLine = true, string? timeFormat = "HH:mm:ss", ConsoleColor? color = null)
         {
             var options = new PrintOptions
             {
@@ -297,38 +281,73 @@ namespace AVS.CoreLib.PowerConsole.Printers
             return options;
         }
 
-        public static PrintOptions EmptyLinesVoided { get; set; } = new PrintOptions()
+        public static PrintOptions Default { get; set; } = new()
         {
-            VoidEmptyLines = true,
-            EndLine = true
+            EndLine = true,
+            TimeFormat = "HH:mm:ss",
+            ColorTags = false
         };
 
-        public static PrintOptions EmptyLinesAllowed { get; set; } = new PrintOptions()
+        /// <summary>
+        /// Use CTags options if the message contains color tags 
+        /// usage example:
+        /// <code>
+        /// PowerConsole.Print("<Red>text in red</Red>", PrintOptions.CTags);
+        /// </code>
+        /// </summary>
+        public static PrintOptions CTags { get; set; } = new()
         {
-            VoidEmptyLines = false,
-            EndLine = true
+            EndLine = true,
+            TimeFormat = "HH:mm:ss",
+            ColorTags = true
         };
 
-        public static PrintOptions Inline { get; set; } = new PrintOptions()
+        /// <summary>
+        /// Use Inline options when print should not put the end line break
+        /// usage example:
+        /// <code>
+        /// PowerConsole.Print("some text", PrintOptions.Inline);
+        /// PowerConsole.Print("continue text on the same line", PrintOptions.Inline);
+        /// </code>
+        /// </summary>
+        public static PrintOptions Inline { get; set; } = new()
         {
             EndLine = false,
             TimeFormat = "HH:mm:ss",
             ColorTags = false
         };
 
-        public static PrintOptions NoTimestamp { get; set; } = new PrintOptions()
+        /// <summary>
+        /// Use NoTimestamp options when print should not add timestamp label
+        /// <code>
+        /// PowerConsole.Print("some text", PrintOptions.NoTimestamp);
+        /// </code>
+        /// </summary>
+        public static PrintOptions NoTimestamp { get; set; } = new()
         {
             EndLine = true,
             ColorTags = false
         };
 
-        public static PrintOptions NoTimestampInLine { get; set; } = new PrintOptions()
+        public static PrintOptions EmptyLinesVoided { get; set; } = new()
+        {
+            VoidEmptyLines = true,
+            EndLine = true
+        };
+
+        public static PrintOptions EmptyLinesAllowed { get; set; } = new()
+        {
+            VoidEmptyLines = false,
+            EndLine = true
+        };
+
+        public static PrintOptions NoTimestampInLine { get; set; } = new()
         {
             EndLine = false,
             ColorTags = false
         };
 
-        public static PrintOptions Debug { get; set; } = new PrintOptions()
+        public static PrintOptions Debug { get; set; } = new()
         {
             EndLine = true,
             TimeFormat = "HH:mm:ss",
@@ -337,7 +356,7 @@ namespace AVS.CoreLib.PowerConsole.Printers
             Color = ConsoleColor.DarkGray,
         };
 
-        public static PrintOptions Error { get; set; } = new PrintOptions()
+        public static PrintOptions Error { get; set; } = new()
         {
             Color = ConsoleColor.Red,
             EndLine = true,
@@ -399,6 +418,29 @@ namespace AVS.CoreLib.PowerConsole.Printers
         }
     }
 
+    public static class PrintOptionsExtensions
+    {
+        public static Colors GetColors(this PrintOptions options)
+        {
+            if (options.Color.HasValue)
+                return new Colors(options.Color, null);
+
+            if (options.Colors.HasValue)
+                return options.Colors.Value;
+
+            if (options.Scheme.HasValue)
+                return new Colors(options.Scheme.Value.Foreground, options.Scheme.Value.Background);
+
+            if (options.CTag.HasValue)
+                return options.CTag.Value.ToColors();
+
+            return Colors.Empty;
+        }
+    }
+
+
+    //todo rework print options to use enum flags, it would make options more simple
+
     public class HeaderPrintOptions : PrintOptions
     {
         public string Template { get; set; } = "============";
@@ -412,7 +454,7 @@ namespace AVS.CoreLib.PowerConsole.Printers
             LineIndentation = "\r\n",
         };
 
-        public override PrintOptions Clone()
+        public PrintOptions Clone()
         {
             var copy = new HeaderPrintOptions()
             {

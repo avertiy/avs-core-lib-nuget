@@ -9,6 +9,14 @@ namespace AVS.CoreLib.Extensions
 {
     public static partial class StringBuilderExtensions
     {
+
+        public static StringBuilder Pad(this StringBuilder sb, char symbol, int width)
+        {
+            for(var i=0; i< width; i++)
+                sb.Append(symbol);
+            return sb;
+        }
+
         /// <summary>
         /// If StringBuilder content is not empty and the last character is neither a whitespace ' ', neither '\t' or '\n'
         /// append a whitespace ' '

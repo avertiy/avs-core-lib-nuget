@@ -2,16 +2,35 @@
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
-using AVS.CoreLib.Abstractions;
 using AVS.CoreLib.Abstractions.Bootstrap;
 using AVS.CoreLib.PowerConsole.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AVS.CoreLib.PowerConsole.Bootstrapping
 {
+    /// <summary>
+    /// Console utility to quickly bootstrap your console app with DI
+    /// (Microsoft.Extensions.DependencyInjection) without getting into burden of the .NET core Host/WebHost builder complexities. 
+    /// <code>
+    ///    //simple usage:
+    ///     Bootstrap.Start&lt;StartupService&gt;(services => {..register your services..});
+    /// </code>
+    /// <seealso cref="StartupServiceBase"/>
+    /// </summary>
     public class Bootstrap
     {
-        public static IServiceProvider ConfigureServices(Action<ServiceCollection> configure)
+        /// <summary>
+        /// Create <see cref="ServiceCollection"/> container, invoke register services than build service provider
+        /// usage:
+        /// <code>    
+        ///     Bootstrap.ConfigureServices(services =>
+        ///     {
+        ///         services.AddSingleton&lt;StartupService&gt;();
+        ///         services.AddScoped&lt;IAnotherService&gt;();
+        ///     });
+        /// </code>
+        /// </summary>
+        public static IServiceProvider ConfigureServices(Action<IServiceCollection> configure)
         {
             try
             {
@@ -22,6 +41,45 @@ namespace AVS.CoreLib.PowerConsole.Bootstrapping
             catch (Exception ex)
             {
                 PowerConsole.PrintError(ex);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Bootstrap set for you DarkGray console color scheme, a default en-US current culture, build <see cref="IServiceProvider"/>
+        /// and run <see cref="IStartupService.Start"/> method
+        /// Also configure DI and run Main() are wrapped in try catch blocks for you
+        /// </summary>
+        public static void Start<TStartupService>(Action<IServiceCollection> register, Action<IServiceProvider>? configure = null, string culture = "en-US")
+            where TStartupService : class, IStartupService, new()
+        {
+            TStartupService startupService;
+            try
+            {
+                PowerConsole.SetDefaultColorScheme(ColorScheme.DarkGray);
+                PowerConsole.ApplyColorScheme(ColorScheme.DarkGray);
+                SetCulture(culture);
+                var services = new ServiceCollection();
+                services.AddSingleton<TStartupService>();
+                register.Invoke(services);
+                IServiceProvider serviceProvider = services.BuildServiceProvider();
+                configure?.Invoke(serviceProvider);
+                startupService = serviceProvider.GetRequiredService<TStartupService>();
+            }
+            catch (Exception ex)
+            {
+                PowerConsole.PrintError(ex, $"Bootstrap::Run{typeof(TStartupService).Name}>() configure services failed", printStackTrace: true);
+                throw;
+            }
+
+            try
+            {
+                startupService.Start();
+                PowerConsole.PressEnterToExit();
+            }   
+            catch (Exception ex)
+            {
+                PowerConsole.PrintError(ex, $"{typeof(TStartupService).Name}.{nameof(startupService.Start)}() failed", printStackTrace: true);
                 throw;
             }
         }
@@ -50,11 +108,11 @@ namespace AVS.CoreLib.PowerConsole.Bootstrapping
         /// <summary>
         /// Builds service provider <see cref="IServiceProvider"/>
         /// </summary>
-        /// <example>
+        /// <code>
         /// Main(string[] args){
-        ///    Run(sp=> {Console.WriteLine("Hello World"); sp.GetService();})
+        ///    Bootstrap.Run(sp=> {Console.WriteLine("Hello World"); sp.GetService();})
         /// };
-        /// </example>
+        /// </code>
         public static void Run<TStartup>(Action<IServiceProvider> action) where TStartup : IStartup, new()
         {
             PowerConsole.SetDefaultColorScheme(ColorScheme.DarkGray);
@@ -80,11 +138,11 @@ namespace AVS.CoreLib.PowerConsole.Bootstrapping
         /// <summary>
         /// Builds service provider <see cref="IServiceProvider"/>
         /// </summary>
-        /// <example>
+        /// <code>
         /// Main(string[] args){
-        ///    Run(sp=> {Console.WriteLine("Hello World"); sp.GetService();})
+        ///    Bootstrap.RunAsync(sp=> {Console.WriteLine("Hello World"); sp.GetService();})
         /// };
-        /// </example>
+        /// </code>
         public static Task RunAsync<TStartup>(Func<IServiceProvider, Task> func) where TStartup : IStartup, new()
         {
             PowerConsole.SetDefaultColorScheme(ColorScheme.DarkGray);
@@ -107,7 +165,7 @@ namespace AVS.CoreLib.PowerConsole.Bootstrapping
             }
         }
 
-        public static void SetCulture(string culture = "en-US")
+        protected static void SetCulture(string culture = "en-US")
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo(culture);
         }

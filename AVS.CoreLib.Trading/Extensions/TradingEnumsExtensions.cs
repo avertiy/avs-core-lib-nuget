@@ -4,6 +4,11 @@ namespace AVS.CoreLib.Trading.Extensions
 {
     public static class TradingEnumsExtensions
     {
+        public static OrderSide GetOppositeSide(this OrderSide side)
+        {
+            return side == OrderSide.Buy ? OrderSide.Sell : OrderSide.Buy;
+        }
+
         public static CoinCap GetCoinCapByRank(this int rank)
         {
             return rank switch

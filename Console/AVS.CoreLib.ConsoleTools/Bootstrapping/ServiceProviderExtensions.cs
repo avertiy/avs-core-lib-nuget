@@ -33,22 +33,18 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
         public static IServiceProvider RunAllDemo(this IServiceProvider sp)
         {
             var services = sp.GetServices<IDemoService>();
-            var task = Task.Run(async () =>
+            foreach (var demoService in services)
             {
-                foreach (var demoService in services)
+                try
                 {
-                    try
-                    {
-                        await demoService.DemoAsync();
-                    }
-                    catch (Exception ex)
-                    {
-                        PowerConsole.PowerConsole.Write($"{demoService.GetType().Name}.DemoAsync() failed");
-                        PowerConsole.PowerConsole.PrintError(ex);
-                    }
+                    demoService.Demo();
                 }
-            });
-            Task.WaitAny(task);
+                catch (Exception ex)
+                {
+                    PowerConsole.PowerConsole.Write($"{demoService.GetType().Name}.DemoAsync() failed");
+                    PowerConsole.PowerConsole.PrintError(ex);
+                }
+            }
             return sp;
         }
 
@@ -78,17 +74,12 @@ namespace AVS.CoreLib.ConsoleTools.Bootstrapping
         /// Get service of type <see cref="IDemoService"/> registered in DI container
         /// and call Test() method within a try catch block 
         /// </summary>
-        public static async Task<IServiceProvider> RunDemoAsync<TService>(this IServiceProvider sp) where TService : IDemoService
+        public static IServiceProvider RunDemo<TService>(this IServiceProvider sp) where TService : IDemoService
         {
-            var service = sp.GetService<TService>();
-            if (service == null)
-            {
-                throw new ArgumentException($"{typeof(TService).Name} is null");
-            }
-
             try
             {
-                await service.DemoAsync();
+                var service = sp.GetRequiredService<TService>();
+                service.Demo();
             }
             catch (Exception ex)
             {

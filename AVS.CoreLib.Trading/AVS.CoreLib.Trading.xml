@@ -535,9 +535,16 @@
             In ONE-WAY mode they return BOTH i.e. you can identify the actual long/short direction by amount sign
             </summary>
         </member>
-        <member name="T:AVS.CoreLib.Trading.Enums.Futures.PositionDirection">
+        <member name="T:AVS.CoreLib.Trading.Enums.Futures.Direction">
             <summary>
             clearly defines position direction SHORT / LONG
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.Direction.None">
+            <summary>
+            Undefined means position amount is 0 
+            On practice the exchange will close current position, and open a new one with the next trade
+            But for testing purposes it's easier to track one position instead of multiple small ones
             </summary>
         </member>
         <member name="T:AVS.CoreLib.Trading.Enums.Futures.WorkingType">

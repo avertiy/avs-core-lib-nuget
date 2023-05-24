@@ -1,8 +1,7 @@
 ﻿using System;
-using AVS.CoreLib.Extensions.Stringify;
 using AVS.CoreLib.PowerConsole.Utilities;
 using AVS.CoreLib.Text;
-
+using AVS.CoreLib.Extensions;
 namespace AVS.CoreLib.PowerConsole.ConsoleTable
 {
     public static class RowExtensions
@@ -15,36 +14,21 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
             return row;
         }
 
-        public static Row AddCellWithValue(this Row row, string value, int colspan = 1, ColorScheme? scheme = null)
-        {
-            var cell = new Cell()
-            {
-                Text = value,
-                ColorScheme = scheme,
-                Colspan = colspan
-            };
-            return row.AddCell(cell);
-        }
-
-        public static Row AddCellWithValue<T>(this Row row, T value, int colspan = 1, ColorScheme? scheme = null)
-        {
-            var cell = new Cell()
-            {
-                Value = value, 
-                Text = value?.Stringify(),
-                ColorScheme = scheme,
-                Colspan = colspan
-            };
-            return row.AddCell(cell);
-        }
-
         public static Row AddCell(this Row row, string text, int colspan = 1, ColorScheme? scheme = null)
         {
-            var cell = new Cell() { Text = text, ColorScheme = scheme, Colspan = colspan };
+            var (width, height) = text.GetWidthAndHeight();
+            var cell = new Cell()
+            {
+                Text = text,
+                ColorScheme = scheme,
+                Colspan = colspan,
+                Width = width + 2,
+                Height = height
+            };
             return row.AddCell(cell);
         }
 
-        public static void AddCells(this Row row, string[] values, ColorScheme[] cellSchemes = null)
+        public static void AddCells(this Row row, string[] values, ColorScheme[]? cellSchemes = null)
         {
             for (var i = 0; i < values.Length && i < row.Table.Columns.Count; i++)
             {

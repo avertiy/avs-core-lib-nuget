@@ -8,9 +8,9 @@ public static class ObjectExtensions
 {
     public static (ObjType, FormatFlags) GetTypeAndFlags(this object val, string formattedValue)
     {
-        var type = val.GetObjType();
+        var objType = val.GetObjType();
         var flags = FormatFlags.None;
-        if (type == ObjType.String)
+        if (objType == ObjType.String)
         {
             if(formattedValue.Length <= 5)
                 flags = FormatFlags.ShortString;
@@ -29,7 +29,7 @@ public static class ObjectExtensions
             if (formattedValue.Length < 50 && formattedValue.Contains('%'))
                 flags = FormatFlags.Percentage;
         }
-        else if (type == ObjType.Object)
+        else if (objType == ObjType.Object)
         {
             if (formattedValue.StartsWith('{') && formattedValue.EndsWith('}'))
                 flags = FormatFlags.Json & FormatFlags.CurlyBrackets;
@@ -51,7 +51,7 @@ public static class ObjectExtensions
                 flags = flags | FormatFlags.Currency;
         }
 
-        return (type, flags);
+        return (objType, flags);
     }
 
     public static ObjType GetObjType(this object obj)

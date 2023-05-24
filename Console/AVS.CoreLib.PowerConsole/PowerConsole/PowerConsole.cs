@@ -1,10 +1,38 @@
-﻿using System;
-using AVS.CoreLib.Console.ColorFormatting;
+﻿using AVS.CoreLib.Console.ColorFormatting;
+using AVS.CoreLib.Extensions.AutoFormatters;
+using AVS.CoreLib.PowerConsole.Extensions;
 using AVS.CoreLib.PowerConsole.Utilities;
 
 namespace AVS.CoreLib.PowerConsole
 {
     using Console = System.Console;
+
+    //todo BIG REWORK
+    // 1. create PowerConsole2 with only basic print functionality based on PrintOptions2 enum
+    // 2. PrintF methods are rarely used so no need to maintain that stuff.
+    // 3. i don't want to put colors for every print method i'd like to printer auto-highlight args
+    // for this make all complex print methods like print table accept FString or FormattableString2
+    // that carries string format and args so printer will utilize some ArgsFormatProvider
+    // to format/colorize arguments rather than track color tags etc.
+
+    // 4. Printer should delegate formatting object & coloring it to some  AutoFormatProvider.Format(key, obj)
+
+    //PowerConsole.Print features:
+    //PowerConsole.Print("{arg:Green C} some text {arg2:Red N3}"); // explicit format modifiers and colors
+    //PowerConsole.Print("{arg:C}"); //similar to LogInformation("{arg:C}", 1.022); => <Green>$1.02</Green> - colors is determined based on formatted value (currency value -> green)
+    //PowerConsole.Print("<Blue>{arg1:-Green C} blue text</Blue> {arg2:Red N3}");
+    //PowerConsole.Print("{arg1:C} some text {arg2:N3}", ColorPalette.RedGreen);//arg1 -> red, arg2 -> green
+    //PowerConsole.Print("{arg1:C} some text {timestamp}");//auto-format & color based on argument type: arg1 -> cash -> DarkGreen, arg2 -> DateTime -> Cyan
+
+    // print complex structures
+    // (format and color with AutoFormatProvider)
+    //PowerConsole.Printer.PrintArray(..)  also it might have a shortcut(s): PowerConsole.PrintArray(..)
+    //PowerConsole.Printer.PrintDictionary(..)
+    //PowerConsole.Printer.PrintJson(obj)
+    //PowerConsole.Printer.PrintList(..)
+    //PowerConsole.Printer.PrintObject(obj) //reflect object props & its values, than auto-format & auto-color values with AutoFormatProvider
+    //PowerConsole.Printer.PrintTable(obj);
+    //PowerConsole.Printer.PrintTable(new [] { obj1, obj2,...})
 
     //todo print time labels implement via printer and datetimehelper system time instead of DateTime.Now
     //add overload print methods to print elapsed time
@@ -15,6 +43,7 @@ namespace AVS.CoreLib.PowerConsole
         {
             ColorScheme.Default = new ColorScheme(Console.ForegroundColor, Console.BackgroundColor);
             DefaultSchemeBackup = ColorScheme.Default;
+            AutoFormatter.Instance.AddOptionsFormatter();
         }
 
         private static ColorScheme DefaultSchemeBackup { get; set; }

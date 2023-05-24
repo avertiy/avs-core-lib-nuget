@@ -1,25 +1,16 @@
-﻿using System;
-using System.IO;
-using AVS.CoreLib.Console.ColorFormatting;
+﻿using System.IO;
 using AVS.CoreLib.Console.ColorFormatting.Tags;
 using AVS.CoreLib.PowerConsole.Enums;
 using AVS.CoreLib.PowerConsole.Printers;
-using AVS.CoreLib.PowerConsole.Utilities;
 
 namespace AVS.CoreLib.PowerConsole.Writers
 {
     public interface IOutputWriter
     {
         void Write(string str, bool endLine = true);
+        void Write(string message, bool endLine, bool colorTags);
         void Write(string str, PrintOptions options);
-
-        //void Write(string str, bool endLine = true);
-        //void Write(string str, bool endLine, bool? containsCTags);
-        //void Write(string str, bool endLine, bool? containsCTags, ConsoleColor? color);
-        //void Write(string str, bool endLine, bool? containsCTags, CTag tag);
-        //void Write(string str, bool endLine, bool? containsCTags, ColorScheme scheme);
-        //void Write(string str, bool endLine, bool? containsCTags, Colors colors);
-
+        
         void WriteLine(string? str, PrintOptions options);
         void WriteLine(bool voidMultipleEmptyLines = true);
     }
@@ -53,22 +44,22 @@ namespace AVS.CoreLib.PowerConsole.Writers
             }
         }
 
-        
-
-        public void Write(string str, PrintOptions options)
+        public void Write(string message, PrintOptions options)
         {
-            var text = string.IsNullOrEmpty(options.TimeFormat)
-                ? str
-                : $"{PowerConsolePrinter.SystemTime.ToString(options.TimeFormat)} {str}";
-
             if (options.HasColors)
             {
-                WriteColored(text, options);
+                WriteColored(message, options);
             }
             else
             {
-                WriteTextWithColorTags(text, options.EndLine, options.ColorTags);
+                WriteTextWithColorTags(message, options.EndLine, options.ColorTags);
             }
+        }
+
+        public void Write(string message, bool endLine, bool colorTags)
+        {
+            var text = PreProcessText(message, colorTags);
+            WriteInternal(text, endLine);
         }
 
         protected void WriteInternal(string str, bool endLine)

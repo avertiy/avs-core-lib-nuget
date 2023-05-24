@@ -21,7 +21,13 @@ public static class GuardMustBeExtensions
             throw new ArgumentException(message ?? $"'{arg1}' expected to be equal '{arg2}'");
     }
 
-    
+    public static void EnumEqualOrDefault<T>(this IMustBeGuardClause guardClause, T arg1, T arg2, T @default, string? message = null) where T : Enum
+    {
+        if (!arg1.Equals(arg2) && !arg1.Equals(@default))
+            throw new ArgumentException(message ?? $"'{arg1}' expected to be equal '{arg2}' or default `{@default}`");
+    }
+
+
     public static void Equal(this IMustBeGuardClause guardClause, string? str1, string? str2, string? message = null)
     {
         if (str1 == null || str2 == null || !str1.Equals(str2))

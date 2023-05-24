@@ -7,7 +7,19 @@ namespace AVS.CoreLib.Extensions.AutoFormatters;
 
 public static class AutoFormatterExtensions
 {
-    internal static IAutoFormatter AddBaseFormatters(this IAutoFormatter formatter)
+    public static bool TryAddFormatterByKeyword<T>(this IAutoFormatter formatter, string keyword, Func<T, string> format)
+    {
+        var type = typeof(T);
+        var key = $"{type.Name}:{keyword.ToLower()}";
+        if (formatter.Contains(key))
+            return false;
+
+        formatter.Formatters.Register(key, x => format((T)x));
+        formatter.AddKeywordMapping(keyword, key);
+        return true;
+    }
+
+    public static IAutoFormatter AddBaseFormatters(this IAutoFormatter formatter)
     {
         formatter.AddFormatter<decimal>(x => x.Round().ToString(CultureInfo.CurrentCulture));
         formatter.AddFormatter<double>(x => x.Round().ToString(CultureInfo.CurrentCulture));
@@ -15,12 +27,17 @@ public static class AutoFormatterExtensions
         return formatter;
     }
 
-    internal static IAutoFormatter AddFinancialFormatters(this IAutoFormatter formatter)
+    public static IAutoFormatter AddFinancialFormatters(this IAutoFormatter formatter)
     {
         formatter.AddFormatterByKeyword<decimal>("price", x => x.ToString("C", CultureInfo.CurrentCulture));
         formatter.AddFormatterByKeyword<decimal>("total", x => x.ToString("C", CultureInfo.CurrentCulture));
         formatter.AddFormatterByKeyword<decimal>("pnl", x => x.ToString("C", CultureInfo.CurrentCulture));
+        formatter.AddFormatterByKeyword<decimal>("profit", x => x.ToString("C", CultureInfo.CurrentCulture));
+        formatter.AddFormatterByKeyword<decimal>("loss", x => x.ToString("C", CultureInfo.CurrentCulture));
+        formatter.AddFormatterByKeyword<decimal>("income", x => x.ToString("C", CultureInfo.CurrentCulture));
+        formatter.AddFormatterByKeyword<decimal>("fees", x => x.ToString("C", CultureInfo.CurrentCulture));
         formatter.AddFormatterByKeyword<decimal>("roe", x => x.ToString("P", CultureInfo.CurrentCulture));
+        
         return formatter;
     }
 

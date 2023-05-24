@@ -21,19 +21,19 @@ namespace AVS.CoreLib.PowerConsole.Printers
 
         public void PrintF(FormattableString str, PrintOptions options)
         {
-            string formattedStr;
+            string message;
 
             if (options.ColorPalette != null)
             {
                 var str2 = str.Colorize(options.ColorPalette.Colors);
-                formattedStr = XFormatInternal(str2);
+                message = XFormatInternal(str2);
             }
             else
             {
-                formattedStr = XFormatInternal(str);
+                message = XFormatInternal(str);
             }
-
-            Writer.Write(formattedStr, options);
+            var text = options.TimeFormat == null ? message : this.AddTimestamp(message, SystemTime, options.TimeFormat);
+            Writer.Write(text, options);
         }
 
         public void SetCustomFormatter(Func<FormattableString, string> formatter, bool printF = true)

@@ -8,16 +8,51 @@ namespace AVS.CoreLib.PowerConsole.Extensions
 {
     public static class PrinterExtensions
     {
-        public static void PrintJson<T>(this IPowerConsolePrinter printer, T obj, JsonPrintOptions options)
+        internal static string AddTimestamp(this IPrinter printer, string message, DateTime timestamp, string timeFormat)
         {
-            var str = obj.ToJsonString(options.Indented);
+            return string.IsNullOrEmpty(printer.TimeFormat) ? message : $"{timestamp.ToString(timeFormat)} {message}";
+        }
+
+        public static void PrintObject(this IPowerConsolePrinter printer, object obj, string message, ObjectFormat format, PrintOptions options)
+        {
+            switch (format)
+            {
+                case ObjectFormat.ToString:
+                    printer.Print(message, options);
+                    printer.Print(obj.ToString(), options);
+                    break;
+                case ObjectFormat.Json:
+                    printer.Print(message, options);
+                    printer.Print(obj.ToJsonString(), options);
+                    break;
+                case ObjectFormat.JsonIndented:
+                    printer.Print(message, options);
+                    printer.Print(obj.ToJsonString(true), options);
+                    break;
+                case ObjectFormat.Table:
+                case ObjectFormat.TableVertical:
+                case ObjectFormat.TableHorizontal:
+                    var table = obj.ToTable(format.GetColumnOptions()).WithTitle(message);
+                    printer.PrintTable(table, options);
+                    break;
+
+                default:
+                    printer.Print(message, options);
+                    printer.Print(obj.ToJsonString(), options);
+                    break;
+            }
+        }
+
+        public static void PrintJson(this IPowerConsolePrinter printer, object obj, bool indented, PrintOptions options)
+        {
+            var str = obj.ToJsonString(indented);
             printer.Print(str, options);
         }
 
         public static void PrintTable(this IPowerConsolePrinter printer, Table table, PrintOptions options)
         {
             var str = table.ToString();
-            printer.Print(str, options);
+            printer.Print(str, options.Clone(x => x.NoTimeStamp()));
         }
 
         public static void PrintHeader(this IPowerConsolePrinter printer, string header, HeaderPrintOptions options)

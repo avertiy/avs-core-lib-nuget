@@ -1,17 +1,24 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace AVS.CoreLib.Abstractions.Bootstrap
 {
     public interface ITestService
     {
         void Test();
-        Task TestAsync();
     }
 
     public abstract class TestService : ITestService
     {
+        [DebuggerStepThrough]
         public virtual void Test()
         {
+            var task = Task.Run(async () =>
+            {
+                await TestAsync();
+            });
+            task.Wait();
         }
 
         public virtual Task TestAsync()

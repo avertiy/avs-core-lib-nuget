@@ -30,8 +30,14 @@
     /// <summary>
     /// clearly defines position direction SHORT / LONG
     /// </summary>
-    public enum PositionDirection
+    public enum Direction
     {
+        /// <summary>
+        /// Undefined means position amount is 0 
+        /// On practice the exchange will close current position, and open a new one with the next trade
+        /// But for testing purposes it's easier to track one position instead of multiple small ones
+        /// </summary>
+        None = 0,
         Short = 1,
         Long = 2
     }

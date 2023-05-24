@@ -9,13 +9,13 @@
     <RepositoryUrl>https://github.com/avertiy/avs-core-lib-nuget</RepositoryUrl>
     <RepositoryType>public</RepositoryType>
     <PackageTags>Console PowerConsole avs</PackageTags>
-    <AssemblyVersion>2.1.1</AssemblyVersion>
-    <FileVersion>2.1.1</FileVersion>
+    <AssemblyVersion>2.1.2</AssemblyVersion>
+    <FileVersion>2.1.2</FileVersion>
     <Copyright>Artem Vertii</Copyright>
     <PackageIcon>command-line-icon.jpg</PackageIcon>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <NeutralLanguage />
-    <Version>2.1.1</Version>
+    <Version>2.1.2</Version>
     <Description>contains vairous useful console utility methods, including print table, print array, colored printing by means of color formatted string, console get/set font, read key, prompting etc.</Description>
     <Authors>Artem Vertii</Authors>
     <Company>AV Studio</Company>
@@ -62,15 +62,15 @@
   <ItemGroup>
     <PackageReference Include="AVS.CoreLib.Console.ColorFormatting" Version="2.1.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
-    <PackageReference Include="NuGet.CommandLine" Version="6.3.1">
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
+    <PackageReference Include="NuGet.CommandLine" Version="6.5.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="System.Text.Json" Version="7.0.0" />
+    <PackageReference Include="System.Text.Json" Version="7.0.2" />
   </ItemGroup>
 
   <ItemGroup>

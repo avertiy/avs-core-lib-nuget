@@ -11,23 +11,24 @@ namespace AVS.CoreLib.PowerConsole
     {
         public static void PrintTable<T>(IEnumerable<T> data, PrintOptions? options = null)
         {
-            var table = Table.Create(data);
-            PrintTable(table, options);
+            var builder = new TableBuilder();
+            var table = builder.CreateTable(data);
+            Printer.PrintTable(table, options ?? DefaultOptions);
         }
 
         public static void PrintTable<T>(IEnumerable<T> data,
             Action<Table>? configure, PrintOptions? options = null)
         {
-            var table = Table.Create(data);
+            var builder = new TableBuilder();
+            var table = builder.CreateTable(data);
             configure?.Invoke(table);
-            PrintTable(table, options);
+            Printer.PrintTable(table, options ?? DefaultOptions);
         }
 
         public static void PrintTable(Table table, PrintOptions? options = null)
         {
             Guard.Against.Null(table);
-            var op = options ?? PrintOptions.NoTimestamp;
-            Printer.PrintTable(table, op);
+            Printer.PrintTable(table, options ?? DefaultOptions);
         }
     }
 }

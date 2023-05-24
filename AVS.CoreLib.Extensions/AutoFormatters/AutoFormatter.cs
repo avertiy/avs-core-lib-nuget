@@ -1,18 +1,72 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using AVS.CoreLib.Extensions.Stringify;
+using System.Reflection;
 
 namespace AVS.CoreLib.Extensions.AutoFormatters
 {
     //AutoFormatter tmp sitting here, AutoFormatter + Stringify feature might be moved out into separate package..
 
+    public interface IArgumentFormatProvider
+    {
+        /// <summary>
+        /// format object argument
+        /// <code>
+        ///     Format(150.00, new ArgumentDescriptor(){ ... }) => &lt;Green&gt;$150.00&lt;/Green&gt;
+        /// </code>
+        /// </summary>
+        /// <returns>
+        /// formatted value (it might contain color tags / ansi codes)
+        /// </returns>
+        string Format(object arg, ArgumentDescriptor descriptor);
+    }
+
+    //to calculate Cell width we would still need text without color tags due to we calc. str.length
+    //thus it might need to either do separate format value 155.00 => $155.00 than colorize
+    //or return some struct that contains text and color and colors will be applied applied already by printer
+    public class ArgumentDescriptor
+    {
+        /// <summary>
+        /// .raw value
+        /// </summary>
+        public object? Value { get; set; }
+
+        /// <summary>
+        /// hold format modifier e.g. {arg:C} => `C` or {arg:### ###.00} => `### ###.00`
+        /// </summary>
+        public string? Format { get; set; }
+        /// <summary>
+        /// formatted value e.g. $150.00 in case we need formatted value length to calc cell width for Table
+        /// (no color tags ansi-codes etc.)
+        /// </summary>
+        public string? FormattedValue { get; set; }
+
+        //public Colors? Colors { get; set; }
+        //public ObjType PrimitiveType // null/string/bool/float/int/array/list/dict/other
+        //public FormatFlags Flags // zero/empty/negative/currency/percentage/short string/text/json
+
+        public PropertyInfo? Property { get; set; }
+        public string? PropertyName => Property?.Name;
+
+        public Type? Type { get; set; }
+        public Type? OwnerType { get; set; }
+    }
+
     public interface IAutoFormatter
     {
+        IFormatterRegistry Formatters { get; }
+
         void AddFormatter<T>(Func<T, string> format);
+        /// <summary>
+        /// Add special formatter by keyword in type/property name
+        /// </summary>
+        /// <param name="keyword">keyword case sensitivity is off</param>
+        /// <param name="format">formatter func</param>
         void AddFormatterByKeyword<T>(string keyword, Func<T, string> format);
         string Format(string key, object value);
         string Format(object value);
+        bool Contains(string keyOrKeyword);
+
+        void AddKeywordMapping(string keyword, string key);
     }
 
     /// <summary>
@@ -62,6 +116,10 @@ namespace AVS.CoreLib.Extensions.AutoFormatters
             _keywordMap.Add(keyword, key);
         }
 
+        public bool Contains(string keyOrKeyword)
+        {
+            return _keywordMap.ContainsKey(keyOrKeyword) || Formatters.ContainsKey(keyOrKeyword);
+        }
 
         /// <summary>
         /// format single object value (not enumerable/array/list/etc.)
@@ -104,7 +162,10 @@ namespace AVS.CoreLib.Extensions.AutoFormatters
             var str = propName.ToLower();
             foreach (var kp in _keywordMap)
             {
-                if (str.Contains(kp.Key) && kp.Value.StartsWith(type.Name + ":"))
+                if (!str.Contains(kp.Key))
+                    continue;
+
+                if(kp.Value.StartsWith(type.Name + ":") || kp.Value.StartsWith(type.BaseType?.Name + ":"))
                 {
                     specialFormatterKey = kp.Value;
                     return true;

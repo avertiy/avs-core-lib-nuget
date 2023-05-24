@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using AVS.CoreLib.PowerConsole.Printers;
 
 namespace AVS.CoreLib.PowerConsole.Extensions
 {
@@ -17,6 +18,11 @@ namespace AVS.CoreLib.PowerConsole.Extensions
             sb.Length -= separator.Length;
             return sb.ToString();
         }
+    }
+
+    internal static class StringExtensions
+    {
+        
     }
 }
 

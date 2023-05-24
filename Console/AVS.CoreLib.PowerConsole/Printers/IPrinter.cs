@@ -6,15 +6,18 @@ namespace AVS.CoreLib.PowerConsole.Printers
 {
     public interface IPrinter
     {
+        string TimeFormat { get; set; }
         void Write(string str, bool endLine = false);
         void Write(string str, ConsoleColor color, bool endLine = false);
         void Write(string str, PrintOptions options);
 
         void WriteLine(bool voidMultipleEmptyLines = true);
         void WriteLine(string? str, PrintOptions options);
-        void Print(string str, PrintOptions options);
+        void Print(string message, PrintOptions options);
 
         void Print(FormattableString str, PrintOptions options);
+
+        void Print(string message, PrintOptions2 options);
 
         void SwitchMode(ColorMode mode);
     }
