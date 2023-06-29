@@ -32,6 +32,7 @@ namespace AVS.CoreLib.WebSockets.Abstractions
         Task UnSubscribe(string channelName, string command);
 
         void SetMessageHandler(Action<string> handler);
-        void ClearChannels();
+        void SetConnectionClosedHandler(Action<string> handler);
+        void Reset();
     }
 }

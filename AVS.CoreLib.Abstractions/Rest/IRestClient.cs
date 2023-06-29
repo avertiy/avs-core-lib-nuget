@@ -13,8 +13,6 @@ namespace AVS.CoreLib.Abstractions.Rest
 
         [Obsolete("use SendRequestAsync(IRequest) instead")]
         Task<string> QueryAsync(IEndpoint endpoint, IPayload data = null);
-        //[Obsolete("use SendRequestAsync(IRequest) instead")]
-        //Task<HttpWebResponse> SendRequestAsync(IEndpoint endpoint, IPayload data = null);
         void SwitchKeys(string publicKey, string privateKey);
     }
 }

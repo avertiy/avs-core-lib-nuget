@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Globalization;
 using System.Reflection;
 using AVS.CoreLib.BootstrapTools.Extensions;
 using Microsoft.Extensions.Configuration;
@@ -11,12 +11,13 @@ public interface IStartup
 {
     void RegisterServices(IServiceCollection services);
     void ConfigureServices(IServiceProvider sp);
+    IStartupService? GetStartupService(IServiceProvider sp);
 }
 
 /// <summary>
 /// Startup base class provides basic startup stuff
 /// </summary>
-public abstract class StartupBase : IStartup
+public class Startup<TStartupService> : IStartup where TStartupService : class, IStartupService
 {
     protected virtual string ContentRootPath => AppContext.BaseDirectory;
     protected virtual string? AppName => Assembly.GetEntryAssembly()?.GetName().Name;
@@ -29,14 +30,30 @@ public abstract class StartupBase : IStartup
 
     public virtual void RegisterServices(IServiceCollection services)
     {
+        SetupConsole();
         services.AddSingleton(Configuration);
         services.AddOptions();
         AddLogging(services);
+        services.AddSingleton<TStartupService>();
     }
 
     public virtual void ConfigureServices(IServiceProvider sp)
     {
+    }
 
+    public virtual IStartupService? GetStartupService(IServiceProvider sp)
+    {
+        return sp.GetRequiredService<TStartupService>();
+    }
+
+    /// <summary>
+    /// set current culture to en-US and
+    /// Console foreground color to DarkGray
+    /// </summary>
+    protected virtual void SetupConsole()
+    {
+        Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+        Console.ForegroundColor = ConsoleColor.DarkGray;
     }
 
     // override to configure logging
@@ -62,4 +79,5 @@ public abstract class StartupBase : IStartup
             ConfigureLogging(builder);
         });
     }
+    
 }

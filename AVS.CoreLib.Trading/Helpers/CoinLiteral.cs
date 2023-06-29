@@ -49,6 +49,7 @@ namespace AVS.CoreLib.Trading.Helpers
     public static class SymbolFilterExtensions
     {
         /// <summary>
+        /// match given symbol with a filter (by filter we mean either literal <see cref="CoinLiteral"/>, concrete symbol or quote currency e.g. USDT)
         /// returns true if filter is <see cref="CoinLiteral"/> that matches the symbol
         /// </summary>
         public static bool Match(this string symbol, string filter)
@@ -60,7 +61,7 @@ namespace AVS.CoreLib.Trading.Helpers
                 CoinLiteral.ANY_FIAT => CoinHelper.Fiat.Any(symbol.EndsWith),
                 CoinLiteral.ANY_TOP => CoinHelper.Top.Any(symbol.EndsWith),
                 CoinLiteral.ANY => true,
-                _ => false
+                _ => symbol == filter || symbol.EndsWith(filter)
             };
         }
 
@@ -73,19 +74,19 @@ namespace AVS.CoreLib.Trading.Helpers
         ///  [`BTC_*`,`*_BUSD`] match `BTC_USDT` => true 
         /// (iii) coin literals e.g. `ATOM_USDT*`, `ATOM_FIAT` <see cref="CoinLiteral"/>
         /// </summary>
-        public static bool Match(this string[] symbols, string symbol)
+        public static bool Match(this string[] symbols, string filter)
         {
-            if (symbol == "*")
+            if (filter == "*")
                 return true;
 
-            if (CoinLiteral.IsLiteral(symbol) && symbols.Any(x => x.Match(symbol)))
+            if (CoinLiteral.IsLiteral(filter) && symbols.Any(x => x.Match(filter)))
             {
                 return true;
             }
 
             foreach (var s in symbols)
             {
-                if (s == symbol)
+                if (s == filter)
                     return true;
 
                 if (!s.Contains('*'))
@@ -98,13 +99,13 @@ namespace AVS.CoreLib.Trading.Helpers
                 if (parts.Length != 2)
                     continue;
 
-                if (parts[0] == "*" && symbol.EndsWith(parts[1]))
+                if (parts[0] == "*" && filter.EndsWith(parts[1]))
                     return true;
 
-                if (parts[1] == "*" && symbol.StartsWith(parts[0]))
+                if (parts[1] == "*" && filter.StartsWith(parts[0]))
                     return true;
 
-                if (CoinLiteral.IsLiteral(parts[1]) && symbol.Match(parts[1]))
+                if (CoinLiteral.IsLiteral(parts[1]) && filter.Match(parts[1]))
                 {
                     return true;
                 }

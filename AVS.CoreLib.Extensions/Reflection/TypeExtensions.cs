@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using AVS.CoreLib.Extensions.Attributes;
@@ -87,34 +88,21 @@ namespace AVS.CoreLib.Extensions.Reflection
         }
 
         
-        public static string GetReadableName(this Type type, bool fullNamePreferably = false)
+        public static string GetReadableName(this Type type, int? maxLength = null, bool fullNamePreferably = false)
         {
             var name = type.Name;
-            if (fullNamePreferably && type.FullName.Length < 80)
+            if (fullNamePreferably && type.FullName?.Length < 80)
                 name = type.FullName;
 
             if (!type.IsGenericType)
                 return name;
 
             var args = type.GetGenericArguments();
-            return ToStringNotation(type.Name, args);
+            var limitArgs = maxLength == null ? 4 : (int?)null;
+            return ToStringNotation(type.Name, args, limitArgs, maxLength);
         }
 
-        /// <summary>
-        /// For generics return a type name in a human friendly format e.g. List&lt;MyClass&gt;
-        /// </summary>
-        /// <param name="type"></param>
-        [Obsolete("use GetReadableName()")]
-        public static string ToStringNotation(this Type type)
-        {
-            if (!type.IsGenericType)
-                return type.Name;
-
-            var args = type.GetGenericArguments();
-            return ToStringNotation(type.Name, args);
-        }
-
-        private static string ToStringNotation(string typeName, Type[] args)
+        private static string ToStringNotation(string typeName, Type[] args, int? limitArgs, int? maxLength = null)
         {
             typeName = typeName.TrimStart('<', '>');
             if (typeName.Contains('`'))
@@ -122,9 +110,23 @@ namespace AVS.CoreLib.Extensions.Reflection
 
             var sb = new StringBuilder(typeName);
             sb.Append("<");
-            foreach (var typeArgument in args)
+            for (var i = 0; i < args.Length; i++)
             {
-                sb.Append(typeArgument.ToStringNotation());
+                if (limitArgs.HasValue && i == limitArgs)
+                {
+                    sb.Append("...,");
+                    break;
+                }
+
+                var typeArgument = args[i];
+                sb.Append(typeArgument.GetReadableName());
+
+                if (maxLength.HasValue && sb.Length > maxLength - 4)
+                {
+                    sb.Append("...,");
+                    break;
+                }
+
                 sb.Append(",");
             }
 

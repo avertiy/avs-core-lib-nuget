@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using AVS.CoreLib.Extensions.Stringify;
@@ -113,24 +114,40 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
             return scheme.HasValue ? new ColorString(text, scheme.Value) : new ColorString(text);
         }
 
+        
+
         public static void CalculateWidth(this Table table, bool force = false)
         {
-            //if (TotalWidth > 0 && force == false)
-            //    return;
-
             var totalWidth = 0;
-            var columns = table.Columns;
-            var rows = table.Rows;
-            foreach (var column in table.Columns)
+            if (table.Title != null)
             {
-                var minWidth = column.Title.Length + 2;
-                if (column.Width < minWidth)
-                    column.Width = minWidth;
-                totalWidth += column.Width;
+                totalWidth = table.Title.Length + 2;
             }
-
-            if (columns.Any())
+            
+            var rows = table.Rows;
+            
+            if (table.Columns.Any())
             {
+                var columns = table.Columns;
+                var colsWidth = 0;
+                foreach (var column in columns)
+                {
+                    var minWidth = column.Title.Length + 2;
+                    if (column.Width < minWidth)
+                        column.Width = minWidth;
+                    colsWidth += column.Width;
+                }
+
+                var diff = totalWidth - colsWidth;
+                if (diff > 0)
+                {
+                    var addWidth = diff / columns.Count;
+                    foreach (var column in columns)
+                    {
+                        column.Width += addWidth;
+                    }
+                }
+
                 for (var i = 0; i < columns.Count; i++)
                 {
                     var column = columns[i];
@@ -144,24 +161,36 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
                         if (string.IsNullOrEmpty(cell.Text))
                             continue;
 
-                        if (cell.Text.Length + 1 > column.Width)
+                        if (cell.Colspan == 1)
                         {
-                            var diff = cell.Text.Length - column.Width;
-                            if (totalWidth + diff + 2 < Table.MAX_WIDTH)
-                            {
-                                column.Width = cell.Text.Length + 2;
-                                totalWidth += diff + 2;
-                            }
-                            else if (totalWidth + diff < Table.MAX_WIDTH)
-                            {
-                                column.Width = cell.Text.Length;
-                                totalWidth += diff;
-                            }
+                            if(cell.Text.Length <= column.Width)
+                                continue;
+                        
+                            column.Width = cell.Text.Length + 2;
+                            continue;
                         }
+
+                        //if (cell.Colspan > 1)
+                        //{
+                        //    continue;
+                        //}
+
+                        //if (cell.Text.Length + 1 > column.Width)
+                        //{
+                        //    var diff = cell.Text.Length - column.Width;
+                        //    if (totalWidth + diff + 2 < Table.MAX_WIDTH)
+                        //    {
+                        //        column.Width = cell.Text.Length + 2;
+                        //        totalWidth += diff + 2;
+                        //    }
+                        //    else if (totalWidth + diff < Table.MAX_WIDTH)
+                        //    {
+                        //        column.Width = cell.Text.Length;
+                        //        totalWidth += diff;
+                        //    }
+                        //}
                     }
                 }
-
-                totalWidth += columns.Count * 2;
 
                 foreach (var row in rows)
                 {
@@ -176,31 +205,51 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
             }
             else if (rows.Any())
             {
-                totalWidth = 0;
-                var cells = rows.First().Cells;
-                for (var i = 0; i < cells.Count; i++)
+                var columns = CalcColumns(rows, totalWidth);
+                for (var i = 0; i < columns.Count; i++)
                 {
-                    var width = 0;
                     foreach (var row in rows)
                     {
                         if (i >= row.Cells.Count)
                             continue;
-                        width = row[i].CalcWidth(0, width);
-                    }
-
-                    //ensure all rows has max column width
-                    foreach (var row in rows)
-                    {
-                        if (i >= row.Cells.Count)
-                            continue;
-
+                        var width = columns[i];
                         if (row[i].Width < width)
                             row[i].Width = width;
                     }
-
-                    totalWidth += width + 2;
                 }
             }
+        }
+
+        private static List<int> CalcColumns(IList<Row> rows, int totalWidth)
+        {
+            var cells = rows.First().Cells;
+            var colsWidth = 0;
+            var columns = new List<int>(cells.Count + 2);
+            for (var i = 0; i < cells.Count; i++)
+            {
+                var width = 0;
+                foreach (var row in rows)
+                {
+                    if (i >= row.Cells.Count)
+                        continue;
+                    width = row[i].CalcWidth(0, width);
+                }
+
+                columns.Add(width);
+                colsWidth += width;
+            }
+
+            var diff = totalWidth - colsWidth;
+            if (diff > 0 && columns.Any())
+            {
+                var addWidth = diff / columns.Count;
+                for (var i = 0; i < columns.Count; i++)
+                {
+                    columns[i] += addWidth;
+                }
+            }
+
+            return columns;
         }
     }
 }

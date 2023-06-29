@@ -5,9 +5,8 @@ using System.Globalization;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using AVS.CoreLib.Enums;
 using AVS.CoreLib.Extensions;
-using static System.Net.Mime.MediaTypeNames;
+using AVS.CoreLib.Extensions.Enums;
 
 namespace AVS.CoreLib.Dates
 {
@@ -179,62 +178,6 @@ namespace AVS.CoreLib.Dates
         
 
         #region static methods
-        ///// <summary>
-        ///// returns all supported literals parseable into date range
-        ///// </summary>
-        //public static string[] GetLiterals()
-        //{
-        //    return new[]
-        //    {
-        //        "today",
-        //        "yesterday",
-        //        "day",
-        //        "week",
-        //        "Week",
-        //        "month",
-        //        "quarter",
-        //        "year",
-        //        "1m",
-        //        "5m",
-        //        "15m",
-        //        "30m",
-        //        "60m",
-        //        "1h",
-        //        "2h",
-        //        "4h",
-        //        "12h",
-        //        "24h",
-        //        "48h",
-        //        "72h",
-        //        "1d",
-        //        "2d",
-        //        "3d",
-        //        "4d",
-        //        "7d",
-        //        "1w",
-        //        "2w",
-        //        "3w",
-        //        "4w",
-        //        "1M",
-        //        "2M",
-        //        "3M",
-        //        "4M",
-        //        "5M",
-        //        "6M",
-        //        "9M",
-        //        "12M",
-        //        "36M",
-        //        "1Q",
-        //        "2Q",
-        //        "3Q",
-        //        "4Q",
-        //        "1Y",
-        //        "2Y",
-        //        "3Y",
-        //        "5Y",
-        //        "10Y"
-        //    };
-        //}
 
         /// <summary>
         /// parse date range almost from any possible literal:
@@ -324,7 +267,6 @@ namespace AVS.CoreLib.Dates
             else
                 return new DateRange(DateTime.Today, DateTime.Today.AddDays(days));
         }
-
         public static DateRange Empty => new(DateTime.MinValue, DateTime.MinValue);
         public static DateRange Day => new(DateTime.Today.AddDays(-1), DateTime.Today);
         public static DateRange Week => new(DateTime.Today.AddDays(-7), DateTime.Today);
@@ -357,11 +299,61 @@ namespace AVS.CoreLib.Dates
 
         public static IEnumerable<DateRange> Iterate(this DateRange range, int seconds)
         {
-            for (var i = range.From; i <= range.To;)
+            for (var i = range.From; i < range.To;)
             {
                 var next = i.AddSeconds(seconds);
+
+                if (next > range.To)
+                    next = range.To;
+
                 yield return new DateRange(i, next);
                 i = next;
+            }
+        }
+
+        public static IEnumerable<DateRange> IterateByMonths(this DateRange range, int months = 1, OrderBy orderBy = OrderBy.Asc)
+        {
+            if (orderBy == OrderBy.Asc)
+            {
+                var i = range.From;
+                var startOfMonth = i.StartOfMonth();
+                DateTime next;
+                if (i > startOfMonth)
+                {
+                    next = startOfMonth.AddMonths(months).AddDays(-1);
+                    yield return new DateRange(i, next);
+                }
+
+                while (true)
+                {
+                    next = i.AddMonths(months);
+
+                    if (next > range.To)
+                    {
+                        yield return new DateRange(i, range.To);
+                        break;
+                    }
+
+                    yield return new DateRange(i, next);
+                    i = next;
+                }
+            }
+            else
+            {
+                var i = range.To;
+                while (true)
+                {
+                    var prev = i.AddMonths(-months);
+
+                    if (prev < range.From)
+                    {
+                        yield return new DateRange(range.From, i);
+                        break;
+                    }
+
+                    yield return new DateRange(prev, i);
+                    i = prev;
+                }
             }
         }
 

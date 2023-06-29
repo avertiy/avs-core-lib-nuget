@@ -4,7 +4,6 @@ using AVS.CoreLib.Console.ColorFormatting;
 using AVS.CoreLib.PowerConsole.Structs;
 using AVS.CoreLib.PowerConsole.Utilities;
 using AVS.CoreLib.Text.Formatters.ColorMarkup;
-using IPrinter = AVS.CoreLib.PowerConsole.Printers.IPowerConsolePrinter;
 namespace AVS.CoreLib.PowerConsole.Printers
 {
     public static partial class PrintExtensions

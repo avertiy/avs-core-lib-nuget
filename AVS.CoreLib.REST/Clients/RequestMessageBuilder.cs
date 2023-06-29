@@ -1,81 +1,94 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.Extensions.Collections;
-using AVS.CoreLib.REST.Helpers;
+using AVS.CoreLib.Extensions.Web;
+using AVS.CoreLib.REST.Extensions;
 using AVS.CoreLib.Utilities;
 
 namespace AVS.CoreLib.REST.Clients
 {
     public class RequestMessageBuilder : IRequestMessageBuilder
     {
-        public bool AddCommandToRequestData { get; set; } = true;
         public bool UseTonce { get; set; }
-        public IAuthenticator Authenticator { get; protected set; }
-        public HttpRequestMessage Build(IEndpoint endpoint, IPayload data)
+        public bool OrderQueryStringParameters { get; set; } = true;
+        public IAuthenticator? Authenticator { get; set; }
+
+        public const string JSON_CONTENT_HEADER = "application/json";
+
+        public RequestMessageBuilder()
+        {
+        }
+
+        public RequestMessageBuilder(IAuthenticator authenticator)
+        {
+            Authenticator = authenticator;
+        }
+
+        public HttpRequestMessage Build(IRequest input)
         {
             try
             {
-                var message = new HttpRequestMessage(new HttpMethod(endpoint.Method), GetUri(endpoint, data))
-                {
-                    Content = CreateHttpContent(endpoint, data)
-                };
-                return message;
+                OnHttpRequestMessageCreating(input);
+                var requestMessage = CreateHttpRequestMessage(input);
+                OnHttpRequestMessageCreated(requestMessage);
+                return requestMessage;
             }
             catch (Exception ex)
             {
-                throw new Exception("Build HttpRequestMessage failed", ex);
+                throw new HttpRequestException("Build HttpRequestMessage failed", ex);
             }
         }
 
-        protected virtual Uri GetUri(IEndpoint endpoint, IPayload data)
+        protected virtual void OnHttpRequestMessageCreated(HttpRequestMessage requestMessage)
         {
-            var url = endpoint.Url;
-            if (data != null)
-            {
-                url += data.RelativeUrl;
-                if (endpoint.Method == "GET")
-                {
-                    url = UrlHelper.Combine(url, data.ToHttpQueryString());
-                }
-            }
-            return new Uri(url);
         }
 
-        protected virtual HttpContent CreateHttpContent(IEndpoint endpoint, IPayload data)
+        protected virtual void OnHttpRequestMessageCreating(IRequest request)
         {
-            OnHttpContentCreating(endpoint, data);
-            var queryString = data.ToHttpQueryString();
-            HttpContent content = new StringContent(queryString);
-
-            if (endpoint.AuthType == AuthType.ApiKey)
+            if (request.AuthType == AuthType.ApiKey)
             {
-                AddAuthHeaders(content, queryString);
-            }
-            return content;
-        }
-
-        protected virtual void OnHttpContentCreating(IEndpoint endpoint, IPayload data)
-        {
-            if (endpoint.AuthType == AuthType.ApiKey)
-            {
-                if (AddCommandToRequestData)
-                    data.Add("command", endpoint.Command);
                 if (UseTonce)
-                    data.Add("tonce", NonceHelper.GetTonce());
+                    request.Data.Add("tonce", NonceHelper.GetTonce());
                 else
-                    data.Add("nonce", NonceHelper.GetNonce());
+                    request.Data.Add("nonce", NonceHelper.GetNonce());
             }
         }
 
-        protected virtual void AddAuthHeaders(HttpContent content, string queryString)
+        protected virtual HttpRequestMessage CreateHttpRequestMessage(IRequest input)
         {
-            if (Authenticator == null)
-                throw new Exception("Authenticator must be initialized");
+            var url = input.GetFullUrl(OrderQueryStringParameters);
+            var httpMethod = new HttpMethod(input.Method);
+            var requestMessage = new HttpRequestMessage(httpMethod, url);
+            var queryString = input.Data.ToHttpQueryString(orderBy: OrderQueryStringParameters);
+            requestMessage.Content = new StringContent(queryString);
+            AddHeaders(requestMessage, queryString);
+            return requestMessage;
+        }
 
-            content.Headers.Add("Key", Authenticator.PublicKey);
+        protected virtual void AddHeaders(HttpRequestMessage requestMessage, string queryString)
+        {
+            requestMessage.Headers.AcceptApplicationJsonContent();
+            if (Authenticator == null)
+                return;
+
+            requestMessage.Headers.Add("Key", Authenticator.PublicKey);
             var signature = Authenticator.Sign(queryString);
-            content.Headers.Add("Sign", signature.ToBase64String());
+            requestMessage.Headers.Add("Sign", signature.ToBase64String());
+        }
+    }
+
+    public static class HttpRequestHeadersExtenions
+    {
+        /// <summary>
+        /// set headers.Accept "application/json"
+        /// </summary>
+        /// <param name="headers"></param>
+        public static void AcceptApplicationJsonContent(this HttpRequestHeaders headers)
+        {
+            headers.Accept.Add(new MediaTypeWithQualityHeaderValue(RequestMessageBuilder.JSON_CONTENT_HEADER));
         }
     }
 }

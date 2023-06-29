@@ -1,7 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using AVS.CoreLib.PowerConsole.Enums;
-using AVS.CoreLib.PowerConsole.Printers;
+using AVS.CoreLib.PowerConsole.Printers2;
 
 namespace AVS.CoreLib.PowerConsole
 {
@@ -10,7 +10,13 @@ namespace AVS.CoreLib.PowerConsole
     {
         public static string ReadLine()
         {
-            return Console.ReadLine();
+            return Console.ReadLine()!;
+        }
+
+        public static IEnumerable<string> ReadLines(int count)
+        {
+            for(var i=0; i<count;i++)
+                yield return Console.ReadLine()!;
         }
 
         public static async Task<string> ReadLineAsync(int millisecondsTimeout, string defaultText = null)
@@ -27,9 +33,9 @@ namespace AVS.CoreLib.PowerConsole
         /// <param name="message">Message text to be written in console output</param>
         /// <param name="options"><see cref="PrintOptions"/></param>
         /// <returns>Returns entered value from the user</returns>
-        public static string ReadLine(string message, PrintOptions? options = null)
+        public static string ReadLine(string message, PrintOptions2 options = PrintOptions2.Default)
         {
-            WriteLine(message, options ?? DefaultOptions);
+            Print(message, options);
             return Console.ReadLine() ?? string.Empty;
         }
 
@@ -41,10 +47,10 @@ namespace AVS.CoreLib.PowerConsole
         /// <param name="message">Message text to be written in console output</param>
         /// <param name="options"></param>
         /// <returns>Returns entered value from the user</returns>
-        public static T ReadLine<T>(string message, PrintOptions? options = null)
+        public static T ReadLine<T>(string message, PrintOptions2 options = PrintOptions2.Default)
             where T : IConvertible
         {
-            WriteLine(message, options ?? DefaultOptions);
+            Print(message, options);
             var input = Console.ReadLine();
             try
             {

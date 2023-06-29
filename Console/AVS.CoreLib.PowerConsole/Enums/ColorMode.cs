@@ -9,7 +9,7 @@
     public enum ColorMode
     {
         /// <summary>
-        /// print colored text by switching Console.ForegroundColor = color
+        /// The default mode coloring based on ansi-color codes
         /// </summary>
         Default = 0,
         /// <summary>
@@ -19,6 +19,10 @@
         /// <summary>
         /// print plain text, i.e. no colors removing color tags and color-markup 
         /// </summary>
-        PlainText = 2
+        PlainText = 2,
+        /// <summary>
+        /// print colored text coloring is based on switch console foreground & background colors 
+        /// </summary>
+        SwitchColors = 3
     }
 }

@@ -22,8 +22,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Bootstrap\**" />
     <Compile Remove="Caching\**" />
+    <EmbeddedResource Remove="Bootstrap\**" />
     <EmbeddedResource Remove="Caching\**" />
+    <None Remove="Bootstrap\**" />
     <None Remove="Caching\**" />
   </ItemGroup>
 

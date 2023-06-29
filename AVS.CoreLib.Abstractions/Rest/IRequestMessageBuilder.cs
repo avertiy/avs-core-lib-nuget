@@ -4,6 +4,7 @@ namespace AVS.CoreLib.Abstractions.Rest
 {
     public interface IRequestMessageBuilder
     {
-        HttpRequestMessage Build(IEndpoint endpoint, IPayload data);
+        IAuthenticator Authenticator { get; }
+        HttpRequestMessage Build(IRequest input);
     }
 }

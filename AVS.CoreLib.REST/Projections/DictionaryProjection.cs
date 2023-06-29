@@ -317,7 +317,7 @@ namespace AVS.CoreLib.REST.Projections
                         }
                         catch (Exception ex)
                         {
-                            throw new MapException($"ParseDictionary<{typeof(TKey).Name},{typeof(TValue).ToStringNotation()}> with projection of {typeof(TProjection).ToStringNotation()}> failed", ex) { JsonText = JsonText };
+                            throw new MapException($"ParseDictionary<{typeof(TKey).Name},{typeof(TValue).GetReadableName()}> with projection of {typeof(TProjection).GetReadableName()}> failed", ex) { JsonText = JsonText };
                         }
 
                         response.Data = transform(data);
@@ -453,7 +453,7 @@ namespace AVS.CoreLib.REST.Projections
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception($"ParseGenericType<{typeof(TKey).Name},{itemType.ToStringNotation()}> failed", ex);
+                    throw new Exception($"ParseGenericType<{typeof(TKey).Name},{itemType.GetReadableName()}> failed", ex);
                 }
             }
 

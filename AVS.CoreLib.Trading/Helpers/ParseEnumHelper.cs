@@ -383,33 +383,45 @@ namespace AVS.CoreLib.Trading.Helpers
 
         public static OrderType ParseOrderType(string value)
         {
-            switch (value.ToUpper())
+            switch (value.ToUpperInvariant())
             {
-                case "M":
-                case "MARKET":
-                    return OrderType.Market;
                 case "L":
                 case "LIMIT":
                     return OrderType.Limit;
-                case "I":
-                case "IMMEDIATE":
-                    return OrderType.Immediate;
 
-                case "FOK":
-                case "FILL_OR_KILL":
-                    return OrderType.FOK;
-                case "GTC":
-                case "GOOD_TILL_CANCEL":
-                    return OrderType.GTC;
-                case "SL":
-                case "STOP_LIMIT":
-                    return OrderType.StopLimit;
-                case "S":
+                case "M":
+                case "MARKET":
+                    return OrderType.Market;
+
+                case "LIMIT_MAKER":
+                case "LIMITMAKER":
+                    return OrderType.LimitMaker;
+
                 case "STOP":
+                case "STOP_MARKET":
+                case "STOP_LOSS":
+                case "STOP_LOSS_MARKET":
+                case "STOPMARKET":
+                case "STOPLOSSMARKET":
+                    return OrderType.StopMarket;
+
+                case "STOP_LIMIT":
+                case "STOP_LOSS_LIMIT":
+                case "STOPLIMIT":
+                case "STOPLOSSLIMIT":
                     return OrderType.Stop;
-                case "OCO":
-                case "OCTO":
-                    return OrderType.OCO;
+
+                case "TPL":
+                case "TAKE_PROFIT_LIMIT":
+                case "TAKEPROFITLIMIT":
+                    return OrderType.TakeProfit;
+
+                case "TPM":
+                case "TAKE_PROFIT":
+                case "TAKE_PROFIT_MARKET":
+                case "TAKEPROFIT":
+                case "TAKEPROFITMARKET":
+                    return OrderType.TakeProfitMarket;
             }
 
             throw new ArgumentOutOfRangeException($"{value} unknown kind of {nameof(OrderType)}");

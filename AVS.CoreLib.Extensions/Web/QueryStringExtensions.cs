@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -41,5 +40,22 @@ namespace AVS.CoreLib.Extensions.Web
             return sb.ToString();
         }
 
+        public static string GetQueryStringValue(this string queryString, string key)
+        {
+            var ind = queryString.IndexOf(key, StringComparison.Ordinal);
+            if (ind == -1)
+                return string.Empty;
+
+            ind+=key.Length+1;
+            var endInd = queryString.IndexOf('&', ind);
+            return endInd == -1 ? queryString.Substring(ind) : queryString.Substring(ind, endInd - ind);
+        }
+
+        public static string QueryStringCombine(this string queryString, string otherPart)
+        {
+            if (queryString.Length > 0 && otherPart.Length > 0)
+                return $"{queryString}&{otherPart}";
+            return queryString + otherPart;
+        }
     }
 }

@@ -30,6 +30,8 @@ namespace AVS.CoreLib.WebSockets
         /// </summary>
         public int ConnectionTimeout { get; set; } = 180000;
 
+        public bool IsBackgroundTaskActive { get; private set; }
+
         /// <summary>
         /// Shortcut to <see cref="ClientWebSocketOptions.KeepAliveInterval"/>
         /// Default keep alive interval is 30 sec. <see cref="WebSocket.DefaultKeepAliveInterval"/>
@@ -153,10 +155,12 @@ namespace AVS.CoreLib.WebSockets
 
             var memoryStream = new MemoryStream();
             string reason = null;
+            IsBackgroundTaskActive = true;
             //var i = 1;
             // Check WebSocket state.
             while (true)
             {
+                
                 if (_disposing)
                 {
                     reason = "Disposing";
@@ -199,6 +203,8 @@ namespace AVS.CoreLib.WebSockets
                 //    throw new SocketCommunicatorException("test exception");
                 //}
             }
+
+            IsBackgroundTaskActive = false;
 
             return reason;
         }

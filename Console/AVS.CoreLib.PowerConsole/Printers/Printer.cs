@@ -13,8 +13,9 @@ namespace AVS.CoreLib.PowerConsole.Printers
         public virtual DateTime SystemTime => DateTime.Now;
         public string TimeFormat { get; set; } = "HH:mm:ss";
 
-        protected IOutputWriter Writer { get; set; }
         protected Func<FormattableString, string> Format { get; set; } = str => str.ToString(CultureInfo.CurrentCulture);
+        protected IOutputWriter Writer { get; set; }
+        
 
         private readonly TextWriter _textWriter;
         

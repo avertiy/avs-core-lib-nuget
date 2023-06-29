@@ -1,7 +1,6 @@
 ﻿using System;
 using AVS.CoreLib.PowerConsole.Utilities;
 using AVS.CoreLib.Text;
-using AVS.CoreLib.Extensions;
 namespace AVS.CoreLib.PowerConsole.ConsoleTable
 {
     public static class RowExtensions
@@ -14,15 +13,16 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
             return row;
         }
 
-        public static Row AddCell(this Row row, string text, int colspan = 1, ColorScheme? scheme = null)
+        public static Row AddCell(this Row row, string text, int colspan = 1, int columnWidth = 0, ColorScheme? scheme = null)
         {
             var (width, height) = text.GetWidthAndHeight();
+            width = columnWidth > width + 2 ? columnWidth : width +2;
             var cell = new Cell()
             {
                 Text = text,
                 ColorScheme = scheme,
                 Colspan = colspan,
-                Width = width + 2,
+                Width = width,
                 Height = height
             };
             return row.AddCell(cell);
@@ -36,7 +36,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
                 if (cellSchemes != null)
                     cellScheme = cellSchemes[i];
 
-                row.AddCell(values[i], 1, cellScheme);
+                row.AddCell(values[i], 1, scheme: cellScheme);
             }
         }
     }

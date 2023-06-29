@@ -17,5 +17,7 @@ namespace AVS.CoreLib.Trading.Abstractions
         /// </summary>
         decimal Total { get; }
         DateTime Time { get; }
+
+        //int NumberOfTrades { get; }
     }
 }

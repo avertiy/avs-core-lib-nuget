@@ -1,32 +1,23 @@
-﻿using System.Diagnostics;
-using System.Globalization;
+﻿using System.Globalization;
+using AVS.CoreLib.BootstrapTools.Schedule;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AVS.CoreLib.BootstrapTools
 {
-    //3 ways of use Bootstrap:
-    //Bootstrap.ConfigureServices(...);
-    //Bootstrap.StartWith<StartupService>();
-    //Bootstrap.UseStartup<Startup>().StartWith<StartupService>();
-
     /// <summary>
     /// Console utility to quickly bootstrap your console app with DI
-    /// (Microsoft.Extensions.DependencyInjection) without getting into burden of the .NET core Host/WebHost builder complexities. 
+    /// (Microsoft.Extensions.DependencyInjection) without getting into burden of the .NET core Host/WebHost builder complexities.
+    /// <seealso cref="Startup{T}"/> and <see cref="StartupServiceBase"/>
     /// <code>
-    ///     //usages: 
+    ///     // usages: 
     ///     // if you just need to build a service provider: 
     ///     Bootstrap.ConfigureServices(services => {..register your services..});
     /// 
-    ///     // if want to start with a startup service:
-    ///     Bootstrap.Default().StartWith&lt;StartupService&gt;(services => {..register your services..});
-    /// 
-    ///     // if want to use a Startup class to configure services (like in .net core 3.1 style)
-    ///     Bootstrap.Default().UseStartup&lt;Startup&gt;().StartWith(..);
+    ///     // full configuration using Startup class and StartupService 
+    ///     Bootstrap.UseStartup&lt;Startup&lt;StartupService&gt;&gt;(); 
     /// </code>
-    /// StartupService <seealso cref="StartupServiceBase"/>.
-    /// Startup <seealso cref="StartupServiceBase"/>.
     /// </summary>
-    public class Bootstrap
+    public static class Bootstrap
     {
         private const string ANSI_RESET = "\u001b[0m";
         private const string ANSI_RED = "\u001b[91m";
@@ -63,13 +54,14 @@ namespace AVS.CoreLib.BootstrapTools
         /// and run <see cref="IStartupService.Start"/> method
         /// Also configure DI and run Main() are wrapped in try catch blocks for you
         /// <code>    
-        ///     Bootstrap.Start&lt;StartupService&gt;(services =>
+        ///     Bootstrap.StartWith&lt;StartupService&gt;(services =>
         ///     {
         ///         services.AddXXX(..)
         ///     });
         /// </code>
         /// </summary>
-        public static void StartWith<TStartupService>(Action<IServiceCollection> register, Action<IServiceProvider>? configure = null, string culture = "en-US")
+        public static void StartWith<TStartupService>(Action<IServiceCollection> register, string[]? args = null,
+            Action<IServiceProvider>? configure = null, string culture = "en-US")
             where TStartupService : class, IStartupService, new()
         {
             TStartupService startupService;
@@ -86,15 +78,15 @@ namespace AVS.CoreLib.BootstrapTools
             }
             catch (Exception ex)
             {
-                PrintError(ex, $"Bootstrap::Run{typeof(TStartupService).Name}>() configure services failed");
+                PrintError(ex, $"Bootstrap::StartWith{typeof(TStartupService).Name}>() configure services failed");
                 throw;
             }
 
             try
             {
-                startupService.Start();
+                startupService.Start(args ?? Array.Empty<string>());
                 PressEnterToExit();
-            }   
+            }
             catch (Exception ex)
             {
                 PrintError(ex, $"{typeof(TStartupService).Name}.{nameof(startupService.Start)}() failed");
@@ -107,45 +99,62 @@ namespace AVS.CoreLib.BootstrapTools
         /// </summary>
         /// <code>
         /// Main(string[] args){
-        ///    Bootstrap.Run(sp=> {Console.WriteLine("Hello World"); sp.GetService();})
+        ///    Bootstrap.UseStartup{Startup}()
         /// };
         /// </code>
-        public Bootstrap UseStartup<TStartup>(Action<IServiceProvider>? action = null) where TStartup : IStartup, new()
+        public static IServiceProvider UseStartup<TStartup>(string[]? args = null,
+            Action<IServiceProvider>? action = null) where TStartup : IStartup, new()
         {
-            SetDefaultColorScheme();
-            SetupCulture("en-US");
+            IServiceProvider serviceProvider;
+            var startup = new TStartup();
             try
             {
-                var startup = new TStartup();
+
                 var services = new ServiceCollection();
                 startup.RegisterServices(services);
-                var serviceProvider = services.BuildServiceProvider();
+                serviceProvider = services.BuildServiceProvider();
                 startup.ConfigureServices(serviceProvider);
                 action?.Invoke(serviceProvider);
-                return this;
+
             }
             catch (Exception ex)
             {
-                PrintError(ex, $"Bootstrap::{nameof(UseStartup)}<{typeof(TStartup).Name}>() failed");
+                PrintError(ex,
+                    $"Bootstrap::{nameof(UseStartup)}<{typeof(TStartup).Name}>() services configuration failed");
+                throw;
+            }
+
+            var scheduler = serviceProvider.GetService<IScheduler>();
+            scheduler?.Start();
+
+            Start(startup.GetStartupService(serviceProvider), args);
+
+            scheduler?.Stop();
+            return serviceProvider;
+        }
+
+        private static void Start(IStartupService? startupService, string[]? args)
+        {
+            if (startupService == null)
+                return;
+            try
+            {
+                startupService.Start(args ?? Array.Empty<string>());
+                PressEnterToExit();
+            }
+            catch (Exception ex)
+            {
+                PrintError(ex, $"Bootstrap::{startupService.GetType().Name}.{nameof(Start)}() failed");
                 throw;
             }
         }
 
-        [DebuggerStepThrough]
-        public static Bootstrap Default(string culture = "en-US")
-        {
-            SetupCulture(culture);
-            SetDefaultColorScheme();
-            var bootstrap = new Bootstrap();
-            return bootstrap;
-        }
-
-        private static void SetupCulture(string culture = "en-US")
+        internal static void SetupCulture(string culture = "en-US")
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo(culture);
         }
 
-        private static void SetDefaultColorScheme()
+        internal static void SetDefaultColorScheme()
         {
             Console.ForegroundColor = ConsoleColor.DarkGray;
         }
@@ -157,17 +166,11 @@ namespace AVS.CoreLib.BootstrapTools
             Console.WriteLine($"\r\n{ANSI_RED}{str}{ANSI_RESET}");
             Console.WriteLine($"{ANSI_DARK_RED}{ex.StackTrace}{ANSI_RESET}\r\n");
         }
+
         private static void PressEnterToExit()
         {
             Console.Write("Press enter to quit.");
             Console.ReadLine();
         }
-
-        
     }
-
-    //may be in future version can make Bootstrap overrideable
-    //Bootstrap.PowerConsoleSetup().ConfigureServices();
-    //Bootstrap.Default().StartWith<StartupService>();
-    //Bootstrap.Default().UseStartup<Startup>().StartWith<StartupService>();
 }

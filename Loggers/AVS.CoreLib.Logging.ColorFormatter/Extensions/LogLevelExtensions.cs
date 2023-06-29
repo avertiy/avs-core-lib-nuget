@@ -14,7 +14,7 @@ namespace AVS.CoreLib.Logging.ColorFormatter.Extensions
                 LogLevel.Trace => new Colors(ConsoleColor.DarkGray, null),
                 LogLevel.Debug => new Colors(ConsoleColor.Gray, null),
                 LogLevel.Information => new Colors(ConsoleColor.DarkGreen, null),
-                LogLevel.Warning => new Colors(ConsoleColor.Yellow, null),
+                LogLevel.Warning => new Colors(ConsoleColor.Magenta, null),
                 LogLevel.Error => new Colors(ConsoleColor.DarkRed, null),
                 LogLevel.Critical => new Colors(ConsoleColor.White, ConsoleColor.DarkRed),
                 _ => new Colors(null, null)

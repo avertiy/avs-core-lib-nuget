@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using AVS.CoreLib.AbstractLogger;
-using AVS.CoreLib.PowerConsole.Printers;
+using AVS.CoreLib.PowerConsole.Printers2;
 using AVS.CoreLib.PowerConsole.Utilities;
 using AVS.CoreLib.Text.Formatters.ColorMarkup;
 using Microsoft.Extensions.Logging;
@@ -19,12 +19,15 @@ namespace AVS.CoreLib.ConsoleLogger
 
         public void WriteLine(bool voidEmptyLines = true)
         {
-            Console1.WriteLine(voidEmptyLines ? PrintOptions.EmptyLinesVoided : PrintOptions.EmptyLinesAllowed);
+            Console1.WriteLine(voidEmptyLines);
         }
 
         public void Write(string str, bool endLine = true)
         {
-            Console1.Write(str, endLine ? PrintOptions.Default : PrintOptions.Inline);
+            if(endLine)
+                Console1.WriteLine(str);
+            else 
+                Console1.Write(str);
         }
 
         public void Write(string logger, EventId eventId, LogLevel logLevel, string message, Exception exception = null)
@@ -54,25 +57,31 @@ namespace AVS.CoreLib.ConsoleLogger
         {
             if (Options.CurrentValue.PrintLoggerName)
             {
-                Console1.Print($" {logger} ", PrintOptions.FromColor(ConsoleColor.DarkGray, endLine: false));
+                Console1.Print($" {logger} ", PrintOptions2.Inline, ConsoleColor.DarkGray);
             }
         }
 
         private void PrintTimestampAndLogLevel(LogLevel logLevel)
         {
-            var scheme = logLevel.GetColorScheme();
             var options = Options.CurrentValue;
             Console1.WriteLine();
             if (string.IsNullOrEmpty(options.TimestampFormat))
             {
-                Console1.Print(logLevel.GetLogLevelText(), PrintOptions.FromColorScheme(scheme, endLine: !options.SingleLine));
+                var printOptions = AdjustPrintOptions(PrintOptions2.NoTimestamp | PrintOptions2.NoCTags);
+                Console1.Print(logLevel.GetLogLevelText(), printOptions, colors: logLevel.GetColors());
             }
             else
             {
                 var timestamp = DateTimeOffset.Now.ToLocalTime()
                     .ToString(options.TimestampFormat, CultureInfo.InvariantCulture);
-                Console1.Print($"{logLevel.GetLogLevelText()} {timestamp}", PrintOptions.FromColorScheme(scheme, endLine: !options.SingleLine));
+                var printOptions = AdjustPrintOptions(PrintOptions2.NoCTags);
+                Console1.Print($"{logLevel.GetLogLevelText()} {timestamp}", printOptions, logLevel.GetColors());
             }
+        }
+
+        private PrintOptions2 AdjustPrintOptions(PrintOptions2 options)
+        {
+            return options.InLine(Options.CurrentValue.SingleLine);
         }
 
         public void BeginScope(object scope, bool addCurlyBraces)
@@ -80,11 +89,11 @@ namespace AVS.CoreLib.ConsoleLogger
             WriteLine(false);
             if (addCurlyBraces)
             {
-                Console1.Print($"{scope}\r\n {{", ConsoleColor.Cyan);
+                Console1.WriteLine($"{scope}\r\n {{", colors: ConsoleColor.Cyan);
             }
             else
             {
-                Console1.Print($" ===== begin scope: {scope} =====\r\n", ConsoleColor.Cyan);
+                Console1.WriteLine($" ===== begin scope: {scope} =====\r\n",colors: ConsoleColor.Cyan);
             }
             WriteLine(false);
         }
@@ -94,11 +103,11 @@ namespace AVS.CoreLib.ConsoleLogger
             WriteLine(false);
             if (addCurlyBraces)
             {
-                Console1.Print($" }}", ConsoleColor.Cyan);
+                Console1.WriteLine($" }}", colors: ConsoleColor.Cyan);
             }
             else
             {
-                Console1.Print($" ===== end scope =====\r\n", ConsoleColor.Cyan);
+                Console1.WriteLine($" ===== end scope =====\r\n", colors: ConsoleColor.Cyan);
             }
             WriteLine(false);
         }

@@ -1,4 +1,4 @@
-﻿namespace AVS.CoreLib.Enums
+﻿namespace AVS.CoreLib.Extensions.Enums
 {
     public enum OrderBy
     {

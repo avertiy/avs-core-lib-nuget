@@ -21,9 +21,15 @@ namespace AVS.CoreLib.PowerConsole.Extensions
             return JsonSerializer.Serialize(obj, options);
         }
 
-        public static Table ToTable(this object obj, ColumnOptions options, params string[] excludeProperties)
+        public static string ToTableString(this object obj, TableOrientation options = TableOrientation.Auto)
         {
-            var builder = new TableBuilder { ColumnOptions = options, ExcludeProperties = excludeProperties };
+            var builder = new TableBuilder { TableOrientation = options };
+            return builder.CreateTable(obj).ToString();
+        }
+
+        public static Table ToTable(this object obj, TableOrientation options = TableOrientation.Auto, params string[] excludeProperties)
+        {
+            var builder = new TableBuilder { TableOrientation = options, ExcludeProperties = excludeProperties };
             return builder.CreateTable(obj);
         }
     }

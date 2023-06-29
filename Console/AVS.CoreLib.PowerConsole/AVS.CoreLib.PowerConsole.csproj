@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
@@ -22,6 +22,7 @@
     <Product>PowerConsole</Product>
     <LangVersion>9</LangVersion>
     <Nullable>enable</Nullable>
+    <Title>PowerConsole</Title>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -35,28 +36,32 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Bootstrapping\**" />
     <Compile Remove="Printers0\**" />
+    <Compile Remove="Printers\**" />
     <Compile Remove="Printers_backup\**" />
+    <Compile Remove="Writers\**" />
     <Compile Remove="Writers_old\**" />
+    <EmbeddedResource Remove="Bootstrapping\**" />
     <EmbeddedResource Remove="Printers0\**" />
+    <EmbeddedResource Remove="Printers\**" />
     <EmbeddedResource Remove="Printers_backup\**" />
+    <EmbeddedResource Remove="Writers\**" />
     <EmbeddedResource Remove="Writers_old\**" />
+    <None Remove="Bootstrapping\**" />
     <None Remove="Printers0\**" />
+    <None Remove="Printers\**" />
     <None Remove="Printers_backup\**" />
+    <None Remove="Writers\**" />
     <None Remove="Writers_old\**" />
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Extensions\PrinterExtensions.cs" />
+    <Compile Remove="Extensions\PrintExtensions.cs" />
     <Compile Remove="Extensions\PrintExtensions_FormattableString.cs" />
     <Compile Remove="Extensions\PrintFExtensions.cs" />
     <Compile Remove="Extensions\RegexExtensions.cs" />
-    <Compile Remove="Printers\IPrinter_.cs" />
-    <Compile Remove="Printers\StringifyPrinter.cs" />
-    <Compile Remove="Writers\BasicWriter.cs" />
-    <Compile Remove="Writers\ColorWriter.cs" />
-    <Compile Remove="Writers\IColorWriter.cs" />
-    <Compile Remove="Writers\PlainTextWriter.cs" />
-    <Compile Remove="Writers\SwitchColorWriter.cs" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,5 +1,4 @@
 ﻿using System;
-using AVS.CoreLib.Abstractions;
 using AVS.CoreLib.Abstractions.Messaging;
 using AVS.CoreLib.Abstractions.Messaging.PubSub;
 
@@ -7,8 +6,7 @@ namespace AVS.CoreLib.Messaging.PubSub
 {
     public class PublishContext : IPublishContext
     {
-        public bool Mandatory { get; set; }
-        public bool Isolated { get; set; }
+        public PublishMode Mode { get; set; }
     }
 
     public class Event : IEvent

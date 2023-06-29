@@ -1,10 +1,29 @@
 ﻿using System;
+using System.Globalization;
 
 namespace AVS.CoreLib.Extensions
 {
     public static class NumberExtensions
     {
         #region doubles
+
+        public static int GetDecimalPlaces(this decimal number)
+        {
+            var rest = number % 1;
+            if (rest == 0)
+                return 0;
+
+            rest = rest.Abs();
+            //let's say rest=0.151
+            var decimalPlaces = 0;
+            while (rest > 0)
+            {
+                decimalPlaces++;
+                rest *= 10;
+                rest -= (int)rest;
+            }
+            return decimalPlaces;
+        }
 
         public static double Round(this double value, int decimals)
         {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
-using AVS.CoreLib.PowerConsole.Printers;
+using AVS.CoreLib.Console.ColorFormatting;
+using AVS.CoreLib.PowerConsole.Enums;
 
 namespace AVS.CoreLib.PowerConsole
 {
@@ -14,32 +15,23 @@ namespace AVS.CoreLib.PowerConsole
     {
         #region WriteLine
 
-        public static void WriteLine(PrintOptions? options = null)
+        public static void WriteLine(bool voidEmptyLines = true)
         {
-            Printer.WriteLine(null, options ?? DefaultOptions);
+            Printer2.WriteLine(voidEmptyLines);
         }
 
         ///// <summary>
         ///// Writes the specified string value, followed by the current line terminator, to console output stream.
         ///// </summary>
-        /// <param name="str">string value to write</param>
-        /// <param name="options"><see cref="PrintOptions"/></param>
-        public static void WriteLine(string str, PrintOptions? options = null)
+        public static void WriteLine(string str, Colors? colors = null)
         {
-            options = options ?? DefaultOptions;
-            Printer.WriteLine(str, options);
+            Printer2.WriteLine(str, colors);
 
-            if (BeepOnMessageLevels != null && BeepOnMessageLevels.Contains(options.Level))
+            if (BeepOnMessageLevels != null && BeepOnMessageLevels.Contains(MessageLevel.Default))
                 Console.Beep();
         }
 
-        public static void WriteLine(string str, Action<PrintOptions> configure)
-        {
-            var options = DefaultOptions.Clone();
-            configure(options);
-            WriteLine(str, options);
-        }
-
+        #endregion
 
         public static void WriteLine(int posX, int posY, params string[] arr)
         {
@@ -49,7 +41,5 @@ namespace AVS.CoreLib.PowerConsole
                 Console.WriteLine(text);
             }
         }
-
-        #endregion
     }
 }

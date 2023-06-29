@@ -17,7 +17,7 @@ namespace AVS.CoreLib.Mapper
     /// </code>
     public class Mapper : IMapper
     {
-        protected readonly Dictionary<string, Delegate> _mappings = new();
+        protected Dictionary<string, Delegate> Mappings { get; set; } = new();
 
         /// <summary>
         /// Register type mapping  delegate
@@ -32,7 +32,7 @@ namespace AVS.CoreLib.Mapper
         public void Register<TSource, TModel>(Func<TSource, TModel> func)
         {
             var mappingKey = $"{typeof(TSource).Name}->{typeof(TModel).Name}";
-            _mappings.Add(mappingKey, func);
+            Mappings.Add(mappingKey, func);
         }
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace AVS.CoreLib.Mapper
         public TModel Map<TSource, TModel>(TSource source)
         {
             var mappingKey = $"{typeof(TSource).Name}->{typeof(TModel).Name}";
-            var del = _mappings[mappingKey];
+            var del = Mappings[mappingKey];
             var func = (Func<TSource, TModel>)del;
             return func(source);
         }
@@ -62,16 +62,37 @@ namespace AVS.CoreLib.Mapper
         public IEnumerable<TModel> MapAll<TSource, TModel>(IEnumerable<TSource> source)
         {
             var mappingKey = $"{typeof(TSource).Name}->{typeof(TModel).Name}";
-            var del = _mappings[mappingKey];
+            var del = Mappings[mappingKey];
             var func = (Func<TSource, TModel>)del;
             return source.Select(x => func(x));
         }
 
-        
+        public Func<TSource, TModel> GetMapper<TSource, TModel>()
+        {
+            var mappingKey = $"{typeof(TSource).Name}->{typeof(TModel).Name}";
+            var del = Mappings[mappingKey];
+            var func = (Func<TSource, TModel>)del;
+            return func;
+        }
     }
 
     public static class MapperExtensions
     {
+        public static IEnumerable<TModel> MapAll<TSource, TModel>(this IMapper mapper, IEnumerable<TSource> source, Action<TModel>? action = null)
+        {
+            var func = mapper.GetMapper<TSource, TModel>();
+
+            if(action == null)
+                return source.Select(x => func(x));
+
+            return source.Select(x =>
+            {
+                var model = func(x);
+                action.Invoke(model);
+                return model;
+            });
+        }
+
         public static void Register<TSource>(this IMapper mapper, Func<TSource, TSource> func)
         {
             mapper.Register(func);

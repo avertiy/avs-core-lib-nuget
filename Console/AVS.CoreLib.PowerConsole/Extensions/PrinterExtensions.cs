@@ -1,4 +1,5 @@
 ﻿using System;
+using AVS.CoreLib.Guards;
 using AVS.CoreLib.PowerConsole.ConsoleTable;
 using AVS.CoreLib.PowerConsole.Enums;
 using AVS.CoreLib.PowerConsole.Printers;
@@ -51,6 +52,7 @@ namespace AVS.CoreLib.PowerConsole.Extensions
 
         public static void PrintTable(this IPowerConsolePrinter printer, Table table, PrintOptions options)
         {
+            Guard.Against.Null(table);
             var str = table.ToString();
             printer.Print(str, options.Clone(x => x.NoTimeStamp()));
         }

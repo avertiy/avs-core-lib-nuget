@@ -2,7 +2,7 @@
 {
     /// <summary>
     /// For a convenience startup service is just an entry point like Program.Main
-    /// <see cref="Bootstrap.Start{TStartupService}"/>
+    /// <see cref="Bootstrap.StartWith{TStartupService}"/>
     /// <code>
     ///  Bootstrap.Start&lt;StartupService&gt;(services => {..register your services..})
     /// </code>
@@ -10,11 +10,6 @@
     /// </summary>
     public interface IStartupService
     {
-        void Start();
-    }
-
-    public interface ITestService
-    {
-        void Test();
+        void Start(string[] args);
     }
 }

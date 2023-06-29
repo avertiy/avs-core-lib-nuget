@@ -1,10 +1,12 @@
-﻿using AVS.CoreLib.BootstrapTools;
+﻿using System;
+using AVS.CoreLib.BootstrapTools;
 using AVS.CoreLib.BootstrapTools.Extensions;
+using AVS.CoreLib.BootstrapTools.Schedule;
 using AVS.CoreLib.ConsoleLogger;
 using AVS.CoreLib.Logging.ColorFormatter.Extensions;
+using AVS.CoreLib.PowerConsole.Printers2;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using ITestService = AVS.CoreLib.Abstractions.Bootstrap.ITestService;
 
 namespace AVS.CoreLib.Loggers.TestApp;
 
@@ -12,14 +14,16 @@ internal class Program
 {
     private static void Main()
     {
-        Bootstrap.ConfigureServices(services =>
-            {
+        var sp = Bootstrap.ConfigureServices(services =>
+        {
+                services.AddSingleton<ScheduledTaskTest>();
+                services.AddScheduler(x => x.Schedule<ScheduledTaskTest>(new ScheduleOptions() { Interval = 5 }));
                 AddConsoleFormatter(services)
                 //AddConsoleLogger(services)
                     .AddTransient<NestedService, NestedService>()
                     .AddTransient<ITestService, LoggerTestService>();
-            })
-            .RunAllTest();
+            }).RunAllTest();
+        sp.GetRequiredService<IScheduler>().Start();
         System.Console.ReadLine();
     }
 
@@ -102,5 +106,13 @@ internal class Program
             //Console.WriteLine("\x1b[34mTEST\x1b[0m");
         }
 
+    }
+}
+
+public class ScheduledTaskTest : ScheduledTask
+{
+    public override void Invoke()
+    {
+        PowerConsole.PowerConsole.Printer2.Print("test printer2", PrintOptions2.Default, ConsoleColor.DarkGreen);
     }
 }

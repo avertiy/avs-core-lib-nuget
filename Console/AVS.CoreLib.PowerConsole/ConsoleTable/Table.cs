@@ -1,7 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using AVS.CoreLib.Extensions;
 using AVS.CoreLib.PowerConsole.Utilities;
 
 namespace AVS.CoreLib.PowerConsole.ConsoleTable
@@ -30,7 +27,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
             return builder.ToString();
         }
 
-        public void AddColumn(string title, ColorScheme? scheme = null, int? width = null)
+        public int AddColumn(string title, ColorScheme? scheme = null, int? width = null)
         {
             var minWidth = title.Length + 2;
             var colWidth = minWidth;
@@ -44,6 +41,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
                 Width = colWidth, 
                 ColorScheme = scheme
             });
+            return colWidth;
         }
 
         public Row AddRow(Row row)
@@ -73,9 +71,23 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
 
             return table;
         }
+
+        public static Table FromObject(object source, params string[] excludeProperties)
+        {
+            var builder = new TableBuilder { TableOrientation = TableOrientation.Auto, ExcludeProperties = excludeProperties };
+            var table = builder.CreateTable(source);
+            return table;
+        }
+
+        public static Table FromArray<T>(IEnumerable<T> source, params string[] excludeProperties)
+        {
+            var builder = new TableBuilder() { TableOrientation = TableOrientation.Auto, ExcludeProperties = excludeProperties };
+            var table = builder.CreateTable(source);
+            return table;
+        }
     }
 
-    public enum ColumnOptions
+    public enum TableOrientation
     {
         Auto=0,
         Vertical =1,

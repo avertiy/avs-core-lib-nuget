@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
-using AVS.CoreLib.Abstractions.Bootstrap;
+using AVS.CoreLib.BootstrapTools;
 using AVS.CoreLib.Debugging;
 using AVS.CoreLib.Extensions.Stringify;
 using AVS.CoreLib.Logging.ColorFormatter.Utils;
@@ -22,34 +21,31 @@ namespace AVS.CoreLib.Loggers.TestApp
             _service = service;
         }
 
-    
-
-        public override void Test()
+        public override void Test(string[] args)
         {
-            var arr = new object[] { "1", 2, 3.0m, 54, 6 };
-            var list = new List<object>() {"|", "123213", new object(), new {RRR =11 }};
-            var obj = new { Prop1 = "abc", Price = 252.2, Prop3 = arr, Prop4= list };
-            var str = XDebug.Dump(obj);
-
-            _logger.LogInformation("Dump object test {obj} => {str}", obj, str);
             ConsoleLogProfiler.Enabled = true;
             TestArgsColorFormatter();
             ArgsFormatTests();
-
-            //Console.ForegroundColor = ConsoleColor.DarkGray;
-            //AnsiCodesHelper.PrintAnsiColors();
-            //AnsiCodesHelper.PrintPalete();
-
             ConsoleFormatterFeaturesTests();
             TagFormattingTests();
             
             ArgHighlightTests();
-
+            TestDumpObject();
             var log = ConsoleLogProfiler.Flush();
+        }
+
+        private void TestDumpObject()
+        {
+            var arr = new object[] { "1", 2, 3.0m, 54, 6 };
+            var list = new List<object>() { "|", "123213", new object(), new { RRR = 11 } };
+            var obj = new { Prop1 = "abc", Price = 252.2, Prop3 = arr, Prop4 = list };
+            _logger.LogInformation("Dump object test {obj}", obj.Dump());
         }
 
         private void TestArgsColorFormatter()
         {
+            _logger.LogInformation("enum value:{arg1:D}; enum value with custom format:{arg2:G}", ConsoleColor.Cyan, ConsoleColor.DarkYellow);
+            //_logger.LogInformation("enum value:{arg1:D}; enum value with custom format:{arg2:G}", ConsoleColor.Cyan, ConsoleColor.DarkYellow);
             _logger.LogInformation("string:{arg1}; currency:{arg2:C}", "my-str", 10.21m);
             var dict = new Dictionary<string, object>();
             dict.Add("arg1", "my-str");

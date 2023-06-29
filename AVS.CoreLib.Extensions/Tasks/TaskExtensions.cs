@@ -2,13 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AVS.CoreLib.Enums;
+using AVS.CoreLib.Extensions.Enums;
 using AVS.CoreLib.Extensions.Linq;
 
 namespace AVS.CoreLib.Extensions.Tasks;
 
 public static class TaskExtensions
 {
+    public static async Task DoWhile(this Task task, Action otherAction)
+    {
+        otherAction.Invoke();
+        await task;
+    }
+
     public static async Task Then<T, TResult>(this Task<T> task, Action<T> then)
     {
         var result = await task;

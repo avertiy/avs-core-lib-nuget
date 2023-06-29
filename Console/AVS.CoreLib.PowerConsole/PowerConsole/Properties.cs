@@ -2,7 +2,6 @@
 using System.IO;
 using System.Text;
 using AVS.CoreLib.PowerConsole.Enums;
-using AVS.CoreLib.PowerConsole.Printers;
 
 namespace AVS.CoreLib.PowerConsole
 {
@@ -106,10 +105,5 @@ namespace AVS.CoreLib.PowerConsole
         /// </summary>
         public static MessageLevel[]? BeepOnMessageLevels { get; set; } = null;
 
-        public static PrintOptions DefaultOptions
-        {
-            get => PrintOptions.Default;
-            set => PrintOptions.Default = value;
-        }
     }
 }

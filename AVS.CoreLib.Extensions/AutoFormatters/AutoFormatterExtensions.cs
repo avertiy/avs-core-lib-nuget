@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using AVS.CoreLib.Extensions.Formatting;
 
 namespace AVS.CoreLib.Extensions.AutoFormatters;
 
@@ -29,17 +30,18 @@ public static class AutoFormatterExtensions
 
     public static IAutoFormatter AddFinancialFormatters(this IAutoFormatter formatter)
     {
-        formatter.AddFormatterByKeyword<decimal>("price", x => x.ToString("C", CultureInfo.CurrentCulture));
-        formatter.AddFormatterByKeyword<decimal>("total", x => x.ToString("C", CultureInfo.CurrentCulture));
-        formatter.AddFormatterByKeyword<decimal>("pnl", x => x.ToString("C", CultureInfo.CurrentCulture));
-        formatter.AddFormatterByKeyword<decimal>("profit", x => x.ToString("C", CultureInfo.CurrentCulture));
-        formatter.AddFormatterByKeyword<decimal>("loss", x => x.ToString("C", CultureInfo.CurrentCulture));
-        formatter.AddFormatterByKeyword<decimal>("income", x => x.ToString("C", CultureInfo.CurrentCulture));
-        formatter.AddFormatterByKeyword<decimal>("fees", x => x.ToString("C", CultureInfo.CurrentCulture));
+        formatter.AddFormatterByKeyword<decimal>("price", x => x.ToCurrencyString());
+        formatter.AddFormatterByKeyword<decimal>("total", x => x.ToCurrencyString(2));
+        formatter.AddFormatterByKeyword<decimal>("pnl", x => x.ToCurrencyString(2));
+        formatter.AddFormatterByKeyword<decimal>("profit", x => x.ToCurrencyString(2));
+        formatter.AddFormatterByKeyword<decimal>("loss", x => x.ToCurrencyString(2));
+        formatter.AddFormatterByKeyword<decimal>("income", x => x.ToCurrencyString(2));
+        formatter.AddFormatterByKeyword<decimal>("fees", x => x.ToCurrencyString(2));
         formatter.AddFormatterByKeyword<decimal>("roe", x => x.ToString("P", CultureInfo.CurrentCulture));
-        
         return formatter;
     }
+
+    
 
     public static IEnumerable<string> FormatAll(this IAutoFormatter formatter, IEnumerable source)
     {

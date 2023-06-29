@@ -62,6 +62,11 @@ namespace AVS.CoreLib.Trading.Extensions
             return len / avg > k;
         }
 
+        /// <summary>
+        /// Estimate bar size based on avg bar length  
+        /// </summary>
+        /// <param name="ohlc">bar</param>
+        /// <param name="avgLength">bar length in % e.g. 1% not 0.01</param>
         public static BarSize GetBarSize(this IOhlc ohlc, decimal avgLength)
         {
             var len = ohlc.GetLength();
@@ -79,19 +84,22 @@ namespace AVS.CoreLib.Trading.Extensions
         }
 
         /// <summary>
-        /// without avg we can assume avg bar length by time frame, that's approximate classification but it works for top crypto coins
+        /// Estimate absolute bar size based on a timeframe and assumption that roughly avg bar size on H1 ~1.75% (1.5%-2% for big cap markets like BTC/ETH/TRX etc.)
+        /// Thus we can omit avg bar length calculation, hence the absolute size as it is estimated comparatively to absolute mean
         /// </summary>
-        public static BarSize GetBarSize(this IOhlc ohlc, TimeFrame timeFrame = TimeFrame.M5)
+        /// <param name="ohlc">bar</param>
+        /// <param name="timeFrame">timeframe</param>
+        /// <param name="avgH1Length">(optional)</param>
+        public static BarSize GetBarSizeAbs(this IOhlc ohlc, TimeFrame timeFrame = TimeFrame.M5, decimal avgH1Length = 1.75m)
         {
             // for BTC and most other big cap coins we can assume avg bar lengths as the following:
             // tf:1D ~7-8%
             // tf:1H ~ 1.5-2% 
             // tf:M5 ~0.21%
             var tf = (int)timeFrame;
-            var adjustment = tf <= 300 ? 2 : 1; 
-            var h0 = 1.75m;
+            var adjustment = tf <= 300 ? 2 : 1;
             var k = 3600 / (tf* adjustment);
-            var avgH = h0 / k;
+            var avgH = avgH1Length / k;
             return ohlc.GetBarSize(avgH);
         }
     }

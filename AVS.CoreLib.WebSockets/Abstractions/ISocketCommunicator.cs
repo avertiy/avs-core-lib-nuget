@@ -26,6 +26,8 @@ namespace AVS.CoreLib.WebSockets.Abstractions
 
         WebSocketState State { get; }
 
+        bool IsBackgroundTaskActive { get; }
+
         /// <summary>
         /// connect to websocket channel at given uri
         /// </summary>

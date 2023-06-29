@@ -4,42 +4,6 @@
         <name>AVS.CoreLib.Trading</name>
     </assembly>
     <members>
-        <member name="T:AVS.CoreLib.Trading.Abstractions.Bars.IBarExtension">
-            <summary>
-            Represent an extension for bar properties
-            for example we can calc moving average value at this bar, bollinger bands etc. 
-            </summary>
-        </member>
-        <member name="T:AVS.CoreLib.Trading.Abstractions.Bars.ITopIndicators">
-            <summary>
-            Top indicators
-            </summary>
-        </member>
-        <member name="T:AVS.CoreLib.Trading.Abstractions.Bars.TopIndicators">
-            <summary>
-            these are my indicators: 3MAs + BB + RSI
-            </summary>
-        </member>
-        <member name="P:AVS.CoreLib.Trading.Abstractions.Bars.IMovingAverage.Distance">
-            <summary>
-            distance from Close price to MA
-            </summary>
-        </member>
-        <member name="T:AVS.CoreLib.Trading.Abstractions.Bars.IXBar">
-            <summary>
-            Bar with extra properties lengths, avg price, indicators etc.
-            </summary>
-        </member>
-        <member name="P:AVS.CoreLib.Trading.Abstractions.Bars.IXBar.Avg">
-            <summary>
-            (Open+Close)/2
-            </summary>
-        </member>
-        <member name="P:AVS.CoreLib.Trading.Abstractions.Bars.IXBar.Mid">
-            <summary>
-            (High+Low)/2
-            </summary>
-        </member>
         <member name="T:AVS.CoreLib.Trading.Abstractions.IBar">
             <summary>
             represent a bar chart unit (synonym candle or simply bar)  
@@ -53,6 +17,52 @@
         <member name="P:AVS.CoreLib.Trading.Abstractions.IBar.Total">
             <summary>
             total is an amount of quote currency
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Abstractions.TA.Indicators.ITAIndicator">
+            <summary>
+            Tech indicator value
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Abstractions.XBars.ITAExt">
+            <summary> 
+            Defines TA extension interface to access calculated indicator values such as Moving Averages <see cref="T:AVS.CoreLib.Trading.Abstractions.XBars.IMAValue"/>, Bollinger Bands <seealso cref="T:AVS.CoreLib.Trading.Abstractions.XBars.IBBValue"/> etc.
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Abstractions.XBars.ITAProps">
+            <summary>
+            Common basic indicators set
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Abstractions.XBars.IMAValue.Average">
+            <summary>
+            moving average value
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Abstractions.XBars.IXBar">
+            <summary>
+            XBar is <see cref="T:AVS.CoreLib.Trading.Abstractions.IBar"/> with extra properties such as calculated lengths, avg price, size, type etc.
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Abstractions.XBars.IXBar.Size">
+            <summary>
+            Size relative to other bars based on avg bar length metric
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Abstractions.XBars.IXBar.SizeAbs">
+            <summary>
+            absolute size based on a timeframe i.e. M5 
+            regardless avg bar length
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Abstractions.XBars.IXBar.Avg">
+            <summary>
+            (Open+Close)/2
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Abstractions.XBars.IXBar.Mid">
+            <summary>
+            (High+Low)/2
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Trading.Collections.CurrencyCollection.System#Collections#Generic#ICollection{System#String}#Add(System.String)">
@@ -135,6 +145,12 @@
         <member name="F:AVS.CoreLib.Trading.Enums.CandleType.ShootingStar">
             <summary>
             ohlc.Low == ohlc.Close and ohlc.High - ohlc.Open > body * 2
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Enums.Bars.Color">
+            <summary>
+            Represents a 2 color + neutral (none) enum
+            Used to color MA/BB and other simply indicating bearish/bullish direction with a color
             </summary>
         </member>
         <member name="F:AVS.CoreLib.Trading.Enums.CoinCap.BigCap">
@@ -604,44 +620,45 @@
             Full order info, only valid on SPOT orders  
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.FOK">
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.Limit">
             <summary>
-            fill or kill
+            Limit orders will be placed at a specific price. If the price isn't available in the order book for that asset the order will be added in the order book for someone to fill.
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.GTC">
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.Market">
             <summary>
-            good till canceled
-            </summary>
-        </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.OCO">
-            <summary>
-            one cancels the other
-            </summary>
-        </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.StopLimit">
-            <summary>
-            Stop loss order. Will execute a limit order when the price drops below a price to sell and therefor limit the loss
-            </summary>
-        </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.Stop">
-            <summary>
-            Stop loss order. Will execute a market order when the price drops below a price to sell and therefor limit the loss
-            </summary>
-        </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.TakeProfit">
-            <summary>
-            Take profit order. Will execute a market order when the price rises above a price to sell and therefor take a profit
-            </summary>
-        </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.TakeProfitLimit">
-            <summary>
-            Take profit limit order. Will execute a limit order when the price rises above a price to sell and therefor take a profit
+            Market order will be placed without a price. The order will be executed at the best price available at that time in the order book.
             </summary>
         </member>
         <member name="F:AVS.CoreLib.Trading.Enums.OrderType.LimitMaker">
             <summary>
-            Same as a limit order, however it will fail if the order would immediately match, therefor preventing taker orders
+            Maker or "post-only" order is a conditional limit order, that serves to add liquidity to the order book so it is charged with a maker fee. 
+            If order price crosses market spread the order will be rejected.
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.Stop">
+            <summary>
+            Stop order. Execute a limit order when price reaches a specific Stop price
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.StopMarket">
+            <summary>
+            Stop market order. Execute a market order when price reaches a specific Stop price
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.TakeProfit">
+            <summary>
+            Take profit order. Will execute a limit order when the price rises above a price to sell and therefor take a profit
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.TakeProfitMarket">
+            <summary>
+            Take profit market order. Will execute a market order when the price rises above a price to sell and therefor take a profit
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.TrailingStopMarket">
+            <summary>
+            A trailing stop order will execute an order when the price drops below a certain percentage from its all time high since the order was activated
             </summary>
         </member>
         <member name="F:AVS.CoreLib.Trading.Enums.SymbolFormat.Normalized">
@@ -664,9 +681,19 @@
             USDT_BTC
             </summary>
         </member>
-        <member name="T:AVS.CoreLib.Trading.Enums.TA.MAColor">
+        <member name="F:AVS.CoreLib.Trading.Enums.TA.IndicatorType.Overlay">
             <summary>
-            MA has a green color when it climbs up, and red color when it looks down, neutral when its direction is undefined 
+            same scale as asset price, plotted directly on a price chart. 
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TA.IndicatorType.Oscillator">
+            <summary>
+            oscillate between a local minimum and maximum, plotted below price chart
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TA.MAType.HMA">
+            <summary>
+            Hull MA
             </summary>
         </member>
         <member name="T:AVS.CoreLib.Trading.Enums.TimeFrame">
@@ -807,10 +834,21 @@
             long shadow means bar length is a <see cref="!:k"/> times bigger than body length
             </summary>
         </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.BarLengthExtensions.GetBarSize(AVS.CoreLib.Trading.Abstractions.IOhlc,AVS.CoreLib.Trading.Enums.TimeFrame)">
+        <member name="M:AVS.CoreLib.Trading.Extensions.BarLengthExtensions.GetBarSize(AVS.CoreLib.Trading.Abstractions.IOhlc,System.Decimal)">
             <summary>
-            without avg we can assume avg bar length by time frame, that's approximate classification but it works for top crypto coins
+            Estimate bar size based on avg bar length  
             </summary>
+            <param name="ohlc">bar</param>
+            <param name="avgLength">bar length in % e.g. 1% not 0.01</param>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.BarLengthExtensions.GetBarSizeAbs(AVS.CoreLib.Trading.Abstractions.IOhlc,AVS.CoreLib.Trading.Enums.TimeFrame,System.Decimal)">
+            <summary>
+            Estimate absolute bar size based on a timeframe and assumption that roughly avg bar size on H1 ~1.75% (1.5%-2% for big cap markets like BTC/ETH/TRX etc.)
+            Thus we can omit avg bar length calculation, hence the absolute size as it is estimated comparatively to absolute mean
+            </summary>
+            <param name="ohlc">bar</param>
+            <param name="timeFrame">timeframe</param>
+            <param name="avgH1Length">(optional)</param>
         </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.DecimalExtensions.Deduct(System.Decimal,System.Decimal)">
             <summary>
@@ -895,6 +933,22 @@
         <member name="M:AVS.CoreLib.Trading.Extensions.SymbolExtensions.B(System.String)">
             <summary>
             returns base currency for BTC_USDT => BTC
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.TimeFrameExtensions.CalcTimespan(AVS.CoreLib.Trading.Enums.TimeFrame,System.Int32)">
+            <summary>
+            Calculate timespan = (int)timeframe x count 
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.TimeFrameExtensions.CalcBarCount(AVS.CoreLib.Trading.Enums.TimeFrame,System.Double)">
+            <summary>
+            Calculate bar count = period / (int)timeframe
+            i.e. how many bars (count) cover the specified period
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.TimeFrameExtensions.CalcBarCountFrom(AVS.CoreLib.Trading.Enums.TimeFrame,System.DateTime)">
+            <summary>
+            Calculate bar count from <see cref="!:fromDate"/> till <see cref="P:System.DateTime.Now"/>
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.XFormatProviderExtensions.AddTradingFormatters(AVS.CoreLib.Text.FormatProviders.XFormatProvider)">
@@ -1048,6 +1102,7 @@
         </member>
         <member name="M:AVS.CoreLib.Trading.Helpers.SymbolFilterExtensions.Match(System.String,System.String)">
             <summary>
+            match given symbol with a filter (by filter we mean either literal <see cref="T:AVS.CoreLib.Trading.Helpers.CoinLiteral"/>, concrete symbol or quote currency e.g. USDT)
             returns true if filter is <see cref="T:AVS.CoreLib.Trading.Helpers.CoinLiteral"/> that matches the symbol
             </summary>
         </member>
@@ -1145,6 +1200,26 @@
             <summary>
             Get descriptors filtered by <see cref="T:AVS.CoreLib.Abstractions.IQuery`1"/>
             you can use <see cref="T:AVS.CoreLib.Trading.Symbols.SymbolDescriptorsQuery"/> or your own implementation
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.TA.XBar">
+            <summary>
+            Represent bar extension that aggregate top (main) TA indicators MA (21, 50), BB, etc.
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.TA.XBar.Size">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.TA.XBar.SizeAbs">
+            <summary>
+            absolute size based on a timeframe regardless avg bar length
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.TA.XBar.IncreasedVolume">
+            <summary> 
+            indicates whether the volume is bigger comparatively to prev 10 bars 
             </summary>
         </member>
         <member name="T:AVS.CoreLib.Trading.Types.CurrencyPair">

@@ -11,44 +11,44 @@ public abstract class StartupServiceBase : IStartupService, ITestService
 {
     public virtual bool RunTestFlow { get; set; }
     [DebuggerStepThrough]
-    public void Start()
+    public void Start(string[] args)
     {
         if (RunTestFlow)
         {
-            Test();
+            Test(args);
         }
         else
         {
-            Main();
+            Main(args);
         }
     }
 
     [DebuggerStepThrough]
-    public virtual void Main()
+    public virtual void Main(string[] args)
     {
         var task = Task.Run(async () =>
         {
-            await MainAsync();
+            await MainAsync(args);
         });
         task.Wait();
     }
 
-    public virtual Task MainAsync()
+    public virtual Task MainAsync(string[] args)
     {
         return Task.CompletedTask;
     }
 
     [DebuggerStepThrough]
-    public virtual void Test()
+    public virtual void Test(string[] args)
     {
         var task = Task.Run(async () =>
         {
-            await TestAsync();
+            await TestAsync(args);
         });
         task.Wait();
     }
 
-    public virtual Task TestAsync()
+    public virtual Task TestAsync(string[] args)
     {
         return Task.CompletedTask;
     }

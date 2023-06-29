@@ -1,4 +1,6 @@
-﻿using AVS.CoreLib.Console.ColorFormatting;
+﻿using System;
+using System.Threading;
+using AVS.CoreLib.Console.ColorFormatting;
 using AVS.CoreLib.Extensions.AutoFormatters;
 using AVS.CoreLib.PowerConsole.Extensions;
 using AVS.CoreLib.PowerConsole.Utilities;
@@ -108,7 +110,23 @@ namespace AVS.CoreLib.PowerConsole
         public static void PressEnterToExit()
         {
             Console.Write("Press enter to quit.");
-            Console.ReadLine();
+            var input = Console.ReadKey();
+            while (input.Key != ConsoleKey.Enter)
+            {
+                input = Console.ReadKey();
+                Thread.Sleep(100);
+            }
+        }
+
+        public static void PressQToExit()
+        {
+            Console.Write("Press `Q` to quit.");
+            var input = Console.ReadKey();
+            while (input.Key != ConsoleKey.Q)
+            {
+                input = Console.ReadKey();
+                Thread.Sleep(100);
+            }
         }
     }
 }

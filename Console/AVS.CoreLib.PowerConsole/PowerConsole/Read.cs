@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using AVS.CoreLib.PowerConsole.Printers2;
 
 namespace AVS.CoreLib.PowerConsole
 {
@@ -68,12 +69,12 @@ namespace AVS.CoreLib.PowerConsole
             if (keyInfo.Key == ConsoleKey.Y || (keyInfo.Key == ConsoleKey.Escape && defaultAnswer == ConsoleKey.Y))
             {
                 //default answer
-                Print("Yes", ConsoleColor.DarkGreen);
+                Print("Yes", PrintOptions2.PlainText, ConsoleColor.DarkGreen);
                 return true;
             }
             else
             {
-                Print("No", ConsoleColor.DarkRed);
+                Print("No",PrintOptions2.PlainText, ConsoleColor.DarkRed);
                 return false;
             }
         }
@@ -94,12 +95,12 @@ namespace AVS.CoreLib.PowerConsole
             if (keyInfo.Key == ConsoleKey.Y || (keyInfo.Key == ConsoleKey.Escape && defaultAnswer == ConsoleKey.Y))
             {
                 //default answer
-                Print("Yes", ConsoleColor.DarkGreen);
+                Print("Yes", PrintOptions2.PlainText,  ConsoleColor.DarkGreen);
                 return true;
             }
             else
             {
-                Print("No", ConsoleColor.DarkRed);
+                Print("No", PrintOptions2.PlainText, ConsoleColor.DarkRed);
                 return false;
             }
         }

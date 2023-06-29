@@ -1,6 +1,5 @@
 ﻿using System;
-using AVS.CoreLib.PowerConsole.Printers;
-using AVS.CoreLib.PowerConsole.Utilities;
+using AVS.CoreLib.Console.ColorFormatting;
 
 namespace AVS.CoreLib.PowerConsole
 {
@@ -12,23 +11,17 @@ namespace AVS.CoreLib.PowerConsole
     {
         public static void Write(string str)
         {
-            Printer.Write(str);
+            Printer2.Write(str);
         }
      
-        public static void Write(string str, ConsoleColor color, bool endLine = false)
+        public static void Write(string str, ConsoleColor color)
         {
-            Printer.Write(str, color, endLine);
+            Printer2.Write(str, color);
         }
 
-        public static void Write(string str, ColorScheme scheme, bool endLine = false)
+        public static void Write(string str, Colors colors)
         {
-            var options = PrintOptions.FromColorScheme(scheme, endLine: endLine);
-            Printer.Write(str, options);
-        }
-
-        public static void Write(string str, PrintOptions options)
-        {
-            Printer.Write(str, options);
+            Printer2.Write(str, colors);
         }
     }
 }

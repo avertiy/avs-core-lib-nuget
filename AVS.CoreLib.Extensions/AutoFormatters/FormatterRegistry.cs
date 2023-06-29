@@ -78,10 +78,13 @@ public class XFormatterRegistry : FormatterRegistry
         _dictionary.Add(keyword, fullKey);
     }
 
-    public Func<object, string> PickFormatter(string key, object value)
+    public Func<object, string> PickFormatter(string key, object? value)
     {
         if (Formatters.ContainsKey(key))
             return Formatters[key];
+
+        if(value == null)
+            return Formatters[AutoFormatter.DEFAULT_FORMATTER];
 
         var type = value.GetType();
 
@@ -90,7 +93,7 @@ public class XFormatterRegistry : FormatterRegistry
             return Formatters[specialFormatterKey];
         }
 
-        return Formatters.ContainsKey(type.Name) ? Formatters[type.Name] : Formatters["default"];
+        return Formatters.ContainsKey(type.Name) ? Formatters[type.Name] : Formatters[AutoFormatter.DEFAULT_FORMATTER];
     }
 
     private bool Match(string propName, Type type, out string specialFormatterKey)

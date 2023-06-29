@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using AVS.CoreLib.Text;
 
 namespace AVS.CoreLib.PowerConsole.Utilities
 {

@@ -92,7 +92,7 @@ namespace AVS.CoreLib.Extensions.AutoFormatters
 
         public AutoFormatter()
         {
-            Formatters.Register(DEFAULT_FORMATTER, x => x.ToString());
+            Formatters.Register(DEFAULT_FORMATTER, x => x?.ToString() ?? "");
         }
 
         public void AddFormatter<T>(Func<T, string> format)
@@ -139,12 +139,15 @@ namespace AVS.CoreLib.Extensions.AutoFormatters
             return formatter(value);
         }
 
-        protected virtual Func<object, string> PickFormatter(string key, object value)
+        protected virtual Func<object, string> PickFormatter(string key, object? value)
         {
             //e.g. Timestamp
             if (Formatters.ContainsKey(key))
                 return Formatters[key];
 
+            if (value == null)
+                return Formatters[DEFAULT_FORMATTER];
+            
             var type = value.GetType();
             // e.g. EntryPrice
             if (Match(key, type, out var specialFormatterKey))

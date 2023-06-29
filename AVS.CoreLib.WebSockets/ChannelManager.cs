@@ -58,17 +58,17 @@ namespace AVS.CoreLib.WebSockets
             if (AutoReconnect && _channels.Any())
             {
                 await Client.ReconnectAsync().ConfigureAwait(false);
+            }
 
-                if (Client.State == WebSocketState.Open)
+            if (Client.State == WebSocketState.Open)
+            {
+                // re-subscribe on channels
+                foreach (var kp in _channels)
                 {
-                    // re-subscribe on channels
-                    foreach (var kp in _channels)
-                    {
-                        await Client.SendAsync(BaseAddress, kp.Value);
-                    }
-
-                    return;
+                    await Client.SendAsync(BaseAddress, kp.Value);
                 }
+
+                return;
             }
 
             _logger.LogInformation("{class}: websocket connection `{address}` has been closed [{error}]",
@@ -101,8 +101,9 @@ namespace AVS.CoreLib.WebSockets
             Client?.Dispose();
         }
 
-        public void ClearChannels()
+        public void Reset()
         {
+            Client.Reset();
             _channels.Clear();
         }
     }

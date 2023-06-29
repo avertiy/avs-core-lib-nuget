@@ -39,6 +39,7 @@
 
   <ItemGroup>
     <Compile Remove="Extensions\PriceStepExtensions.cs" />
+    <Compile Remove="TA\Indicators\TAIndicator.cs" />
     <Compile Remove="Types\Pairs.cs" />
   </ItemGroup>
 
@@ -51,10 +52,6 @@
   <ItemGroup>
     <ProjectReference Include="..\AVS.CoreLib.Extensions\AVS.CoreLib.Extensions.csproj" />
     <ProjectReference Include="..\AVS.CoreLib.Text\AVS.CoreLib.Text.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="TA\" />
   </ItemGroup>
 
 </Project>

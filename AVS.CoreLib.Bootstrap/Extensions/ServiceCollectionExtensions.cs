@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using AVS.CoreLib.BootstrapTools.Schedule;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -106,5 +107,28 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<IConfigureOptions<TOptions>>(new ConfigureNamedOptions<TOptions>(name ?? string.Empty, configureOptions));
         return services;
+    }
+
+    /// <summary>
+    /// Add scheduler <see cref="IScheduler"/>, in case you need scheduled tasks <see cref="IScheduledTask"/>
+    /// <code>
+    ///  //usage example:
+    ///  services.AddScheduledTask&lt;EnsureConnectedScheduledTask&gt;();
+    ///  services.AddScheduler(x => x.Schedule&lt;EnsureConnectedScheduledTask&gt;(..));
+    /// </code>
+    /// </summary>
+    public static IServiceCollection AddScheduler(this IServiceCollection services, Action<ISchedulerBuilder> setup)
+    {
+        return services.AddSingleton<IScheduler>(sp=>
+        {
+            var builder = new SchedulerBuilder() { ServiceProvider = sp };
+            setup(builder);
+            return builder.GetScheduler();
+        });
+    }
+
+    public static IServiceCollection AddScheduledTask<TScheduledTask>(this IServiceCollection services) where TScheduledTask : class, IScheduledTask
+    {
+        return services.AddSingleton<TScheduledTask>();
     }
 }

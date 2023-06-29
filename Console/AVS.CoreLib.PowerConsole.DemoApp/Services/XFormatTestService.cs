@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Threading.Tasks;
-using AVS.CoreLib.Abstractions;
-using AVS.CoreLib.Abstractions.Bootstrap;
+using AVS.CoreLib.BootstrapTools;
 using AVS.CoreLib.Text;
 using AVS.CoreLib.Trading.FormatProviders;
 using AVS.CoreLib.Trading.Models;
 
 namespace AVS.CoreLib.PowerConsole.DemoApp.Services
 {
-    internal class XFormatDemoService : DemoService
+    internal class XFormatTestService : TestService
     {
-        public override Task DemoAsync()
+        public override Task TestAsync(string[] args)
         {
             try
             {
@@ -70,7 +69,7 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
                 0.000000069m,
             };
 
-            PowerConsole.Print($"a|amount format:", ConsoleColor.DarkYellow);
+            PowerConsole.Print($"a|amount format:",colors: ConsoleColor.DarkYellow);
 
             foreach (var d in arr)
             {
@@ -78,14 +77,14 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
                 PowerConsole.Print($"{d:G} => {formatted}");
             }
 
-            PowerConsole.Print($"\r\nt|total format:", ConsoleColor.Green);
+            PowerConsole.Print($"\r\nt|total format:", colors: ConsoleColor.Green);
             foreach (var d in arr)
             {
                 var formatted = X.Format($"{d:total}");
                 PowerConsole.Print($"{d:G} => {formatted}");
             }
 
-            PowerConsole.Print($"\r\np|price format:", ConsoleColor.Cyan);
+            PowerConsole.Print($"\r\np|price format:", colors: ConsoleColor.Cyan);
             foreach (var d in arr)
             {
                 var formatted = X.Format($"{d:price}");

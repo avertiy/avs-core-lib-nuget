@@ -25,6 +25,10 @@ namespace AVS.CoreLib.Extensions
         public static string ToString(this Exception ex, ReductionFormat format = ReductionFormat.Truncated)
         {
             var str = ex.ToString();
+            
+            if (format == ReductionFormat.None)
+                return str;
+
             var n = ex.InnerException == null ? 1 : 2;
             var lines = str.SplitAndShorten(format, extraLines: n);
             return string.Join(Environment.NewLine, lines);

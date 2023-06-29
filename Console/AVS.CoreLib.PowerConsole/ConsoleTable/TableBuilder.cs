@@ -12,10 +12,8 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
 {
     public class TableBuilder
     {
-        public ColumnOptions ColumnOptions { get; set; }
+        public TableOrientation TableOrientation { get; set; }
         public string[]? ExcludeProperties { get; set; }
-
-        
 
         public Table CreateTable<T>(IEnumerable<T> data, string? title = null)
         {
@@ -27,11 +25,47 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
             if (!props.Any())
                 return table;
 
-            table.Columns = props.Select(pi => new Column() { Title = pi.Name }).ToList();
+            var dict = props.ToDictionary(pi => pi.GetDisplayName(), _ => (width: 0, values: new List<string>()));
+            
 
             foreach (var obj in data)
             {
-                table.AddRow(obj, props);
+                foreach (var pi in props)
+                {
+                    var tuple = dict[pi.GetDisplayName()];
+                    var value = pi.GetValue(obj);
+                    if (value == null || value.IsEmpty())
+                    {
+                        tuple.values.Add(string.Empty);
+                        continue;
+                    }
+
+                    var str = value.Stringify(pi.Name);
+
+                    if(tuple.width < str.Length +2)
+                        tuple.width = str.Length+2;
+
+                    tuple.values.Add(str);
+                    dict[pi.GetDisplayName()] = tuple;
+                }
+
+                table.AddRow();
+            }
+
+            foreach (var kp in dict)
+            {
+                //skip columns with no values
+                if (kp.Value.width == 0)
+                    continue;
+                
+                var width = table.AddColumn(kp.Key, width: kp.Value.width);
+
+                for (var i = 0; i < table.Rows.Count; i++)
+                {
+                    var value = kp.Value.values[i];
+                    var row = table.Rows[i];
+                    row.AddCell(value, columnWidth: width);
+                }
             }
 
             table.CalculateWidth();
@@ -43,34 +77,34 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
             Guard.Against.Null(source, "Source is missing");
 
             var type = source.GetType();
-            var table = new Table() { Title = type.Name };
+            var table = new Table() { Title = type.GetReadableName(140) };
             var dict = type.Reflect(source!, FilterProperties);
 
-            if (ColumnOptions == ColumnOptions.Auto)
+            if (TableOrientation == TableOrientation.Auto)
             {
                 if (dict.Count <= 20)
                     BuildHorizontal(table, dict);
                 else
-                    BuildVertical(table, type.GetReadableName(), dict);
+                    BuildVertical(table, dict);
             }
 
-            if (ColumnOptions == ColumnOptions.Horizontal)
+            if (TableOrientation == TableOrientation.Horizontal)
             {
                 BuildHorizontal(table, dict);
             }
-            else if (ColumnOptions == ColumnOptions.Vertical)
+            else if (TableOrientation == TableOrientation.Vertical)
             {
-                BuildVertical(table, type.GetReadableName(), dict);
+                BuildVertical(table, dict);
             }
 
             table.CalculateWidth();
             return table;
         }
 
-        private void BuildVertical(Table table, string typeName, Dictionary<string, object> dict)
+        private void BuildVertical(Table table, Dictionary<string, object> dict)
         {
-            table.AddColumn(typeName);
-            table.AddColumn("Values");
+            //table.AddColumn(typeName);
+            //table.AddColumn("Values");
             foreach (var kp in dict)
             {
                 var str = kp.Value.Stringify(kp.Key);

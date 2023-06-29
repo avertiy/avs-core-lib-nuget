@@ -1,4 +1,5 @@
-﻿using AVS.CoreLib.Console.ColorFormatting.Extensions;
+﻿using AVS.CoreLib.Console.ColorFormatting;
+using AVS.CoreLib.Console.ColorFormatting.Extensions;
 using AVS.CoreLib.Console.ColorFormatting.Tags;
 using AVS.CoreLib.Logging.ColorFormatter.Enums;
 using AVS.CoreLib.Logging.ColorFormatter.Extensions;

@@ -1,7 +1,5 @@
 ﻿using System.IO;
 using AVS.CoreLib.Console.ColorFormatting.Tags;
-using AVS.CoreLib.PowerConsole.Extensions;
-using AVS.CoreLib.PowerConsole.Printers;
 
 namespace AVS.CoreLib.PowerConsole.Writers
 {

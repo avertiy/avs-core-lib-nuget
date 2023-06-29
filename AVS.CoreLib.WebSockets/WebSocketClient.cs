@@ -20,16 +20,24 @@ namespace AVS.CoreLib.WebSockets
         protected ISocketCommunicator _communicator;
         protected readonly ILogger _logger;
         protected CancellationTokenSource _cancellationTokenSource;
-        protected readonly CancellationToken _cancellationToken;
+        protected CancellationToken _cancellationToken;
 
         #region props
-        protected bool IsDisposing { get; set; }
+
+        protected bool Disposing { get; set; }
+        protected bool Reconnecting { get; set; }
 
         public bool DiagnosticEnabled { get; set; }
 
-        public WebSocketState State => _communicator.State;
+        public int ReconnectAttempts { get; set; } = 10;
+        /// <summary>
+        /// in milliseconds
+        /// </summary>
+        public int ReconnectInterval { get; set; } = 15000;
 
-        public bool IsConnected => State == WebSocketState.Open;
+        public WebSocketState State => Reconnecting ? WebSocketState.Connecting : _communicator.State;
+
+        public bool IsConnected => State == WebSocketState.Open && _communicator.IsBackgroundTaskActive;
 
         /// <summary>
         /// shortcut to <see cref="ClientWebSocketOptions.KeepAliveInterval"/>
@@ -41,7 +49,6 @@ namespace AVS.CoreLib.WebSockets
         }
 
         public ClientWebSocketOptions Options => _communicator.Options;
-
 
         private Uri Uri
         {
@@ -73,9 +80,13 @@ namespace AVS.CoreLib.WebSockets
 
         public async Task SendAsync(string url, string command)
         {
-            Uri = _uri == null || State is WebSocketState.Closed or WebSocketState.None
-                ? new Uri(url)
-                : throw new ArgumentException($"WebSocket state {State} does not allow to switch uri. Multiple websocket connections not supported yet.");
+            if (_uri == null)
+            {
+                Uri = new Uri(url);
+            }else if (_uri.ToString() != url)
+            {
+                throw new ArgumentException($"WebSocket state {State} does not allow to switch uri. Multiple websocket connections not supported yet.");
+            }
 
             await EnsureConnected().ConfigureAwait(false);
             await SendCommandAsync(command).ConfigureAwait(false);
@@ -146,7 +157,7 @@ namespace AVS.CoreLib.WebSockets
             if (DiagnosticEnabled)
             {
                 _logger.LogInformation("{class}:Socket connection closed [reason: {reason}, reconnect: {reconnect}]",
-                    nameof(WebSocketClient), reason, !IsDisposing);
+                    nameof(WebSocketClient), reason, !Disposing);
             }
 
             FireConnectionClosed(reason);
@@ -161,11 +172,12 @@ namespace AVS.CoreLib.WebSockets
             ConnectionClosed?.Invoke(reason);
         }
 
-        public async Task ReconnectAsync()
+        public async Task<bool> ReconnectAsync()
         {
-            if (IsDisposing)
-                return;
+            if (Disposing)
+                return false;
 
+            Reconnecting = true;
             var attempt = 0;
             connect:
 
@@ -179,6 +191,8 @@ namespace AVS.CoreLib.WebSockets
             {
                 _communicator.ResetWebSocket();
                 await EnsureConnected();
+                Reconnecting = false;
+                return true;
             }
             catch (SocketCommunicatorException ex)
             {
@@ -190,25 +204,38 @@ namespace AVS.CoreLib.WebSockets
 
                 // try a few times before throw
                 attempt++;
-                if (attempt < 10)
+                if (attempt < ReconnectAttempts)
                 {
                     //let some time to fix the network issue before the app fails
-                    Thread.Sleep(5000 + attempt * 1000);
+                    Thread.Sleep(ReconnectInterval * (1+ attempt));
                     goto connect;
                 }
 
-                FireConnectionClosed(ex.Message);
+                Reconnecting = false;
+                return false;
             }
         }
 
         public void Dispose()
         {
-            IsDisposing = true;
+            _uri = null;
+            Disposing = true;
             _cancellationTokenSource.Cancel();
             _cancellationTokenSource.Dispose();
             _cancellationTokenSource = null;
             _communicator.Dispose();
             _communicator = null;
+        }
+
+        public void Reset()
+        {
+            _uri = null;
+            _cancellationTokenSource.Cancel();
+            _cancellationTokenSource.Dispose();
+            _cancellationTokenSource = null;
+            _cancellationTokenSource = new CancellationTokenSource();
+            _cancellationToken = _cancellationTokenSource.Token;
+            _communicator.ResetWebSocket();
         }
     }
 

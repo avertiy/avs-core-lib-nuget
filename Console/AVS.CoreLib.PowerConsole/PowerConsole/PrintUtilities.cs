@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
-using AVS.CoreLib.PowerConsole.Extensions;
-using AVS.CoreLib.PowerConsole.Printers;
+using AVS.CoreLib.Console.ColorFormatting;
+using AVS.CoreLib.PowerConsole.Enums;
+using AVS.CoreLib.PowerConsole.Printers2;
+using AVS.CoreLib.PowerConsole.Printers2.Extensions;
 
 namespace AVS.CoreLib.PowerConsole
 {
@@ -11,39 +13,37 @@ namespace AVS.CoreLib.PowerConsole
     {
         public static void PrintAllColors()
         {
-            Printer.PrintConsoleColors();
+            Printer2.PrintConsoleColors();
         }
 
-        public static void PrintHeader(string header, HeaderPrintOptions? options = null)
+        public static void PrintHeader(string header, Colors? colors =null,  string template = "============", string indentation ="\r\n")
         {
-            Printer.PrintHeader(header, options ?? HeaderPrintOptions.Options);
+            Printer2.PrintHeader(header, template, indentation, colors);
         }
 
-        public static void PrintTest(bool test, string message, int padRight, PrintOptions? options = null)
+        public static void PrintTest(bool test, string message, int padRight, PrintOptions2 options = PrintOptions2.Default)
         {
-            Printer.PrintTest(message, test, padRight, options ?? DefaultOptions);
+            Printer2.PrintTest(message, test, padRight, options);
         }
 
         public static void PrintTimeElapsed(
             DateTime dateTime,
             string? message = null,
-            PrintOptions? options = null)
+            PrintOptions2 options = PrintOptions2.Default, Colors? colors = null)
         {
-            Printer.PrintTimeElapsed(message, dateTime, options ?? DefaultOptions);
+            Printer2.PrintTimeElapsed(message, dateTime, options, colors );
         }
 
         [Conditional("DEBUG")]
-        public static void PrintDebug(string message, PrintOptions? options = null)
+        public static void PrintDebug(string message, PrintOptions2 options = PrintOptions2.Default, Colors? colors = null)
         {
-            options = options ?? PrintOptions.Debug;
-            WriteLine(message, options);
+            Printer2.Print(MessageLevel.Debug, message,options, colors);
         }
 
-        public static void PrintError(Exception ex, string? message = null, bool printStackTrace = true, PrintOptions? options = null)
+        public static void PrintError(Exception ex, string? message = null, bool printStackTrace = true, PrintOptions2 options = PrintOptions2.Default)
         {
-            options = options ?? PrintOptions.Error;
-            Printer.PrintError(ex, message, printStackTrace, options);
-            if (BeepOnMessageLevels != null && BeepOnMessageLevels.Any(x => x == options.Level))
+            Printer2.PrintError(ex, message, printStackTrace, options);
+            if (BeepOnMessageLevels != null && BeepOnMessageLevels.Any(x => x == MessageLevel.Error))
                 Console.Beep(2500, 1000);
         }
     }

@@ -5,6 +5,46 @@ namespace AVS.CoreLib.Trading.Extensions
 {
     public static class TimeFrameExtensions
     {
+        public static bool IsIntraday(this TimeFrame timeframe)
+        {
+            return (int)timeframe < (int)TimeFrame.D;
+        }
+
+        public static bool IsMinutes(this TimeFrame timeframe)
+        {
+            var val = (int)timeframe;
+            return val is < (int)TimeFrame.H1 and >= (int)TimeFrame.M1;
+        }
+
+        /// <summary>
+        /// Calculate timespan = (int)timeframe x count 
+        /// </summary>
+        public static int CalcTimespan(this TimeFrame timeframe, int count)
+        {
+            var timespan = (int)timeframe * count;
+            return timespan;
+        }
+
+        /// <summary>
+        /// Calculate bar count = period / (int)timeframe
+        /// i.e. how many bars (count) cover the specified period
+        /// </summary>
+        public static int CalcBarCount(this TimeFrame timeframe, double periodInSeconds)
+        {
+            var count = (int) (periodInSeconds / (int)timeframe);
+            return count;
+        }
+
+        /// <summary>
+        /// Calculate bar count from <see cref="fromDate"/> till <see cref="DateTime.Now"/>
+        /// </summary>
+        public static int CalcBarCountFrom(this TimeFrame timeframe, DateTime fromDate)
+        {
+            var ts = DateTime.Now - fromDate;
+            var count = (int)(ts.TotalSeconds / (int)timeframe);
+            return count;
+        }
+
         public static TimeFrame GetSeniorTimeFrame(this TimeFrame timeframe)
         {
             switch (timeframe)

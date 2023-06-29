@@ -15,6 +15,7 @@ namespace AVS.CoreLib.PowerConsole.Enums
         Important = 4,
         Warning = 5,
         Error = 6,
+        //StackTrace = 7,
         Critical = 7
     }
 }

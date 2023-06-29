@@ -114,7 +114,7 @@ public class ColorProvider : IColorProvider
 
     public Colors GetColorsFor(LogPart part, LogLevel logLevel)
     {
-        var colors = Colors.Empty;
+        var colors = new Colors();
         switch (part)
         {
             case LogPart.Error:

@@ -4,15 +4,15 @@ namespace AVS.CoreLib.PowerConsole.Extensions
 {
     internal static class ObjectFormatExtensions
     {
-        public static ColumnOptions GetColumnOptions(this ObjectFormat format)
+        public static TableOrientation GetColumnOptions(this ObjectFormat format)
         {
             if (format == ObjectFormat.TableHorizontal)
-                return ColumnOptions.Horizontal;
+                return TableOrientation.Horizontal;
 
             if (format == ObjectFormat.TableVertical)
-                return ColumnOptions.Vertical;
+                return TableOrientation.Vertical;
 
-            return ColumnOptions.Auto;
+            return TableOrientation.Auto;
         }
     }
 }

@@ -138,7 +138,8 @@ namespace AVS.CoreLib.Trading.Extensions
 
         public static bool IsSingleSymbol(this string symbol, bool ensureNormalized = true)
         {
-            if(symbol.Length < 6 || symbol.Length > 9)
+            // length < 6 does not look as symbol, the same for length > 12 the most length i know is 10 MATIC_
+            if(symbol.Length < 6 || symbol.Length > 12)
                 return false;
 
             if (symbol.Contains(',') || symbol.Contains('*'))

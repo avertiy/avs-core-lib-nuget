@@ -1,30 +1,43 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
+using AVS.CoreLib.Console.ColorFormatting;
 using AVS.CoreLib.Guards;
 using AVS.CoreLib.PowerConsole.ConsoleTable;
 using AVS.CoreLib.PowerConsole.Extensions;
-using AVS.CoreLib.PowerConsole.Printers;
+using AVS.CoreLib.PowerConsole.Printers2;
+using AVS.CoreLib.PowerConsole.Printers2.Extensions;
 
 namespace AVS.CoreLib.PowerConsole
 {
     public static partial class PowerConsole
     {
-        public static void PrintObject(string message, object obj, ObjectFormat format = ObjectFormat.Default, PrintOptions? options = null)
+        public static void PrintObject(object? obj, ObjectFormat format = ObjectFormat.Default, PrintOptions2 options = PrintOptions2.Default, Colors? colors = null)
         {
-            Guard.Against.Null(obj);
-            Printer.PrintObject(obj, message, format, options ?? DefaultOptions);
+            Printer2.PrintObject(obj, string.Empty, format, options, colors);
         }
 
-        public static void PrintJson(object obj, bool indented = false, PrintOptions? options = null)
+        public static void PrintObject(string message, object? obj, ObjectFormat format = ObjectFormat.Default, PrintOptions2 options = PrintOptions2.Default, Colors? colors = null)
         {
-            Guard.Against.Null(obj);
-            Printer.PrintJson(obj, indented, options ?? DefaultOptions);
+            Printer2.PrintObject(obj, message, format, options, colors);
         }
 
-        public static void PrintTable(object obj, ColumnOptions options = ColumnOptions.Auto, params string[] excludeProps)
+        public static void PrintJson(object obj, bool indented = false, PrintOptions2 options = PrintOptions2.Default, Colors? colors = null)
         {
-            Guard.Against.Null(obj);
+            Printer2.PrintJson(obj, indented, options, colors);
+        }
+
+        public static void PrintTable(object? obj, TableOrientation options = TableOrientation.Auto,
+            Colors? colors = null,
+            params string[] excludeProps)
+        {
+            if (obj == null)
+            {
+                Printer2.Print("null");
+                return;
+            }
+
             var tbl = obj.ToTable(options, excludeProps);
-            Printer.PrintTable(tbl, PrintOptions.NoTimestamp);
+            Printer2.PrintTable(tbl, PrintOptions2.NoTimestamp, colors);
         }
     }
 

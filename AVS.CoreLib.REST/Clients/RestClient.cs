@@ -33,16 +33,11 @@ namespace AVS.CoreLib.REST.Clients
 
         public Task<HttpWebResponse> SendRequestAsync(IRequest request, CancellationToken ct = default)
         {
+            //HttpWebRequest является устаревшим классом в .NET Core/.NET 5+ 
+            //рекомендуется использовать HttpClient вместо HttpWebRequest,
             var httpRequest = HttpRequestBuilder.Build(request);
             return httpRequest.FetchHttpResponseAsync(maxAttempts: 2, ct);
         }
-
-        //[Obsolete("Use SendRequestAsync(IRequest request)")]
-        //public Task<HttpWebResponse> SendRequestAsync(IEndpoint endpoint, IPayload data = null)
-        //{
-        //    var request = HttpRequestBuilder.Build(endpoint, data);
-        //    return request.FetchHttpResponseAsync();
-        //}
 
         [Obsolete("Use SendRequestAsync(IRequest request)")]
         public Task<string> QueryAsync(IEndpoint endpoint, IPayload data = null)

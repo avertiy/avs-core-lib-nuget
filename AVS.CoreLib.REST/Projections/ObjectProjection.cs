@@ -81,20 +81,10 @@ namespace AVS.CoreLib.REST.Projections
             return this;
         }
 
-        [Obsolete("use UseProxy method instead")]
-        public ObjectProjection<T> UseBuilder<TBuilder>(Action<TBuilder> initialize = null)
-            where TBuilder : class, IObjectProxy<T>, new()
-        {
-            var builder = new TBuilder();
-            initialize?.Invoke(builder);
-            Proxy = builder;
-            return this;
-        }
-
         private void EnsureProxyInitialized()
         {
             if (Proxy == null)
-                throw new AppException("Proxy is not initialized", "You might need to use UseProxy<TProxy>() method first");
+                throw new AppException("Proxy is not initialized", $"You might need to use UseProxy<{typeof(T).Name}>() method first");
         }
 
         public object InspectDeserialization(Action<JObject, IObjectProxy<T>> inspect, out Exception err)
@@ -300,7 +290,7 @@ namespace AVS.CoreLib.REST.Projections
         private void EnsureProxyInitialized()
         {
             if (_proxy == null)
-                throw new AppException("Proxy is not initialized", "You might need to use UseProxy<TProxy>() method first");
+                throw new AppException("Proxy is not initialized", $"You might need to use UseProxy<{typeof(T).Name}>() method first");
         }
 
         public Response<T> Map()

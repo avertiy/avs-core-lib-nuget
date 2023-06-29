@@ -29,12 +29,6 @@ namespace AVS.CoreLib.PowerConsole.Printers
     public interface IXPrinter : IPrinter
     {
         void PrintF(FormattableString str, PrintOptions options);
-
-        //void PrintF(FormattableString str, bool endLine = true);
-        //void PrintF(FormattableString str, bool endLine, bool? containsCTags);
-        //void PrintF(FormattableString str, bool endLine, bool? containsCTags, ConsoleColor? color);
-        //void PrintF(FormattableString str, bool endLine, bool? containsCTags, Colors colors);
-        //void PrintF(FormattableString str, bool endLine, bool? containsCTags, ColorScheme scheme);
-        void SetCustomFormatter(Func<FormattableString, string> formatter, bool printF = true);
+        //void SetCustomFormatter(Func<FormattableString, string> formatter, bool printF = true);
     }
 }

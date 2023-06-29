@@ -22,6 +22,8 @@ public sealed class ParallelJobs<T,TResult> : IEnumerable<T>
 
     private readonly Func<T, Task<TResult>> _job;
 
+    public TResult[] AllResults { get; private set; }
+
     private Func<TResult, string?>? _checkErrorFn = null;
     public Dictionary<T, string>? Errors { get; private set; } = null;
     public bool HasErrors => Errors != null && Errors.Any();
@@ -33,7 +35,9 @@ public sealed class ParallelJobs<T,TResult> : IEnumerable<T>
     }
 
     /// <summary>
-    /// execute jobs and fetch data returning <see cref="List{TResult}"/>
+    /// execute jobs fetch data returning list of results <see cref="List{TResult}"/>
+    /// in case error check <seealso cref="WithErrorCheck"/> not passed  i.e. has error the failed result is skipped
+    /// you can access still it via <see cref="AllResults"/> property
     /// </summary>
     public async Task<List<TResult>> FetchAsync(CancellationToken ct = default)
     {
@@ -50,7 +54,9 @@ public sealed class ParallelJobs<T,TResult> : IEnumerable<T>
 
         await Task.WhenAll(tasks.Values).ConfigureAwait(false);
 
-        var list = new List<TResult>();
+        var list = new List<TResult>(tasks.Count);
+        AllResults = new TResult[tasks.Count];
+        var i = 0;
 
         foreach (var kp in tasks)
         {
@@ -59,6 +65,7 @@ public sealed class ParallelJobs<T,TResult> : IEnumerable<T>
 
             var task = kp.Value;
             var result = task.Result;
+            AllResults[i++] = result;
 
             if (HasError(kp.Key, result))
                 continue;
@@ -66,6 +73,7 @@ public sealed class ParallelJobs<T,TResult> : IEnumerable<T>
             if (result != null)
                 list.Add(result);
         }
+
         return list;
     }
 
@@ -87,15 +95,16 @@ public sealed class ParallelJobs<T,TResult> : IEnumerable<T>
 
         await Task.WhenAll(tasks.Values).ConfigureAwait(false);
 
+        AllResults = new TResult[tasks.Count];
         var dict = new Dictionary<T, TResult>();
-
+        var i= 0;
         foreach (var kp in tasks)
         {
             if (ct.IsCancellationRequested)
                 break;
 
             var task = kp.Value;
-
+            AllResults[i++] = task.Result;
             if (HasError(kp.Key, task.Result))
                 continue;
 
@@ -128,8 +137,10 @@ public sealed class ParallelJobs<T,TResult> : IEnumerable<T>
 
         await Task.WhenAll(tasks.Values).ConfigureAwait(false);
 
+        AllResults = new TResult[tasks.Count];
         var list = new List<TItem>();
 
+        var i = 0;
         foreach (var kp in tasks)
         {
             if (ct.IsCancellationRequested)
@@ -137,6 +148,7 @@ public sealed class ParallelJobs<T,TResult> : IEnumerable<T>
 
             var task = kp.Value;
             var result = task.Result;
+            AllResults[i++] = result;
 
             if (HasError(kp.Key, result))
                 continue;
@@ -176,8 +188,9 @@ public sealed class ParallelJobs<T,TResult> : IEnumerable<T>
 
         await Task.WhenAll(tasks.Values).ConfigureAwait(false);
 
+        AllResults = new TResult[tasks.Count];
         var list = new List<TItem>();
-
+        var i = 0;
         foreach (var kp in tasks)
         {
             if (ct.IsCancellationRequested)
@@ -185,6 +198,7 @@ public sealed class ParallelJobs<T,TResult> : IEnumerable<T>
 
             var task = kp.Value;
             var result = task.Result;
+            AllResults[i++] = result;
 
             if (HasError(kp.Key, result))
                 continue;

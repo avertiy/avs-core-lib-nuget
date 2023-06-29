@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Text.RegularExpressions;
-using AVS.CoreLib.PowerConsole.Printers;
-using AVS.CoreLib.PowerConsole.Utilities;
+using AVS.CoreLib.Console.ColorFormatting;
+using AVS.CoreLib.PowerConsole.Printers2;
 using AVS.CoreLib.Text.FormatProviders;
-using AVS.CoreLib.Text.Formatters.ColorMarkup;
 
 namespace AVS.CoreLib.PowerConsole
 {
@@ -16,35 +14,27 @@ namespace AVS.CoreLib.PowerConsole
         /// in case you use X.Format
         /// strings staring with @ symbol are treated as strings with expression(s) and processed by TextProcessor(s)
         /// </remarks>
-        public static void PrintF(FormattableString str, PrintOptions? options = null)
+        public static void PrintF(FormattableString str, PrintOptions2 options = PrintOptions2.Default, Colors? colors = null)
         {
-            Printer.PrintF(str, options ?? DefaultOptions);
+            Printer2.Print(str, options, colors);
         }
 
-        public static void PrintF(FormattableString str, Action<PrintOptions> configureOptions)
-        {
-            var options = DefaultOptions.Clone();
-            configureOptions(options);
-            Printer.Print(str, options);
-        }
+        //public static void PrintF(FormattableString str, ColorPalette colorPalette)
+        //{
+        //    Printer2.Print(str, PrintOptions.FromColorPalette(colorPalette));
+        //}
 
-        public static void PrintF(FormattableString str, ColorPalette colorPalette)
-        {
-            Printer.PrintF(str, PrintOptions.FromColorPalette(colorPalette));
-        }
-
-        public static void PrintF(FormattableString str, params ConsoleColor[] colors)
-        {
-            Printer.PrintF(str, PrintOptions.FromColors(colors));
-        }
-
-        public static void PrintF(int posX, int posY, FormattableString str, PrintOptions? options = null)
-        {
-            var text = str.ToString();
-            var rows = Regex.Matches(text, Environment.NewLine).Count;
-            ClearRegion(posX, posY, rows);
-            Printer.Print(new ColorMarkupString(text), options?? DefaultOptions);
-            ClearLine();
-        }
+        //public static void PrintF(FormattableString str, params ConsoleColor[] colors)
+        //{
+        //    Printer.PrintF(str, PrintOptions.FromColors(colors));
+        //}
+        //public static void PrintF(int posX, int posY, FormattableString str, PrintOptions2 options = PrintOptions2.Default)
+        //{
+        //    var text = str.ToString();
+        //    var rows = Regex.Matches(text, Environment.NewLine).Count;
+        //    ClearRegion(posX, posY, rows);
+        //    Printer2.Print(str, options);
+        //    ClearLine();
+        //}
     }
 }
