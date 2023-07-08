@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.Text.RegularExpressions;
 using AVS.CoreLib.REST.Extensions;
-using AVS.CoreLib.Utilities;
 
 namespace AVS.CoreLib.REST
 {
@@ -88,7 +88,7 @@ namespace AVS.CoreLib.REST
 
         public override string ToString()
         {
-            return $"JsonResult: {Source} => {JsonText}";
+            return $"JsonResult: {Source} => {(HasError ? Error : JsonText)}";
         }
 
         public static JsonResult FromResponse(HttpWebResponse response, string source = null)

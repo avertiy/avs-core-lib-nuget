@@ -248,85 +248,78 @@ namespace AVS.CoreLib.REST.Projections
             where TResponse : Response<IDictionary<TKey, TValue>>, new()
             where TProjection : new()
         {
-            var response = new TResponse() { Source = Source };
+            var response = new TResponse() { Source = Source, Error = Error };
+            if (HasError)
+                return response;
+
             if (IsEmpty)
             {
                 response.Data = new Dictionary<TKey, TValue>();
+                return response;
             }
-            else if (ContainsError(out string err))
+
+            using (var stringReader = new StringReader(JsonText))
+            using (var reader = new JsonTextReader(stringReader))
             {
-                response.Error = err;
-            }
-            else
-            {
-                using (var stringReader = new StringReader(JsonText))
-                using (var reader = new JsonTextReader(stringReader))
+                var token = JToken.Load(reader);
+
+                if (token.Type == JTokenType.Object)
                 {
-                    JToken token = JToken.Load(reader);
+                    var jObject = (JObject)token;
 
-                    if (token.Type == JTokenType.Object)
+                    try
                     {
-                        var jObject = (JObject)token;
-
-                        try
-                        {
-                            response.Data = ParseDictionary<TProjection>(jObject);
-                        }
-                        catch (Exception ex)
-                        {
-                            var msg =
-                                $"ParseDictionary<{typeof(TKey).Name},{typeof(TValue).GetReadableName()}> with projection of {typeof(TProjection).GetReadableName()}> failed";
-                            throw new MapException(msg, ex) { JsonText = JsonText };
-                        }
-
-                        return response;
+                        response.Data = ParseDictionary<TProjection>(jObject);
+                    }
+                    catch (Exception ex)
+                    {
+                        var msg =
+                            $"ParseDictionary<{typeof(TKey).Name},{typeof(TValue).GetReadableName()}> with projection of {typeof(TProjection).GetReadableName()}> failed";
+                        throw new MapException(msg, ex) { JsonText = JsonText };
                     }
 
-                    throw new JsonReaderException($"Unexpected JToken type {token.Type}");
+                    return response;
                 }
+
+                throw new JsonReaderException($"Unexpected JToken type {token.Type}");
             }
-            return response;
         }
 
         public virtual TResponse Map<TResponse, TProjection, TData>(Func<IDictionary<TKey, TValue>, TData> transform)
             where TResponse : Response<TData>, new()
             where TProjection : new()
         {
-            var response = new TResponse() { Source = Source };
+            var response = new TResponse() { Source = Source, Error = Error };
+            if(HasError) return response;
+
             if (IsEmpty)
             {
                 response.Data = transform(new Dictionary<TKey, TValue>());
+                return response;
             }
-            else if (ContainsError(out string err))
-            {
-                response.Error = err;
-            }
-            else
-            {
-                using (var stringReader = new StringReader(JsonText))
-                using (var reader = new JsonTextReader(stringReader))
-                {
-                    JToken token = JToken.Load(reader);
-                    if (token.Type == JTokenType.Object)
-                    {
-                        var jObject = (JObject)token;
-                        IDictionary<TKey, TValue> data;
-                        try
-                        {
-                            data = ParseDictionary<TProjection>(jObject);
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new MapException($"ParseDictionary<{typeof(TKey).Name},{typeof(TValue).GetReadableName()}> with projection of {typeof(TProjection).GetReadableName()}> failed", ex) { JsonText = JsonText };
-                        }
 
-                        response.Data = transform(data);
-                        return response;
+            using (var stringReader = new StringReader(JsonText))
+            using (var reader = new JsonTextReader(stringReader))
+            {
+                var token = JToken.Load(reader);
+                if (token.Type == JTokenType.Object)
+                {
+                    var jObject = (JObject)token;
+                    IDictionary<TKey, TValue> data;
+                    try
+                    {
+                        data = ParseDictionary<TProjection>(jObject);
                     }
-                    throw new MapException($"Unexpected JToken type {token.Type}") { JsonText = JsonText };
+                    catch (Exception ex)
+                    {
+                        throw new MapException($"ParseDictionary<{typeof(TKey).Name},{typeof(TValue).GetReadableName()}> with projection of {typeof(TProjection).GetReadableName()}> failed", ex) { JsonText = JsonText };
+                    }
+
+                    response.Data = transform(data);
+                    return response;
                 }
+                throw new MapException($"Unexpected JToken type {token.Type}") { JsonText = JsonText };
             }
-            return response;
         }
 
         /// <summary>
@@ -336,37 +329,35 @@ namespace AVS.CoreLib.REST.Projections
         public virtual MapResult<TKey, TValue> MapResult<TProjection>()
             where TProjection : new()
         {
-            var result = new MapResult<TKey, TValue>() { Source = Source };
+            var result = new MapResult<TKey, TValue>() { Source = Source, Error = Error };
+            if (HasError)
+                return result;
+
             if (IsEmpty)
             {
                 result.Data = new Dictionary<TKey, TValue>();
+                return result;
             }
-            else if (ContainsError(out string err))
+
+            using (var stringReader = new StringReader(JsonText))
+            using (var reader = new JsonTextReader(stringReader))
             {
-                result.Error = err;
-            }
-            else
-            {
-                using (var stringReader = new StringReader(JsonText))
-                using (var reader = new JsonTextReader(stringReader))
+                var token = JToken.Load(reader);
+                if (token.Type == JTokenType.Object)
                 {
-                    JToken token = JToken.Load(reader);
-                    if (token.Type == JTokenType.Object)
+                    var jObject = (JObject)token;
+                    try
                     {
-                        var jObject = (JObject)token;
-                        try
-                        {
-                            result.Data = ParseDictionary<TProjection>(jObject);
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new MapException($"ParseDictionary<{typeof(TKey).Name},{typeof(TValue).GetReadableName()}> with projection of {typeof(TProjection).GetReadableName()}> failed", ex) { JsonText = JsonText };
-                        }
+                        result.Data = ParseDictionary<TProjection>(jObject);
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        throw new MapException($"Unexpected JToken type {token.Type}") {JsonText = JsonText};
+                        throw new MapException($"ParseDictionary<{typeof(TKey).Name},{typeof(TValue).GetReadableName()}> with projection of {typeof(TProjection).GetReadableName()}> failed", ex) { JsonText = JsonText };
                     }
+                }
+                else
+                {
+                    throw new MapException($"Unexpected JToken type {token.Type}") {JsonText = JsonText};
                 }
             }
             return result;

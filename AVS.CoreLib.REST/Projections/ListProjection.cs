@@ -23,7 +23,7 @@ namespace AVS.CoreLib.REST.Projections
         private IListProxy<TItem> _proxy;
 
 
-        public ListProjection(string jsonText, string source, string error = null) : base(jsonText, source, error)
+        public ListProjection(string jsonText, string source, string error) : base(jsonText, source, error)
         {
         }
 

@@ -19,10 +19,10 @@ namespace AVS.CoreLib.Utilities
         /// The server checks the nonce to ensure that it has not been used before, and therefore helps to prevent replay attacks.
         /// </remarks>
         /// <returns></returns>
-        public static string GetNonce()
+        public static string GetNonce(DateTime? time = null)
         {
-            var totalms = DateTimeProvider.GetTime().Subtract(UnixEpoch.Start).TotalMilliseconds;
-            var newHttpPostNonce = new BigInteger(Math.Round(totalms * 1000, MidpointRounding.AwayFromZero));
+            var totalMilliseconds = (time ?? DateTimeProvider.GetTime()).Subtract(UnixEpoch.Start).TotalMilliseconds;
+            var newHttpPostNonce = new BigInteger(Math.Round(totalMilliseconds * 1000, MidpointRounding.AwayFromZero));
             if (newHttpPostNonce > CurrentHttpPostNonce)
             {
                 CurrentHttpPostNonce = newHttpPostNonce;
@@ -44,17 +44,10 @@ namespace AVS.CoreLib.Utilities
         /// `tonce` is a unique identifier based on the current time expressed as the number of milliseconds since unix epoch.
         /// It is used to ensure that each request is unique, even if multiple requests are made in quick succession.
         /// </remarks>
-        public static long GetTonce(bool inMilliseconds = true)
+        public static long GetTonce(bool inMilliseconds = true, DateTime? time = null)
         {
-            var offset = DateTimeOffset.Now;
+            var offset = new DateTimeOffset(time ?? DateTimeProvider.GetTime());
             return inMilliseconds ? offset.ToUnixTimeMilliseconds() : offset.ToUnixTimeSeconds();
-        }
-
-        
-        [Obsolete("use GetTonce().ToString()")]
-        public static string GetTonceOld()
-        {
-            return DateTimeOffset.Now.ToUnixTimeMilliseconds().ToString();
         }
 
         /// <summary>

@@ -1,7 +1,9 @@
 ﻿#nullable enable
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.Extensions.Collections;
 using AVS.CoreLib.Extensions.Web;
@@ -16,7 +18,8 @@ namespace AVS.CoreLib.REST.Clients
         public bool OrderQueryStringParameters { get; set; } = true;
         public IAuthenticator? Authenticator { get; set; }
 
-        public const string JSON_CONTENT_HEADER = "application/json";
+        
+        
 
         public RequestMessageBuilder()
         {
@@ -80,7 +83,13 @@ namespace AVS.CoreLib.REST.Clients
         }
     }
 
-    public static class HttpRequestHeadersExtenions
+    public static class MediaTypes
+    {
+        public const string APPLICATION_JSON = "application/json";
+        public const string FORM_URL_ENCODED = "application/x-www-form-urlencoded";
+    }
+
+    public static class HttpRequestMessageExtensions
     {
         /// <summary>
         /// set headers.Accept "application/json"
@@ -88,7 +97,23 @@ namespace AVS.CoreLib.REST.Clients
         /// <param name="headers"></param>
         public static void AcceptApplicationJsonContent(this HttpRequestHeaders headers)
         {
-            headers.Accept.Add(new MediaTypeWithQualityHeaderValue(RequestMessageBuilder.JSON_CONTENT_HEADER));
+            headers.Accept.Add(new MediaTypeWithQualityHeaderValue(MediaTypes.APPLICATION_JSON));
+        }
+
+        /// <summary>
+        /// when u use request.Content = new StringContent(queryString) the media type by default is text/plain
+        /// here by default media type is application/x-www-form-urlencoded
+        /// </summary>
+        public static void SetContent(this HttpRequestMessage request, string queryString, string mediaType = MediaTypes.FORM_URL_ENCODED)
+        {
+            request.Content = new StringContent(queryString, Encoding.UTF8, mediaType);
+        }
+
+        public static void SetContentAsFormUrlEncodedContent(this HttpRequestMessage request, IDictionary<string, string> data)
+        {
+            var formData = new FormUrlEncodedContent(data);
+            request.Content = formData;
+            request.Content.Headers.ContentType = new MediaTypeHeaderValue(MediaTypes.FORM_URL_ENCODED);
         }
     }
 }

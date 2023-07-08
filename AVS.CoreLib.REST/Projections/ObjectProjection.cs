@@ -162,26 +162,18 @@ namespace AVS.CoreLib.REST.Projections
 
         public virtual Response<T> Map<TProjection>(Func<TProjection> createFunc) where TProjection : T, new()
         {
-            var response = new Response<T>() { Source = Source, Data = createFunc() };
-            if (IsEmpty)
+            var response = new Response<T>() { Source = Source, Data = createFunc(), Error = Error };
+            if (IsEmpty || HasError)
                 return response;
 
-            if (ContainsError(out string err))
+            var data = response.Data;
+            _preProcessAction?.Invoke(data);
+            LoadToken<JObject, TProjection>(jObject =>
             {
-                response.Error = err;
-            }
-            else
-            {
-                var data = response.Data;
-                _preProcessAction?.Invoke(data);
-                LoadToken<JObject, TProjection>(jObject =>
-                {
-                    JsonHelper.Populate(data, jObject);
-                });
-                _postProcessAction?.Invoke(data);
-                response.Data = data;
-            }
-
+                JsonHelper.Populate(data, jObject);
+            });
+            _postProcessAction?.Invoke(data);
+            response.Data = data;
             return response;
         }
 
@@ -326,30 +318,28 @@ namespace AVS.CoreLib.REST.Projections
 
         public Response<T> Map(Func<TProjection, T> map)
         {
-            var response = Response.Create<T>();
-            response.Source = Source;
+            var response = Response.Create<T>(source: Source, error: Error);
+
+            if (HasError)
+                return response;
 
             if (IsEmpty)
             {
                 response.Data = map(new TProjection());
+                return response;
             }
-            else if (ContainsError(out var err))
+
+            LoadToken<JObject, TProjection>(jObject =>
             {
-                response.Error = err;
-            }
-            else
-            {
-                LoadToken<JObject, TProjection>(jObject =>
-                {
-                    var projection = new TProjection();
-                    _preProcess?.Invoke(projection);
-                    JsonHelper.Populate(projection, jObject);
-                    var data = map(projection);
-                    _postProcessProjection?.Invoke(projection);
-                    _postProcess?.Invoke(data);
-                    response.Data = data;
-                });
-            }
+                var projection = new TProjection();
+                _preProcess?.Invoke(projection);
+                JsonHelper.Populate(projection, jObject);
+                var data = map(projection);
+                _postProcessProjection?.Invoke(projection);
+                _postProcess?.Invoke(data);
+                response.Data = data;
+            });
+
             return response;
         }
     }
