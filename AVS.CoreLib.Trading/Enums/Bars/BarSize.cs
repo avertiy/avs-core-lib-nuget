@@ -1,5 +1,8 @@
 ﻿namespace AVS.CoreLib.Trading.Enums
 {
+    /// <summary>
+    /// Classify bar by length 
+    /// </summary>
     public enum BarSize
     {
         Normal = 0,
@@ -17,9 +20,17 @@
         Paranormal = 2,
     }
 
-    public enum BarType
+    public enum VolumeSize
     {
-        Bearish = 0,
-        Bullish = 1,
+        Normal = 0,        
+        /// <summary>
+        /// 2 times smaller volume than the average volume for the last 12 bars
+        /// </summary>
+        Reduced = 1,
+        /// <summary>
+        /// 2 times bigger volume than the average volume for the last 12 bars
+        /// </summary>
+        Increased = 2,
+        Extreme = 3,
     }
 }

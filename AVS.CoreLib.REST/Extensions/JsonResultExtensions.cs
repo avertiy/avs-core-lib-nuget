@@ -73,7 +73,10 @@ namespace AVS.CoreLib.REST.Extensions
 
         /// <summary>
         /// Create object projection <see cref="ObjectProjection{T,TProjection}"/> to map a json object to type <see cref="TProjection"/>.
-        /// but return result as a <see cref="Response{T}"/>
+        /// but return result as a <see cref="Response{T}"/>.
+        /// 
+        /// !!! the Map() method requires proxy to be setup !!!
+        /// 
         /// It is case of indirect mapping, when <see cref="TProjection"/> neither implement, neither inherit type <see cref="T"/>.
         /// The <see cref="ObjectProjection{T,TProjection}.UseProxy{TProxy}"/> is required, the proxy creates <see cref="T"/> from <see cref="TProjection"/>:
         /// <code>

@@ -31,7 +31,8 @@
         /// <summary>
         /// Hull MA
         /// </summary>
-        HMA =3
+        HMA =3,
+        TEMA =4
     }
 
     public enum Indicator

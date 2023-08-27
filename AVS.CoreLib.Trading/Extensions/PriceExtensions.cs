@@ -44,6 +44,7 @@ namespace AVS.CoreLib.Trading.Extensions
 
         #region decimal
 
+        [Obsolete("use Round(this decimal value, int? roundDecimals = null, int extraPrecision = 0, int minPrecision = 0)")]
         public static decimal PriceRound(this decimal price, int? roundDecimals = null, int extraPrecision = 0)
         {
             var dec = roundDecimals ?? price.GetRoundDecimals();

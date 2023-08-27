@@ -39,7 +39,14 @@
 
   <ItemGroup>
     <Compile Remove="Extensions\PriceStepExtensions.cs" />
-    <Compile Remove="TA\Indicators\TAIndicator.cs" />
+    <Compile Remove="TA\Calculators\AvgCalculator.cs" />
+    <Compile Remove="TA\Calculators\NSECalculator.cs" />
+    <Compile Remove="TA\Models\TAIndicator.cs" />
+    <Compile Remove="TA\NSE.cs" />
+    <Compile Remove="TA\PropertyBag.cs" />
+    <Compile Remove="TA\Series.cs" />
+    <Compile Remove="TA\Tools\Oscillators.cs" />
+    <Compile Remove="TA\Tools\TASet.cs" />
     <Compile Remove="Types\Pairs.cs" />
   </ItemGroup>
 

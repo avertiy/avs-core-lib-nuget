@@ -1,7 +1,7 @@
 ﻿using System;
 using AVS.CoreLib.Trading.Abstractions;
 using AVS.CoreLib.Trading.Enums;
-
+using AVS.CoreLib.Extensions;
 namespace AVS.CoreLib.Trading.Extensions
 {
     public static class BarExtensions
@@ -26,12 +26,12 @@ namespace AVS.CoreLib.Trading.Extensions
 
         public static decimal GetAvgPrice(this IOhlc bar, int? roundDecimals = null)
         {
-            return ((bar.Open + bar.Close) / 2).PriceRound(roundDecimals);
+            return ((bar.Open + bar.Close) / 2).Round(roundDecimals);
         }
 
         public static decimal GetMediana(this IOhlc bar, int? roundDecimals = null)
         {
-            return ((bar.High + bar.Low) / 2).PriceRound(roundDecimals);
+            return ((bar.High + bar.Low) / 2).Round(roundDecimals);
         }
 
         /// <summary>

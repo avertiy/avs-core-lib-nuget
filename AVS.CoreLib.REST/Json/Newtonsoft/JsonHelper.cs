@@ -86,7 +86,14 @@ namespace AVS.CoreLib.REST.Json.Newtonsoft
 
         public static T Deserialize<T>(JToken token, Type itemType)
         {
-            return (T)Serializer.Value.Deserialize(token.CreateReader(), itemType);
+            try
+            {
+                return (T)Serializer.Value.Deserialize(token.CreateReader(), itemType);
+            }
+            catch (Exception ex)
+            {
+                throw new JsonSerializationException($"Deserialize<{typeof(T).Name}> failed: " + ex.Message, ex);
+            }
         }
 
         internal static T ParseJArray<T>(Type itemType, JsonSerializer serializer, JArray token)

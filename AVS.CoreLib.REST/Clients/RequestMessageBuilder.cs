@@ -18,9 +18,6 @@ namespace AVS.CoreLib.REST.Clients
         public bool OrderQueryStringParameters { get; set; } = true;
         public IAuthenticator? Authenticator { get; set; }
 
-        
-        
-
         public RequestMessageBuilder()
         {
         }
@@ -66,7 +63,12 @@ namespace AVS.CoreLib.REST.Clients
             var httpMethod = new HttpMethod(input.Method);
             var requestMessage = new HttpRequestMessage(httpMethod, url);
             var queryString = input.Data.ToHttpQueryString(orderBy: OrderQueryStringParameters);
-            requestMessage.Content = new StringContent(queryString);
+
+            if (httpMethod != HttpMethod.Get)
+            {
+                requestMessage.Content = new StringContent(queryString);
+            }
+            
             AddHeaders(requestMessage, queryString);
             return requestMessage;
         }

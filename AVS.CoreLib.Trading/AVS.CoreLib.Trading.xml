@@ -9,60 +9,72 @@
             represent a bar chart unit (synonym candle or simply bar)  
             </summary>
         </member>
-        <member name="P:AVS.CoreLib.Trading.Abstractions.IBar.Volume">
-            <summary>
-            volume is an amount of base currency
-            </summary>
-        </member>
         <member name="P:AVS.CoreLib.Trading.Abstractions.IBar.Total">
             <summary>
             total is an amount of quote currency
             </summary>
         </member>
-        <member name="T:AVS.CoreLib.Trading.Abstractions.TA.Indicators.ITAIndicator">
+        <member name="P:AVS.CoreLib.Trading.Abstractions.IOhlcv.Volume">
             <summary>
-            Tech indicator value
+            volume is an amount of base asset
             </summary>
         </member>
-        <member name="T:AVS.CoreLib.Trading.Abstractions.XBars.ITAExt">
-            <summary> 
-            Defines TA extension interface to access calculated indicator values such as Moving Averages <see cref="T:AVS.CoreLib.Trading.Abstractions.XBars.IMAValue"/>, Bollinger Bands <seealso cref="T:AVS.CoreLib.Trading.Abstractions.XBars.IBBValue"/> etc.
-            </summary>
-        </member>
-        <member name="T:AVS.CoreLib.Trading.Abstractions.XBars.ITAProps">
-            <summary>
-            Common basic indicators set
-            </summary>
-        </member>
-        <member name="P:AVS.CoreLib.Trading.Abstractions.XBars.IMAValue.Average">
-            <summary>
-            moving average value
-            </summary>
-        </member>
-        <member name="T:AVS.CoreLib.Trading.Abstractions.XBars.IXBar">
+        <member name="T:AVS.CoreLib.Trading.Abstractions.TA.IXBar">
             <summary>
             XBar is <see cref="T:AVS.CoreLib.Trading.Abstractions.IBar"/> with extra properties such as calculated lengths, avg price, size, type etc.
             </summary>
         </member>
-        <member name="P:AVS.CoreLib.Trading.Abstractions.XBars.IXBar.Size">
+        <member name="P:AVS.CoreLib.Trading.Abstractions.TA.IXBar.Type">
             <summary>
-            Size relative to other bars based on avg bar length metric
+            Indicates the bar is bullish or bearish
             </summary>
         </member>
-        <member name="P:AVS.CoreLib.Trading.Abstractions.XBars.IXBar.SizeAbs">
+        <member name="P:AVS.CoreLib.Trading.Abstractions.TA.IXBar.Length">
             <summary>
-            absolute size based on a timeframe i.e. M5 
-            regardless avg bar length
+            Bar Length in %, formula: 100*(High - Low)/Low
             </summary>
         </member>
-        <member name="P:AVS.CoreLib.Trading.Abstractions.XBars.IXBar.Avg">
+        <member name="P:AVS.CoreLib.Trading.Abstractions.TA.IXBar.BodyLength">
+            <summary>
+            Candle body length in %, , formula: 100*  (Bullish ? (Close - Open)/Open : (Open - Close)/Close)
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Abstractions.TA.IXBar.Avg">
             <summary>
             (Open+Close)/2
             </summary>
         </member>
-        <member name="P:AVS.CoreLib.Trading.Abstractions.XBars.IXBar.Mid">
+        <member name="P:AVS.CoreLib.Trading.Abstractions.TA.IXBar.Hl2">
             <summary>
             (High+Low)/2
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Abstractions.TA.IXBar.Hlc3">
+            <summary>
+            (High+Low+Close)/3
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Abstractions.TA.IXBar.SizeAbs">
+            <summary>
+            absolute size based on a timeframe 
+            regardless avg bar length
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Abstractions.TA.IXBar.TA">
+            <summary>
+            TA extension adds calculated values based on moving statistic like ATR, MA, RSI etc.         
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Abstractions.TA.IXBar.Size">
+            <summary>
+            Indicates how big (long) the bar is relative to avg length
+            avg length is sma(Length, 12)
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Abstractions.TA.IXBar.VolumeSize">
+            <summary>
+            Indicates how big volume is relative to avg volume        
+            avg volumw is sma(Volume, 12)
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Trading.Collections.CurrencyCollection.System#Collections#Generic#ICollection{System#String}#Add(System.String)">
@@ -97,6 +109,11 @@
             Add trading formatters core services
             </summary>
         </member>
+        <member name="T:AVS.CoreLib.Trading.Enums.BarSize">
+            <summary>
+            Classify bar by length 
+            </summary>
+        </member>
         <member name="F:AVS.CoreLib.Trading.Enums.BarSize.Short">
             <summary>
             short bar is a bar with a little price difference between Low and High
@@ -110,6 +127,16 @@
         <member name="F:AVS.CoreLib.Trading.Enums.BarSize.Paranormal">
             <summary>
             Extreme big or paranormal bar is a bar with a significant length several times bigger than average bar
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.VolumeSize.Reduced">
+            <summary>
+            2 times smaller volume than the average volume for the last 12 bars
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.VolumeSize.Increased">
+            <summary>
+            2 times bigger volume than the average volume for the last 12 bars
             </summary>
         </member>
         <member name="F:AVS.CoreLib.Trading.Enums.CandleType.Doji">
@@ -696,6 +723,73 @@
             Hull MA
             </summary>
         </member>
+        <member name="T:AVS.CoreLib.Trading.Enums.TA.Slope">
+            <summary>
+            indicator line slope
+            moving average slope or stochastic etc. curve 
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TA.Slope.None">
+            <summary>
+            no clear slope detected
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TA.Slope.SteepBearish">
+            <summary>
+            indicates that the curve clearly moves down fast
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TA.Slope.Bearish">
+            <summary>
+            indicates that the curve moves down slowly   
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TA.Slope.Bullish">
+            <summary>
+            indicates that the curve moves up slowly
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TA.Slope.SteepBullish">
+            <summary>
+            indicates that the curve clearly moves up fast
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TA.MarketPhase.UpTrend">
+            <summary>
+            Цены двигаются вверх, формируя Higher Highs and Higher Lows
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TA.MarketPhase.DownTrend">
+            <summary>
+            Цены двигаются вниз, формируя Lower Highs and Lower Lows
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TA.MarketPhase.Range">
+            <summary>
+            Цены колеблются в узком диапазоне
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TA.MarketPhase.Swings">
+            <summary>
+            рынок не показывает явного направления и двигается в пределах определенных уровней поддержки и сопротивления
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TA.MarketPhase.Consolidation">
+            <summary>
+            рынок временно замедляет движение после активного тренда
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TA.MarketPhase.Retracement">
+            <summary>
+            коррекционное движение против общего направления тренда
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TA.Signal.Danger">
+            <summary>
+            Danger for cases when there are signs of possible agressive bearish/bullish movement
+            к примеру волатильность сужена, а индикаторы типа ADX сигналят сильный даун тренд => следует сливная елда на -20%
+            </summary>
+        </member>
         <member name="T:AVS.CoreLib.Trading.Enums.TimeFrame">
             <summary>Represents a time frame of a market.</summary>
         </member>
@@ -821,7 +915,7 @@
         </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.BarLengthExtensions.GetLength(AVS.CoreLib.Trading.Abstractions.IOhlc,System.Int32)">
             <summary>
-            Get candle length in % formula: (High - Low)/Low * 100
+            Get candle length in % formula: (High - Low)/Close * 100
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.BarLengthExtensions.GetShadowLength(AVS.CoreLib.Trading.Abstractions.IOhlc,System.Int32)">
@@ -1176,6 +1270,11 @@
             indicative means for example BTC is ~10 times bigger than ETH or ~100 times bigger than BCH, LTC etc. 
             </summary>
         </member>
+        <member name="T:AVS.CoreLib.Trading.Structs.TimeFrame">
+            <summary>
+            why i have created this struct??
+            </summary>
+        </member>
         <member name="T:AVS.CoreLib.Trading.Symbols.SymbolDescriptor">
             <summary>
             descriptors should help to classify coin-zoo 
@@ -1202,24 +1301,114 @@
             you can use <see cref="T:AVS.CoreLib.Trading.Symbols.SymbolDescriptorsQuery"/> or your own implementation
             </summary>
         </member>
+        <member name="T:AVS.CoreLib.Trading.TA.Calculators.MovingAverages.EMACalculator">
+            <summary>
+            EMA=Price​×k +EMA[1]​×(1−k) where k=2/(n+1)
+            EMA = EMA[1]​ + k*(Price - EMA[1]​)
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.TA.Calculators.MovingAverages.EMACalculator.Alpha">
+            <summary>
+            by default Alpha = 2.0m / (period + 1)
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.TA.Calculators.MovingAverages.SMACalculator">
+            <summary>
+            SMA= SUM(price)/n
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.TA.Calculators.Oscillators.ADXCalculator">
+            <summary>
+            DI+ = EMA(High - High[1] >=0 ? High - High[1] : 0, 14) / ATR*100  
+            DI- =  EMA(Low[1] - Low >=0  ? Low[1] - Low : 0, 14) / ATR*100
+            ADX = SMA(abs(DI+ - DI-) / (DI+ + DI-), 14)*100 
+            Histogram = DI+ - DI- 
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.TA.Calculators.Oscillators.MACDCalculator">
+            <summary>
+            MACD = ЕМА(Period1) − EMA(Period2)
+            Signal Line = EМА(MACD, 9)
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.TA.Calculators.Oscillators.MACDCalculator.Period1">
+            <summary>
+            Fast EMA period        
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.TA.Calculators.Oscillators.MACDCalculator.Period2">
+            <summary>
+            Slow EMA period        
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.TA.Calculators.Oscillators.MACDCalculator.Period3">
+            <summary>
+            Signal line period
+            (signal line is a smoothed macd line)
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.TA.Calculators.Oscillators.RSICalculator">
+            <summary>
+            RSI = 100 - 100 /(1+RS), 
+            RS= SUM(Bullish bars lengths) / SUM(Bearish bars lengths)
+            </summary>    
+        </member>
+        <member name="T:AVS.CoreLib.Trading.TA.Calculators.Oscillators.StochCalculator">
+            <summary>
+                stoch = 100 *[(Сlose - Low(n)) / (High(n) - Low(n))]
+            	%K = ta.sma(ta.stoch(close, high, low, period1), period2)
+            	%D = ta.sma(k, period3)
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.TA.Functions.Ema.Alpha">
+            <summary>
+            by default Alpha = 2.0m / (period + 1)
+            but for RSI for example, Alpha = 1 / period;
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.TA.Functions.MovingStatistic">
+            <summary>
+            Utility class to get moving statistic for some period
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.TA.Functions.MovingStatistic.Change">
+            <summary>
+            price change absolute 
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.TA.Functions.MovingStatistic.PriceChange">
+            <summary>
+            price change in %
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.TA.Indicators.MA">
+            <summary>
+            Describe moving average value for a certain point (bar)
+            </summary>
+        </member>
         <member name="T:AVS.CoreLib.Trading.TA.XBar">
             <summary>
             Represent bar extension that aggregate top (main) TA indicators MA (21, 50), BB, etc.
             </summary>
         </member>
-        <member name="P:AVS.CoreLib.Trading.TA.XBar.Size">
+        <member name="P:AVS.CoreLib.Trading.TA.XBar.Avg">
             <summary>
-            
+            (Open+Close)/2
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.TA.XBar.Hl2">
+            <summary>
+            (High+Low)/2
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.TA.XBar.Hlc3">
+            <summary>
+            (High+Low+Close)/3
             </summary>
         </member>
         <member name="P:AVS.CoreLib.Trading.TA.XBar.SizeAbs">
             <summary>
-            absolute size based on a timeframe regardless avg bar length
-            </summary>
-        </member>
-        <member name="P:AVS.CoreLib.Trading.TA.XBar.IncreasedVolume">
-            <summary> 
-            indicates whether the volume is bigger comparatively to prev 10 bars 
+            Indicates bar size (length) relative to avg bar length
             </summary>
         </member>
         <member name="T:AVS.CoreLib.Trading.Types.CurrencyPair">

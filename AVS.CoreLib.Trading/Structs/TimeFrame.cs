@@ -5,7 +5,11 @@ using System.Globalization;
 using TimeFrameEnum = AVS.CoreLib.Trading.Enums.TimeFrame;
 namespace AVS.CoreLib.Trading.Structs
 {
+    /// <summary>
+    /// why i have created this struct??
+    /// </summary>
     [TypeConverter(typeof(TimeFrameTypeConverter))]
+    [Obsolete("seems unnesessary struct")]
     public readonly struct TimeFrame
     {
         public static Dictionary<string, int> Literals = new Dictionary<string, int>()

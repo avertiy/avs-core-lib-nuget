@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using AVS.CoreLib.Trading.TA.Calculators;
 using AVS.CoreLib.Trading.TA.Indicators;
 
 namespace AVS.CoreLib.Trading.TA

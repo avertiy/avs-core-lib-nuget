@@ -16,6 +16,11 @@ namespace AVS.CoreLib.Trading.Extensions
             return val is < (int)TimeFrame.H1 and >= (int)TimeFrame.M1;
         }
 
+        public static int ToSeconds(this TimeFrame timeframe)
+        {
+            return (int)timeframe;
+        }
+
         /// <summary>
         /// Calculate timespan = (int)timeframe x count 
         /// </summary>

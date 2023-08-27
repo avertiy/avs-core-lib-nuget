@@ -8,30 +8,30 @@ namespace AVS.CoreLib.Trading.Extensions
     {
         #region length measurements
         /// <summary>
-        /// Get candle length in % formula: (High - Low)/Low * 100
+        /// Get candle length in % formula: (High - Low)/Close * 100
         /// </summary>
         public static decimal GetLength(this IOhlc candle, int roundDigits = 4)
         {
-            var len = (candle.High - candle.Low) / candle.Low * 100;
+            var len = (candle.High - candle.Low) / candle.Close * 100;
             return Math.Round(len, roundDigits);
         }
 
-        public static decimal GetBodyLength(this IOhlc candle, int roundDigits = 4)
+        public static decimal GetBodyLength(this IOhlc bar, int roundDigits = 4)
         {
-            var len = (candle.Open > candle.Close
-                ? (candle.Open - candle.Close) / candle.Close
-                : (candle.Close - candle.Open) / candle.Open) * 100;
+             var len = 100*(bar.Open > bar.Close
+                ? (bar.Open - bar.Close) / bar.Close
+                : (bar.Close - bar.Open) / bar.Open);
             return Math.Round(len, roundDigits);
         }
 
         /// <summary>
         /// for bullish candles return upper shadow, for bearish - lower
         /// </summary>
-        public static decimal GetShadowLength(this IOhlc candle, int roundDigits = 4)
+        public static decimal GetShadowLength(this IOhlc bar, int roundDigits = 4)
         {
-            var shadow = candle.Open > candle.Close
-                ? (candle.Close - candle.Low) / ((candle.Close + candle.Low) / 2) * 100
-                : (candle.High - candle.Open) / ((candle.High + candle.Open) / 2) * 100;
+            var shadow = bar.Open > bar.Close
+                ? (bar.Close - bar.Low) / ((bar.Close + bar.Low) / 2) * 100
+                : (bar.High - bar.Open) / ((bar.High + bar.Open) / 2) * 100;
 
             return Math.Round(shadow, roundDigits);
         }
@@ -81,6 +81,22 @@ namespace AVS.CoreLib.Trading.Extensions
                 return BarSize.Long;
 
             return BarSize.Normal;
+        }
+
+        public static VolumeSize GetVolumeSize(this IBar ohlc, decimal avgVolume)
+        {
+            var volume = ohlc.Volume;
+
+            if (volume < avgVolume / 2)
+                return VolumeSize.Reduced;
+
+            if (volume < avgVolume * 2)
+                return VolumeSize.Normal;
+
+            if (volume < avgVolume * 5)
+                return VolumeSize.Increased;            
+
+            return VolumeSize.Extreme;
         }
 
         /// <summary>

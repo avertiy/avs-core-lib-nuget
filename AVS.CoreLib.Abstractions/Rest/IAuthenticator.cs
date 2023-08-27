@@ -18,5 +18,5 @@ namespace AVS.CoreLib.Abstractions.Rest
         byte[] Sign(string payload, out byte[] bytes);
 
         byte[] Sign(byte[] payload);
-    }
+    }    
 }

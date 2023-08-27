@@ -6,12 +6,8 @@ namespace AVS.CoreLib.Trading.Abstractions
     /// <summary>
     /// represent a bar chart unit (synonym candle or simply bar)  
     /// </summary>
-    public interface IBar : IOhlc
+    public interface IBar : IOhlcv
     {
-        /// <summary>
-        /// volume is an amount of base currency
-        /// </summary>
-        decimal Volume { get; }
         /// <summary>
         /// total is an amount of quote currency
         /// </summary>

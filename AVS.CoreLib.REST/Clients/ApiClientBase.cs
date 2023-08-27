@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.REST.Types;
@@ -21,23 +22,25 @@ namespace AVS.CoreLib.REST.Clients
             Client.SwitchKeys(publicKey, privateKey);
         }
 
-        protected virtual async Task<JsonResult> Query(IEndpoint endpoint, IPayload data)
-        {
-            var text = await Client.QueryAsync(endpoint, data).ConfigureAwait(false);
-            return new JsonResult() { JsonText = text, Source = Name };
-        }
-
         protected virtual async Task<JsonResult> SendRequest(IRequest request, CancellationToken ct = default)
         {
             var response = await Client.SendRequestAsync(request, ct).ConfigureAwait(false);
-            var result = JsonResult.FromResponse(response);
+            var result = JsonResult.FromResponse(response, Name);
             return result;
         }
 
+        [Obsolete("use SendRequest")]
+        protected virtual async Task<JsonResult> Query(IEndpoint endpoint, IPayload data)
+        {
+            var text = await Client.QueryAsync(endpoint, data).ConfigureAwait(false);
+            return new JsonResult(source: Name, content: text);
+        }
+
+        [Obsolete("use SendRequest")]
         protected async Task<JsonResult> Query(string url, string method = "GET")
         {
             var text = await Client.QueryAsync(new ApiEndpoint(url, "", method)).ConfigureAwait(false);
-            return new JsonResult() { JsonText = text, Source = Name };
+            return new JsonResult(Name, text);
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 
 namespace AVS.CoreLib.Extensions
 {
@@ -102,6 +101,14 @@ namespace AVS.CoreLib.Extensions
             return Math.Round(value, decimals, MidpointRounding.AwayFromZero);
         }
 
+        public static decimal Round(this decimal value, int? roundDecimals = null, int extraPrecision = 0, int minPrecision =0)
+        {
+            var dec = (roundDecimals ?? GetRoundDecimals(value)) + extraPrecision;
+            if (minPrecision > 0 && dec < minPrecision)
+                dec = minPrecision;
+            return Math.Round(value, dec, MidpointRounding.AwayFromZero);
+        }
+
         /// <summary>
         /// determines number of meaningful digits based on price value
         /// </summary>
@@ -117,14 +124,6 @@ namespace AVS.CoreLib.Extensions
                 > 0.001m => 7,
                 _ => 8
             };
-        }
-
-        public static decimal Round(this decimal value, int? roundDecimals = null, int extraPrecision = 0, int minPrecision =0)
-        {
-            var dec = (roundDecimals ?? GetRoundDecimals(value)) + extraPrecision;
-            if (minPrecision > 0 && dec < minPrecision)
-                dec = minPrecision;
-            return Math.Round(value, dec, MidpointRounding.AwayFromZero);
         }
 
         public static decimal RoundUp(this decimal value, int decimals)
