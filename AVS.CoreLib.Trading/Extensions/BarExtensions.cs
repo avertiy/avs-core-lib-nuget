@@ -58,10 +58,10 @@ namespace AVS.CoreLib.Trading.Extensions
         {
             return format switch
             {
-                "o" => $"{ohlc.Open.PriceRound()}",
-                "h" => $"{ohlc.High.PriceRound()}",
-                "l" => $"{ohlc.Low.PriceRound()}",
-                "c" => $"{ohlc.Close.PriceRound()}",
+                "o" => $"{ohlc.Open.Round()}",
+                "h" => $"{ohlc.High.Round()}",
+                "l" => $"{ohlc.Low.Round()}",
+                "c" => $"{ohlc.Close.Round()}",
                 _ => ohlc.ToString()
             };
         }

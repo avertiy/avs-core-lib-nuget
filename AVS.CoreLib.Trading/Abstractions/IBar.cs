@@ -9,11 +9,9 @@ namespace AVS.CoreLib.Trading.Abstractions
     public interface IBar : IOhlcv
     {
         /// <summary>
-        /// total is an amount of quote currency
+        /// Amount of quote asset
         /// </summary>
         decimal Total { get; }
         DateTime Time { get; }
-
-        //int NumberOfTrades { get; }
     }
 }

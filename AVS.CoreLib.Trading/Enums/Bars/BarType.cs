@@ -2,7 +2,17 @@
 {
     public enum BarType
     {
-        Bearish = 0,
-        Bullish = 1,
+        /// <summary>
+        /// doji Open=Close
+        /// </summary>
+        None =0,
+        /// <summary>
+        /// Open > Close
+        /// </summary>
+        Bearish = 1,
+        /// <summary>
+        /// Open < Close
+        /// </summary>
+        Bullish = 2,
     } 
 }

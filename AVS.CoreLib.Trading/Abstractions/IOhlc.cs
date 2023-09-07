@@ -2,6 +2,7 @@
 
 namespace AVS.CoreLib.Trading.Abstractions
 {
+    /*
     public interface IOhlc
     {
         decimal Open { get; set; }
@@ -13,8 +14,25 @@ namespace AVS.CoreLib.Trading.Abstractions
     public interface IOhlcv : IOhlc
     {
         /// <summary>
-        /// volume is an amount of base asset
+        /// Amount of base asset
         /// </summary>
         decimal Volume { get; set; }
     }
+    */
+    public interface IOhlc
+    {
+        decimal Open { get; }
+        decimal High { get; }
+        decimal Low { get; }
+        decimal Close { get; }
+    }
+
+    public interface IOhlcv : IOhlc
+    {
+        /// <summary>
+        /// Amount of base asset
+        /// </summary>
+        decimal Volume { get; }
+    }
+
 }

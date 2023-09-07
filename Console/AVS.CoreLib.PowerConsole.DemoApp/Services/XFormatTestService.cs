@@ -31,7 +31,7 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
 
         private void OhlcFormatterDemo()
         {
-            var ohlc = new Ohlc() { Open = 36000, Close = 35999, High = 38000, Low = 35500 };
+            var ohlc = new Bar() { Open = 36000, Close = 35999, High = 38000, Low = 35500 };
             PowerConsole.PrintHeader($"OHLC formatter");
             var formatted = X.Format($"{ohlc:OHLC}");
             PowerConsole.Print($"OHLC => {formatted}");

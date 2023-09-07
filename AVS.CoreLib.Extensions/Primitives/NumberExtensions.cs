@@ -2,6 +2,7 @@
 
 namespace AVS.CoreLib.Extensions
 {
+
     public static class NumberExtensions
     {
         #region doubles

@@ -39,6 +39,7 @@
 
   <ItemGroup>
     <Compile Remove="Extensions\PriceStepExtensions.cs" />
+    <Compile Remove="Structs\TimeFrame.cs" />
     <Compile Remove="TA\Calculators\AvgCalculator.cs" />
     <Compile Remove="TA\Calculators\NSECalculator.cs" />
     <Compile Remove="TA\Models\TAIndicator.cs" />

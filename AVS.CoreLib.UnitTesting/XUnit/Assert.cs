@@ -1,15 +1,14 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using AVS.CoreLib.Abstractions.Responses;
 using AVS.CoreLib.UnitTesting.XUnit.Exceptions;
-using Xunit;
 #nullable enable
 namespace AVS.CoreLib.UnitTesting.xUnit
 {
-    public static class XAssert
+    public partial class Assert: Xunit.Assert
     {
         public static void Success(IResponse response, string userMessage)
         {
-            Assert.True(response.Success, $"\r\n {userMessage}\r\n Error: {response.Error}");
+            True(response.Success, $"\r\n {userMessage}\r\n Error: {response.Error}");
         }
 
         public static void Null([MaybeNull] object? obj, string userMessage = "Expected null value")
@@ -79,11 +78,12 @@ namespace AVS.CoreLib.UnitTesting.xUnit
                 throw new EqualException(expected, actual, userMessage, index1, index2);
         }
 
+
         public static void Equal<T>(T expected, T actual, string userMessage)
         {
             try
             {
-                Assert.Equal<T>(expected, actual);
+                Equal<T>(expected, actual);
             }
             catch
             {
@@ -95,7 +95,7 @@ namespace AVS.CoreLib.UnitTesting.xUnit
         {
             try
             {
-                Assert.NotEqual(expected, actual);
+                NotEqual(expected, actual);
             }
             catch
             {

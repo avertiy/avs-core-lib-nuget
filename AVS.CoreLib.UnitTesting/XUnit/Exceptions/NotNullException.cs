@@ -13,4 +13,15 @@ namespace AVS.CoreLib.UnitTesting.XUnit.Exceptions
         {
         }
     }
+
+    public class NullException : XunitException
+    {
+        /// <summary>
+        /// Creates a new instance of the <see cref="T:Xunit.Sdk.NotNullException" /> class.
+        /// </summary>
+        public NullException(string userMessage)
+            : base($"Assert.Null() Failure\r\n{userMessage}")
+        {
+        }
+    }
 }

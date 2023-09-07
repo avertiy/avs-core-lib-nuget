@@ -9,6 +9,14 @@ namespace AVS.CoreLib.Trading.Abstractions.TA
     /// </summary>
     public interface IXBar : IBar
     {
+        //new decimal Open { get; set; }
+        //new decimal High { get; set; }
+        //new decimal Low { get; set; }
+        //new decimal Close { get; set; }
+        //new decimal Volume { get; set; }
+        //new DateTime Time { get; set; }
+        //new decimal Total { get; set; }
+
         /// <summary>
         /// Indicates the bar is bullish or bearish
         /// </summary>
