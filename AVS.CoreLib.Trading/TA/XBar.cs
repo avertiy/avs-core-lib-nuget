@@ -2,6 +2,7 @@
 using System;
 using AVS.CoreLib.Trading.Abstractions.TA;
 using AVS.CoreLib.Trading.Enums;
+using AVS.CoreLib.Trading.TA.Tools;
 
 namespace AVS.CoreLib.Trading.TA
 {
@@ -54,6 +55,6 @@ namespace AVS.CoreLib.Trading.TA
         public BarSize Size { get; set; }
         public VolumeSize VolumeSize { get; set; }
 
-        public ITa? TA { get; set; }
+        public TAExt? TA { get; set; }       
     }
 }

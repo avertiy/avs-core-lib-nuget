@@ -54,12 +54,7 @@ namespace AVS.CoreLib.Trading.Helpers
                 {
                     obj = ParseEnumHelper.ParsePositionSide(value);
                     return true;
-                }
-                //case nameof(PositionMode):
-                //{
-                //    obj = ParseEnumHelper.ParsePositionMode(value);
-                //    return true;
-                //}
+                }                
                 case nameof(FuturesOrderType):
                 {
                     obj = ParseEnumHelper.ParseFuturesOrderType(value);
@@ -90,12 +85,64 @@ namespace AVS.CoreLib.Trading.Helpers
                     obj = ParseEnumHelper.ParseTimeFrame(value);
                     return true;
                 }
+                case nameof(IncomeType):
+                {
+                        obj = ParseEnumHelper.ParseIncomeType(value);
+                        return true;
+                }               
 
                 default:
                 {
                     obj = null;
                     return false;
                 }
+            }
+        }
+
+        private static IncomeType ParseIncomeType(string value)
+        {
+            switch (value.ToUpper())
+            {
+                case "COMMISSION":
+                    return IncomeType.COMMISSION;
+                case "FUNDING_FEE":
+                    return IncomeType.FUNDING_FEE;                
+                case "REALIZED_PNL":
+                    return IncomeType.REALIZED_PNL;
+                case "TRANSFER":
+                    return IncomeType.TRANSFER;
+                case "WELCOME_BONUS":
+                    return IncomeType.WELCOME_BONUS;                
+                case "REFERRAL_KICKBACK":
+                    return IncomeType.REFERRAL_KICKBACK;
+                case "INSURANCE_CLEAR":
+                    return IncomeType.INSURANCE_CLEAR;                
+                case "COMISSION_REABATE":
+                    return IncomeType.COMMISSION_REBATE;
+                case "API_REABATE":
+                    return IncomeType.API_REBATE;
+                case "CONTEST_REWARD":
+                    return IncomeType.CONTEST_REWARD;
+                case "CROSS_COLLATERAL_TRANSFER":
+                    return IncomeType.CrossCollateralTransfer;
+                case "INTERNAL_TRANSFER":
+                    return IncomeType.INTERNAL_TRANSFER;
+                case "OPTIONS_PREMIUM_FEE":
+                    return IncomeType.OPTIONS_PREMIUM_FEE;
+                case "OPTIONS_SETTLE_PROFIT":
+                    return IncomeType.OPTIONS_SETTLEMENT_PROFIT;
+                case "AUTO_EXCHANGE":
+                    return IncomeType.AUTO_EXCHANGE;
+                case "COIN_SWAP_DEPOSIT":
+                    return IncomeType.COIN_SWAP_DEPOSIT;
+                case "COIN_SWAP_WITHDRAW":
+                    return IncomeType.COIN_SWAP_WITHDRAW;
+                case "POSITION_LIMIT_INCREASE_FEE":
+                    return IncomeType.POSITION_LIMIT_INCREASE_FEE;
+                case "DELIVERED_SETTLEMENT":
+                    return IncomeType.DELIVERED_SETTLEMENT;
+                default:
+                    throw new ArgumentOutOfRangeException($"Unknown {nameof(IncomeType)} '{value}'");
             }
         }
 
@@ -149,7 +196,7 @@ namespace AVS.CoreLib.Trading.Helpers
                 case "MONTH":
                     return TimeFrame.Month;
                 default:
-                    throw new NotSupportedException($"Unknown {nameof(TimeFrame)} '{value}'");
+                    throw new ArgumentOutOfRangeException($"Unknown {nameof(TimeFrame)} '{value}'");
             }
         }
 
@@ -172,7 +219,7 @@ namespace AVS.CoreLib.Trading.Helpers
                 case "AMENDMENT":
                     return ExecutionType.Amendment;
                 default:
-                    throw new NotSupportedException($"Unknown {nameof(ExecutionType)} '{value}'");
+                    throw new ArgumentOutOfRangeException($"Unknown {nameof(ExecutionType)} '{value}'");
             }
         }
 
@@ -216,7 +263,7 @@ namespace AVS.CoreLib.Trading.Helpers
                 //case "AUTO_EXCHANGE":
                 //    return AccountUpdateReason.CoinSwapWithdraw;
                 default:
-                    throw new NotSupportedException($"Unknown {nameof(AccountUpdateReason)} '{value}'");
+                    throw new ArgumentOutOfRangeException($"Unknown {nameof(AccountUpdateReason)} '{value}'");
             }
         }
 
@@ -230,7 +277,7 @@ namespace AVS.CoreLib.Trading.Helpers
                 case "CROSS":
                     return MarginType.Cross;
                 default:
-                    throw new NotSupportedException($"Unknown {nameof(MarginType)} '{value}'");
+                    throw new ArgumentOutOfRangeException($"Unknown {nameof(MarginType)} '{value}'");
             }
         }
 
@@ -245,7 +292,7 @@ namespace AVS.CoreLib.Trading.Helpers
                 case "MARK_PRICE":
                     return WorkingType.Mark;
                 default:
-                    throw new NotSupportedException($"Unknown {nameof(WorkingType)} '{value}'");
+                    throw new ArgumentOutOfRangeException($"Unknown {nameof(WorkingType)} '{value}'");
             }
         }
 
@@ -266,7 +313,7 @@ namespace AVS.CoreLib.Trading.Helpers
                 case "GTE_GTC":
                     return TimeInForce.GTE_GTC;
                 default:
-                    throw new NotSupportedException($"Unknown {nameof(TimeInForce)} '{value}'");
+                    throw new ArgumentOutOfRangeException($"Unknown {nameof(TimeInForce)} '{value}'");
             }
         }
 
@@ -331,23 +378,6 @@ namespace AVS.CoreLib.Trading.Helpers
             }
             throw new ArgumentOutOfRangeException($"{value} unknown OrderSide");
         }
-
-        //public static PositionMode ParsePositionMode(string value)
-        //{
-        //    switch (value[0])
-        //    {
-        //        case 'l':
-        //        case 'L':
-        //            return PositionMode.Long;
-        //        case 's':
-        //        case 'S':
-        //            return PositionMode.Short;
-        //        case 'b':
-        //        case 'B':
-        //            return PositionMode.Both;
-        //    }
-        //    throw new ArgumentOutOfRangeException($"{value} unknown OrderSide");
-        //}
 
         public static FuturesOrderType ParseFuturesOrderType(string value)
         {
@@ -436,7 +466,7 @@ namespace AVS.CoreLib.Trading.Helpers
                 case 'L': return AccountType.Lending;
                 case 'F': return AccountType.Margin;
                 default:
-                    throw new NotSupportedException($"Unknown {nameof(AccountType)} '{value}'");
+                    throw new ArgumentOutOfRangeException($"Unknown {nameof(AccountType)} '{value}'");
             }
         }
 
@@ -458,7 +488,7 @@ namespace AVS.CoreLib.Trading.Helpers
                     if (str is "C" or "CANCELED")
                         return OrderState.Canceled;
 
-                    throw new NotSupportedException($"Unknown {nameof(OrderState)} '{value}'");
+                    throw new ArgumentOutOfRangeException($"Unknown {nameof(OrderState)} '{value}'");
                 }
             }
         }

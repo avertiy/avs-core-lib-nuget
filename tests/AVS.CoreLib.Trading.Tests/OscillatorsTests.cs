@@ -2,6 +2,7 @@
 using AVS.CoreLib.Trading.Helpers;
 using AVS.CoreLib.Trading.TA.Calculators.Oscillators;
 using AVS.CoreLib.Trading.TA.Indicators;
+using AVS.CoreLib.Trading.Extensions;
 
 namespace AVS.CoreLib.Trading.Tests
 {
@@ -11,9 +12,8 @@ namespace AVS.CoreLib.Trading.Tests
         [InlineData(14, 3, 5)]
         public void StochCalculator_Returns_K_and_D_After_Period_Iterated(int period1, int period2, int period3)
         {
-            var period = 14;
             // Arrange
-            var data = MarketDataGenerator.GenerateAsc(period + 2, bullFactor: 2);
+            var data = MarketDataGenerator.GenerateAsc(period1 + period3, bullFactor: 2);
 
             var bearCount = data.Count(x => x.IsBearish());
 
@@ -24,15 +24,15 @@ namespace AVS.CoreLib.Trading.Tests
             {
                 var value = (Stoch?)calculator.Invoke(data[i]);
 
-                if (i < period - 1)
+                if (i < period1 - 1)
                 {
-                    Assert.Null(value, $"Value supposed to be null at bar[{i}]");
+                    Assert.Null(value, $"Value supposed to be null (i={i})");
                     continue;
                 }
 
-                Assert.NotNull(value, $"Value supposed to be not null at bar[{i}]");
-                Xunit.Assert.True(value.K > 0, $"K supposed to be greater than 0 at bar[{i}]");
-                Xunit.Assert.True(value.D > 0, $"D supposed to be greater than 0 at bar[{i}]");
+                Assert.NotNull(value, $"Value supposed to be not null (i={i})");
+                Assert.WithinRange(value.K, (0m, 100m), $"K must be within [0;100] range (i={i})");
+                Assert.WithinRange(value.D, (0m, 100m), $"D must be within [0;100] range (i={i})");
             }
         }
 
@@ -57,13 +57,49 @@ namespace AVS.CoreLib.Trading.Tests
 
                 if (i < period1 - 1)
                 {
-                    Assert.Null(value, $"Value supposed to be null at bar[{i}]");
+                    Assert.Null(value, $"Value supposed to be null (i={i})");
                     continue;
                 }
 
-                Assert.NotNull(value, $"Value supposed to be not null at bar[{i}]");
-                Xunit.Assert.True(value.K > 0, $"K supposed to be greater than 0 at bar[{i}]");
-                Xunit.Assert.True(value.D > 0, $"D supposed to be greater than 0 at bar[{i}]");
+                Assert.NotNull(value, $"Value supposed to be not null (i={i})");
+                Assert.WithinRange(value.K, (0m, 100m), $"K must be within [0;100] range (i={i})");
+                Assert.WithinRange(value.D, (0m, 100m), $"D must be within [0;100] range (i={i})");
+            }
+        }
+
+
+        [Theory]
+        [InlineData(12)]
+        public void RSICalculator_Return_Value_After_Period_Iterated(int period)
+        {
+            // Arrange
+            var data = MarketDataGenerator.GenerateAsc(period + 3, bullFactor: period);
+
+            var bearCount = data.Count(x => x.IsBearish());
+
+            var calculator = new RSICalculator(period);
+
+            // Act
+            for (var i = 0; i < data.Length; i++)
+            {
+                var rsi = (RSI?)calculator.Invoke(data[i]);
+
+                if (i < period - 1)
+                {
+                    Assert.Null(rsi, $"RSI({period}) supposed to be null (i={i})");
+                    continue;
+                }
+
+                Assert.NotNull(rsi, $"RSI({period}) supposed to be not null (i={i})");
+
+                if(i == period - 1)
+                {
+                    Assert.Equal(100, rsi.Value, $"RSI({period}) must be 100 (i={i})");
+                }
+                else
+                {
+                    Assert.WithinInclRange(rsi.Value, (0m, 100m), $"RSI({period}) must be within range [0;100] (i={i})");                    
+                }
             }
         }
     }

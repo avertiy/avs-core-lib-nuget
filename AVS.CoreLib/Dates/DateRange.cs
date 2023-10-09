@@ -117,25 +117,25 @@ namespace AVS.CoreLib.Dates
             return dateRange.TotalSeconds < compare.TotalSeconds;
         }
 
-        public static bool operator >=(DateRange dateRange, int periodInSeconds)
-        {
-            return dateRange.TotalSeconds >= periodInSeconds;
-        }
+        //public static bool operator >=(DateRange dateRange, int periodInSeconds)
+        //{
+        //    return dateRange.TotalSeconds >= periodInSeconds;
+        //}
 
-        public static bool operator >(DateRange dateRange, int periodInSeconds)
-        {
-            return dateRange.TotalSeconds > periodInSeconds;
-        }
+        //public static bool operator >(DateRange dateRange, int periodInSeconds)
+        //{
+        //    return dateRange.TotalSeconds > periodInSeconds;
+        //}
 
-        public static bool operator <(DateRange dateRange, int periodInSeconds)
-        {
-            return dateRange.TotalSeconds < periodInSeconds;
-        }
+        //public static bool operator <(DateRange dateRange, int periodInSeconds)
+        //{
+        //    return dateRange.TotalSeconds < periodInSeconds;
+        //}
 
-        public static bool operator <=(DateRange dateRange, int periodInSeconds)
-        {
-            return dateRange.TotalSeconds <= periodInSeconds;
-        }
+        //public static bool operator <=(DateRange dateRange, int periodInSeconds)
+        //{
+        //    return dateRange.TotalSeconds <= periodInSeconds;
+        //}
 
        
         #endregion
@@ -175,8 +175,6 @@ namespace AVS.CoreLib.Dates
             return $"[{From.ToString(format)};{To.ToString(format)}]";
         }
 
-        
-
         #region static methods
 
         /// <summary>
@@ -201,27 +199,6 @@ namespace AVS.CoreLib.Dates
             }
 
             return DateRangeHelper.TryParseFromLiterals(str, out range) || DateRangeHelper.TryParseExact(str, out range);
-        }
-
-        private static DateRange CreateDateRange(int n, char letter, DateTime toDate)
-        {
-            return letter switch
-            {
-                'd' => new DateRange(DateTime.Today.AddDays(-n), toDate),
-                'D' => new DateRange(DateTime.Today.AddDays(-n), toDate),
-                'w' => new DateRange(DateTime.Today.AddDays(-n * 7), toDate),
-                'W' => new DateRange(DateTime.Today.AddDays(-n * 7), toDate),
-                'M' => new DateRange(DateTime.Today.AddMonths(-n), toDate),
-                'q' => new DateRange(DateTime.Today.AddMonths(-n * 3), toDate),
-                'Q' => new DateRange(DateTime.Today.AddMonths(-n * 3), toDate),
-                'y' => new DateRange(DateTime.Today.AddYears(-n), toDate),
-                'Y' => new DateRange(DateTime.Today.AddYears(-n), toDate),
-                's' => new DateRange(toDate.AddSeconds(-n), toDate),
-                'm' => new DateRange(toDate.AddMinutes(-n), toDate),
-                'h' => new DateRange(toDate.AddHours(-n), toDate),
-                'H' => new DateRange(toDate.AddHours(-n), toDate),
-                _ => throw new ArgumentException($"Unable to create DateRange from `{n}{letter}`")
-            };
         }
         
         public static DateRange FromNow(int seconds, bool useUtcTime = false)

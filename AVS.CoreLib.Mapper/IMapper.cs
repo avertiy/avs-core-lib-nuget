@@ -18,7 +18,15 @@ namespace AVS.CoreLib.Mapper
     public interface IMapper
     {
         void Register<TSource, TModel>(Func<TSource, TModel> func);
+        void Register<TSource,TContext, TModel>(Func<TSource, TContext, TModel> func);
+        void Register<TSource, TModel>(Action<TSource, TModel> action);
+        void Register<TSource, TModel, TContext>(Action<TSource, TModel, TContext> action);
         TModel Map<TSource, TModel>(TSource source);
+        TModel Map<TSource, TContext, TModel>(TSource source, TContext context);
         Func<TSource, TModel> GetMapper<TSource, TModel>();
+        Func<TSource, TContext, TModel> GetMapper<TSource, TContext, TModel>();
+        void Fill<TSource, TModel>(TSource source, TModel model);
+        void Fill<TSource, TModel,TContext>(TSource source, TModel model, TContext context);
+        
     }
 }

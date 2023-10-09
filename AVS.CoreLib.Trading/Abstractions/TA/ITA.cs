@@ -5,24 +5,24 @@ using AVS.CoreLib.Trading.TA.Indicators;
 
 namespace AVS.CoreLib.Trading.Abstractions.TA
 {
-    public interface ITa : ITABag, IMainIndicators
+    public interface ITAExt : IMainIndicators, IBag
     {
         IHTF HTF { get; }
-    }
+    }    
 
     /// <summary>
     /// Represent a container (bag) of decimal (simple) values and object values
     /// </summary>
-    public interface ITABag
+    public interface IBag
     {
         decimal? Get(string key);
-        T? Get<T>(string key);
+        T? Get<T>(string key) where T: class;
         bool ContainsKey(string key);
     }
 
     public interface IMainIndicators
     {
-        MA? MA(int period, MAType type = MAType.SMA);
+        T? MA<T>(int period, MAType type = MAType.SMA) where T : MA;
         BB? BB(int period = 21);
         ADX? ADX(int period = 14, int smoothing = 14);
         RSI? RSI(int period = 14);

@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using AVS;
 using AVS.CoreLib.Trading.Enums;
+using AVS.CoreLib.Trading.TA.Tools;
 
 namespace AVS.CoreLib.Trading.Abstractions.TA
 {
@@ -9,27 +10,19 @@ namespace AVS.CoreLib.Trading.Abstractions.TA
     /// </summary>
     public interface IXBar : IBar
     {
-        //new decimal Open { get; set; }
-        //new decimal High { get; set; }
-        //new decimal Low { get; set; }
-        //new decimal Close { get; set; }
-        //new decimal Volume { get; set; }
-        //new DateTime Time { get; set; }
-        //new decimal Total { get; set; }
-
         /// <summary>
         /// Indicates the bar is bullish or bearish
         /// </summary>
-        BarType Type { get; set; }
+        BarType Type { get;  }
         /// <summary>
         /// Bar Length in %, formula: 100*(High - Low)/Low
         /// </summary>
-        decimal Length { get; set; }
+        decimal Length { get; }
 
         /// <summary>
         /// Candle body length in %, , formula: 100*  (Bullish ? (Close - Open)/Open : (Open - Close)/Close)
         /// </summary>
-        decimal BodyLength { get; set; }
+        decimal BodyLength { get; }
 
         /// <summary>
         /// (Open+Close)/2
@@ -49,12 +42,13 @@ namespace AVS.CoreLib.Trading.Abstractions.TA
         /// absolute size based on a timeframe 
         /// regardless avg bar length
         /// </summary>
-        BarSize SizeAbs { get; set; }
+        BarSize SizeAbs { get; }
 
         /// <summary>
         /// TA extension adds calculated values based on moving statistic like ATR, MA, RSI etc.         
         /// </summary>
-        ITa? TA { get; set; }
+        TAExt? TA { get; }
+        //ITAExt? TA { get; }
 
         /// <summary>
         /// Indicates how big (long) the bar is relative to avg length

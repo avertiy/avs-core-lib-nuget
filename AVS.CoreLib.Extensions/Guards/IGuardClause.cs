@@ -17,6 +17,11 @@ public interface IMustBeGuardClause : IGuardClause
 {
 }
 
+public interface IMustBeGuardClause<T> : IGuardClause
+{
+    T Value { get; set; }
+}
+
 /// <summary>
 /// Aggregates Must guard methods (Guard.Must.XXX)
 /// </summary>

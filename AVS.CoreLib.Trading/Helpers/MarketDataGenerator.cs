@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using AVS.CoreLib.Extensions;
+using AVS.CoreLib.Guards;
 using AVS.CoreLib.Trading.Enums;
 using AVS.CoreLib.Trading.Extensions;
 using AVS.CoreLib.Trading.Models;
@@ -60,48 +61,21 @@ namespace AVS.CoreLib.Trading.Helpers
                     atr_passed -= len;
                     open = bar.Close;                    
                 }                
-                //if (atr > 0)
-                //{
-                //    // if direction match than add bar
-                //    if (bar.IsBullish())
-                //    {
-                //        bars.Add(bar);
-                //        atr_passed += len;
-                //        open = bar.Close;
-                //        continue;
-                //    }
-                //    // filter bars of opposite direction if atr distance is too long relative to number of bars   
-                //    else if(rest/n < len *0.9m)
-                //    {
-                //        bars.Add(bar);
-                //        atr_passed -= len;
-                //        open = bar.Close;
-                //        continue;
-                //    }
-                //}else if (atr < 0)
-                //{
-                //    if (bar.IsBearish())
-                //    {
-                //        bars.Add(bar);
-                //        atr_passed += len;
-                //        open = bar.Close;
-                //        continue;
-                //    }
-                //    else if (rest/n < len*0.9m)
-                //    {
-                //        bars.Add(bar);
-                //        atr_passed -= len;
-                //        open = bar.Close;
-                //        continue;
-                //    }
-                //}                
             }
 
             return bars.ToArray();
         }
-
+        /// <summary>
+        /// Generate random series of bars in ascending price movement
+        /// </summary>
+        /// <param name="length">bar series length</param>
+        /// <param name="bullFactor">how many bullish bars should be in a row</param>
+        /// <param name="timeframe"></param>
         public static Bar[] GenerateAsc(int length = 100, int bullFactor = 5, TimeFrame timeframe = TimeFrame.H1)
         {
+            Guard.MustBe.GreaterThan(length, 0, "length must be greater than 0");
+            Guard.MustBe.GreaterThan(bullFactor, 0, "bullFactor must be greater than 0");
+
             var bars = new List<Bar>();
             var time = DateTime.Now.AddSeconds(-((int)timeframe * length)).RoundDown(timeframe);
             var open = 100.0m;
@@ -109,23 +83,26 @@ namespace AVS.CoreLib.Trading.Helpers
             var volatility = timeframe > TimeFrame.H1 ? 0.1m : 0.04m;
 
             var bullCounter = 0;
-
+            
             for (int i = 0; i < length; i++)
             {
                 var bar = GetBar(open, time, volatility);
-                if (bar.IsBearish())
+                if (bar.IsBullish())
                 {
-                    if (bullFactor > 0 && bullCounter >= bullFactor)
-                        bullCounter = 0;
-                    else
-                    {
-                        i--;
-                        continue;
-                    }
+                    bullCounter++;
                 }
                 else
                 {
-                    bullCounter++;
+                    if (bullCounter < bullFactor)
+                    {
+                        //swap Open/Close to make bullish bar
+                        var close = bar.Close;
+                        bar.Close = bar.Open;
+                        bar.Open = close;
+                        bullCounter++;
+                    }
+                    else
+                        bullCounter = 0;
                 }
 
                 bars.Add(bar);

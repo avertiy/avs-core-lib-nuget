@@ -79,8 +79,7 @@ namespace AVS.CoreLib.Extensions.Collections
         }
 
         [DebuggerStepThrough]
-        public static IEnumerable<TResult> Select<TKey, TValue, TResult>(this IDictionary<TKey, TValue> dictionary,
-            Func<TValue, TResult> selector)
+        public static IEnumerable<TResult> Select<TKey, TValue, TResult>(this IDictionary<TKey, TValue> dictionary, Func<TValue, TResult> selector)
         {
             var list = new List<TResult>();
             foreach (var kp in dictionary)
@@ -91,8 +90,7 @@ namespace AVS.CoreLib.Extensions.Collections
         }
 
         [DebuggerStepThrough]
-        public static IEnumerable<TResult> Select<TKey, TValue, TResult>(this IDictionary<TKey, TValue> dictionary,
-            Func<TKey, TValue, TResult> selector)
+        public static IEnumerable<TResult> Select<TKey, TValue, TResult>(this IDictionary<TKey, TValue> dictionary, Func<TKey, TValue, TResult> selector)
         {
             var list = new List<TResult>();
             foreach (var kp in dictionary)
@@ -136,6 +134,6 @@ namespace AVS.CoreLib.Extensions.Collections
             }
             sb.Length -= separator.Length;
             return sb.ToString();
-        }
+        }        
     }
 }

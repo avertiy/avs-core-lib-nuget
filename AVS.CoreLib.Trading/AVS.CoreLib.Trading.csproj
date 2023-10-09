@@ -47,6 +47,7 @@
     <Compile Remove="TA\PropertyBag.cs" />
     <Compile Remove="TA\Series.cs" />
     <Compile Remove="TA\Tools\Oscillators.cs" />
+    <Compile Remove="TA\Tools\TABag.cs" />
     <Compile Remove="TA\Tools\TASet.cs" />
     <Compile Remove="Types\Pairs.cs" />
   </ItemGroup>

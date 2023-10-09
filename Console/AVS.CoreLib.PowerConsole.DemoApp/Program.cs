@@ -22,5 +22,5 @@ namespace AVS.CoreLib.PowerConsole.DemoApp
                 .RunAllTest(10_000);
             PowerConsole.PressEnterToExit();
         }
-    }
+    }    
 }

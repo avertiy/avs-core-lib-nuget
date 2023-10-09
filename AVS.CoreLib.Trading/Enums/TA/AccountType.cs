@@ -34,14 +34,4 @@
         HMA =3,
         TEMA =4
     }
-
-    public enum Indicator
-    {
-        SMA = 0,
-        EMA = 1,
-        WMA = 2,
-        HMA = 3,
-        BB,
-        RSI
-    }
 }

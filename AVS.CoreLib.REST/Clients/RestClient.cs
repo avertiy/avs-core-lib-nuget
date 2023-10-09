@@ -14,6 +14,7 @@ namespace AVS.CoreLib.REST.Clients
     /// <remarks>
     /// if endpoint requires Authentication, the authentication delegated to <see cref="HttpRequestBuilder"/>
     /// </remarks>
+    [Obsolete("Use RestTools instead (in .NET Core 5+ HttpWebRequest is recommented instead of HttpClient)")]
     public class RestClient : IRestClient
     {
         protected IHttpRequestBuilder HttpRequestBuilder { get; }

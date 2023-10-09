@@ -13,7 +13,7 @@ namespace AVS.CoreLib.UnitTesting.xUnit
 
         public static void Null([MaybeNull] object? obj, string userMessage = "Expected null value")
         {
-            if (obj == null)
+            if (obj != null)
                 throw new NullException(userMessage);
         }
 
@@ -23,6 +23,25 @@ namespace AVS.CoreLib.UnitTesting.xUnit
                 throw new NotNullException(userMessage);
         }
 
+        public static new void True(bool condition, string userMessage)
+        {
+            if (condition)
+                throw new TrueException(userMessage, condition);
+        }
+
+        public static void WithinRange(decimal actual, (decimal from, decimal to) range, string userMessage)
+        {
+            if (actual <= range.from || actual >= range.to)
+                throw new RangeException(userMessage);
+        }
+
+        public static void WithinInclRange(decimal actual, (decimal from, decimal to) range, string userMessage)
+        {
+            if (actual < range.from || actual > range.to)
+                throw new RangeException(userMessage);
+        }
+
+        #region Equal overloads
         public static void Equal(string expected, string actual, string userMessage,
             bool ignoreCase = true,
             bool ignoreLineEndingDifferences = true,
@@ -75,9 +94,27 @@ namespace AVS.CoreLib.UnitTesting.xUnit
                 }
             }
             if (index1 < num1 || index2 < num2)
-                throw new EqualException(expected, actual, userMessage, index1, index2);
+                throw new StringEqualException(expected, actual, userMessage, index1, index2);
         }
 
+
+        public static void Equal(decimal expected, decimal actual, string userMessage)
+        {
+            if (expected != actual)
+                throw new EqualException(expected, actual, userMessage);
+        }
+
+        public static void Equal(double expected, double actual, string userMessage)
+        {
+            if (expected != actual)
+                throw new EqualException(expected, actual, userMessage);
+        }
+
+        public static void Equal(int expected, int actual, string userMessage)
+        {
+            if (expected != actual)
+                throw new EqualException(expected, actual, userMessage);
+        }
 
         public static void Equal<T>(T expected, T actual, string userMessage)
         {
@@ -90,6 +127,26 @@ namespace AVS.CoreLib.UnitTesting.xUnit
                 throw new EqualException(expected, actual, userMessage);
             }
         }
+        #endregion
+
+        #region NotEqual overloads
+        public static void NotEqual(decimal expected, decimal actual, string userMessage)
+        {
+            if (expected == actual)
+                throw new NotEqualException(expected, actual, userMessage);
+        }
+
+        public static void NotEqual(double expected, double actual, string userMessage)
+        {
+            if (expected == actual)
+                throw new NotEqualException(expected, actual, userMessage);
+        }
+
+        public static void NotEqual(int expected, int actual, string userMessage)
+        {
+            if (expected == actual)
+                throw new NotEqualException(expected, actual, userMessage);
+        }
 
         public static void NotEqual<T>(T expected, T actual, string userMessage)
         {
@@ -101,7 +158,8 @@ namespace AVS.CoreLib.UnitTesting.xUnit
             {
                 throw new NotEqualException(expected, actual, userMessage);
             }
-        }
+        } 
+        #endregion
 
         private static bool IsLineEnding(char c)
         {

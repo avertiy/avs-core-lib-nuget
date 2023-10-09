@@ -12,15 +12,15 @@ using AVS.CoreLib.Utilities;
 
 namespace AVS.CoreLib.REST.Clients
 {
+    /// <summary>
+    /// represent RequestMessageBuilder to build authenticated (signed) http request messages
+    /// if you need unsigned http request messages to consume public api <see cref="PublicRequestMessageBuilder"/>
+    /// </summary>
     public class RequestMessageBuilder : IRequestMessageBuilder
     {
         public bool UseTonce { get; set; }
         public bool OrderQueryStringParameters { get; set; } = true;
-        public IAuthenticator? Authenticator { get; set; }
-
-        public RequestMessageBuilder()
-        {
-        }
+        public IAuthenticator Authenticator { get; set; }
 
         public RequestMessageBuilder(IAuthenticator authenticator)
         {

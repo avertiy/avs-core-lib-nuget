@@ -15,21 +15,19 @@ namespace AVS.CoreLib.REST.Clients
         private readonly IRequestMessageBuilder _requestMessageBuilder;
         private readonly IHttpClientFactory _httpClientFactory;
         public string Source { get; set; }
-
         /// <summary>
         /// prevents from being blocked when sending multiple parallel requests
         /// API provider might set rate limits like Binance or just return access denied when detects too many requests within a small timeframe
         /// </summary>
         public int RequestMinDelay { get; set; } = 50;
         public DateTime LastRequestTime { get; private set; } = DateTime.UtcNow;
-
         public string LastRequestedUrl { get; set; }
-
         /// <summary>
         /// sometimes api source might return 422 error, we can make a few attempts to do the request
         /// </summary>
         public int FetchAttempts { get; set; } = 2;
-        protected RestTools(IRequestMessageBuilder requestMessageBuilder, IHttpClientFactory httpClientFactory)
+
+        public RestTools(IRequestMessageBuilder requestMessageBuilder, IHttpClientFactory httpClientFactory)
         {
             _requestMessageBuilder = requestMessageBuilder;
             _httpClientFactory = httpClientFactory;

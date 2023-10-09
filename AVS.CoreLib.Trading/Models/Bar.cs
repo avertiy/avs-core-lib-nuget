@@ -22,11 +22,6 @@ namespace AVS.CoreLib.Trading.Models
 
         public BarType Type => Open < Close ? BarType.Bullish : Open > Close ? BarType.Bearish : BarType.None;
 
-        public bool IsBearish()
-        {
-            throw new NotImplementedException();
-        }
-
         public override string ToString()
         {
             return $"{Time:g} {Open:C};{High:C};{Low:C};{Close:C} Length={this.GetBodyLength()}";

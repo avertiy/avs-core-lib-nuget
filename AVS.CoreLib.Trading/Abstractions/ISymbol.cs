@@ -4,4 +4,9 @@
     {
         string Symbol { get; }
     }
+
+    public interface IMutSymbol : ISymbol
+    {
+        new string Symbol { get; set; }
+    }
 }

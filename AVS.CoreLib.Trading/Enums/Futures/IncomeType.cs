@@ -6,45 +6,45 @@
     public enum IncomeType
     {
         /// <summary>
-        /// Transfer into account
+        /// Futures trading commission
         /// </summary>
-        Transfer,
-        /// <summary>
-        /// Futures welcome bonus
-        /// </summary>
-        WelcomeBonus,
-        /// <summary>
-        /// Futures realized profit
-        /// </summary>
-        RealizedPnl,
+        COMMISSION,        
         /// <summary>
         /// Futures funding fee
         /// </summary>
-        FundingFee,
+        FUNDING_FEE,
         /// <summary>
-        /// Futures trading commission
+        /// Futures realized profit
         /// </summary>
-        Commission,
+        REALIZED_PNL,
+        /// <summary>
+        /// Transfer into account
+        /// </summary>
+        TRANSFER,
+        /// <summary>
+        /// Futures welcome bonus
+        /// </summary>
+        WELCOME_BONUS,
         /// <summary>
         /// Insurance clear
         /// </summary>
-        InsuranceClear,
+        INSURANCE_CLEAR,
         /// <summary>
         /// Referral kickback
         /// </summary>
-        ReferralKickback,
+        REFERRAL_KICKBACK,
         /// <summary>
         /// Commission rebate
         /// </summary>
-        CommissionRebate,
+        COMMISSION_REBATE,
         /// <summary>
         /// Api rebate
         /// </summary>
-        ApiRebate,
+        API_REBATE,
         /// <summary>
         /// Contest reward
         /// </summary>
-        ContestReward,
+        CONTEST_REWARD,
         /// <summary>
         /// Cross collateral transfer
         /// </summary>
@@ -52,34 +52,34 @@
         /// <summary>
         /// Options premium fee
         /// </summary>
-        OptionsPremiumFee,
+        OPTIONS_PREMIUM_FEE,
         /// <summary>
         /// Options settle profit
         /// </summary>
-        OptionsSettleProfit,
+        OPTIONS_SETTLEMENT_PROFIT,
         /// <summary>
         /// Internal transfer
         /// </summary>
-        InternalTransfer,
+        INTERNAL_TRANSFER,
         /// <summary>
         /// Auto exchange
         /// </summary>
-        AutoExchange,
+        AUTO_EXCHANGE,
         /// <summary>
         /// Delivered settlement
         /// </summary>
-        DeliveredSettlement,
+        DELIVERED_SETTLEMENT,
         /// <summary>
         /// Coin swap deposit
         /// </summary>
-        CoinSwapDeposit,
+        COIN_SWAP_DEPOSIT,
         /// <summary>
         /// Coin swap withdraw
         /// </summary>
-        CoinSwapWithdraw,
+        COIN_SWAP_WITHDRAW,
         /// <summary>
         /// Position limit increase fee
         /// </summary>
-        PositionLimitIncreaseFee
+        POSITION_LIMIT_INCREASE_FEE
     }
 }

@@ -2,6 +2,11 @@
 {
     public interface IPrice
     {
-        decimal Price { get; set; }
+        decimal Price { get; }
+    }
+
+    public interface IMutPrice : IPrice
+    {
+        new decimal Price { get; set; }
     }
 }

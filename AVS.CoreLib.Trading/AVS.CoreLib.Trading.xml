@@ -19,7 +19,12 @@
             Amount of base asset
             </summary>
         </member>
-        <member name="T:AVS.CoreLib.Trading.Abstractions.TA.ITABag">
+        <member name="P:AVS.CoreLib.Trading.Abstractions.IMutOhlcv.Volume">
+            <summary>
+            Amount of base asset
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Abstractions.TA.IBag">
             <summary>
             Represent a container (bag) of decimal (simple) values and object values
             </summary>
@@ -481,52 +486,52 @@
             Type of futures income
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.Transfer">
-            <summary>
-            Transfer into account
-            </summary>
-        </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.WelcomeBonus">
-            <summary>
-            Futures welcome bonus
-            </summary>
-        </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.RealizedPnl">
-            <summary>
-            Futures realized profit
-            </summary>
-        </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.FundingFee">
-            <summary>
-            Futures funding fee
-            </summary>
-        </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.Commission">
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.COMMISSION">
             <summary>
             Futures trading commission
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.InsuranceClear">
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.FUNDING_FEE">
+            <summary>
+            Futures funding fee
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.REALIZED_PNL">
+            <summary>
+            Futures realized profit
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.TRANSFER">
+            <summary>
+            Transfer into account
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.WELCOME_BONUS">
+            <summary>
+            Futures welcome bonus
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.INSURANCE_CLEAR">
             <summary>
             Insurance clear
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.ReferralKickback">
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.REFERRAL_KICKBACK">
             <summary>
             Referral kickback
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.CommissionRebate">
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.COMMISSION_REBATE">
             <summary>
             Commission rebate
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.ApiRebate">
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.API_REBATE">
             <summary>
             Api rebate
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.ContestReward">
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.CONTEST_REWARD">
             <summary>
             Contest reward
             </summary>
@@ -536,42 +541,42 @@
             Cross collateral transfer
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.OptionsPremiumFee">
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.OPTIONS_PREMIUM_FEE">
             <summary>
             Options premium fee
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.OptionsSettleProfit">
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.OPTIONS_SETTLEMENT_PROFIT">
             <summary>
             Options settle profit
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.InternalTransfer">
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.INTERNAL_TRANSFER">
             <summary>
             Internal transfer
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.AutoExchange">
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.AUTO_EXCHANGE">
             <summary>
             Auto exchange
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.DeliveredSettlement">
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.DELIVERED_SETTLEMENT">
             <summary>
             Delivered settlement
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.CoinSwapDeposit">
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.COIN_SWAP_DEPOSIT">
             <summary>
             Coin swap deposit
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.CoinSwapWithdraw">
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.COIN_SWAP_WITHDRAW">
             <summary>
             Coin swap withdraw
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.PositionLimitIncreaseFee">
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.POSITION_LIMIT_INCREASE_FEE">
             <summary>
             Position limit increase fee
             </summary>
@@ -1255,6 +1260,14 @@
             the greater rank the larger the trade was
             </summary>
         </member>
+        <member name="M:AVS.CoreLib.Trading.Helpers.MarketDataGenerator.GenerateAsc(System.Int32,System.Int32,AVS.CoreLib.Trading.Enums.TimeFrame)">
+            <summary>
+            Generate random series of bars in ascending price movement
+            </summary>
+            <param name="length">bar series length</param>
+            <param name="bullFactor">how many bullish bars should be in a row</param>
+            <param name="timeframe"></param>
+        </member>
         <member name="T:AVS.CoreLib.Trading.Helpers.TradingPairHelper">
             <summary>
             helps to generate trading pairs (aka symbols) combining quote and base currencies
@@ -1408,6 +1421,11 @@
         <member name="T:AVS.CoreLib.Trading.TA.Indicators.MA">
             <summary>
             Describe moving average value for a certain point (bar)
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.TA.Tools.TAExt">
+            <summary>
+            Defines an interface to TA bar extension (ITAExt)
             </summary>
         </member>
         <member name="T:AVS.CoreLib.Trading.TA.XBar">

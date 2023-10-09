@@ -33,7 +33,7 @@ public static class ParallelExtensions
         Func<T, Task<TResult>> job,
         Func<T, TResult, IEnumerable<TItem>> selector) where T : notnull
     {
-        return new ParallelJobs<T, TResult>(enumerable, job).FetchItemsAsync(selector);
+        return ParallelJobs.Create(enumerable, job).RunAll(x => x.PickItems(selector));
     }
 
     /// <summary>
@@ -43,7 +43,7 @@ public static class ParallelExtensions
         Func<T, Task<TResult>> job,
         Func<TResult, IEnumerable<TItem>> selector) where T : notnull
     {
-        return new ParallelJobs<T, TResult>(enumerable, job).FetchItemsAsync(selector);
+        return ParallelJobs.Create(enumerable, job).RunAll(x => x.PickItems(selector));
     }
 
     /// <summary>
@@ -52,7 +52,7 @@ public static class ParallelExtensions
     public static Task<List<TResult>> ParallelFetch<T, TResult>(this IEnumerable<T> enumerable,
         Func<T, Task<TResult>> job) where T : notnull
     {
-        return new ParallelJobs<T, TResult>(enumerable, job).FetchAsync();
+        return ParallelJobs.Create(enumerable, job).RunAll(x => x.ToList());
     }
 
     /// <summary>
@@ -61,6 +61,6 @@ public static class ParallelExtensions
     public static Task<Dictionary<T, TResult>> ParallelFetchAsDictionary<T, TResult>(this IEnumerable<T> enumerable,
         Func<T, Task<TResult>> job) where T : notnull
     {
-        return new ParallelJobs<T, TResult>(enumerable, job).FetchAsDictionaryAsync();
+        return ParallelJobs.Create(enumerable, job).RunAll(x=> x.Results);        
     }
 }

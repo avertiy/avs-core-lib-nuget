@@ -22,23 +22,23 @@ namespace AVS.CoreLib.Guards
         public static IArrayGuardClause List { get; set; } = _guard;
         public static IDictionaryGuardClause Dictionary { get; set; } = _guard;
 
-
-
         #region Obosolete methods
 
-        #region MustBePositive
+        #region MustBePositive        
+
+        [Obsolete("use Guard.MustBe.Positive(..)")]
         public static void MustBePositive(int value, string name = "argument")
         {
             if (value <= 0)
                 throw new ArgumentException($"{name} must be positive number (value:{value})");
         }
-
+        [Obsolete("use Guard.MustBe.Positive(..)")]
         public static void MustBePositive(decimal value, string name = "argument")
         {
             if (value <= 0)
                 throw new ArgumentException($"{name} must be positive number (value:{value})");
         }
-
+        [Obsolete("use Guard.MustBe.Positive(..)")]
         public static void MustBePositive(double value, string name = "argument")
         {
             if (value <= 0)

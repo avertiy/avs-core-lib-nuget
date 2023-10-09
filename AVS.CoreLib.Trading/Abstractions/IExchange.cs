@@ -2,6 +2,11 @@
 {
     public interface IExchange
     {
-        string Exchange { get; set; }
+        string Exchange { get; }
     }
+
+    public interface IMutExchange : IExchange
+    {
+        new string Exchange { get; set; }
+    }    
 }
