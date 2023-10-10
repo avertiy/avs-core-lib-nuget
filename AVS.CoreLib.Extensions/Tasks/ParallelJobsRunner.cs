@@ -29,6 +29,7 @@ public sealed class ParallelJobs<TKey, TResult> where TKey: notnull
     /// delay (timeout) in milliseconds
     /// </summary>
     public int Timeout { get; private set; }
+    public string? Errors { get; private set; }
 
     [DebuggerStepThrough]
     public ParallelJobs(IEnumerable<TKey> enumerable, Func<TKey, Task<TResult>> job)
@@ -65,7 +66,7 @@ public sealed class ParallelJobs<TKey, TResult> where TKey: notnull
     }
 
     [DebuggerStepThrough]
-    public async Task<TOutput> RunAll<TOutput>(Func<TaskResults<TKey, TResult>,TOutput> func, CancellationToken ct = default)
+    public async Task<TOutput> RunAll<TOutput>(Func<TaskResults<TResult>,TOutput> func, CancellationToken ct = default)
     {
         var tasks = new Dictionary<TKey, Task<TResult>>();
         foreach (var key in _enumerable)
@@ -79,13 +80,14 @@ public sealed class ParallelJobs<TKey, TResult> where TKey: notnull
         }
 
         await Task.WhenAll(tasks.Values);
-        var taskResults = CreateResults(tasks);
+        var taskResults = CreateResults(tasks);        
         var result = func(taskResults);
+        Errors = taskResults.HasErrors ? taskResults.GetCombinedErrors() : null;
         return result;
     }
 
     [DebuggerStepThrough]
-    public async Task<TaskResults<TKey, TResult>> RunAll(CancellationToken ct = default)
+    public async Task<TaskResults<TResult>> RunAll(CancellationToken ct = default)
     {
         var tasks = new Dictionary<TKey, Task<TResult>>();
         foreach (var key in _enumerable)
@@ -99,17 +101,24 @@ public sealed class ParallelJobs<TKey, TResult> where TKey: notnull
         }
 
         await Task.WhenAll(tasks.Values);
-        return CreateResults(tasks);
+        var results = CreateResults(tasks);
+        Errors = results.HasErrors ? results.GetCombinedErrors() : null;
+        return results;
+    }
+
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public Task<List<TItem>> FetchItems<TItem>(Func<TResult, IEnumerable<TItem>> selector, CancellationToken ct = default)
+    {
+        return RunAll(x => x.PickItems(selector) ,ct);
     }
 
     /// <summary>
     /// unwrap Task results from Tasks
     /// </summary>
-    private TaskResults<TKey, TResult> CreateResults(Dictionary<TKey, Task<TResult>> tasks)
+    private TaskResults<TResult> CreateResults(Dictionary<TKey, Task<TResult>> tasks)
     {
-        var success = new Dictionary<TKey, TResult>(tasks.Count);
-        var failed = new Dictionary<TKey, TResult>();
-        var errors = new Dictionary<TKey, string>();
+        var results = new TaskResults<TResult>(tasks.Count);        
         foreach (var kp in tasks)
         {
             var key = kp.Key;
@@ -118,15 +127,13 @@ public sealed class ParallelJobs<TKey, TResult> where TKey: notnull
 
             if (!IsValidResult(result, out var error))
             {
-                errors[key] = error!;
-                failed[key] = result;
+                results.Add(key, result, error!);                
                 continue;
             }
 
-            success[key] = result;
+            results.Add(key, result);
         }
-
-        var results = new TaskResults<TKey, TResult>(success, failed, errors);
+        
         return results;
     }
 

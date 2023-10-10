@@ -54,13 +54,4 @@ public static class ParallelExtensions
     {
         return ParallelJobs.Create(enumerable, job).RunAll(x => x.ToList());
     }
-
-    /// <summary>
-    /// for each item creates job (task), executes them in in parallel, then returns results <see cref="Dictionary{T,TResults}"/> 
-    /// </summary>
-    public static Task<Dictionary<T, TResult>> ParallelFetchAsDictionary<T, TResult>(this IEnumerable<T> enumerable,
-        Func<T, Task<TResult>> job) where T : notnull
-    {
-        return ParallelJobs.Create(enumerable, job).RunAll(x=> x.Results);        
-    }
 }
