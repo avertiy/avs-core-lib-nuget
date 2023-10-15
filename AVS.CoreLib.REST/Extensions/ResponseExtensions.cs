@@ -1,14 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using AVS.CoreLib.Abstractions;
 using AVS.CoreLib.Abstractions.Responses;
 using AVS.CoreLib.Abstractions.Rest;
+using AVS.CoreLib.Extensions.Tasks;
 using AVS.CoreLib.REST.Responses;
 
 namespace AVS.CoreLib.REST.Extensions
 {
     public static class ResponseExtensions
     {
+        public static Task<TaskResults<T, Response<TResult>>> RunInParallel<T, TResult>(this IEnumerable<T> args, Func<T, Task<Response<TResult>>> job, int delay = 0)
+        {
+            var runner = new TaskRunner<Response<TResult>>(job).WithDelay(delay).WithErrorCheck(x => x.Error);
+            return runner.RunAll(args);
+        }
+
         public static IResponse<T> OnSuccess<T>(this IResponse response, Func<T> func, string errorMessage = null)
         {
             var newResponse = CreateResponse<T>(response, errorMessage);

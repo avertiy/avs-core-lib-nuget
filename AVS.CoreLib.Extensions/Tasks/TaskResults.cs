@@ -1,122 +1,57 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using AVS.CoreLib.Extensions.Collections;
+using AVS.CoreLib.Extensions.Linq;
 using AVS.CoreLib.Extensions.Stringify;
 
 namespace AVS.CoreLib.Extensions.Tasks;
 
-public sealed class TaskResults<TResult>
+public sealed class TaskResults<T, TResult> : IEnumerable<TResult>
 {
-    public Dictionary<object, TResult> Results { get; }
-    public Dictionary<object, TResult>? Failed { get; private set; }
-    public Dictionary<object, string>? Errors { get; private set; }
+    public Dictionary<T, TResult> Results { get; private set; }
+    public Dictionary<T, TResult>? Failed { get; private set; }
+    public Dictionary<T, string>? Errors { get; private set; }
+
+    public TaskResults(int capacity = 0)
+    {
+        Results = new Dictionary<T, TResult>(capacity);
+    }
+
+    public void Add(T key, TResult value, string? err = null)
+    {
+        if (err != null)
+        {
+            Failed ??= new Dictionary<T, TResult>();
+            Errors ??= new Dictionary<T, string>();
+            Errors[key] = err;
+            Failed[key] = value;
+        }
+        else
+        {
+            Results[key] = value;
+        }
+    }
 
     public bool HasErrors => Errors != null && Errors.Any();
 
-    public TaskResults(int capacity)
+    public Dictionary<T, TResult> GetAllResults()
     {
-        Results = new Dictionary<object, TResult>(capacity);
-    }
-
-    public void Add(object key, TResult value)
-    {
-        Results.Add(key, value);
-    }
-
-    public void Add(object key, TResult value, string error)
-    {
-        Failed ??= new Dictionary<object, TResult>();
-        Failed.Add(key, value);
-        Errors ??= new Dictionary<object, string>();
-        Errors.Add(key, error);
-    }
-
-    public string? GetCombinedErrors(bool distinct = true)
-    {
-        if (Errors == null || Errors.Count == 0)
-            return null;
-
-        if (!distinct)
-            return Errors.Stringify();
-
-        var distinctErrors = Errors.Values.Distinct().ToArray();
-
-        return distinctErrors.Length == 1
-            ? $"{string.Join(",", Errors.Keys)}: {distinctErrors[0]}"
-            : Errors.Stringify();
-    }
-
-    public List<TItem> PickItems<TItem>(Func<TResult, IEnumerable<TItem>> selector)
-    {
-        return Results.PickItems(selector);
-    }
-
-    public List<TItem> PickItems<TKey, TItem>(Func<TKey, TResult, IEnumerable<TItem>> selector)
-    {
-        return Results.PickItems((key, res)=> selector((TKey)key, res));
-    }
-
-    public HashSet<TItem> PickUniqueItems<TItem>(Func<TResult, IEnumerable<TItem>> selector)
-    {
-        return Results.PickUniqueItems(selector);
-    }
-
-    public HashSet<TItem> PickUniqueItems<TKey, TItem>(Func<TKey, TResult, IEnumerable<TItem>> selector)
-    {
-        return Results.PickUniqueItems((key, res) => selector((TKey)key, res));        
-    }
-
-    public List<TItem> PickUniqueItems<TItem, TKey>(Func<TResult, IEnumerable<TItem>> selector, Func<TItem, TKey> keySelector)
-    {
-        return Results.PickUniqueItems(selector, keySelector).Values.ToList();
-    }
-
-    public List<TResult> ToList()
-    {
-        return Results.Values.ToList();
-    }
-
-    public Dictionary<TKey, TResult> GetAllResults<TKey>()
-    {
-        var dict = new Dictionary<TKey, TResult>(Results.Count + Failed?.Count ?? 0);
-
-        foreach(var kp in Results)
-        {
-            dict.Add((TKey)kp.Key, kp.Value);
-        }
-
+        var dict = new Dictionary<T, TResult>(Results);
         if (Failed != null)
         {
             foreach (var kp in Failed)
             {
-                dict.Add((TKey)kp.Key, kp.Value);
+                dict.Add(kp.Key, kp.Value);
             }
         }
-
         return dict;
     }
-}
-/*
-public sealed class TaskResults<T, TResult> where T : notnull
-{
-    public Dictionary<T, TResult> Results { get; }
-    public Dictionary<T, TResult>? Failed { get; }
-    public Dictionary<T, string>? Errors { get; }
-    public bool HasErrors => Errors != null && Errors.Any();
 
-    public TaskResults(Dictionary<T, TResult> results, Dictionary<T, TResult> failed, Dictionary<T, string> errors)
-    {
-        Results = results;
-
-        if (failed.Any())
-        {
-            Failed = failed;
-            Errors = errors;
-        }
-    }
-
-    public string? GetCombinedErrors(bool distinct = true)
+    public string? GetErrorsCombined(bool distinct = true)
     {
         if (Errors == null || Errors.Count == 0)
             return null;
@@ -131,33 +66,74 @@ public sealed class TaskResults<T, TResult> where T : notnull
             : Errors.Stringify();
     }
 
-    public List<TItem> PickItems<TItem>(Func<TResult, IEnumerable<TItem>> selector)
+    public string[] GetErrors(bool distinct = true)
     {
-        return Results.PickItems(selector);
+        if (Errors == null || Errors.Count == 0)
+            return Array.Empty<string>();
+
+        if (!distinct)
+            return Errors.Values.ToArray();
+
+        var errors = Errors.Values.Distinct().ToArray();
+        return errors;
     }
 
-    public List<TItem> PickItems<TItem>(Func<T, TResult, IEnumerable<TItem>> selector)
+    public IEnumerator<TResult> GetEnumerator()
     {
-        return Results.PickItems(selector);
+        return Results.Values.GetEnumerator();
     }
 
-    public HashSet<TItem> PickUniqueItems<TItem>(Func<T, TResult, IEnumerable<TItem>> selector)
+    IEnumerator IEnumerable.GetEnumerator()
     {
-        return Results.PickUniqueItems(selector);
+        return Results.Values.GetEnumerator();
     }
 
-    public HashSet<TItem> PickUniqueItems<TItem>(Func<TResult, IEnumerable<TItem>> selector)
-    {
-        return Results.PickUniqueItems(selector);
+    public static implicit operator Dictionary<T, TResult>(TaskResults<T, TResult> results) => results.Results;
+
+    public static implicit operator string[](TaskResults<T, TResult> results) => results.Errors?.Values.ToArray() ?? Array.Empty<string>();
+}
+
+public static class TaskResultsExtensions
+{
+    public static List<TResult> ToList<T, TResult>(this TaskResults<T, TResult> tasks)
+    {   
+        return tasks.Results.Values.ToList();
     }
 
-    public List<TItem> PickUniqueItems<TItem, TKey>(Func<TResult, IEnumerable<TItem>> selector, Func<TItem, TKey> keySelector)
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static List<TItem> PickItems<T, TResult, TItem>(this TaskResults<T, TResult> tasks, Func<TResult, IEnumerable<TItem>> selector)
     {
-        return Results.PickUniqueItems(selector, keySelector).Values.ToList();
+        return tasks.Results.PickItems(selector);
     }
 
-    public List<TResult> ToList()
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static List<TItem> PickItems<T,TResult, TItem>(this TaskResults<T,TResult> tasks, Func<T, TResult, IEnumerable<TItem>> selector)
     {
-        return Results.Values.ToList();
+        return tasks.Results.PickItems((key, res) => selector(key, res));
     }
-}*/
+
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static List<TItem> PickUniqueItems<T,TResult, TItem, TKey>(this TaskResults<T,TResult> tasks, 
+        Func<TResult, IEnumerable<TItem>> selector, Func<TItem, TKey> keySelector)
+    {
+        return tasks.Results.PickUniqueItems(selector, keySelector).Values.ToList();
+    }
+
+    [DebuggerStepThrough]
+    public static List<TItem> PickUniqueItems<T,TResult, TItem, TKey>(this TaskResults<T,TResult> tasks, Func<TResult, IEnumerable<TItem>> selector,
+        Func<TItem, TKey> keySelector, Enums.OrderBy orderDirection)
+    {
+        var values = tasks.Results.PickUniqueItems(selector, keySelector).Values;
+        return values.OrderBy(keySelector, orderDirection).ToList();
+    }
+
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static HashSet<TItem> PickUniqueItems<T,TResult, TItem>(this TaskResults<T,TResult> tasks, Func<TResult, IEnumerable<TItem>> selector)
+    {
+        return tasks.Results.PickUniqueItems(selector);
+    }
+}

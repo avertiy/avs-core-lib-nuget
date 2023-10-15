@@ -7,16 +7,6 @@ using System.Threading.Tasks;
 
 namespace AVS.CoreLib.Extensions.Tasks;
 
-public static class ParallelJobs
-{
-    [DebuggerStepThrough]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static ParallelJobs<TKey, TResult> Create<TKey, TResult>(IEnumerable<TKey> enumerable, Func<TKey, Task<TResult>> job) where TKey : notnull
-    {
-        return new ParallelJobs<TKey, TResult>(enumerable, job);
-    }
-}
-
 /// <summary>
 /// parallel job runner helps in running multiple tasks (jobs) in parallel with a configured delay
 /// </summary>

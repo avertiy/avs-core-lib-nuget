@@ -87,7 +87,8 @@ namespace AVS.CoreLib.Extensions.Collections
         /// <summary>
         /// pick items unique by key from dictionary values
         /// </summary>
-        public static Dictionary<TItemKey, TItem> PickUniqueItems<T, TValue, TItem, TItemKey>(this IDictionary<T, TValue> source, Func<TValue, IEnumerable<TItem>> selector, Func<TItem, TItemKey> itemKeySelector)
+        public static Dictionary<TItemKey, TItem> PickUniqueItems<T, TValue, TItem, TItemKey>(this IDictionary<T, TValue> source, 
+            Func<TValue, IEnumerable<TItem>> selector, Func<TItem, TItemKey> key)
         {
             var dict = new Dictionary<TItemKey, TItem>();
             foreach (var kp in source)
@@ -99,11 +100,11 @@ namespace AVS.CoreLib.Extensions.Collections
 
                 foreach (var item in items)
                 {
-                    var key = itemKeySelector(item);
-                    if (dict.ContainsKey(key))
+                    var itemKey = key(item);
+                    if (dict.ContainsKey(itemKey))
                         continue;
 
-                    dict.Add(key, item);
+                    dict.Add(itemKey, item);
                 }                
             }
 

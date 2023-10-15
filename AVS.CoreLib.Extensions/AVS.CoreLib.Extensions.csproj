@@ -29,9 +29,9 @@
 
   <ItemGroup>
     <Compile Include="Tasks\ParallelExtensions.cs" />
-    <Compile Include="Tasks\ParallelJobsRunner.cs" />
     <Compile Include="Tasks\ParallelTasks.cs" />
     <Compile Include="Tasks\TaskExtensions.cs" />
     <Compile Include="Tasks\TaskResults.cs" />
+    <Compile Include="Tasks\TaskRunner.cs" />
   </ItemGroup>
 </Project>

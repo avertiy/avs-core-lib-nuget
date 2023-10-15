@@ -200,10 +200,25 @@ namespace AVS.CoreLib.Dates
 
             return DateRangeHelper.TryParseFromLiterals(str, out range) || DateRangeHelper.TryParseExact(str, out range);
         }
-        
-        public static DateRange FromNow(int seconds, bool useUtcTime = false)
+
+        public static DateRange Create(DateTime from, int days)
         {
-            var now = useUtcTime ? DateTime.UtcNow : DateTime.Now;
+            return new DateRange(from, from.AddDays(days));
+        }
+
+        public static DateRange Create(DateTime from, DateTime to)
+        {
+            return new DateRange(from, to);
+        }
+
+        public static DateRange Create(DateTime from, double milliseconds)
+        {
+            return new DateRange(from, from.AddMilliseconds(milliseconds));
+        }
+
+        public static DateRange FromNow(int seconds, bool utcTime = false)
+        {
+            var now = utcTime ? DateTime.UtcNow : DateTime.Now;
             if (seconds < 0)
             {
                 return new DateRange(now.AddSeconds(seconds), now);
@@ -214,15 +229,10 @@ namespace AVS.CoreLib.Dates
             }
         }
 
-        public static DateRange FromNow(DateTime from, bool useUtcTime = false)
+        public static DateRange FromNow(DateTime from, bool utcTime = false)
         {
-            var now = useUtcTime ? DateTime.UtcNow : DateTime.Now;
+            var now = utcTime ? DateTime.UtcNow : DateTime.Now;
             return new DateRange(from, now);
-        }
-
-        public static DateRange Create(DateTime from, int days)
-        {
-            return new DateRange(from, from.AddDays(days));
         }
 
         public static DateRange FromSource<T>(IList<T> source, Func<T,DateTime> selector)

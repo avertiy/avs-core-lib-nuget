@@ -1,57 +1,83 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace AVS.CoreLib.Extensions.Tasks;
 
 public static class ParallelExtensions
 {
-    public static TResult Pipe<T, TResult>(this T value, Func<T, TResult> transform)
-    {
-        return transform(value);
-    }
-
-    public static T Let<T>(this T value, Action<T> action)
-    {
-        action(value);
-        return value;
-    }
-
     /// <summary>
-    /// returns <see cref="ParallelJobs{T,TResult}"/> wrapper
-    /// </summary>
-    public static ParallelJobs<T, TResult> AsParallelJobs<T, TResult>(this IEnumerable<T> enumerable, Func<T, Task<TResult>> job) where T : notnull
+    /// Run job for each item in parallel mode <see cref="TaskRunner"/>
+    /// returns <see cref="TaskResults{T,TResult}"/>
+    /// </summary>    
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Task<TaskResults<T, TResult>> RunInParallel<T, TResult>(this IEnumerable<T> args, Func<T, Task<TResult>> job, int delay = 0)
     {
-        return new ParallelJobs<T, TResult>(enumerable, job);
+        return TaskRunner.Create(job, null, delay).RunAll(args);
     }
 
-    /// <summary>
-    /// for each item creates job (task), executes them in parallel, then combine all results to single list of items
-    /// </summary>
-    public static Task<List<TItem>> ParallelFetchItems<T, TResult, TItem>(this IEnumerable<T> enumerable,
-        Func<T, Task<TResult>> job,
-        Func<T, TResult, IEnumerable<TItem>> selector) where T : notnull
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Task<TaskResults<T, TResult>> RunInParallel<T, TResult>(this IEnumerable<T> args, Func<T, Task<TResult>> job, Func<TResult, string?>? validateFn = null, int delay = 0)
     {
-        return ParallelJobs.Create(enumerable, job).RunAll(x => x.PickItems(selector));
+        return TaskRunner.Create(job, validateFn, delay).RunAll(args);
     }
 
-    /// <summary>
-    /// for each item creates job (task), executes them in parallel, then combine all results to single list of items
-    /// </summary>
-    public static Task<List<TItem>> ParallelFetchItems<T, TResult, TItem>(this IEnumerable<T> enumerable,
-        Func<T, Task<TResult>> job,
-        Func<TResult, IEnumerable<TItem>> selector) where T : notnull
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Task<TaskResults<T, TResult>> RunInParallel<T, TResult>(this T[] args, Func<T, Task<TResult>> job, Func<TResult, string?>? validateFn = null, int delay = 0)
     {
-        return ParallelJobs.Create(enumerable, job).RunAll(x => x.PickItems(selector));
+        return TaskRunner.Create(job, validateFn, delay).RunAll(args);
+    }
+
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Task<TaskResults<T, TResult>> RunInParallel<T, TResult>(this IList<T> args, Func<T, Task<TResult>> job, Func<TResult, string?>? validateFn = null, int delay = 0)
+    {
+        return TaskRunner.Create(job, validateFn, delay).RunAll(args);
     }
 
     /// <summary>
     /// for each item creates job (task), executes them in in parallel, then returns results <see cref="List{TResult}"/>
     /// </summary>
-    public static Task<List<TResult>> ParallelFetch<T, TResult>(this IEnumerable<T> enumerable,
-        Func<T, Task<TResult>> job) where T : notnull
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Task<List<TResult>> ParallelFetch<T, TResult>(this IEnumerable<T> enumerable, Func<T, Task<TResult>> job, Func<TResult, string?>? validateFn = null, int delay = 0)
     {
-        return ParallelJobs.Create(enumerable, job).RunAll(x => x.ToList());
+        return TaskRunner.Create(job, validateFn, delay).RunAll(enumerable, x => x.ToList());
+    }
+
+    /// <summary>
+    /// for each item runs a job (task), jobs are run in parallel, then pick items from each result and combines all items into one list
+    /// </summary>
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Task<List<TItem>> ParallelFetchItems<T, TResult, TItem>(this IEnumerable<T> enumerable, Func<T, Task<TResult>> job, 
+        Func<T, TResult, IEnumerable<TItem>> selector, Func<TResult, string?>? validateFn = null, int delay = 0)
+    {
+        return TaskRunner.Create(job, validateFn, delay).RunAll(enumerable, x=> x.PickItems(selector));
+    }
+
+    /// <summary>
+    /// for each item runs a job (task), jobs are run in parallel, then pick items from each result and combines all items into one list
+    /// </summary>
+    [DebuggerStepThrough]
+    public static Task<List<TItem>> ParallelFetchItems<T, TResult, TItem>(this IEnumerable<T> enumerable,
+        Func<T, Task<TResult>> job, 
+        Func<TResult, IEnumerable<TItem>> selector, Func<TResult, string?>? validateFn = null, int delay = 0)
+    {
+        return TaskRunner.Create(job,validateFn, delay).RunAll(enumerable, x => x.PickItems(selector));
+    }
+
+    [DebuggerStepThrough]
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static Task<List<TItem>> ParallelFetchUniqueItems<T, TResult, TItem, TItemKey>(this IEnumerable<T> enumerable,
+        Func<T, Task<TResult>> job, 
+        Func<TResult, IEnumerable<TItem>> selector, Func<TItem, TItemKey> itemKeySelector, Func<TResult, string?>? validateFn = null, int delay = 0)
+    {
+        return TaskRunner.Create(job, validateFn, delay).RunAll(enumerable, x => x.PickUniqueItems(selector, itemKeySelector));
     }
 }

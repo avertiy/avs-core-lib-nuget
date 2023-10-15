@@ -18,6 +18,44 @@ namespace AVS.CoreLib.Extensions.Collections
                 source.Add(item);
         }
 
+        /// <summary>
+        /// Adds unique by key items of the given collection to the end of the source list.        
+        /// </summary>
+        public static int AddRange<T, TKey>(this IList<T> source, IEnumerable<T> items, Func<T, TKey> key)
+        {
+            var knownKeys = new HashSet<TKey>(source.Select(key));
+            var counter = 0;
+            foreach (var item in items)
+            {
+                var itemKey = key(item);
+                if (knownKeys.Add(itemKey))
+                {
+                    source.Add(item);
+                    counter++;
+                }
+            }
+            return counter;
+        }
+
+        /// <summary>
+        /// Adds unique by key items of the given collection to the end of the source list.
+        /// if they are satisfying a predicate condition
+        /// </summary>
+        public static int AddRange<T, TKey>(this IList<T> target, IEnumerable<T> second, Func<T, TKey> key, Func<T, bool> predicate)
+        {
+            var knownKeys = new HashSet<TKey>(target.Select(key));
+            var counter = 0;
+            foreach (var item in second)
+            {
+                if (predicate(item) && knownKeys.Add(key(item)))
+                {
+                    target.Add(item);
+                    counter++;
+                }
+            }
+            return counter;
+        }
+
         public static bool ContainsAll<T>(this IList<T> source, params T[] items)
         {
             if (source.Count < items.Length)
@@ -38,57 +76,38 @@ namespace AVS.CoreLib.Extensions.Collections
         }
 
         /// <summary>
-        /// Merge by key target list with a second list, returns the target list
+        /// Merge source with another collection into a new list of items, dropping duplicates
         /// </summary>
-        public static IList<T> Merge<T, TKey>(this IList<T> target, IEnumerable<T> second, Func<T, TKey> selector)
+        public static List<T> Merge<T, TKey>(this IEnumerable<T> source, IEnumerable<T> other, Func<T, TKey> key, Func<(T source, T other),T>? resolve = null)
         {
-            var knownKeys = new HashSet<TKey>(target.Select(selector));
-
-            foreach (var item in second)
-            {
-                var added = knownKeys.Add(selector(item));
-                if (added)
-                    target.Add(item);
-            }
-
-            return target;
-        }
-
-        /// <summary>
-        /// Merge by key source list with the second list, returns the result list
-        /// </summary>
-        public static IEnumerable<T> Merge<T, TKey>(this IEnumerable<T> source, IEnumerable<T> second, Func<T, TKey> selector)
-        {
-            var knownKeys = new HashSet<TKey>();
-
+            var dict = new Dictionary<TKey, T>();
             foreach (var item in source)
             {
-                knownKeys.Add(selector(item));
-                yield return item;
+                var itemKey = key(item);
+                if (dict.ContainsKey(itemKey))
+                {
+                    dict[itemKey] = resolve != null ? resolve.Invoke((dict[itemKey], item)) : dict[itemKey];
+                }
+                else
+                {
+                    dict[itemKey] = item;
+                }
             }
 
-            foreach (var item in second)
+            foreach (var item in other)
             {
-                var added = knownKeys.Add(selector(item));
-                if (added)
-                    yield return item;
-            }
-        }
-
-        /// <summary>
-        /// Merge by key target list with a second list, items form the second list should also match predicate condition, returns the target list
-        /// </summary>
-        public static IList<T> Merge<T, TKey>(this IList<T> target, IEnumerable<T> second, Func<T, TKey> keySelector, Func<T, bool> predicate)
-        {
-            var knownKeys = new HashSet<TKey>(target.Select(keySelector));
-
-            foreach (var item in second)
-            {
-                if (predicate(item) && knownKeys.Add(keySelector(item)))
-                    target.Add(item);
+                var itemKey = key(item);
+                if (dict.ContainsKey(itemKey))
+                {
+                    dict[itemKey] = resolve != null ? resolve.Invoke((dict[itemKey], item)) : dict[itemKey];
+                }
+                else
+                {
+                    dict[itemKey] = item;
+                }
             }
 
-            return target;
+            return dict.Values.ToList();
         }
 
         public static IList<T> Shrink<T>(this IList<T> items, Func<T, double> selector, double threshold = 0.0)

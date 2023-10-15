@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using AVS.CoreLib.Trading.Enums;
 using AVS.CoreLib.Trading.Enums.TA;
 
@@ -7,16 +8,19 @@ namespace AVS.CoreLib.Trading.Extensions
 {
     public static class TimeFrameExtensions
     {
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsIntraday(this TimeFrame timeframe)
         {
             return (int)timeframe < (int)TimeFrame.D;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsMinutes(this TimeFrame timeframe)
         {
-            var val = (int)timeframe;
-            return val is < (int)TimeFrame.H1 and >= (int)TimeFrame.M1;
+            return (int)timeframe is < (int)TimeFrame.H1 and >= (int)TimeFrame.M1;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
 
         public static int ToSeconds(this TimeFrame timeframe)
         {
@@ -26,20 +30,20 @@ namespace AVS.CoreLib.Trading.Extensions
         /// <summary>
         /// Calculate timespan = (int)timeframe x count 
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int CalcTimespan(this TimeFrame timeframe, int count)
         {
-            var timespan = (int)timeframe * count;
-            return timespan;
+            return (int)timeframe * count;
         }
 
         /// <summary>
         /// Calculate bar count = period / (int)timeframe
         /// i.e. how many bars (count) cover the specified period
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int CalcBarCount(this TimeFrame timeframe, double periodInSeconds)
         {
-            var count = (int) (periodInSeconds / (int)timeframe);
-            return count;
+            return (int) (periodInSeconds / (int)timeframe);
         }
 
         /// <summary>
