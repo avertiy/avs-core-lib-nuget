@@ -6,76 +6,39 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using AVS.CoreLib.Extensions.Collections;
 using AVS.CoreLib.Extensions.Linq;
-using AVS.CoreLib.Extensions.Stringify;
 
 namespace AVS.CoreLib.Extensions.Tasks;
 
 public sealed class TaskResults<T, TResult> : IEnumerable<TResult>
 {
     public Dictionary<T, TResult> Results { get; private set; }
-    public Dictionary<T, TResult>? Failed { get; private set; }
-    public Dictionary<T, string>? Errors { get; private set; }
 
     public TaskResults(int capacity = 0)
     {
         Results = new Dictionary<T, TResult>(capacity);
     }
 
-    public void Add(T key, TResult value, string? err = null)
+    public void Add(T key, TResult value)
     {
-        if (err != null)
+        Results.Add(key,value);
+    }
+
+    public IEnumerable<(T, TResult)> GetFailed(Func<TResult, bool> isValid)
+    {
+        foreach (var kp in Results)
         {
-            Failed ??= new Dictionary<T, TResult>();
-            Errors ??= new Dictionary<T, string>();
-            Errors[key] = err;
-            Failed[key] = value;
-        }
-        else
-        {
-            Results[key] = value;
+            if (!isValid(kp.Value))
+                yield return (kp.Key, kp.Value);
         }
     }
 
-    public bool HasErrors => Errors != null && Errors.Any();
-
-    public Dictionary<T, TResult> GetAllResults()
+    public string? GetErrorsCombined(Func<TResult, string> selector, bool distinct = true)
     {
-        var dict = new Dictionary<T, TResult>(Results);
-        if (Failed != null)
-        {
-            foreach (var kp in Failed)
-            {
-                dict.Add(kp.Key, kp.Value);
-            }
-        }
-        return dict;
-    }
-
-    public string? GetErrorsCombined(bool distinct = true)
-    {
-        if (Errors == null || Errors.Count == 0)
-            return null;
-
-        if (!distinct)
-            return Errors.Stringify();
-
-        var distinctErrors = Errors.Values.Distinct().ToArray();
-
-        return distinctErrors.Length == 1
-            ? $"{string.Join(",", Errors.Keys)}: {distinctErrors[0]}"
-            : Errors.Stringify();
-    }
-
-    public string[] GetErrors(bool distinct = true)
-    {
-        if (Errors == null || Errors.Count == 0)
-            return Array.Empty<string>();
-
-        if (!distinct)
-            return Errors.Values.ToArray();
-
-        var errors = Errors.Values.Distinct().ToArray();
-        return errors;
+        var enumerable = Results.Values.Select(selector);
+        if (distinct)
+            enumerable = enumerable.Distinct();
+        var errors = enumerable.ToArray();
+        return errors.Any() ? string.Join(",", enumerable) : null;
     }
 
     public IEnumerator<TResult> GetEnumerator()
@@ -88,9 +51,7 @@ public sealed class TaskResults<T, TResult> : IEnumerable<TResult>
         return Results.Values.GetEnumerator();
     }
 
-    public static implicit operator Dictionary<T, TResult>(TaskResults<T, TResult> results) => results.Results;
-
-    public static implicit operator string[](TaskResults<T, TResult> results) => results.Errors?.Values.ToArray() ?? Array.Empty<string>();
+    public static implicit operator Dictionary<T, TResult>(TaskResults<T, TResult> results) => results.Results;    
 }
 
 public static class TaskResultsExtensions
@@ -102,38 +63,33 @@ public static class TaskResultsExtensions
 
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static List<TItem> PickItems<T, TResult, TItem>(this TaskResults<T, TResult> tasks, Func<TResult, IEnumerable<TItem>> selector)
+    public static List<TItem> PickUniqueItems<T,TResult, TItem, TKey>(this TaskResults<T,TResult> tasks,
+        Func<TResult, IEnumerable<TItem>> selector, Func<TItem, TKey> keySelector, Func<TResult, bool>? isValid = null)
     {
-        return tasks.Results.PickItems(selector);
+        return 
+            isValid == null 
+            ? tasks.Results.Values.PickUniqueItems(selector, keySelector).Values.ToList()            
+            : tasks.Results.Values.Where(isValid).PickUniqueItems(selector, keySelector).Values.ToList();
+    }
+
+    [DebuggerStepThrough]
+    public static List<TItem> PickUniqueItems<T,TResult, TItem, TKey>(this TaskResults<T,TResult> tasks,  
+        Func<TResult, IEnumerable<TItem>> selector,
+        Func<TItem, TKey> keySelector, Enums.OrderBy orderDirection, Func<TResult, bool>? isValid = null)
+    {
+        var values = tasks.Results.Values.AsEnumerable();
+        if (isValid != null)
+        {
+            values = values.Where(isValid);
+        }
+        var items = values.PickUniqueItems(selector, keySelector).Values;
+        return items.OrderBy(keySelector, orderDirection).ToList();
     }
 
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static List<TItem> PickItems<T,TResult, TItem>(this TaskResults<T,TResult> tasks, Func<T, TResult, IEnumerable<TItem>> selector)
+    public static HashSet<TItem> PickUniqueItems<T,TResult, TItem>(this TaskResults<T,TResult> tasks, Func<TResult, IEnumerable<TItem>> selector, Func<TResult, bool>? isValid = null)
     {
-        return tasks.Results.PickItems((key, res) => selector(key, res));
-    }
-
-    [DebuggerStepThrough]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static List<TItem> PickUniqueItems<T,TResult, TItem, TKey>(this TaskResults<T,TResult> tasks, 
-        Func<TResult, IEnumerable<TItem>> selector, Func<TItem, TKey> keySelector)
-    {
-        return tasks.Results.PickUniqueItems(selector, keySelector).Values.ToList();
-    }
-
-    [DebuggerStepThrough]
-    public static List<TItem> PickUniqueItems<T,TResult, TItem, TKey>(this TaskResults<T,TResult> tasks, Func<TResult, IEnumerable<TItem>> selector,
-        Func<TItem, TKey> keySelector, Enums.OrderBy orderDirection)
-    {
-        var values = tasks.Results.PickUniqueItems(selector, keySelector).Values;
-        return values.OrderBy(keySelector, orderDirection).ToList();
-    }
-
-    [DebuggerStepThrough]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static HashSet<TItem> PickUniqueItems<T,TResult, TItem>(this TaskResults<T,TResult> tasks, Func<TResult, IEnumerable<TItem>> selector)
-    {
-        return tasks.Results.PickUniqueItems(selector);
+        return isValid == null ? tasks.Results.PickUniqueItems(selector) : tasks.Results.Values.Where(isValid).PickUniqueItems(selector);
     }
 }

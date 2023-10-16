@@ -16,28 +16,21 @@ public static class ParallelExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Task<TaskResults<T, TResult>> RunInParallel<T, TResult>(this IEnumerable<T> args, Func<T, Task<TResult>> job, int delay = 0)
     {
-        return TaskRunner.Create(job, null, delay).RunAll(args);
+        return TaskRunner.Create(job, delay).RunAll(args);
     }
 
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Task<TaskResults<T, TResult>> RunInParallel<T, TResult>(this IEnumerable<T> args, Func<T, Task<TResult>> job, Func<TResult, string?>? validateFn = null, int delay = 0)
+    public static Task<TaskResults<T, TResult>> RunInParallel<T, TResult>(this T[] args, Func<T, Task<TResult>> job, int delay = 0)
     {
-        return TaskRunner.Create(job, validateFn, delay).RunAll(args);
+        return TaskRunner.Create(job, delay).RunAll(args);
     }
 
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Task<TaskResults<T, TResult>> RunInParallel<T, TResult>(this T[] args, Func<T, Task<TResult>> job, Func<TResult, string?>? validateFn = null, int delay = 0)
+    public static Task<TaskResults<T, TResult>> RunInParallel<T, TResult>(this IList<T> args, Func<T, Task<TResult>> job, int delay = 0)
     {
-        return TaskRunner.Create(job, validateFn, delay).RunAll(args);
-    }
-
-    [DebuggerStepThrough]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Task<TaskResults<T, TResult>> RunInParallel<T, TResult>(this IList<T> args, Func<T, Task<TResult>> job, Func<TResult, string?>? validateFn = null, int delay = 0)
-    {
-        return TaskRunner.Create(job, validateFn, delay).RunAll(args);
+        return TaskRunner.Create(job, delay).RunAll(args);
     }
 
     /// <summary>
@@ -45,39 +38,18 @@ public static class ParallelExtensions
     /// </summary>
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Task<List<TResult>> ParallelFetch<T, TResult>(this IEnumerable<T> enumerable, Func<T, Task<TResult>> job, Func<TResult, string?>? validateFn = null, int delay = 0)
+    public static Task<List<TResult>> ParallelFetch<T, TResult>(this IEnumerable<T> enumerable, Func<T, Task<TResult>> job, int delay = 0)
     {
-        return TaskRunner.Create(job, validateFn, delay).RunAll(enumerable, x => x.ToList());
+        return TaskRunner.Create(job, delay).RunAll(enumerable, x => x.ToList());
     }
 
-    /// <summary>
-    /// for each item runs a job (task), jobs are run in parallel, then pick items from each result and combines all items into one list
-    /// </summary>
-    [DebuggerStepThrough]
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static Task<List<TItem>> ParallelFetchItems<T, TResult, TItem>(this IEnumerable<T> enumerable, Func<T, Task<TResult>> job, 
-        Func<T, TResult, IEnumerable<TItem>> selector, Func<TResult, string?>? validateFn = null, int delay = 0)
-    {
-        return TaskRunner.Create(job, validateFn, delay).RunAll(enumerable, x=> x.PickItems(selector));
-    }
-
-    /// <summary>
-    /// for each item runs a job (task), jobs are run in parallel, then pick items from each result and combines all items into one list
-    /// </summary>
-    [DebuggerStepThrough]
-    public static Task<List<TItem>> ParallelFetchItems<T, TResult, TItem>(this IEnumerable<T> enumerable,
-        Func<T, Task<TResult>> job, 
-        Func<TResult, IEnumerable<TItem>> selector, Func<TResult, string?>? validateFn = null, int delay = 0)
-    {
-        return TaskRunner.Create(job,validateFn, delay).RunAll(enumerable, x => x.PickItems(selector));
-    }
-
+    
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static Task<List<TItem>> ParallelFetchUniqueItems<T, TResult, TItem, TItemKey>(this IEnumerable<T> enumerable,
         Func<T, Task<TResult>> job, 
-        Func<TResult, IEnumerable<TItem>> selector, Func<TItem, TItemKey> itemKeySelector, Func<TResult, string?>? validateFn = null, int delay = 0)
+        Func<TResult, IEnumerable<TItem>> selector, Func<TItem, TItemKey> itemKeySelector, int delay = 0)
     {
-        return TaskRunner.Create(job, validateFn, delay).RunAll(enumerable, x => x.PickUniqueItems(selector, itemKeySelector));
+        return TaskRunner.Create(job, delay).RunAll(enumerable, x => x.PickUniqueItems(selector, itemKeySelector));
     }
 }
