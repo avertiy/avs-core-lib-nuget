@@ -1,20 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace AVS.CoreLib.Caching
 {
     /// <summary>
-    /// cache keys bookkeeper (ledger) helps to keep records about keys, stored in cache by <see cref="CacheManager"/>
+    /// Cache keys bookkeeper(ledger) is desgined for advanced caching scenarios when you need to track list of keys present in cache    /// 
     /// </summary>
     public interface ICacheKeysBookkeeper
     {
-        void Add(string key);
+        void AddKey(string key);
         void Remove(string key);
         IEnumerable<string> GetKeys();
-    }
-
-    public interface IKeysBookkeeper
-    {
-        ICacheKeysBookkeeper KeysBookkeeper { get; set; }
     }
 }

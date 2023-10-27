@@ -51,9 +51,9 @@ namespace AVS.CoreLib.REST.Clients
             if (request.AuthType == AuthType.ApiKey)
             {
                 if (UseTonce)
-                    request.Data.Add("tonce", NonceHelper.GetTonce());
+                    request.Data["tonce"] = NonceHelper.GetTonce();
                 else
-                    request.Data.Add("nonce", NonceHelper.GetNonce());
+                    request.Data["nonce"] = NonceHelper.GetNonce();
             }
         }
 

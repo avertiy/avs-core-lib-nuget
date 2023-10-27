@@ -49,7 +49,7 @@ namespace AVS.CoreLib.Caching
         /// </summary>
         public static void AddCacheKeysBookkeeper(this IServiceCollection services, IConfiguration config)
         {
-            services.AddSingleton<ICacheKeysBookkeeper, CacheKeysBookkeeper>();
+            services.AddSingleton<ICacheKeysBookkeeper, KeysBookkeeper>();
         }
     }
 }

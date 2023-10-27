@@ -27,7 +27,7 @@ public static class TaskExtensions
         return then(result);
     }
 
-    public static async Task<IEnumerable<T>> OrderBy<T, Key>(this Task<List<T>> task, Func<T, Key> selector, OrderBy orderBy)
+    public static async Task<IEnumerable<T>> OrderBy<T, Key>(this Task<List<T>> task, Func<T, Key> selector, Sort orderBy)
     {
         var result = await task;
         return result.OrderBy(selector, orderBy);

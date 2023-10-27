@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -16,23 +17,18 @@ namespace AVS.CoreLib.REST
 
         public string? Error { get; private set; }
 
-        public JsonResult(string source, string? content = null, string? error = null)
+        public JsonResult(string source, string? text = null, string? error = null)
         {
             Source = source;
-            JsonText = content ?? string.Empty;
+            JsonText = text ?? string.Empty;
             Error = error;
-        }
-
-        public static implicit operator string(JsonResult result)
-        {
-            return result?.JsonText;
         }
 
         public bool HasError
         {
             get
             {
-                if(!string.IsNullOrEmpty(Error))
+                if (!string.IsNullOrEmpty(Error))
                     return true;
 
                 var re = new Regex("(error|err-msg|error-message)[\"']?:[\"']?(?<error>.*?)[\"',}]", RegexOptions.IgnoreCase);
@@ -47,22 +43,10 @@ namespace AVS.CoreLib.REST
             }
         }
 
-        public override string ToString()
-        {
-            return $"JsonResult: {Source} => {(HasError ? Error : JsonText)}";
-        }
-
-        public static JsonResult FromResponse(HttpWebResponse response, string source)
-        {
-            var json = response.GetContent();
-            var error = response.StatusCode == HttpStatusCode.OK ? null : response.StatusDescription;
-            var result = new JsonResult(source, json, error);
-            return result;
-        }
-
         /// <summary>
         /// <see cref="JsonText"/> might contain
         /// </summary>
+        [Obsolete("seems no usages, use HasError prop")]
         public bool ContainsError()
         {
             if (Error != null)
@@ -78,6 +62,37 @@ namespace AVS.CoreLib.REST
 
             return match.Success;
         }
+
+        
+
+        public override string ToString()
+        {
+            return $"JsonResult: {Source} => {(HasError ? Error : JsonText)}";
+        }
+
+        public static implicit operator string(JsonResult result)
+        {
+            return result?.JsonText!;
+        }
+
+        public static JsonResult Success(string source, string text)
+        {
+            return new JsonResult(source, text);
+        }
+
+        public static JsonResult Failed(string source, string error, string? text = null)
+        {
+            return new JsonResult(source, text: text, error: error);
+        }
+
+        public static JsonResult FromResponse(HttpWebResponse response, string source)
+        {
+            var json = response.GetContent();
+            var error = response.StatusCode == HttpStatusCode.OK ? null : response.StatusDescription;
+            var result = new JsonResult(source, json, error);
+            return result;
+        }
+        
     }
 
     public static class JsonResultExtensions
@@ -111,10 +126,10 @@ namespace AVS.CoreLib.REST
             if (match.Success)
             {
                 var text = match.Groups["data"].Success ? match.Groups["data"].Value : match.Value;
-                return new JsonResult(result.Source, text);
+                return JsonResult.Success(result.Source, text);
             }
 
-            return new JsonResult(result.Source, result.JsonText, $"Invalid json format [expected match with regex pattern: {regex}]");
+            return JsonResult.Failed(result.Source, $"Invalid format [json text must match a regex pattern: {regex}]", result.JsonText);
         }
 
         /// <summary>
@@ -128,8 +143,9 @@ namespace AVS.CoreLib.REST
         public static JsonResult Select(this JsonResult result, string regexPattern, string? errorText = null, RegexOptions options = RegexOptions.None)
         {
             // if has error do nothing
-            if (result.Error != null)
+            if (result.Error != null || string.IsNullOrEmpty(result.JsonText))
                 return result;
+
 
             var re = new Regex(regexPattern, options);
             var match = re.Match(result.JsonText);
@@ -137,10 +153,11 @@ namespace AVS.CoreLib.REST
             if (match.Success)
             {
                 var text = match.Groups["data"].Success ? match.Groups["data"].Value : match.Value;
-                return new JsonResult(result.Source, text);
+                return JsonResult.Success(result.Source, text);
             }
 
-            return new JsonResult(result.Source, result.JsonText, errorText ?? result.Error);
+            var error = errorText ?? result.Error ?? $"Invalid format [json text must match a regex pattern: {regexPattern}]";
+            return JsonResult.Failed(result.Source, error, result.JsonText);
         }
 
         public static JsonResult SelectMany(this JsonResult result, string regexPattern, string? errorText = null, RegexOptions options = RegexOptions.None)
@@ -161,11 +178,11 @@ namespace AVS.CoreLib.REST
                 }
 
                 var text = $"[{string.Join(",", items)}]";
-                return new JsonResult(result.Source, text);
+                return JsonResult.Success(result.Source, text);
             }
 
-            //JsonText = $"{{\"error\":\"{errorText}\"}}";
-            return new JsonResult(result.Source, result.JsonText, errorText ?? result.Error);
+            var error = errorText ?? result.Error ?? $"Invalid format [json text must match a regex pattern: {regexPattern}]";
+            return JsonResult.Failed(result.Source, error, result.JsonText);
         }
     }
 }

@@ -8,8 +8,17 @@ namespace AVS.CoreLib.Caching
 {
     public abstract class CacheManagerBase : IDisposable
     {
-        private bool _disposed;
+        private bool _disposed = false;
         private readonly IMemoryCache _memoryCache;
+
+        /// <summary>
+        /// Raised when item is removed from cache explicitly via <see cref="Remove"/>
+        /// </summary>
+        public event Action<string>? ItemRemoved;
+        /// <summary>
+        /// Raised when item is added to cache
+        /// </summary>
+        public event Action<string, object>? ItemAdded;
 
         /// <summary>
         /// once token cancelled it causes cache entries to expire
@@ -19,7 +28,7 @@ namespace AVS.CoreLib.Caching
 
         protected CacheManagerBase(IMemoryCache memoryCache)
         {
-            _memoryCache = memoryCache;
+            _memoryCache = memoryCache;            
         }
 
         /// <summary>
@@ -39,13 +48,10 @@ namespace AVS.CoreLib.Caching
         public void Remove(string key)
         {
             _memoryCache.Remove(key);
-            OnKeyRemoved(key);
+            ItemRemoved?.Invoke(key);
+            
         }
-
-        protected virtual void OnKeyRemoved(string key)
-        {
-        }
-
+      
         /// <summary>
         /// Clear all cached data
         /// </summary>
@@ -56,35 +62,33 @@ namespace AVS.CoreLib.Caching
             _clearToken = new CancellationTokenSource();
         }
 
-        protected bool TryGetValue<T>(string key, out T value)
+        protected bool TryGetValue<T>(string key, out T? value)
         {
             if (_memoryCache.TryGetValue(key, out var obj) && obj is T val)
             {
                 value = val;
                 return true;
             }
-            
-            value = default(T);
+
+            value = default;
             return false;
         }
 
-        protected virtual void CreateCacheEntry<T>(string key, T value, int cacheDuration)
+        protected virtual void CreateCacheEntry<T>(string key, T? item, int cacheDuration)
         {
             if (cacheDuration <= 0)
             {
-                if(IsSet(key)) 
+                if (IsSet(key))
                     Remove(key);
 
                 return;
             }
 
-            if (value == null || value.Equals(default(T)) || value is ICollection { Count: 0 })
-            {
+            if (item == null || item.Equals(default(T)) || item is ICollection { Count: 0 })
                 return;
-            }
 
             var options = PrepareCacheEntryOptions(key, cacheDuration);
-            CreateCacheEntry(key, value, options);
+            CreateCacheEntry(key, item, options);
         }
 
         protected void CreateCacheEntry<T>(string key, T value, MemoryCacheEntryOptions options)
@@ -93,12 +97,10 @@ namespace AVS.CoreLib.Caching
             using var entry = _memoryCache.CreateEntry(key);
             entry.SetOptions(options);
             entry.Value = value;
-            OnCacheEntryCreated(key, value);
+            ItemAdded?.Invoke(key, value!);
         }
 
-        protected virtual void OnCacheEntryCreated<T>(string key, T value)
-        {
-        }
+       
 
         /// <summary>
         /// Prepare cache entry options for the passed key
@@ -133,12 +135,10 @@ namespace AVS.CoreLib.Caching
                 return;
 
             if (disposing)
-            {
                 _memoryCache.Dispose();
-            }
 
             _disposed = true;
-        } 
+        }
         #endregion
     }
 }

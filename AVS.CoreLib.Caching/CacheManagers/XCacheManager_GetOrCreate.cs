@@ -29,37 +29,41 @@ namespace AVS.CoreLib.Caching
         /// <summary>
         /// this method aka replacement to standard extension method  _memoryCache.GetOrCreateAsync()
         /// </summary>
-        protected async Task<CachedObject<T>> GetOrCreateInternalAsync<T>(CacheKey key, Func<Task<T>> acquire, int defaultCacheTime)
+        protected async Task<CachedObject<T?>> GetOrCreateInternalAsync<T>(CacheKey key, Func<Task<T?>> acquire, int defaultCacheTime)
         {
             if (Options.CachingEnabled == false)
-                return new CachedObject<T>(await acquire().ConfigureAwait(false));
+            {
+                var item = await acquire().ConfigureAwait(false);
+                return new CachedObject<T?>(item);
+            }
 
-            if (TryGetValue<CachedObject<T>>(key.Key, out var cachedObj))
+            if (TryGetValue<CachedObject<T?>>(key.Key, out var cachedObj))
                 return cachedObj;
 
             var value = await acquire().ConfigureAwait(false);
 
             // create CacheEntry
-            CreateCacheEntry(key, value, defaultCacheTime, out var result);
-            return result;
+            if(CreateCacheEntry(key, value, defaultCacheTime, out CachedObject<T?>? result))
+                return result!;
+            return new CachedObject<T?>(default);
         }
 
-        protected void CreateCacheEntry<T>(CacheKey key, T value, int defaultCacheTime, out CachedObject<T> result)
+        protected bool CreateCacheEntry<T>(CacheKey key, T? value, int defaultCacheTime, out CachedObject<T>? result)
         {
-            result = null;
+            result = default;
             if (key.CacheTime == 0 || !Options.CachingEnabled)
-                return;
+                return false;
 
             if (key.CacheTime < 0 && IsSet(key.Key))
             {
                 Remove(key.Key);
-                return;
+                return false;
             }
 
             // do not cache empty value
             if (value == null || value.Equals(default(T)) || value is ICollection { Count: 0 })
             {
-                return;
+                return false;
             }
 
             // create cache entry
@@ -75,6 +79,7 @@ namespace AVS.CoreLib.Caching
             var wrappedValue = new CachedObject<T>(value);
             base.CreateCacheEntry(key.Key, wrappedValue, options);
             result = wrappedValue;
+            return true;
         }
     }
 }

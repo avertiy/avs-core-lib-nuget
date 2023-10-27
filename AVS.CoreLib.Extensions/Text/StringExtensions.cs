@@ -204,7 +204,6 @@ namespace AVS.CoreLib.Extensions
             return str.Substring(0, Math.Min(str.Length, maxLength));
         }
 
-
         public static int IndexOfEndOfWord(this string str, int fromIndex = 0)
         {
             if (str.Length <= fromIndex)
@@ -267,4 +266,5 @@ namespace AVS.CoreLib.Extensions
         }
 
     }
+
 }

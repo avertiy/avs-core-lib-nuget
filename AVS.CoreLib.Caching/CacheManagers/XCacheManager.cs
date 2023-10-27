@@ -10,9 +10,8 @@ namespace AVS.CoreLib.Caching
     /// Uses <see cref="CacheKey"/> as a cache key and wrapper <see cref="CachedObject{T}"/> over cached items to give you more control over caching
     /// Supports removing cached items by prefix 
     /// </summary>
-    public partial class XCacheManager : CacheManagerBase, IXCacheManager, IKeysBookkeeper
+    public partial class XCacheManager : CacheManagerBase, IXCacheManager
     {
-        public ICacheKeysBookkeeper KeysBookkeeper { get; set; }
         public CachingOptions Options { get; }
 
         public XCacheManager(IMemoryCache memoryCache) : base(memoryCache)
@@ -98,16 +97,6 @@ namespace AVS.CoreLib.Caching
 
             var defaultCacheTime = shortTerm ? Options.ShortTermCacheTime : Options.DefaultCacheTime;
             CreateCacheEntry(key, value, defaultCacheTime, out _);
-        }
-
-        protected override void OnCacheEntryCreated<T>(string key, T value)
-        {
-            KeysBookkeeper?.Add(key);
-        }
-
-        protected override void OnKeyRemoved(string key)
-        {
-            KeysBookkeeper?.Remove(key);
         }
     }
 }

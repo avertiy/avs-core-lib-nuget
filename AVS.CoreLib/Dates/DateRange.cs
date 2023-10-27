@@ -10,6 +10,10 @@ using AVS.CoreLib.Extensions.Enums;
 
 namespace AVS.CoreLib.Dates
 {
+    //TODO make From and To nullable, null is treated as UtcNow, both null - means no data
+    //the only issue it would be quite a messy way to access the datetime values
+    //TODO Add DateRange Creation by week number e.g. 12 week and slicing range on pieces by week 10,11,12,13,14 etc.
+
     /// <summary>
     /// represents period from - to 
     /// support string literals e.g. today, yesterday, day, week, month, 15m, 30m, 1h, 24h, 1d,2d, 1M, 1Q, 1Y etc.
@@ -284,11 +288,21 @@ namespace AVS.CoreLib.Dates
             return new DateRange(range.From.TakeEarliest(other.From), range.To.TakeLatest(other.To));
         }
 
-        public static IEnumerable<DateRange> Iterate(this DateRange range, int seconds)
+        public static DateRange[] Split(this DateRange range, int timespanInSeconds)
+        {
+            return range.Iterate(timespanInSeconds).ToArray();
+        }
+
+        public static DateRange[] SplitByDays(this DateRange range, int days)
+        {
+            return range.IterateByDays(days).ToArray();
+        }
+
+        public static IEnumerable<DateRange> Iterate(this DateRange range, int timespanInSeconds)
         {
             for (var i = range.From; i < range.To;)
             {
-                var next = i.AddSeconds(seconds);
+                var next = i.AddSeconds(timespanInSeconds);
 
                 if (next > range.To)
                     next = range.To;
@@ -298,9 +312,9 @@ namespace AVS.CoreLib.Dates
             }
         }
 
-        public static IEnumerable<DateRange> IterateByMonths(this DateRange range, int months = 1, OrderBy orderBy = OrderBy.Asc)
+        public static IEnumerable<DateRange> IterateByMonths(this DateRange range, int months = 1, Sort orderBy = Sort.Asc)
         {
-            if (orderBy == OrderBy.Asc)
+            if (orderBy == Sort.Asc)
             {
                 var i = range.From;
                 var startOfMonth = i.StartOfMonth();
@@ -309,11 +323,12 @@ namespace AVS.CoreLib.Dates
                 {
                     next = startOfMonth.AddMonths(months).AddDays(-1);
                     yield return new DateRange(i, next);
+                    i = next;
                 }
 
                 while (true)
                 {
-                    next = i.AddMonths(months);
+                    next = i.AddMonths(months).StartOfMonth();
 
                     if (next > range.To)
                     {
@@ -328,6 +343,13 @@ namespace AVS.CoreLib.Dates
             else
             {
                 var i = range.To;
+                var startOfMonth = i.StartOfMonth();                
+                if (i > startOfMonth)
+                {
+                    yield return new DateRange(startOfMonth, i);
+                    i = startOfMonth;
+                }
+
                 while (true)
                 {
                     var prev = i.AddMonths(-months);
@@ -344,14 +366,14 @@ namespace AVS.CoreLib.Dates
             }
         }
 
-        public static IEnumerable<DateRange> IterateByDays(this DateRange range, int days, OrderBy orderBy = OrderBy.Asc)
+        public static IEnumerable<DateRange> IterateByDays(this DateRange range, int days, Sort orderBy = Sort.Asc)
         {
-            if (orderBy == OrderBy.Asc)
+            if (orderBy == Sort.Asc)
             {
                 var i = range.From;
                 while (true)
-                {
-                    var next = i.AddDays(days);
+                {                    
+                    var next = i.AddDays(days).Date;
 
                     if (next > range.To)
                     {
@@ -368,7 +390,7 @@ namespace AVS.CoreLib.Dates
                 var i = range.To;
                 while (true)
                 {
-                    var prev = i.AddDays(-days);
+                    var prev = i.AddDays(-days).Date;
 
                     if (prev < range.From)
                     {

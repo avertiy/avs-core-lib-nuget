@@ -37,6 +37,6 @@ namespace AVS.CoreLib.Caching
         public static explicit operator CachedObject<T>(T data)
         {
             return new CachedObject<T>(data);
-        }
+        }        
     }
 }

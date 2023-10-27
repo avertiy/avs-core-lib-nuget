@@ -77,17 +77,27 @@ namespace AVS.CoreLib.REST.Clients
                     goto start;
                 }
 
-                var content = await response.Content.ReadAsStringAsync();
-                var result = response.IsSuccessStatusCode ?
-                    new JsonResult(Source, content) :
-                    new JsonResult(Source, null, content);
+                JsonResult result;
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    if (string.IsNullOrEmpty(error))
+                        error = response.ReasonPhrase;
+                    result = JsonResult.Failed(Source, error);
+                }
+                else
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    result = JsonResult.Success(Source, content);
+                }
 
                 response.Dispose();
                 return result;
             }
             catch (Exception ex)
             {
-                return new JsonResult(Source, null, ex.ToString());
+                return JsonResult.Failed(Source, ex.ToString());
             }
         }
     }

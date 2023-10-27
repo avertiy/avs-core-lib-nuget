@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace AVS.CoreLib.Guards;
 
@@ -14,6 +15,30 @@ public static class GuardAgainstExtensions
     {
         if (string.IsNullOrEmpty(param) && !allowNull)
             throw new ArgumentNullException($"{name} must be not null or empty");
+    }
+
+    public static void NullOrEmpty<T>(this IAgainstGuardClause guardClause, T[]? arr, string? message = null)
+    {
+        if (arr == null || arr.Length == 0)
+            throw new ArgumentNullException(message ?? $"Arg {typeof(T).Name}[] must be neither null neither empty");
+    }
+
+    public static void Empty<T>(this IAgainstGuardClause guardClause, T[] arr, string? message = null)
+    {
+        if (arr.Length == 0)
+            throw new ArgumentNullException(message ?? $"Arg {typeof(T).Name}[] must be not empty");
+    }
+
+    public static void Empty<T>(this IAgainstGuardClause guardClause, IList<T> list, string? message = null)
+    {
+        if (list.Count == 0)
+            throw new ArgumentNullException(message ?? $"Arg IList<{typeof(T).Name}> must be not empty");
+    }
+
+    public static void Empty<TKey,T>(this IAgainstGuardClause guardClause, IDictionary<TKey,T> dict, string? message = null)
+    {
+        if (dict.Count == 0)
+            throw new ArgumentNullException(message ?? $"Arg IDictionary<{typeof(TKey).Name},{typeof(T).Name}> must be not empty");
     }
 
     public static void Null(this IAgainstGuardClause guardClause, object? arg, string? message = null)

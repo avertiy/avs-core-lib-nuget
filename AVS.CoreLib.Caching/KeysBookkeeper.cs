@@ -5,26 +5,37 @@ using AVS.CoreLib.Abstractions;
 namespace AVS.CoreLib.Caching
 {
     /// <summary>
-    /// cache keys ledger or bookkeeper helps to keep records about keys stored by cache manager <see cref="_cacheManager"/>
-    /// note the <see cref="ICacheManager"/> must implement <see cref="IKeysBookkeeper"/> interface
+    /// Keys Bookkeeper(ledger) is designed for advanced caching scenarios 
+    /// when you need to track list of keys present in cache
     /// </summary>
-    public class CacheKeysBookkeeper : ICacheKeysBookkeeper
+    public class KeysBookkeeper : ICacheKeysBookkeeper
     {
         private readonly List<string> _keys = new List<string>();
         private readonly ICacheManager _cacheManager;
         private readonly IDateTimeProvider _dateTimeProvider;
         private DateTime _updated;
 
-        public CacheKeysBookkeeper(ICacheManager cacheManager, IDateTimeProvider dateTimeProvider = null)
+        public KeysBookkeeper(ICacheManager cacheManager, IDateTimeProvider dateTimeProvider = null)
         {
-            if (cacheManager is IKeysBookkeeper kb)
+            if (cacheManager is CacheManagerBase mgr)
             {
-                kb.KeysBookkeeper = this;
+                mgr.ItemRemoved += OnItemRemoved;
+                mgr.ItemAdded += OnItemAdded;
             }
 
             _dateTimeProvider = dateTimeProvider ?? DateTimeProvider.Instance;
             _updated = _dateTimeProvider.GetSystemTime();
             _cacheManager = cacheManager;
+        }
+
+        private void OnItemAdded(string key, object item)
+        {
+            this.AddKey(key);
+        }
+
+        private void OnItemRemoved(string key)
+        {
+            this.Remove(key);
         }
 
         private TimeSpan TimeSinceLastUpdate => _dateTimeProvider.GetSystemTime() - _updated;
@@ -34,12 +45,12 @@ namespace AVS.CoreLib.Caching
         /// </summary>
         public int UpdateInterval { get; set; } = 15;
         
-        public void Add(string key)
+        public void AddKey(string key)
         {
             if (!_keys.Contains(key))
                 _keys.Add(key);
 
-            UpdateKeyRecords();
+            CleanUp();
         }
 
         public void Remove(string key)
@@ -47,7 +58,7 @@ namespace AVS.CoreLib.Caching
             _keys.Remove(key);
         }
 
-        private void UpdateKeyRecords()
+        private void CleanUp()
         {
             if(_keys.Count < 100 || TimeSinceLastUpdate.TotalMinutes < UpdateInterval) 
                 return;

@@ -21,28 +21,28 @@ namespace AVS.CoreLib.Extensions.Linq
             return res;
         }
 
-        public static IEnumerable<T> OrderBy<T, Key>(this IEnumerable<T> source, Func<T, Key> selector, OrderBy orderBy)
+        public static IEnumerable<T> OrderBy<T, Key>(this IEnumerable<T> source, Func<T, Key> selector, Sort orderBy)
         {
-            if (orderBy == Enums.OrderBy.None)
+            if (orderBy == Enums.Sort.None)
                 return source;
 
-            return orderBy == Enums.OrderBy.Asc ? source.OrderBy(selector) : source.OrderByDescending(selector);
+            return orderBy == Enums.Sort.Asc ? source.OrderBy(selector) : source.OrderByDescending(selector);
         }
 
-        public static IEnumerable<T> OrderBy2<T, Key>(this IEnumerable<T> source, Func<T, Key> selector, OrderBy orderBy)
+        public static IEnumerable<T> OrderBy2<T, Key>(this IEnumerable<T> source, Func<T, Key> selector, Sort orderBy)
         {
-            if (orderBy == Enums.OrderBy.None)
+            if (orderBy == Enums.Sort.None)
                 return source;
 
-            return orderBy == Enums.OrderBy.Asc ? source.OrderBy(selector) : source.OrderByDescending(selector);
+            return orderBy == Enums.Sort.Asc ? source.OrderBy(selector) : source.OrderByDescending(selector);
         }
 
-        public static IEnumerable<T> ThenBy<T, Key>(this IOrderedEnumerable<T> source, Func<T, Key> selector, OrderBy orderBy)
+        public static IEnumerable<T> ThenBy<T, Key>(this IOrderedEnumerable<T> source, Func<T, Key> selector, Sort orderBy)
         {
-            if (orderBy == Enums.OrderBy.None)
+            if (orderBy == Enums.Sort.None)
                 return source;
 
-            return orderBy == Enums.OrderBy.Asc ? source.ThenBy(selector) : source.ThenByDescending(selector);
+            return orderBy == Enums.Sort.Asc ? source.ThenBy(selector) : source.ThenByDescending(selector);
         }
 
     }
