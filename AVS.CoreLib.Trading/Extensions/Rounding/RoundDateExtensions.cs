@@ -3,7 +3,7 @@ using AVS.CoreLib.Trading.Enums;
 
 namespace AVS.CoreLib.Trading.Extensions
 {
-    public static class DateExtensions
+    public static class RoundDateExtensions
     {
         public static DateTime RoundDown(this DateTime date, TimeFrame timeFrame)
         {

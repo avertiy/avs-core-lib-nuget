@@ -194,6 +194,17 @@ namespace AVS.CoreLib.Extensions
         {
             return value <= value2 ? value : value2;
         }
+        /// <summary>
+        /// returns fraction of the value e.g. Fraction(500, 0.5%) => 2.5
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="percent"></param>
+        /// <returns></returns>
+        public static decimal Fraction(this decimal value, decimal percent)
+        {
+            return value * percent / 100;
+        }
+
 
         #endregion
 

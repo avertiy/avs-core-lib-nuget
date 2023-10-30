@@ -2,6 +2,7 @@
 
 namespace AVS.CoreLib.Trading.Types
 {
+    /*
     public class XSymbol : IHasValue
     {
         public XSymbol(string symbol, string exchange)
@@ -51,4 +52,5 @@ namespace AVS.CoreLib.Trading.Types
             return false;
         }
     }
+    */
 }

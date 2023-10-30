@@ -9,7 +9,7 @@ namespace AVS.CoreLib.Trading.Extensions
         /// <summary>
         /// not implemented to classify all candle types but some basic candle classification is possible
         /// </summary>
-        [Obsolete("the method is not fully implemented")]
+        [Obsolete("method is not fully implemented")]
         public static CandleType GetCandleType(this IOhlc ohlc)
         {
             var body = ohlc.Close - ohlc.Open;

@@ -2,7 +2,7 @@
 using AVS.CoreLib.Text.FormatProviders;
 using AVS.CoreLib.Text.Formatters;
 
-namespace AVS.CoreLib.Trading.FormatProviders
+namespace AVS.CoreLib.Trading.Formatters
 {
     /// <summary>
     /// Combines a set of custom trading formatters such as

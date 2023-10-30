@@ -1,7 +1,7 @@
 ﻿using System;
 using AVS.CoreLib.Text.FormatProviders;
 
-namespace AVS.CoreLib.Trading.FormatProviders
+namespace AVS.CoreLib.Trading.Formatters
 {
     public static class T
     {

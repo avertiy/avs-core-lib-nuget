@@ -20,6 +20,7 @@ namespace AVS.CoreLib.Trading.Configuration.Markets
             public string? Default { get; set; }
             public string? Preset1 { get; set; }
             public string? Preset2 { get; set; }
+            public string? Preset3 { get; set; }
         }
     }
 
@@ -33,7 +34,8 @@ namespace AVS.CoreLib.Trading.Configuration.Markets
         Default = 0,
         Preset1 = 1,
         Preset2 = 2,
-        All =3
+        Preset3 = 3,
+        All =4
     }
 
     public static class MarketConfigExtensions
@@ -57,40 +59,7 @@ namespace AVS.CoreLib.Trading.Configuration.Markets
 
             return result.ToArray();
         }
-
-        //public static string[] GetFuturesPairs(this MarketConfig config, Preset preset = Preset.Default)
-        //{
-        //    var result = new List<string>(15);
-            
-        //    foreach (var combination in config.Futures)
-        //    {
-        //        var assets = combination.GetBaseAssets(preset);
-        //        if (assets.Any())
-        //        {
-        //            var pairs = TradingPairHelper.Combine(combination.Quote, assets);
-        //            result.AddRange(pairs);
-        //        }
-        //    }
-
-        //    return result.ToArray();
-        //}
-
-        //public static string[] GetTradingPairs(this MarketConfig config, Preset preset = Preset.Default)
-        //{
-        //    var result = new List<string>(15);
-        //    foreach (var combination in config.Spot)
-        //    {
-        //        var assets = combination.GetBaseAssets(preset);
-        //        if (assets.Any())
-        //        {
-        //            var pairs = TradingPairHelper.Combine(combination.Quote, assets);
-        //            result.AddRange(pairs);
-        //        }
-        //    }
-
-        //    return result.ToArray();
-        //}
-
+      
         public static string[] GetBaseAssets(this Combination combination, Preset preset)
         {
             var str = preset switch
@@ -98,9 +67,13 @@ namespace AVS.CoreLib.Trading.Configuration.Markets
                 Preset.Default => combination.Default,
                 Preset.Preset1 => combination.Preset1,
                 Preset.Preset2 => combination.Preset2,
+                Preset.Preset3 => combination.Preset3,
                 _ => combination.BaseAssets
             };
-            
+
+            if (str == "*")
+                str = combination.BaseAssets;
+
             return str == null ? Array.Empty<string>() : str.Split(',');
         }
     }

@@ -13,7 +13,7 @@ namespace AVS.CoreLib.Trading.Symbols
         SymbolDescriptor[] GetAllDescriptors();
         IEnumerable<SymbolDescriptor> GetDescriptors(Func<SymbolDescriptor, bool> predicate);
     }
-
+    //TODO REWORK or move out into separate lib 
     public class SymbolDescriptorService : ISymbolDescriptorService
     {
         private readonly SymbolRegistry _registry = new SymbolRegistry();

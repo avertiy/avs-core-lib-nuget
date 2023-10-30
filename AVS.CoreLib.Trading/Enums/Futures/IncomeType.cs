@@ -8,15 +8,15 @@
         /// <summary>
         /// Futures trading commission
         /// </summary>
-        COMMISSION,        
+        COMMISSION = 0,        
         /// <summary>
         /// Futures funding fee
         /// </summary>
-        FUNDING_FEE,
+        FUNDING_FEE =1,
         /// <summary>
         /// Futures realized profit
         /// </summary>
-        REALIZED_PNL,
+        REALIZED_PNL =2,
         /// <summary>
         /// Transfer into account
         /// </summary>

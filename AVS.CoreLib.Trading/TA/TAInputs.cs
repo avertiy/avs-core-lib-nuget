@@ -1,6 +1,5 @@
 ﻿#nullable enable
 using System;
-using AVS.CoreLib.Trading.Enums;
 using AVS.CoreLib.Trading.Enums.TA;
 
 namespace AVS.CoreLib.Trading.TA

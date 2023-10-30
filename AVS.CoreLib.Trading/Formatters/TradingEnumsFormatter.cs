@@ -2,7 +2,7 @@
 using AVS.CoreLib.Text.Formatters;
 using AVS.CoreLib.Trading.Enums;
 
-namespace AVS.CoreLib.Trading.FormatProviders
+namespace AVS.CoreLib.Trading.Formatters
 {
     /// <summary>
     /// This formatter is replaced with <see cref="CompositeFormatter"/>

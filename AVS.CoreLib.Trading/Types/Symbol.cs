@@ -11,11 +11,9 @@ namespace AVS.CoreLib.Trading.Types
     /// Symbol represent a trade instrument, most exchanges operate symbols 
     /// <see cref="Symbol"/> format convention is [base_currency]_[quote_currency] e.g. BTC_USDT
     /// </summary>
-    /// <remarks>
-    /// this type replace <see cref="PairString"/>  pair `USDT_BTC` pair is a `BTC_USDT` symbol, i.e. swap quote and base currencies 
-    /// </remarks>
     [TypeConverter(typeof(SymbolTypeConverter))]
     [DebuggerDisplay("Symbol: {Value}")]
+    [Obsolete("Use string symbol and extensions")]
     public class Symbol : IHasValue
     {
         [DebuggerStepThrough]
@@ -69,14 +67,6 @@ namespace AVS.CoreLib.Trading.Types
         public string ToTradingPair()
         {
             return Value.Replace('_', '/');
-        }
-    }
-
-    public static class SymbolExtensions
-    {
-        public static XSymbol ToXSymbol(this Symbol symbol, string exchange)
-        {
-            return new XSymbol(symbol.Value, exchange);
         }
     }
 

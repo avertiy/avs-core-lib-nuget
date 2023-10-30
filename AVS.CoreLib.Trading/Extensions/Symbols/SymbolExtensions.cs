@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Trading.Enums;
 using AVS.CoreLib.Trading.Helpers;
@@ -15,6 +13,7 @@ namespace AVS.CoreLib.Trading.Extensions
         /// <summary>
         /// returns quote currency for BTC_USDT => USDT
         /// </summary>
+        [Obsolete("Use symbol.Q()")]
         public static string QuoteCurrency(this string symbol, SymbolFormat format = SymbolFormat.Normalized)
         {
             return format == SymbolFormat.Normalized ? symbol.Split('_')[1] : Normalize(symbol, format).Split('_')[1];
@@ -23,7 +22,26 @@ namespace AVS.CoreLib.Trading.Extensions
         /// <summary>
         /// returns base currency for BTC_USDT => BTC
         /// </summary>
+        [Obsolete("Use symbol.B()")]
         public static string BaseCurrency(this string symbol, SymbolFormat format = SymbolFormat.Normalized)
+        {
+            return format == SymbolFormat.Normalized ? symbol.Split('_')[0] : Normalize(symbol, format).Split('_')[0];
+        }
+
+        /// <summary>
+        /// returns quote currency, when possible replace currency iso code with symbol e.g. USDT => $
+        /// <seealso cref="CoinHelper.GetCurrencySymbol"/>
+        /// </summary>
+        public static string Q(this string symbol, SymbolFormat format = SymbolFormat.Normalized, bool replaceIsoCode = true)
+        {
+            var quote = format == SymbolFormat.Normalized ? symbol.Split('_')[1] : Normalize(symbol, format).Split('_')[1];
+            return replaceIsoCode ? CoinHelper.GetCurrencySymbol(quote) : quote;
+        }
+
+        /// <summary>
+        /// returns base currency for BTC_USDT => BTC
+        /// </summary>
+        public static string B(this string symbol, SymbolFormat format = SymbolFormat.Normalized)
         {
             return format == SymbolFormat.Normalized ? symbol.Split('_')[0] : Normalize(symbol, format).Split('_')[0];
         }
@@ -90,42 +108,7 @@ namespace AVS.CoreLib.Trading.Extensions
             return symbol;
         }
 
-        /// <summary>
-        /// returns quote currency, when possible replace currency iso code with symbol e.g. USDT => $
-        /// <seealso cref="CoinHelper.GetCurrencySymbol"/>
-        /// </summary>
-        public static string Q(this string symbol, bool replaceIsoCodeWithCurrencySymbol = true)
-        {
-            return CoinHelper.GetCurrencySymbol(QuoteCurrency(symbol));
-        }
-
-        /// <summary>
-        /// returns base currency for BTC_USDT => BTC
-        /// </summary>
-        public static string B(this string symbol)
-        {
-            return symbol.BaseCurrency();
-        }
-
-        public static bool MatchBaseCurrency(this string symbol, string currency)
-        {
-            return symbol.StartsWith(currency + "_");
-        }
-
-        public static bool MatchQuoteCurrency(this string symbol, string currency)
-        {
-            return symbol.EndsWith("_" + currency);
-        }
-
-        public static bool MatchQuoteCurrency(this IEnumerable<string> symbols, string symbol)
-        {
-            return symbols.Any(x => symbol.EndsWith("_" + x));
-        }
-
-        public static bool MatchBaseCurrency(this IEnumerable<string> symbols, string symbol)
-        {
-            return symbols.Any(x => symbol.StartsWith(x + "_"));
-        }
+        
 
         public static string Normalize(string symbol, bool isBaseCurrencyFirst)
         {
@@ -181,7 +164,7 @@ namespace AVS.CoreLib.Trading.Extensions
 
         public static bool IsUsdPeggedPair(this string symbol)
         {
-            var quote = symbol.QuoteCurrency();
+            var quote = symbol.Q();
             return quote.Contains("USD") || quote.Either("DAI", "PAX");
         }
     }

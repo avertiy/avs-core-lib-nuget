@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.Linq;
 using AVS.CoreLib.Trading.Abstractions;
 using AVS.CoreLib.Trading.Helpers;
@@ -31,7 +30,7 @@ namespace AVS.CoreLib.Trading.Extensions
 
         public static string PriceFormat(this double price, string symbol)
         {
-            var quote = symbol.QuoteCurrency();
+            var quote = symbol.Q();
             var s = CoinHelper.GetCurrencySymbol(quote);
 
             if (s == "$")
@@ -44,12 +43,34 @@ namespace AVS.CoreLib.Trading.Extensions
 
         #region decimal
 
-        [Obsolete("use Round(this decimal value, int? roundDecimals = null, int extraPrecision = 0, int minPrecision = 0)")]
-        public static decimal PriceRound(this decimal price, int? roundDecimals = null, int extraPrecision = 0)
+        public static int GetPricePrecision(this decimal price)
         {
-            var dec = roundDecimals ?? price.GetRoundDecimals();
-            return price.Round(dec+ extraPrecision);
+            if (price >= 10_000)
+                return 0;
+
+            if (price >= 100)
+                return 2;
+
+            var dec = price.GetDecimalPlaces();
+
+            return price switch
+            {
+                >= 1 => dec > 2 ? 3 : 2,
+                >= 0.1m => dec > 3 ? 4 : 3,
+                >= 0.01m => dec > 4 ? 5 : 4,
+                >= 0.001m => dec > 5 ? 6 : 5,
+                >= 0.0001m => dec > 6 ? 7 : 6,
+                >= 0.00001m => dec > 7 ? 8 : 7,
+                _ => 8
+            };
         }
+
+        //[Obsolete("use Round(this decimal value, int? roundDecimals = null, int extraPrecision = 0, int minPrecision = 0)")]
+        //public static decimal PriceRound(this decimal price, int? roundDecimals = null, int extraPrecision = 0)
+        //{
+        //    var dec = roundDecimals ?? price.GetRoundDecimals();
+        //    return price.Round(dec+ extraPrecision);
+        //}
 
         public static decimal PriceRoundUp(this decimal price, int? roundDecimals = null, int extraPrecision = 0)
         {
@@ -129,13 +150,13 @@ namespace AVS.CoreLib.Trading.Extensions
 
         public static string PriceFormat(this decimal price, string symbol)
         {
-            var quote = symbol.QuoteCurrency();
+            var quote = symbol.Q();
             var s = CoinHelper.GetCurrencySymbol(quote);
 
             if (s == "$")
                 return price.ToString("C");
 
-            return PriceRound(price) + s;
+            return price.Round() + s;
         }
     }
 

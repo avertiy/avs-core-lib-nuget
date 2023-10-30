@@ -1,6 +1,6 @@
 ﻿using AVS.CoreLib.Text.FormatProviders;
 using AVS.CoreLib.Trading.Enums;
-using AVS.CoreLib.Trading.FormatProviders;
+using AVS.CoreLib.Trading.Formatters;
 
 namespace AVS.CoreLib.Trading.Extensions
 {

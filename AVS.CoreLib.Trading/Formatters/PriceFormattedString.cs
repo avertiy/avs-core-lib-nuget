@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AVS.CoreLib.Trading.FormatProviders
+namespace AVS.CoreLib.Trading.Formatters
 {
     /// <summary>
     /// takes FormattableString and applies PriceFormatProvider to it => str.ToString(PriceFormatProvider.Instance)

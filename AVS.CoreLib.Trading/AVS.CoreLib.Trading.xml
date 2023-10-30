@@ -971,31 +971,35 @@
             e.g. commission 0.25%, buy 100 xrp in real you will get 100-0.25% = 99.75 xrp 
             </summary>
         </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.TimeFrameExtensions.CalcTimespan(AVS.CoreLib.Trading.Enums.TimeFrame,System.Int32)">
+            <summary>
+            Calculate timespan = (int)timeframe x count 
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.TimeFrameExtensions.CalcBarCount(AVS.CoreLib.Trading.Enums.TimeFrame,System.Double)">
+            <summary>
+            Calculate bar count = period / (int)timeframe
+            i.e. how many bars (count) cover the specified period
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.TimeFrameExtensions.CalcBarCountFrom(AVS.CoreLib.Trading.Enums.TimeFrame,System.DateTime)">
+            <summary>
+            Calculate bar count from <see cref="!:fromDate"/> till <see cref="P:System.DateTime.Now"/>
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.TimeFrameExtensions.GetVolatilityByTimeFrame(AVS.CoreLib.Trading.Enums.TimeFrame)">
+            <summary>
+            Volatility is kind of average* bar length at a given scale (timeframe)
+            *average calculated taking into account only normal-size bars, similar princip as for ATR (short, long and paranormal bars are ignored as they are unusual)
+            e.g.. tf:D ~7-8%, tf:H1 ~ 1.2-1.8%
+            for some assets it could differ but in most cases ATR bar will 
+            </summary>
+        </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.FormatNumberExtensions.FormatPrices(System.Double[],System.String)">
             <summary>
             format numbers to string using n.FormatPrice()
             leading zeros will be replaced by replacement
             (e.g. 0.0001234 => 0..1234) 
-            </summary>
-        </member>
-        <member name="T:AVS.CoreLib.Trading.Extensions.GenericTypeFormatterExtensions">
-            <summary>
-            GenericFormatter extensions
-            </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.GenericTypeFormatterExtensions.AddTradeTypeFormatter(AVS.CoreLib.Text.Formatters.GenericFormatter.GenericTypeFormatter)">
-            <summary>
-            Register <see cref="T:AVS.CoreLib.Trading.Enums.TradeType"/> enum formatting
-            </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.GenericTypeFormatterExtensions.AddOrderSideFormatter(AVS.CoreLib.Text.Formatters.GenericFormatter.GenericTypeFormatter)">
-            <summary>
-            Register <see cref="T:AVS.CoreLib.Trading.Enums.OrderSide"/> enum formatting
-            </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.GenericTypeFormatterExtensions.AddPositionTypeFormatter(AVS.CoreLib.Text.Formatters.GenericFormatter.GenericTypeFormatter)">
-            <summary>
-            Register <see cref="T:AVS.CoreLib.Trading.Enums.PositionType"/> enum formatting
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.NumberExtensions.GetLeastExpDiff(System.Double,System.Double)">
@@ -1034,86 +1038,97 @@
             returns base currency for BTC_USDT => BTC
             </summary>
         </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolExtensions.Normalize(System.String,AVS.CoreLib.Trading.Enums.SymbolFormat)">
-            <summary>
-            normalize symbol e.g. btcusdt => BTC_USDT
-            </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolExtensions.Q(System.String,System.Boolean)">
+        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolExtensions.Q(System.String,AVS.CoreLib.Trading.Enums.SymbolFormat,System.Boolean)">
             <summary>
             returns quote currency, when possible replace currency iso code with symbol e.g. USDT => $
             <seealso cref="M:AVS.CoreLib.Trading.Helpers.CoinHelper.GetCurrencySymbol(System.String)"/>
             </summary>
         </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolExtensions.B(System.String)">
+        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolExtensions.B(System.String,AVS.CoreLib.Trading.Enums.SymbolFormat)">
             <summary>
             returns base currency for BTC_USDT => BTC
             </summary>
         </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.TimeFrameExtensions.CalcTimespan(AVS.CoreLib.Trading.Enums.TimeFrame,System.Int32)">
+        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolExtensions.Normalize(System.String,AVS.CoreLib.Trading.Enums.SymbolFormat)">
             <summary>
-            Calculate timespan = (int)timeframe x count 
+            normalize symbol e.g. btcusdt => BTC_USDT
             </summary>
         </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.TimeFrameExtensions.CalcBarCount(AVS.CoreLib.Trading.Enums.TimeFrame,System.Double)">
+        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolPatternExtensions.Match(System.String,AVS.CoreLib.Trading.Types.SymbolPattern)">
             <summary>
-            Calculate bar count = period / (int)timeframe
-            i.e. how many bars (count) cover the specified period
+            match symbol (e.g. `BTC_USDT`) with a symbol pattern (e.g. `USDT*`) <see cref="T:AVS.CoreLib.Trading.Types.SymbolPattern"/>
             </summary>
         </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.TimeFrameExtensions.CalcBarCountFrom(AVS.CoreLib.Trading.Enums.TimeFrame,System.DateTime)">
+        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolPatternExtensions.Match(System.String[],AVS.CoreLib.Trading.Types.SymbolPattern)">
             <summary>
-            Calculate bar count from <see cref="!:fromDate"/> till <see cref="P:System.DateTime.Now"/>
+            if any symbol matches pattern <see cref="T:AVS.CoreLib.Trading.Types.SymbolPattern"/> returns true, otherwise false 
             </summary>
         </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.TimeFrameExtensions.GetVolatilityByTimeFrame(AVS.CoreLib.Trading.Enums.TimeFrame)">
+        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolPatternExtensions.Filter(System.String[],System.String)">
             <summary>
-            Volatility is kind of average* bar length at a given scale (timeframe)
-            *average calculated taking into account only normal-size bars, similar princip as for ATR (short, long and paranormal bars are ignored as they are unusual)
-            e.g.. tf:D ~7-8%, tf:H1 ~ 1.2-1.8%
-            for some assets it could differ but in most cases ATR bar will 
+            filter symbols applying symbol pattern (filter) <see cref="T:AVS.CoreLib.Trading.Types.SymbolPattern"/>
+            </summary>        
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Extensions.GenericTypeFormatterExtensions">
+            <summary>
+            GenericFormatter extensions
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.GenericTypeFormatterExtensions.AddTradeTypeFormatter(AVS.CoreLib.Text.Formatters.GenericFormatter.GenericTypeFormatter)">
+            <summary>
+            Register <see cref="T:AVS.CoreLib.Trading.Enums.TradeType"/> enum formatting
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.GenericTypeFormatterExtensions.AddOrderSideFormatter(AVS.CoreLib.Text.Formatters.GenericFormatter.GenericTypeFormatter)">
+            <summary>
+            Register <see cref="T:AVS.CoreLib.Trading.Enums.OrderSide"/> enum formatting
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.GenericTypeFormatterExtensions.AddPositionTypeFormatter(AVS.CoreLib.Text.Formatters.GenericFormatter.GenericTypeFormatter)">
+            <summary>
+            Register <see cref="T:AVS.CoreLib.Trading.Enums.PositionType"/> enum formatting
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.XFormatProviderExtensions.AddTradingFormatters(AVS.CoreLib.Text.FormatProviders.XFormatProvider)">
             <summary>
             Add string formatters
-                <see cref="T:AVS.CoreLib.Trading.FormatProviders.PriceFormatter"/>
-                <see cref="T:AVS.CoreLib.Trading.FormatProviders.PairStringFormatter"/>
-                <see cref="T:AVS.CoreLib.Trading.FormatProviders.OhlcFormatter"/>
-                <see cref="T:AVS.CoreLib.Trading.FormatProviders.CurrencySymbolFormatter"/>
+                <see cref="T:AVS.CoreLib.Trading.Formatters.PriceFormatter"/>
+                <see cref="T:AVS.CoreLib.Trading.Formatters.PairStringFormatter"/>
+                <see cref="T:AVS.CoreLib.Trading.Formatters.OhlcFormatter"/>
+                <see cref="T:AVS.CoreLib.Trading.Formatters.CurrencySymbolFormatter"/>
             and type formatters for enums:
                 <see cref="T:AVS.CoreLib.Trading.Enums.TradeType"/>
                 <see cref="T:AVS.CoreLib.Trading.Enums.OrderSide"/>
                 <see cref="T:AVS.CoreLib.Trading.Enums.PositionType"/>
             </summary>
         </member>
-        <member name="P:AVS.CoreLib.Trading.FormatProviders.CurrencySymbolFormatter.GetQualifiers">
+        <member name="P:AVS.CoreLib.Trading.Formatters.CurrencySymbolFormatter.GetQualifiers">
             <summary>
             qualifiers: "$|symbol; i|iso"
             </summary>
         </member>
-        <member name="P:AVS.CoreLib.Trading.FormatProviders.OhlcFormatter.GetQualifiers">
+        <member name="P:AVS.CoreLib.Trading.Formatters.OhlcFormatter.GetQualifiers">
             <summary>
             qualifiers: "q|quote; b|base; p|pair; Q|B|symbol"
             </summary>
         </member>
-        <member name="P:AVS.CoreLib.Trading.FormatProviders.PairStringFormatter.GetQualifiers">
+        <member name="P:AVS.CoreLib.Trading.Formatters.PairStringFormatter.GetQualifiers">
             <summary>
             qualifiers: "q|quote; b|base; p|pair; Q|B|symbol"
             </summary>
         </member>
-        <member name="T:AVS.CoreLib.Trading.FormatProviders.PriceFormattedString">
+        <member name="T:AVS.CoreLib.Trading.Formatters.PriceFormattedString">
             <summary>
             takes FormattableString and applies PriceFormatProvider to it => str.ToString(PriceFormatProvider.Instance)
             usage: X.Format($"amount {1.25:a}; price {9.99:price}"); 
             </summary>
         </member>
-        <member name="M:AVS.CoreLib.Trading.FormatProviders.PriceFormattedString.op_Implicit(AVS.CoreLib.Trading.FormatProviders.PriceFormattedString)~System.String">
+        <member name="M:AVS.CoreLib.Trading.Formatters.PriceFormattedString.op_Implicit(AVS.CoreLib.Trading.Formatters.PriceFormattedString)~System.String">
             <summary>
             this is to return PriceFormattedString as a string
             </summary>
         </member>
-        <member name="T:AVS.CoreLib.Trading.FormatProviders.PriceFormatter">
+        <member name="T:AVS.CoreLib.Trading.Formatters.PriceFormatter">
             <summary> 
             qualifiers: a|amount; p|price; q|qty|quantity; n|number 
             represents ICustomFormatter implementation (usually it is used by FormatProvider e.g. PriceFormatProvider) 
@@ -1122,24 +1137,24 @@
             - X.Format($"amount {1.25:a}; price {9.99:price}"); 
             </summary>
         </member>
-        <member name="P:AVS.CoreLib.Trading.FormatProviders.PriceFormatter.GetQualifiers">
+        <member name="P:AVS.CoreLib.Trading.Formatters.PriceFormatter.GetQualifiers">
             <summary>
             qualifiers: a|amount; p|price; q|qty|quantity; n|number; t|total
             </summary>
         </member>
-        <member name="M:AVS.CoreLib.Trading.FormatProviders.PriceFormatter.CustomFormat(System.String,System.Object,System.IFormatProvider)">
+        <member name="M:AVS.CoreLib.Trading.Formatters.PriceFormatter.CustomFormat(System.String,System.Object,System.IFormatProvider)">
             <summary>
             format double/decimal argument to string
             </summary>
         </member>
-        <member name="P:AVS.CoreLib.Trading.FormatProviders.T.FormatProvider">
+        <member name="P:AVS.CoreLib.Trading.Formatters.T.FormatProvider">
             <summary>
             Include formatters: PriceFormatter, PairStringFormatter, TradingEnumsFormatter, CurrencySymbolFormatter
             </summary>
         </member>
-        <member name="M:AVS.CoreLib.Trading.FormatProviders.T.Format(System.FormattableString)">
+        <member name="M:AVS.CoreLib.Trading.Formatters.T.Format(System.FormattableString)">
              <summary>
-             Format string with <see cref="P:AVS.CoreLib.Trading.FormatProviders.T.FormatProvider"/> matching trading formatters
+             Format string with <see cref="P:AVS.CoreLib.Trading.Formatters.T.FormatProvider"/> matching trading formatters
              
              PriceFormatter qualifiers:
                  a|amount - FormatNumber(default) [3-4 decimals];
@@ -1165,24 +1180,24 @@
                  i|iso - iso code;
              </summary>
         </member>
-        <member name="T:AVS.CoreLib.Trading.FormatProviders.TradingEnumsFormatter">
+        <member name="T:AVS.CoreLib.Trading.Formatters.TradingEnumsFormatter">
             <summary>
             This formatter is replaced with <see cref="!:CompositeFormatter"/>
             formatter for TradeType, OrderSide, PositionType enums
             </summary>
         </member>
-        <member name="P:AVS.CoreLib.Trading.FormatProviders.TradingEnumsFormatter.GetQualifiers">
+        <member name="P:AVS.CoreLib.Trading.Formatters.TradingEnumsFormatter.GetQualifiers">
             <summary>
             qualifiers: +; c|character; n|number
             </summary>
         </member>
-        <member name="T:AVS.CoreLib.Trading.FormatProviders.TradingFormatter">
+        <member name="T:AVS.CoreLib.Trading.Formatters.TradingFormatter">
             <summary>
             Combines a set of custom trading formatters such as
-            <see cref="T:AVS.CoreLib.Trading.FormatProviders.CurrencySymbolFormatter"/>
-            <see cref="T:AVS.CoreLib.Trading.FormatProviders.PriceFormatter"/>
-            <see cref="T:AVS.CoreLib.Trading.FormatProviders.PairStringFormatter"/>
-            <see cref="T:AVS.CoreLib.Trading.FormatProviders.OhlcFormatter"/>
+            <see cref="T:AVS.CoreLib.Trading.Formatters.CurrencySymbolFormatter"/>
+            <see cref="T:AVS.CoreLib.Trading.Formatters.PriceFormatter"/>
+            <see cref="T:AVS.CoreLib.Trading.Formatters.PairStringFormatter"/>
+            <see cref="T:AVS.CoreLib.Trading.Formatters.OhlcFormatter"/>
             used by X.Format util <seealso cref="T:AVS.CoreLib.Text.FormatProviders.XFormatProvider"/>
             TradingFormatter is registered by <see cref="M:AVS.CoreLib.Trading.ServiceCollectionExtension.AddTradingCore(Microsoft.Extensions.DependencyInjection.IServiceCollection)"/>
             </summary>
@@ -1191,67 +1206,6 @@
             <summary>
             BTC,ETH,BNB,XRP,TRX - i.e. symbols that might serve as quote asset in trading pairs
             </summary>
-        </member>
-        <member name="T:AVS.CoreLib.Trading.Helpers.CoinLiteral">
-            <summary>
-            Literals for wide quote filter <see cref="M:AVS.CoreLib.Trading.Helpers.SymbolFilterExtensions.Filter(System.String[],System.String)"/>
-            e.g. USDT* means match either USDT/USDC/BUSD etc. 
-            </summary>
-        </member>
-        <member name="F:AVS.CoreLib.Trading.Helpers.CoinLiteral.ANY">
-            <summary>
-            * means any symbol is ok 
-            </summary>
-        </member>
-        <member name="F:AVS.CoreLib.Trading.Helpers.CoinLiteral.ANY_USD_LIKE">
-            <summary>
-            USD* means USD + USDT,USDC,BUSD,DAI etc. 
-            </summary>
-        </member>
-        <member name="F:AVS.CoreLib.Trading.Helpers.CoinLiteral.ANY_TOP">
-            <summary>
-            BTC* means BTC + ETH,BNB,TRX etc. i.e. any TOP symbol that might serve as a quote symbol in trading pairs
-            </summary>
-        </member>
-        <member name="F:AVS.CoreLib.Trading.Helpers.CoinLiteral.ANY_STABLE">
-            <summary>
-            USDT* means USDT + USDC,BUSD,USDJ,USDD,TUSD,VAI,DAI etc. i.e. any stable or pegged coin
-            </summary>
-        </member>
-        <member name="F:AVS.CoreLib.Trading.Helpers.CoinLiteral.ANY_FIAT">
-            <summary>
-            FIAT means USD,EUR,UAH etc. <see cref="T:AVS.CoreLib.Trading.Enums.Fiat"/>
-            </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Trading.Helpers.SymbolFilterExtensions.Match(System.String,System.String)">
-            <summary>
-            match given symbol with a filter (by filter we mean either literal <see cref="T:AVS.CoreLib.Trading.Helpers.CoinLiteral"/>, concrete symbol or quote currency e.g. USDT)
-            returns true if filter is <see cref="T:AVS.CoreLib.Trading.Helpers.CoinLiteral"/> that matches the symbol
-            </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Trading.Helpers.SymbolFilterExtensions.Match(System.String[],System.String)">
-            <summary>
-            match symbol with symbols, if any match found returns true, otherwise false.
-            support
-            (i) normal symbols e.g. [`BTC_USDT`,`BTC_BUSD`] match `BTC_USDT` => true
-            (ii) wide symbols with `*` placeholder: e.g. `*_USDT`, `ATOM_*`
-             [`BTC_USDT`,`BTC_BUSD`] match `BTC_*` => true  or [`BTC_USDT`,`BTC_BUSD`] match `*_USDT` => true
-             [`BTC_*`,`*_BUSD`] match `BTC_USDT` => true 
-            (iii) coin literals e.g. `ATOM_USDT*`, `ATOM_FIAT` <see cref="T:AVS.CoreLib.Trading.Helpers.CoinLiteral"/>
-            </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Trading.Helpers.SymbolFilterExtensions.Filter(System.String[],System.String)">
-            <summary>
-            filter symbols, the filter might be a concrete symbol(s) comma-separated or quote asset (e.g. BTC, USDT etc.) or wide quote assets <see cref="T:AVS.CoreLib.Trading.Helpers.CoinLiteral"/>
-            </summary>
-            <param name="symbols">symbols to filter</param>
-            <param name="filter">
-             - `XXX` - a certain asset e.g. BTC, UAH etc.
-             - `*` or `null` - return all <see cref="!:symbols"/>
-             - `USD*` - symbols with quote asset match either USD, USDT, BUSD, DAI etc.
-             - `BTC*`  - symbols with quote asset match <see cref="F:AVS.CoreLib.Trading.Helpers.CoinHelper.Top"/> currencies
-             - `FIAT`  - symbols with quote asset match <see cref="F:AVS.CoreLib.Trading.Helpers.CoinHelper.Fiat"/> currencies
-            </param>
         </member>
         <member name="M:AVS.CoreLib.Trading.Helpers.IRankHelper.GetRank(System.Decimal,System.String)">
             <summary>
@@ -1481,13 +1435,83 @@
             Symbol represent a trade instrument, most exchanges operate symbols 
             <see cref="T:AVS.CoreLib.Trading.Types.Symbol"/> format convention is [base_currency]_[quote_currency] e.g. BTC_USDT
             </summary>
-            <remarks>
-            this type replace <see cref="!:PairString"/>  pair `USDT_BTC` pair is a `BTC_USDT` symbol, i.e. swap quote and base currencies 
-            </remarks>
         </member>
-        <member name="T:AVS.CoreLib.Trading.Types.Symbols">
+        <member name="T:AVS.CoreLib.Trading.Types.SymbolPattern">
             <summary>
-            type to deal with a collection of symbols (trading instrument) <see cref="T:AVS.CoreLib.Trading.Types.Symbol"/>   
+            Represents a symbol pattern which could be on of 7 pattern types <see cref="T:AVS.CoreLib.Trading.Types.SymbolPattern.PatternType"/>
+            e.g. `*`, `USD*`, `FIAT` (means fiat currencies), `ETH`, `*_ETH`, `ETH_*`, `BTC_USDT,ETH_USDT`, `ETH_USDT`
+            SymbolPattern is designed to filter/match symbol(s) 
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Types.SymbolPattern.ANY">
+            <summary>
+            * means any symbol is ok 
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Types.SymbolPattern.USD_LIKE">
+            <summary>
+            USD* means USD + USDT,USDC,BUSD,DAI etc. 
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Types.SymbolPattern.TOP_COINS">
+            <summary>
+            BTC* means BTC + ETH,BNB,TRX etc. i.e. any TOP symbol that might serve as a quote symbol in trading pairs
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Types.SymbolPattern.STABLECOIN">
+            <summary>
+            USDT* means USDT + USDC,BUSD,USDJ,USDD,TUSD,VAI,DAI etc. i.e. any stable or pegged coin
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Types.SymbolPattern.FIAT">
+            <summary>
+            FIAT means USD,EUR,UAH etc. <see cref="T:AVS.CoreLib.Trading.Enums.Fiat"/>
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Types.SymbolPattern.MatchAny(System.String[])">
+            <summary>
+            if any match found returns true, otherwise false
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Types.SymbolPattern.MatchLiteral(System.String,System.String)">
+            <summary>
+            match given symbol with one of literals (<see cref="F:AVS.CoreLib.Trading.Types.SymbolPattern.ANY"/>, <see cref="F:AVS.CoreLib.Trading.Types.SymbolPattern.FIAT"/> etc.)
+            returns true if matches, otherwise - false
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Types.SymbolPattern.PatternType.Any">
+            <summary>
+            *
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Types.SymbolPattern.PatternType.Literal">
+            <summary>
+            FIAT or USD*
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Types.SymbolPattern.PatternType.QuoteAsset">
+            <summary>
+            *_USDT means any pair quoted to USDT 
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Types.SymbolPattern.PatternType.BaseAsset">
+            <summary>
+            ATOM_* means any pair with ATOM as a base asset
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Types.SymbolPattern.PatternType.Asset">
+            <summary>
+            e.g.`ETH` means any pair with ETH as a base or quote asset
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Types.SymbolPattern.PatternType.Symbol">
+            <summary>
+            exact symbol e.g. BTC_USD
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Types.SymbolPattern.PatternType.MultiSymbol">
+            <summary>
+            comma-separated symbols e.g. BTC_USDT,ETH_BTC
             </summary>
         </member>
     </members>

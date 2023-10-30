@@ -2,7 +2,7 @@
 using AVS.CoreLib.Text.Formatters;
 using AVS.CoreLib.Trading.Helpers;
 
-namespace AVS.CoreLib.Trading.FormatProviders
+namespace AVS.CoreLib.Trading.Formatters
 {
     public class CurrencySymbolFormatter : CustomFormatter
     {

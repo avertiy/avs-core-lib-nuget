@@ -52,7 +52,7 @@ namespace AVS.CoreLib.REST.Clients
             start:
             attempts--;
             var jsonText = await request.FetchResponseAsync();
-            if (jsonText != null)
+            if (jsonText != null && !jsonText.Contains("429"))
             {
                 //sometimes exchange returns 422 error, but on the second attempt it is ok
                 if (jsonText.Contains("The remote server returned an error: (422).") && attempts > 0)

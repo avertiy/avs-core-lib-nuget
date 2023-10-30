@@ -3,7 +3,7 @@ using AVS.CoreLib.Text.Formatters;
 using AVS.CoreLib.Trading.Helpers;
 using AVS.CoreLib.Trading.Types;
 
-namespace AVS.CoreLib.Trading.FormatProviders
+namespace AVS.CoreLib.Trading.Formatters
 {
     public class PairStringFormatter : CustomFormatter
     {

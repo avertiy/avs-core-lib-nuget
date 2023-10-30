@@ -7,7 +7,7 @@ using AVS.CoreLib.Trading.Helpers;
 
 namespace AVS.CoreLib.Trading.Types
 {
-    /// <summary>
+   /* /// <summary>
     /// type to deal with a collection of symbols (trading instrument) <see cref="Symbol"/>   
     /// </summary>
     [Description("Represent a string collection of comma separated values (supposed to be symbols) e.g. XRP_BTC,ETH_BTC,BTC_USDT")]
@@ -44,5 +44,5 @@ namespace AVS.CoreLib.Trading.Types
             res.Add(str.Either("all", "*") ? res.AllItems : str.ToUpper().Split(',', StringSplitOptions.RemoveEmptyEntries));
             return res;
         }
-    }
+    }*/
 }

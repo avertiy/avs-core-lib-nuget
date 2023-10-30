@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using AVS.CoreLib.BootstrapTools;
 using AVS.CoreLib.Text;
-using AVS.CoreLib.Trading.FormatProviders;
+using AVS.CoreLib.Trading.Formatters;
 using AVS.CoreLib.Trading.Models;
 
 namespace AVS.CoreLib.PowerConsole.DemoApp.Services

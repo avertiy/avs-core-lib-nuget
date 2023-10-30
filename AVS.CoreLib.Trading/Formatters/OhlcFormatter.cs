@@ -3,7 +3,7 @@ using AVS.CoreLib.Text.Formatters;
 using AVS.CoreLib.Trading.Abstractions;
 using AVS.CoreLib.Trading.Extensions;
 
-namespace AVS.CoreLib.Trading.FormatProviders
+namespace AVS.CoreLib.Trading.Formatters
 {
     public class OhlcFormatter : CustomFormatter
     {
@@ -52,7 +52,7 @@ namespace AVS.CoreLib.Trading.FormatProviders
                             return ohlc.ToString();
                     }
                 default:
-                    return this.DefaultFormat(format, arg, formatProvider);
+                    return DefaultFormat(format, arg, formatProvider);
             }
         }
 

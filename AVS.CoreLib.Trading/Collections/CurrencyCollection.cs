@@ -53,7 +53,7 @@ namespace AVS.CoreLib.Trading.Collections
             if (IsAllOrAny())
                 return true;
 
-            return Contains(symbol.QuoteCurrency());
+            return Contains(symbol.Q());
         }
 
         public bool MatchBaseCurrency(string symbol)
@@ -61,7 +61,7 @@ namespace AVS.CoreLib.Trading.Collections
             if (IsAllOrAny())
                 return true;
 
-            return Contains(symbol.BaseCurrency());
+            return Contains(symbol.B());
         }
 
         //[DebuggerStepThrough]

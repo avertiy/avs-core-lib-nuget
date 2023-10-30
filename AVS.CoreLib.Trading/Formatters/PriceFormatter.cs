@@ -2,7 +2,7 @@
 using AVS.CoreLib.Text.Formatters;
 using AVS.CoreLib.Trading.Extensions;
 
-namespace AVS.CoreLib.Trading.FormatProviders
+namespace AVS.CoreLib.Trading.Formatters
 {
     /// <summary> 
     /// qualifiers: a|amount; p|price; q|qty|quantity; n|number 

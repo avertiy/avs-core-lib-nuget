@@ -7,6 +7,7 @@ using AVS.CoreLib.Extensions;
 namespace AVS.CoreLib.Trading.Types
 {
     [TypeConverter(typeof(PairTypeConverter))]
+    [Obsolete("use string symbol/pair with a corresponding extensions")]
     public class Pair
     {
         private readonly string _pair;

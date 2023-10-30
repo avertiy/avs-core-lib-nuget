@@ -6,6 +6,7 @@ namespace AVS.CoreLib.Trading.Types
     /// <summary>
     /// in `BTC_USDT`, BTC is a base currency, USDT is a quote currency
     /// </summary>
+    [Obsolete("Type seems obsolete will be deleted soon")]
     public class CurrencyPair
     {
         public string QuoteCurrency { get; }
