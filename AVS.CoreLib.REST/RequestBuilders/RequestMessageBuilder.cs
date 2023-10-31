@@ -10,7 +10,7 @@ using AVS.CoreLib.Extensions.Web;
 using AVS.CoreLib.REST.Extensions;
 using AVS.CoreLib.Utilities;
 
-namespace AVS.CoreLib.REST.Clients
+namespace AVS.CoreLib.REST.RequestBuilders
 {
     /// <summary>
     /// represent RequestMessageBuilder to build authenticated (signed) http request messages
@@ -49,12 +49,10 @@ namespace AVS.CoreLib.REST.Clients
         protected virtual void OnHttpRequestMessageCreating(IRequest request)
         {
             if (request.AuthType == AuthType.ApiKey)
-            {
                 if (UseTonce)
                     request.Data["tonce"] = NonceHelper.GetTonce();
                 else
                     request.Data["nonce"] = NonceHelper.GetNonce();
-            }
         }
 
         protected virtual HttpRequestMessage CreateHttpRequestMessage(IRequest input)
@@ -65,10 +63,8 @@ namespace AVS.CoreLib.REST.Clients
             var queryString = input.Data.ToHttpQueryString(orderBy: OrderQueryStringParameters);
 
             if (httpMethod != HttpMethod.Get)
-            {
                 requestMessage.Content = new StringContent(queryString);
-            }
-            
+
             AddHeaders(requestMessage, queryString);
             return requestMessage;
         }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions.Responses;
-using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.REST.Responses;
 
 namespace AVS.CoreLib.REST.Extensions
@@ -62,21 +61,9 @@ namespace AVS.CoreLib.REST.Extensions
 
         private static IResponse<T> CreateResponse<T>(IResponse response, string errorMessage = null)
         {
-            if (response is IPropsContainer container)
-            {
-                return ResponseFactory.Instance.Create<T>(
-                    default(T),
+            return Response.Create(default(T),
                     response.Source,
-                    GetErrorText(response.Error, errorMessage),
-                    container.Props);
-            }
-            else
-            {
-                return ResponseFactory.Instance.Create<T>(
-                    default(T),
-                    response.Source,
-                    GetErrorText(response.Error, errorMessage));
-            }
+                    GetErrorText(response.Error, errorMessage));            
         }
 
         private static string GetErrorText(string error, string errorMessage)

@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Runtime.Serialization;
+using System.Net;
 
 namespace AVS.CoreLib.REST
 {
@@ -7,10 +7,8 @@ namespace AVS.CoreLib.REST
     /// an exception that represents api request error 
     /// </summary>
     public class ApiException : Exception
-    {
-        protected ApiException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
+    {   
+        public HttpStatusCode? StatusCode { get; set; }
 
         public ApiException(string message) : base(message)
         {
@@ -24,9 +22,11 @@ namespace AVS.CoreLib.REST
         /// returns http status code based on error message
         /// if message contains any code (401, 403 etc.) will return the code, otherwise 400
         /// </summary>
-        /// <returns></returns>
-        public int GetStatusCode()
+        public int? GetStatusCode()
         {
+            if(StatusCode.HasValue)
+                return (int) StatusCode.Value;
+
             if (Message.Contains("401"))
                 return 401;
             if (Message.Contains("402"))
@@ -45,7 +45,20 @@ namespace AVS.CoreLib.REST
                 return 408;
             if (Message.Contains("409"))
                 return 409;
-            return 400;
+            if (Message.Contains("429"))
+                return 429;
+            if (Message.Contains("418"))
+                return 418;
+
+            return null;
+        }
+    }
+
+    public class TooManyRequestsApiException : ApiException
+    {
+        public TooManyRequestsApiException(string message) : base(message)
+        {
+            StatusCode = HttpStatusCode.TooManyRequests;
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using AVS.CoreLib.Abstractions;
-using AVS.CoreLib.Abstractions.Rest;
 
 namespace AVS.CoreLib.REST.Extensions
 {

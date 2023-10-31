@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using AVS.CoreLib.Abstractions.Rest;
 
 namespace AVS.CoreLib.REST.Types
 {
     /// <summary>
-    /// todo rename to ApiRequest or something like this
+    /// todo remove as the RestClient and related stuff became obsolete
     /// </summary>
     public struct ApiEndpoint : IEndpoint
     {

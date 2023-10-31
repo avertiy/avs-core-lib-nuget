@@ -10,7 +10,7 @@ namespace AVS.CoreLib.REST.Utilities
     /// </summary>
     public static class SafeCall
     {
-        public static async Task<IResponse<T>> Execute<T>(Func<Task<Response<T>>> func)
+        public static async Task<IResponse<T>> Execute<T>(Func<Task<Response<T>>> func, string source = null)
         {
             try
             {
@@ -18,22 +18,22 @@ namespace AVS.CoreLib.REST.Utilities
             }
             catch (Exception ex)
             {
-                return Response.Create<T>(default, ex);
+                return Response.Failed<T>(ex, source);
             }
         }
         /// <summary>
         /// usage example: SafeCall.Execute(async () => await func(arg))
         /// </summary>
-        public static async Task<IResponse<T>> Execute<T>(Func<Task<T>> func)
+        public static async Task<IResponse<T>> Execute<T>(Func<Task<T>> func, string source)
         {
             try
             {
                 T data = await func();
-                return Response.Create(data);
+                return Response.OK(data, source);
             }
             catch (Exception ex)
             {
-                return Response.Create<T>(default, ex);
+                return Response.Failed<T>(ex, source);
             }
         }
     }

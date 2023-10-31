@@ -7,7 +7,7 @@ using AVS.CoreLib.REST.Extensions;
 using AVS.CoreLib.REST.Helpers;
 using AVS.CoreLib.Utilities;
 
-namespace AVS.CoreLib.REST.Clients
+namespace AVS.CoreLib.REST.RequestBuilders
 {
     /// <summary>
     /// build <see cref="HttpWebRequest"/> for public/private endpoints by <see cref="IEndpoint"/> specification
@@ -68,20 +68,20 @@ namespace AVS.CoreLib.REST.Clients
             switch (request.AuthType)
             {
                 case AuthType.ApiKey:
-                {
-                    if (Authenticator == null)
-                        throw new Exception("Authenticator must be initialized");
+                    {
+                        if (Authenticator == null)
+                            throw new Exception("Authenticator must be initialized");
 
 
-                    var signature = Authenticator.Sign(request.Data.ToHttpQueryString(), out var bytes);
-                    httpRequest.Headers["Key"] = Authenticator.PublicKey;
-                    httpRequest.Headers["Sign"] = signature.ToBase64String();
-                    //work around for stupid .net protocol violation check
-                    httpRequest.Method = "POST";
-                    httpRequest.WriteBytes(bytes);
-                    httpRequest.Method = request.Method;
+                        var signature = Authenticator.Sign(request.Data.ToHttpQueryString(), out var bytes);
+                        httpRequest.Headers["Key"] = Authenticator.PublicKey;
+                        httpRequest.Headers["Sign"] = signature.ToBase64String();
+                        //work around for stupid .net protocol violation check
+                        httpRequest.Method = "POST";
+                        httpRequest.WriteBytes(bytes);
+                        httpRequest.Method = request.Method;
                         break;
-                }
+                    }
                 default:
                     if (httpRequest.Method != "GET")
                     {
@@ -236,20 +236,20 @@ namespace AVS.CoreLib.REST.Clients
             switch (httpRequest.Method)
             {
                 case "GET":
-                {
-                    // do nothing, payload is already in query string 
-                    break;
-                }
+                    {
+                        // do nothing, payload is already in query string 
+                        break;
+                    }
                 default:
-                {
-                    var bytes = Authenticator.Encoding.GetBytes(input.Data.ToHttpQueryString());
-                    httpRequest.WriteBytes(bytes);
-                    break;
-                }
+                    {
+                        var bytes = Authenticator.Encoding.GetBytes(input.Data.ToHttpQueryString());
+                        httpRequest.WriteBytes(bytes);
+                        break;
+                    }
             }
         }
 
-        protected static HttpWebRequest CreateHttpWebRequest(IRequest input, bool orderQueryStringParameters, IWebProxy proxy,  string contentType)
+        protected static HttpWebRequest CreateHttpWebRequest(IRequest input, bool orderQueryStringParameters, IWebProxy proxy, string contentType)
         {
             var url = input.GetFullUrl(orderQueryStringParameters);
             return WebRequestHelper.ConstructHttpWebRequest(input.Method, url, proxy, contentType);

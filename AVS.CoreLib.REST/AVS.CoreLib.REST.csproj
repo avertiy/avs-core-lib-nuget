@@ -23,10 +23,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Filters\**" />
+    <Compile Remove="Http\**" />
+    <EmbeddedResource Remove="Filters\**" />
+    <EmbeddedResource Remove="Http\**" />
+    <None Remove="Filters\**" />
+    <None Remove="Http\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Remove="Extensions\Extensions.cs" />
+    <Compile Remove="Extensions\PropsContainerExtensions.cs" />
+    <Compile Remove="Extensions\StringExtensions.cs" />
     <Compile Remove="Json\Newtonsoft\Converters\ResponseConverter.cs" />
     <Compile Remove="Json\Newtonsoft\Converters\TimestampNanoSecondsConverter.cs" />
     <Compile Remove="Responses\CodeResponse.cs" />
+    <Compile Remove="Responses\ResponseFactory.cs" />
   </ItemGroup>
 
   <ItemGroup>

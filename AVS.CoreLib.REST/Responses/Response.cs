@@ -1,97 +1,103 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Net;
 using AVS.CoreLib.Abstractions.Responses;
-using AVS.CoreLib.Abstractions.Rest;
 
 namespace AVS.CoreLib.REST.Responses
 {
-    public class Response : ResponseBase, IPropsContainer
+    //TODO this stuff with Response looks too complicated, this needs to be simplified to basic stuff without props etc. things
+
+    public class Response : ResponseBase
     {
-        /// <summary>
-        /// Props might contain some metadata e.g. exchange name
-        /// </summary>
-        public virtual dynamic Props { get; set; }
-
-        public virtual bool ShouldSerializeProps()
-        {
-            return Props != null;
-        }
-
-        public virtual dynamic GetData()
-        {
-            return null;
-        }
-
         #region Create static methods
-        public static Response Create(string source = null, string error = null, dynamic props = null)
+        public static Response Create(string source, string error = null)
         {
-            return ResponseFactory.Instance.Create(source, error, props);
+            return new Response() { Source = source, Error = error };
         }
 
-        public static Response<T> Create<T>(string source = null, string error = null, dynamic props = null)
+        public static Response<T> Create<T>(string source, string error)
         {
-            return ResponseFactory.Instance.Create<T>(source, error, props);
+            return new Response<T>() { Source = source, Error = error};
         }
 
-        public static Response<T> Create<T>(T data, string source = null, string error = null, dynamic props = null)
+        public static Response<T> Create<T>(T data, string source, string error)
         {
-            return ResponseFactory.Instance.Create<T>(data, source, error, props);
+            return new Response<T>() { Data = data, Source = source, Error = error };
         }
 
-        public static IResponse<T> Create<T>(T data, Exception ex)
+        public static Response<T> OK<T>(T data, string source, string error = null)
         {
-            return ResponseFactory.Instance.Create<T>(data, ex);
+            return new Response<T>() { Data = data, Source = source, Error = error };
         }
 
-        public static Response<T> CreateCopy<T>(Response<T> response)
+        public static IResponse<T> Failed<T>(Exception ex, string source)
         {
-            return ResponseFactory.Instance.Create<T>(response.Data, response.Source, response.Error, response.Props);
+            return new Response<T>() { Source = source, Error = ex.Message };
         }
+
         #endregion
     }
 
     [DebuggerDisplay("{ToString()}")]
-    public class Response<T> : Response, IResponse<T>
+    public class Response<T> : IResponse<T>
     {
-        public Response() { }
-
+        public string Source { get; set; }
+        public string Error { get; set; }
         public T Data { get; set; }
-
-        public TResponse To<TResponse>()
-            where TResponse : IResponse<T>, new()
-        {
-            return new TResponse { Error = Error, Source = Source, Data = Data };
-        }
-
-        public virtual TResponse To<TResponse>(Action<T, TResponse> onSuccess)
-            where TResponse : IResponse, new()
-        {
-            var result = new TResponse { Error = Error, Source = Source };
-            if (Success)
-            {
-                onSuccess(this.Data, result);
-            }
-            return result;
-        }
-
-        public virtual TResponse OnSuccess<TResponse>(Func<T, TResponse> onSuccess)
-            where TResponse : IResponse, new()
-        {
-            if (Success)
-                return onSuccess(Data);
-            else
-                return new TResponse { Error = Error, Source = Source };
-        }
+        public virtual bool Success => Error == null;
 
         public override string ToString()
         {
-            return Success ? $"Response<{typeof(T).Name}> - OK" : $"Response<{typeof(T).Name}> - Fail [{Error}]";
-        }
-
-        public override dynamic GetData()
-        {
-            return Data;
+            return Success ? $"Response<{typeof(T).Name}> - OK" : $"Response<{typeof(T).Name}> - Failed ({Error})";
         }
     }
+
+    
+
+    //[DebuggerDisplay("{ToString()}")]
+    //public class Response<T> : Response, IResponse<T>
+    //{
+    //    public Response() { }
+
+    //    public T Data { get; set; }
+
+    //    public TResponse To<TResponse>()
+    //        where TResponse : IResponse<T>, new()
+    //    {
+    //        return new TResponse { Error = Error, Source = Source, Data = Data };
+    //    }
+
+    //    public virtual TResponse To<TResponse>(Action<T, TResponse> onSuccess)
+    //        where TResponse : IResponse, new()
+    //    {
+    //        var result = new TResponse { Error = Error, Source = Source };
+    //        if (Success)
+    //        {
+    //            onSuccess(this.Data, result);
+    //        }
+    //        return result;
+    //    }
+
+    //    public virtual TResponse OnSuccess<TResponse>(Func<T, TResponse> onSuccess)
+    //        where TResponse : IResponse, new()
+    //    {
+    //        if (Success)
+    //            return onSuccess(Data);
+    //        else
+    //            return new TResponse { Error = Error, Source = Source };
+    //    }
+
+    //    public override string ToString()
+    //    {
+    //        return Success ? $"Response<{typeof(T).Name}> - OK" : $"Response<{typeof(T).Name}> - Fail [{Error}]";
+    //    }
+
+    //    public override dynamic GetData()
+    //    {
+    //        return Data;
+    //    }
+    //}
+
+
 }
 

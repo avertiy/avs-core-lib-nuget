@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Web;
-using AVS.CoreLib.Utilities;
-
-namespace AVS.CoreLib.REST.Helpers
+﻿namespace AVS.CoreLib.REST.Helpers
 {
     public static class UrlHelper
     {

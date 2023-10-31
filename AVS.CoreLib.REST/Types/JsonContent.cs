@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace AVS.CoreLib.REST.Http
+namespace AVS.CoreLib.REST.Types
 {
     //http://www.bizcoder.com/returning-raw-json-content-from-asp-net-web-api
     public class JsonContent : HttpContent

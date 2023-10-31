@@ -34,12 +34,12 @@ namespace AVS.CoreLib.REST.Projections
         }
     }
 
-    public sealed class MapResult<TKey, TValue> : MapResult//<IDictionary<TKey, TValue>>
+    public sealed class MapResult<TKey, TValue> : MapResult
     {
-        public static implicit operator Response<IDictionary<TKey, TValue>>(MapResult<TKey, TValue> map)
-        {
-            return Response.Create((IDictionary<TKey, TValue>)map.Data, map.Error);
-        }
+        //public static implicit operator Response<IDictionary<TKey, TValue>>(MapResult<TKey, TValue> map)
+        //{
+        //    return Response.Create<IDictionary<TKey, TValue>>(map.Data, map.Error);
+        //}
 
         public Response<T> AsResponse<T>(Func<IDictionary<TKey, TValue>, T> transform)
         {

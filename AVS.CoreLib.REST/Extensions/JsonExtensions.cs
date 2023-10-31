@@ -81,9 +81,9 @@ namespace AVS.CoreLib.REST.Extensions
             return JsonConvert.DeserializeObject<T>(json);
         }
 
-        public static T Deserialize<T>(this JsonResult jsonResult)
+        public static T Deserialize<T>(this RestResponse jsonResult)
         {
-            using var stringReader = new StringReader(jsonResult.JsonText);
+            using var stringReader = new StringReader(jsonResult.Content);
             using var jsonTextReader = new JsonTextReader(stringReader);
             try
             {
@@ -96,9 +96,9 @@ namespace AVS.CoreLib.REST.Extensions
             }
         }
 
-        public static bool TryDeserialize<T>(this JsonResult jsonResult, out T value, out string error)
+        public static bool TryDeserialize<T>(this RestResponse jsonResult, out T value, out string error)
         {
-            using var stringReader = new StringReader(jsonResult.JsonText);
+            using var stringReader = new StringReader(jsonResult.Content);
             using var jsonTextReader = new JsonTextReader(stringReader);
             try
             {

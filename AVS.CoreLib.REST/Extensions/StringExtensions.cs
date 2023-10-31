@@ -7,17 +7,6 @@ namespace AVS.CoreLib.REST.Extensions
     public static class StringExtensions
     {
         /// <summary>
-        /// convert (ensure) the string is in camelCase
-        /// </summary>
-        public static string ToCamelCase(this string str)
-        {
-            SecureString s;
-            if (!string.IsNullOrEmpty(str) && str.Length > 1)
-                return char.ToLowerInvariant(str[0]) + str.Substring(1);
-            return str;
-        }
-
-        /// <summary>
         /// Get the string the secure string is representing
         /// </summary>
         /// <param name="source">The source secure string</param>

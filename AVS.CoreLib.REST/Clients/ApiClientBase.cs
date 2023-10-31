@@ -21,10 +21,10 @@ namespace AVS.CoreLib.REST.Clients
             Client.SwitchKeys(publicKey, privateKey);
         }
 
-        protected virtual async Task<JsonResult> SendRequest(IRequest request, CancellationToken ct = default)
+        protected virtual async Task<RestResponse> SendRequest(IRequest request, CancellationToken ct = default)
         {
             var response = await Client.SendRequestAsync(request, ct).ConfigureAwait(false);
-            var result = JsonResult.FromResponse(response, Name);
+            var result = RestResponse.FromResponse(response, Name);
             return result;
         }        
     }

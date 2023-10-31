@@ -5,9 +5,13 @@ using AVS.CoreLib.Abstractions.Responses;
 using AVS.CoreLib.Collections;
 using AVS.CoreLib.REST.Attributes;
 
-
 namespace AVS.CoreLib.REST.Responses
 {
+    public interface IAggregatedResponse : IResponse
+    {
+        void ForEach(Action<string, dynamic> success, Action<string, string> failed = null);
+    }
+
     /// <summary>
     /// AggregatedResponse aggregates (contains) several separate responses
     /// of the same data type

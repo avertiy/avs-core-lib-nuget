@@ -2,10 +2,11 @@
 using System.Security.Cryptography;
 using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.REST.Clients;
+using AVS.CoreLib.REST.RequestBuilders;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace AVS.CoreLib.REST.Extensions
+namespace AVS.CoreLib.REST
 {
     public static class DIExtensions
     {
@@ -17,9 +18,9 @@ namespace AVS.CoreLib.REST.Extensions
         {
             services.AddHttpClient();
             services.AddTransient<IPublicRequestMessageBuilder, PublicRequestMessageBuilder>();
-            services.TryAddSingleton<IAuthenticator, Authenticator<HMACSHA512>>();                        
+            services.TryAddSingleton<IAuthenticator, Authenticator<HMACSHA512>>();
             services.AddTransient<IRequestMessageBuilder, RequestMessageBuilder>();
-            services.AddTransient<RestTools>();            
+            services.AddTransient<RestTools>();
         }
 
         public static void AddHMACSHA512Authenticator(this IServiceCollection services, string publicKey, string privateKey)

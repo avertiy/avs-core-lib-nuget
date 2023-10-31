@@ -5,7 +5,7 @@ using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.Extensions.Web;
 using AVS.CoreLib.REST.Extensions;
 
-namespace AVS.CoreLib.REST.Clients
+namespace AVS.CoreLib.REST.RequestBuilders
 {
     /// <summary>
     /// represent a simple <see cref="IRequestMessageBuilder"/> implementation 
@@ -28,13 +28,11 @@ namespace AVS.CoreLib.REST.Clients
                 var queryString = input.Data.ToHttpQueryString(orderBy: OrderQueryStringParameters);
 
                 if (httpMethod != HttpMethod.Get)
-                {
                     requestMessage.Content = new StringContent(queryString);
-                }
 
-                if(UseMediaTypeApplicationJson)
+                if (UseMediaTypeApplicationJson)
                     requestMessage.Headers.AcceptApplicationJsonContent();
-                
+
                 return requestMessage;
             }
             catch (Exception ex)

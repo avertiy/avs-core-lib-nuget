@@ -5,9 +5,9 @@ using AVS.CoreLib.REST.Responses;
 
 namespace AVS.CoreLib.REST.Extensions
 {
-    public static class JsonResultExtensions
+    public static class RestResponseProjectionExtensions
     {
-        public static BoolResponse ToBoolResponse(this JsonResult result)
+        public static BoolResponse ToBoolResponse(this RestResponse result)
         {
             if (!result.TryDeserialize(out BoolResponse response, out var error))
                 response = new BoolResponse() { Error = error };
@@ -16,7 +16,7 @@ namespace AVS.CoreLib.REST.Extensions
             return response;
         }
 
-        public static Response<T> ToResponse<T>(this JsonResult result)
+        public static Response<T> ToResponse<T>(this RestResponse result)
         {
             if (!result.TryDeserialize(out Response<T> response, out var error))
                 response = new Response<T>() { Error = error };
@@ -30,15 +30,15 @@ namespace AVS.CoreLib.REST.Extensions
         /// </summary>
         /// <typeparam name="TItem">either an interface (IMarketData) or a concrete type (BinanceMarketData)</typeparam>
         /// <remarks>when <see cref="TItem"/> is an abstraction <see cref="ListProjection{TItem}.Map{TProjection}"/> should be used</remarks>
-        public static ListProjection<TItem> ToListProjection<TItem>(this JsonResult result) where TItem : class
+        public static ListProjection<TItem> ToListProjection<TItem>(this RestResponse result) where TItem : class
         {
-            return new ListProjection<TItem>(result.JsonText, result.Source, result.Error);
+            return new ListProjection<TItem>(result.Content, result.Source, result.Error);
         }
 
         /// <summary>
         /// Create object projection <see cref="ObjectProjection{T}"/> to map json object to type <see cref="T"/> 
         /// <code>
-        /// <see cref="JsonResult.JsonText"/> should represent a json object, e.g.:
+        /// <see cref="RestResponse.Content"/> should represent a json object, e.g.:
         /// {
         ///     "prop1" = 123,
         ///     "prop2" = [],
@@ -66,9 +66,9 @@ namespace AVS.CoreLib.REST.Extensions
         ///    Response`IMyObject` response = projection.Map`MyProjection`(); //here MyProxy create IMyObject from MyProjection
         /// </code>
         /// </summary>
-        public static ObjectProjection<T> AsObject<T>(this JsonResult result)
+        public static ObjectProjection<T> AsObject<T>(this RestResponse result)
         {
-            return new ObjectProjection<T>(result.JsonText, result.Source, result.Error);
+            return new ObjectProjection<T>(result.Content, result.Source, result.Error);
         }
 
         /// <summary>
@@ -84,36 +84,36 @@ namespace AVS.CoreLib.REST.Extensions
         ///    Response`IMyObject` response = projection.Map();
         /// </code>
         /// </summary>
-        public static ObjectProjection<T, TProjection> AsObject<T, TProjection>(this JsonResult result)
+        public static ObjectProjection<T, TProjection> AsObject<T, TProjection>(this RestResponse result)
             where TProjection : new()
         {
-            return new ObjectProjection<T, TProjection>(result.JsonText, result.Source, result.Error);
+            return new ObjectProjection<T, TProjection>(result.Content, result.Source, result.Error);
         }
 
         
         [Obsolete("use ToList<TInterface, TItem>()")]
-        public static ListProjection<TInterface, TItem> AsArray<TInterface, TItem>(this JsonResult result)
+        public static ListProjection<TInterface, TItem> AsArray<TInterface, TItem>(this RestResponse result)
             where TInterface : class
         {
-            return new ListProjection<TInterface, TItem>(result.JsonText, result.Source, result.Error);
+            return new ListProjection<TInterface, TItem>(result.Content, result.Source, result.Error);
         }
 
-        public static ListProjection<TInterface, TItem> ToList<TInterface, TItem>(this JsonResult result)
+        public static ListProjection<TInterface, TItem> ToList<TInterface, TItem>(this RestResponse result)
             where TInterface : class
         {
-            return new ListProjection<TInterface, TItem>(result.JsonText, result.Source, result.Error);
+            return new ListProjection<TInterface, TItem>(result.Content, result.Source, result.Error);
         }
 
-        public static ListProjection<List<T>, T> AsList<T>(this JsonResult result) where T : class
+        public static ListProjection<List<T>, T> AsList<T>(this RestResponse result) where T : class
         {
-            return new ListProjection<List<T>, T>(result.JsonText, result.Source, result.Error);
+            return new ListProjection<List<T>, T>(result.Content, result.Source, result.Error);
         }
 
-        public static ListProjection<T, TItem> AsList<T, TItem>(this JsonResult result)
+        public static ListProjection<T, TItem> AsList<T, TItem>(this RestResponse result)
             where T : class
             where TItem : class
         {
-            return new ListProjection<T, TItem>(result.JsonText, result.Source, result.Error);
+            return new ListProjection<T, TItem>(result.Content, result.Source, result.Error);
         }
 
         /// <summary>
@@ -121,9 +121,9 @@ namespace AVS.CoreLib.REST.Extensions
         /// </summary>
         /// <typeparam name="TKey">The type of keys in the dictionary, for example string</typeparam>
         /// <typeparam name="TValue">The type of values in the dictionary, it could be interface/abstraction, for example ICurrencyInfo</typeparam>
-        public static DictionaryProjection<TKey, TValue> AsDictionary<TKey, TValue>(this JsonResult result) where TKey : class
+        public static DictionaryProjection<TKey, TValue> AsDictionary<TKey, TValue>(this RestResponse result) where TKey : class
         {
-            return new DictionaryProjection<TKey, TValue>(result.JsonText, result.Source, result.Error);
+            return new DictionaryProjection<TKey, TValue>(result.Content, result.Source, result.Error);
         }
 
         /// <summary>
@@ -131,9 +131,9 @@ namespace AVS.CoreLib.REST.Extensions
         /// </summary>
         /// <typeparam name="T">The abstract/interface type of keyed collection, for example IBookTicker</typeparam>
         /// <typeparam name="TItem">The concrete type of item values in the collection, for example ExmoMarketData</typeparam>
-        public static KeyedProjection<T, TItem> AsKeyedProjection<T, TItem>(this JsonResult result) where T : class
+        public static KeyedProjection<T, TItem> AsKeyedProjection<T, TItem>(this RestResponse result) where T : class
         {
-            return new KeyedProjection<T, TItem>(result.JsonText, result.Source, result.Error);
+            return new KeyedProjection<T, TItem>(result.Content, result.Source, result.Error);
         }
     }
 }

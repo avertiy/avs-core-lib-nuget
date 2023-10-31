@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System;
 using System.IO;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AVS.CoreLib.Extensions;
@@ -17,15 +18,24 @@ namespace AVS.CoreLib.REST.Projections
             new Regex("(error|err-msg|error-message)\\\\?[\"']:[\\s\\\\\"']+(?<error>[=():/\\-\\.\\?\\w\\s&]+)[\"']?",
                 RegexOptions.IgnoreCase);
 
+        private string? _selectTokenPath;
+
         public string JsonText { get; set; }
         public string Source { get; set; }
         public string? Error { get; set; }
-        
-        private string? _selectTokenPath;
-
+        public HttpStatusCode StatusCode { get; set; }
         public bool IsEmpty => (string.IsNullOrEmpty(JsonText) || JsonText == "{}" || JsonText == "[]") && Error == null;
         public bool HasError => Error != null;
 
+        //protected Projection(HttpStatusCode code, string source, string? jsonText, string? error)
+        //{
+        //    StatusCode = code;
+        //    Source = source;
+        //    Error = GetErrorText(error);
+        //    JsonText = jsonText ?? string.Empty;
+        //}
+
+        //[Obsolete("use c-tor with HttpStatusCode")]
         protected Projection(string? jsonText, string source, string? error)
         {
             JsonText = jsonText ?? string.Empty;
