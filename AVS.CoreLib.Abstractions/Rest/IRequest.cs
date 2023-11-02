@@ -4,10 +4,15 @@ namespace AVS.CoreLib.Abstractions.Rest
 {
     public interface IRequest
     {
-        public AuthType AuthType { get; set; }
-        public string Method { get; set; }
-        public string BaseUrl { get; set; }
-        public string Path { get; set; }
-        public Dictionary<string, object> Data { get; set; }
+        AuthType AuthType { get; set; }
+        string Method { get; set; }
+        string BaseUrl { get; set; }
+        string Path { get; set; }
+        Dictionary<string, object> Data { get; set; }
+        /// <summary>
+        /// sets the number of delay portions of a rate limiter,
+        /// one portion by default is 50ms        
+        /// </summary>
+        int RateLimit { get; set; }
     }
 }

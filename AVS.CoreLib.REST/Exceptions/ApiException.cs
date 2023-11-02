@@ -53,12 +53,4 @@ namespace AVS.CoreLib.REST
             return null;
         }
     }
-
-    public class TooManyRequestsApiException : ApiException
-    {
-        public TooManyRequestsApiException(string message) : base(message)
-        {
-            StatusCode = HttpStatusCode.TooManyRequests;
-        }
-    }
 }

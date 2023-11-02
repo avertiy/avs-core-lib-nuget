@@ -11,7 +11,7 @@ namespace AVS.CoreLib.REST.Clients
         public string BaseUrl { get; set; }
         public string Path { get; set; }
         public Dictionary<string, object> Data { get; set; } = new Dictionary<string, object>();
-
+        public int RateLimit { get; set; } = 1;
         public override string ToString()
         {
             var authType = AuthType == AuthType.ApiKey ? "SIGNED" : "";
