@@ -51,53 +51,5 @@ namespace AVS.CoreLib.REST.Responses
             return Success ? $"Response<{typeof(T).Name}> - OK" : $"Response<{typeof(T).Name}> - Failed ({Error})";
         }
     }
-
-    
-
-    //[DebuggerDisplay("{ToString()}")]
-    //public class Response<T> : Response, IResponse<T>
-    //{
-    //    public Response() { }
-
-    //    public T Data { get; set; }
-
-    //    public TResponse To<TResponse>()
-    //        where TResponse : IResponse<T>, new()
-    //    {
-    //        return new TResponse { Error = Error, Source = Source, Data = Data };
-    //    }
-
-    //    public virtual TResponse To<TResponse>(Action<T, TResponse> onSuccess)
-    //        where TResponse : IResponse, new()
-    //    {
-    //        var result = new TResponse { Error = Error, Source = Source };
-    //        if (Success)
-    //        {
-    //            onSuccess(this.Data, result);
-    //        }
-    //        return result;
-    //    }
-
-    //    public virtual TResponse OnSuccess<TResponse>(Func<T, TResponse> onSuccess)
-    //        where TResponse : IResponse, new()
-    //    {
-    //        if (Success)
-    //            return onSuccess(Data);
-    //        else
-    //            return new TResponse { Error = Error, Source = Source };
-    //    }
-
-    //    public override string ToString()
-    //    {
-    //        return Success ? $"Response<{typeof(T).Name}> - OK" : $"Response<{typeof(T).Name}> - Fail [{Error}]";
-    //    }
-
-    //    public override dynamic GetData()
-    //    {
-    //        return Data;
-    //    }
-    //}
-
-
 }
 

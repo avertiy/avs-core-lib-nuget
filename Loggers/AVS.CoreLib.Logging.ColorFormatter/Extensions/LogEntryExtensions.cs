@@ -15,11 +15,14 @@ public static class LogEntryExtensions
 
         if (format == ArgsColorFormat.Auto && logEntry.State is IReadOnlyList<KeyValuePair<string, object>> state)
         {
-            // formatter not only adds color tags to highlight arguments but also makes extended args formatting:  
-            // e.g. LogInformation("{arg:C}", 1.022); => <Green>$1.02</Green>
-            var formatter = new ArgsColorFormatter() { Message = message };
+            // formatter highlight arguments wrapping them in color tags
+            // (i) based on color modifier e.g. "{arg:Red}" => <Red>...</Red>
+            // (ii) analizing argument e.g. "{1.022:C}" => $1.02 is a currency value we want such values to be a green color: "<Green>$1.02</Green>"
+            // or "{arg.ToJson()}" we want json to be Cyan color  => <Cyan>...json..</Cyan>
+
+            var formatter = new ArgsColorFormatter() { Message = message, ColorProvider = colorProvider };
             formatter.Init(state);
-            message = formatter.FormatMessage(colorProvider);
+            message = formatter.FormatMessage();
         }
 
         return message;

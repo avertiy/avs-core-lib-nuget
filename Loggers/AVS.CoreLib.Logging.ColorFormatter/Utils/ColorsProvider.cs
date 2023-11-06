@@ -6,111 +6,35 @@ using Microsoft.Extensions.Logging;
 namespace AVS.CoreLib.Logging.ColorFormatter.Utils;
 public interface IColorProvider
 {
-    Colors GetColorsForArgument(ArgType kind);
-    Colors GetColorsForArgument(ObjType type, FormatFlags flags);
+    Colors GetColors(ObjType type);
     Colors GetColorsFor(LogPart part, LogLevel logLevel = LogLevel.None);
+    Colors GetColors(TextKind flag);
+    Colors GetColors(NumberFlags flag);
 }
 
 public class ColorProvider : IColorProvider
 {
-    public Colors GetColorsForArgument(ArgType kind)
-    {
-        return kind switch
-        {
-            ArgType.Array => new Colors(ConsoleColor.Cyan, null),
-            ArgType.DateTime => new Colors(ConsoleColor.Cyan, null),
-            ArgType.TextJson => new Colors(ConsoleColor.Cyan, null),
-
-            ArgType.Percentage => new Colors(ConsoleColor.Magenta, null),
-
-            ArgType.Numeric => new Colors(ConsoleColor.Green, null),
-            ArgType.NumericNegative => new Colors(ConsoleColor.Red, null),
-            
-            ArgType.Cash => new Colors(ConsoleColor.DarkGreen, null),
-            ArgType.CashNegative => new Colors(ConsoleColor.DarkRed, null),
-            
-            ArgType.Enum => new Colors(ConsoleColor.DarkYellow, null),
-
-            ArgType.String => new Colors(ConsoleColor.DarkCyan, null),
-            ArgType.Text => new Colors(ConsoleColor.DarkGray, null),
-            
-            ArgType.Default => new Colors(ConsoleColor.Gray, null),
-            _ => new Colors(ConsoleColor.Gray, null)
-        };
-    }
-
-    public Colors GetColorsForArgument(ObjType type, FormatFlags flags)
+    public Colors GetColors(ObjType type)
     {
         switch (type)
         {
             case ObjType.Array:
             case ObjType.List:
+                return new Colors(ConsoleColor.Yellow, null);
             case ObjType.Dictionary:
-            case ObjType.DateTime:
-            case ObjType.Time:
-                return new Colors(ConsoleColor.Cyan, null);
+                return new Colors(ConsoleColor.Cyan, null);            
             case ObjType.Boolean:
                 return new Colors(ConsoleColor.Blue, null);
             case ObjType.Enum:
-                return new Colors(ConsoleColor.DarkYellow, null);
+                return new Colors(ConsoleColor.DarkYellow, null);             
+            case ObjType.DateTime:
+            case ObjType.Time:
             case ObjType.String:
-                return new Colors(GetStringColor(flags), null);
-            case ObjType.Float:
-                return new Colors(GetFloatColor(flags), null);
-            case ObjType.Integer:
-                return new Colors(GetIntColor(flags), null);
-            case ObjType.Object:
-                return new Colors(GetObjectColor(flags), null);
+                return new Colors(ConsoleColor.White, null);
             default:
                 return new Colors(null, null);
         }
-    }
-
-    private ConsoleColor? GetObjectColor(FormatFlags flags)
-    {
-        return flags.PickColorByBracketFlags(ConsoleColor.Cyan, ConsoleColor.DarkYellow, ConsoleColor.Blue);
-    }
-
-    ConsoleColor GetIntColor(FormatFlags flags)
-    {
-        return flags.PickColorBySignFlags(ConsoleColor.Blue, ConsoleColor.Red, ConsoleColor.Yellow);
-    }
-
-    ConsoleColor GetStringColor(FormatFlags flags)
-    {
-        if(flags.HasFlag(FormatFlags.ShortString))
-            return ConsoleColor.Yellow;
-
-        if (flags.HasFlag(FormatFlags.Percentage))
-            return ConsoleColor.Cyan;
-
-        if (flags.HasFlag(FormatFlags.SquareBrackets))
-            return ConsoleColor.Blue;
-        
-        if (flags.HasFlag(FormatFlags.CurlyBrackets))
-            return ConsoleColor.DarkYellow;
-        
-        if (flags.HasFlag(FormatFlags.Text))
-            return ConsoleColor.DarkGray;
-        
-        if (flags.HasFlag(FormatFlags.Json))
-            return ConsoleColor.Cyan;
-
-        return ConsoleColor.DarkYellow;
-    }
-
-    ConsoleColor GetFloatColor(FormatFlags flags)
-    {
-        if (flags.HasFlag(FormatFlags.Percentage))
-        {
-            return flags.PickColorBySignFlags(ConsoleColor.Cyan, ConsoleColor.Red, ConsoleColor.Yellow);
-        }else if (flags.HasFlag(FormatFlags.Currency))
-        {
-            return flags.PickColorBySignFlags(ConsoleColor.Green, ConsoleColor.DarkRed, ConsoleColor.Yellow);
-        }
-
-        return flags.PickColorBySignFlags(ConsoleColor.Blue, ConsoleColor.Red, ConsoleColor.DarkYellow);
-    }
+    }  
 
     public Colors GetColorsFor(LogPart part, LogLevel logLevel)
     {
@@ -162,21 +86,79 @@ public class ColorProvider : IColorProvider
         }
         return colors;
     }
+
+    public Colors GetColors(TextKind flag)
+    {
+        switch (flag)
+        {
+            case TextKind.Text:
+                return new Colors(ConsoleColor.DarkGray, null);
+            case TextKind.Json:
+                return new Colors(ConsoleColor.Cyan, null);
+            case TextKind.Array:
+                return new Colors(ConsoleColor.Yellow, null);
+            case TextKind.Brackets:
+                return new Colors(ConsoleColor.DarkCyan, null);
+            case TextKind.HttpVerb:
+                return new Colors(ConsoleColor.Blue, null);
+            case TextKind.Url:
+                return new Colors(ConsoleColor.Green, null);
+            case TextKind.Keyword:
+                return new Colors(ConsoleColor.Yellow, null);
+            case TextKind.Percentage:
+                return new Colors(ConsoleColor.Blue, null);
+            case TextKind.Quotes:
+                return new Colors(ConsoleColor.White, null);
+            case TextKind.DoubleQuotes:
+                return new Colors(ConsoleColor.Magenta, null);
+            default:
+                return new Colors(ConsoleColor.Gray, null);
+        }
+    }
+
+    public Colors GetColors(NumberFlags flags)
+    {
+        if (flags.HasFlag(NumberFlags.Percentage))
+        {
+            return flags.PickColorBySignFlags(@default: ConsoleColor.Cyan, negative: ConsoleColor.Red, zero: ConsoleColor.Yellow);
+        }
+
+        if (flags.HasFlag(NumberFlags.Currency))
+        {
+            return flags.PickColorBySignFlags(@default: ConsoleColor.Green, negative: ConsoleColor.Red, zero:ConsoleColor.Yellow);
+        }
+
+        if (flags.HasFlag(NumberFlags.Float))
+        {
+            return flags.PickColorBySignFlags(@default: ConsoleColor.Magenta, ConsoleColor.Red, ConsoleColor.Yellow);
+        }
+
+        // regular integers
+        return flags.PickColorBySignFlags(@default: ConsoleColor.Blue, ConsoleColor.Red, ConsoleColor.DarkYellow);        
+    }
+
+    ConsoleColor GetFloatColor(NumberFlags flags)
+    {
+        if (flags.HasFlag(NumberFlags.Percentage))
+        {
+            return flags.PickColorBySignFlags(ConsoleColor.Cyan, ConsoleColor.Red, ConsoleColor.Yellow);
+        }
+
+        if (flags.HasFlag(NumberFlags.Currency))
+        {
+            return flags.PickColorBySignFlags(ConsoleColor.Green, ConsoleColor.DarkRed, ConsoleColor.Yellow);
+        }
+
+        return flags.PickColorBySignFlags(ConsoleColor.Blue, ConsoleColor.Red, ConsoleColor.DarkYellow);
+    }
 }
 
 public static class FormatFlagsExtensions
 {
-    public static ConsoleColor PickColorBySignFlags(this FormatFlags flags, ConsoleColor @default, ConsoleColor negative, ConsoleColor zero)
+    internal static ConsoleColor PickColorBySignFlags(this NumberFlags flags, ConsoleColor @default, ConsoleColor negative, ConsoleColor zero)
     {
-        if (flags.HasFlag(FormatFlags.Zero))
+        if (flags.HasFlag(NumberFlags.Zero))
             return zero;
-        return flags.HasFlag(FormatFlags.Negative) ? negative : @default;
-    }
-
-    public static ConsoleColor PickColorByBracketFlags(this FormatFlags flags, ConsoleColor @default, ConsoleColor curlyBrackets, ConsoleColor squareBrackets)
-    {
-        if (flags.HasFlag(FormatFlags.CurlyBrackets))
-            return curlyBrackets;
-        return flags.HasFlag(FormatFlags.SquareBrackets) ? squareBrackets : @default;
-    }
+        return flags.HasFlag(NumberFlags.Negative) ? negative : @default;
+    }   
 }

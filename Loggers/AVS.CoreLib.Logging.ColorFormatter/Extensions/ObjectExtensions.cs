@@ -6,53 +6,21 @@ namespace AVS.CoreLib.Logging.ColorFormatter.Extensions;
 
 public static class ObjectExtensions
 {
-    public static (ObjType, FormatFlags) GetTypeAndFlags(this object val, string formattedValue)
+    public static NumberFlags GetNumberFlags(this object val, string formattedValue)
     {
-        var objType = val.GetObjType();
-        var flags = FormatFlags.None;
-        if (objType == ObjType.String)
-        {
-            if(formattedValue.Length <= 5)
-                flags = FormatFlags.ShortString;
-            else if (formattedValue.Length > 50)
-                flags = FormatFlags.Text;
+        var flags = NumberFlags.None;
+        var sign = val.GetSign();        
+        if (sign < 0)
+            flags = flags | NumberFlags.Negative;
+        else if (sign == 0)
+            flags = flags | NumberFlags.Zero;
 
-            if (formattedValue.StartsWith('{') && formattedValue.EndsWith('}'))
-                flags = FormatFlags.CurlyBrackets;
-            else if (formattedValue.StartsWith('[') && formattedValue.EndsWith(']'))
-                flags = FormatFlags.SquareBrackets;
-            else if (formattedValue.StartsWith('(') && formattedValue.EndsWith(')'))
-                flags = FormatFlags.Brackets;
-
-            if (formattedValue.ContainsAll('{', '}',':','"'))
-                flags = FormatFlags.Json;
-            if (formattedValue.Length < 50 && formattedValue.Contains('%'))
-                flags = FormatFlags.Percentage;
-        }
-        else if (objType == ObjType.Object)
-        {
-            if (formattedValue.StartsWith('{') && formattedValue.EndsWith('}'))
-                flags = FormatFlags.Json & FormatFlags.CurlyBrackets;
-            else if (formattedValue.StartsWith('[') && formattedValue.EndsWith(']'))
-                flags = FormatFlags.SquareBrackets;
-        }
-
-        if (val.IsNumeric())
-        {
-            var sign = val.GetSign();
-            if (sign < 0)
-                flags = flags | FormatFlags.Negative;
-            else if (sign == 0)
-                flags = flags | FormatFlags.Zero;
-
-            if (formattedValue.Contains('%'))
-                flags = flags | FormatFlags.Percentage;
-            if (formattedValue.ContainsAny("$", "USD", "EUR", "UAH"))
-                flags = flags | FormatFlags.Currency;
-        }
-
-        return (objType, flags);
-    }
+        if (formattedValue.Contains('%'))
+            flags = flags | NumberFlags.Percentage;
+        if (formattedValue.ContainsAny("$", "USD", "EUR", "UAH"))
+            flags = flags | NumberFlags.Currency;
+        return flags;
+    }   
 
     public static ObjType GetObjType(this object obj)
     {
@@ -63,7 +31,7 @@ public static class ObjectExtensions
             byte => ObjType.Byte,
             string => ObjType.String,
             double or decimal or float => ObjType.Float,
-            int or long or short => ObjType.Integer,
+            int or long or short => ObjType.Number,
             Enum => ObjType.Enum,
             TimeSpan => ObjType.Time,
             DateTime => ObjType.DateTime,

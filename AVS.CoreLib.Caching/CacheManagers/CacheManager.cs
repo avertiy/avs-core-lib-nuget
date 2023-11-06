@@ -17,8 +17,6 @@ namespace AVS.CoreLib.Caching
         {
         }
 
-        
-
         public new bool TryGetValue<T>(string key, out T? value)
         {
             if (!CachingEnabled)

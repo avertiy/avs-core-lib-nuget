@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
@@ -26,13 +27,13 @@ namespace AVS.CoreLib.REST.Clients
     {
         private readonly IRequestMessageBuilder _requestMessageBuilder;
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly IRateLimiter _rateLimiter;
+        protected IRateLimiter RateLimiter { get; }
         public string Source { get; set; } = "default";
         /// <summary>
         /// prevents from being blocked when sending multiple parallel requests
         /// API provider might set rate limits like Binance or just return access denied when detects too many requests within a small timeframe
         /// </summary>
-        public int RequestMinDelay { get; set; } = 50;
+        public int RequestMinDelay { get; set; } = 25;
         public DateTime RequestLastTime { get; private set; } = DateTime.UtcNow;
         public string? LastRequestedUrl { get; set; }
         /// <summary>
@@ -44,7 +45,7 @@ namespace AVS.CoreLib.REST.Clients
         {
             _requestMessageBuilder = requestMessageBuilder;
             _httpClientFactory = httpClientFactory;
-            _rateLimiter = rateLimiter;
+            RateLimiter = rateLimiter;
         }
 
         public async Task<RestResponse> GetResponse(IRequest request, CancellationToken ct = default)
@@ -55,8 +56,6 @@ namespace AVS.CoreLib.REST.Clients
             using var requestMessage = GetHttpRequestMessage(request);
             // 3. send request and get response
             var response = await GetResponse(requestMessage, ct);
-            // 4. adjust rate limits
-            _rateLimiter.Adjust(response.StatusCode);
             return response;
         }
 
@@ -66,6 +65,9 @@ namespace AVS.CoreLib.REST.Clients
             LastRequestedUrl = request.RequestUri.ToString();
 
             var responseMessage = await SendAsync(client, request, FetchAttempts, ct);
+
+            AdjustRateLimit(responseMessage);
+            
             var error = await VerifyStatusCode(responseMessage);
 
             var response = new RestResponse(Source, responseMessage.StatusCode);
@@ -82,10 +84,15 @@ namespace AVS.CoreLib.REST.Clients
         {
             //if (_rateLimiter == null)
             //    return;
-            if (!await _rateLimiter.DelayAsync(count, ct))
+            if (!await RateLimiter.DelayAsync(count, ct))
             {
                 throw new RateLimitExceededException(Source);
             }
+        }
+
+        protected virtual void AdjustRateLimit(HttpResponseMessage response)
+        {
+            RateLimiter.Adjust(response.StatusCode);
         }
 
         protected virtual async ValueTask<string?> VerifyStatusCode(HttpResponseMessage responseMessage)
@@ -109,13 +116,17 @@ namespace AVS.CoreLib.REST.Clients
 
         protected virtual void OnResponseReady(RestResponse response)
         {
+            if (response.Error != null)
+                return;
+
+            if (string.IsNullOrEmpty(response.Error))
+                return;
+
             var re = new Regex("(error|err-msg|error-message)[\"']?:[\"']?(?<error>.*?)[\"',}]", RegexOptions.IgnoreCase);
             var match = re.Match(response.Content);
 
             if (match.Success)
-            {
                 response.Error = match.Groups["error"].Value;
-            }
         }
 
         protected virtual bool IsSuccess(HttpResponseMessage responseMessage, out string? error)

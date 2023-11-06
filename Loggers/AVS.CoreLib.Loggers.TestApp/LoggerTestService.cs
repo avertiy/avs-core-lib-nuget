@@ -48,15 +48,12 @@ namespace AVS.CoreLib.Loggers.TestApp
             //_logger.LogInformation("enum value:{arg1:D}; enum value with custom format:{arg2:G}", ConsoleColor.Cyan, ConsoleColor.DarkYellow);
             _logger.LogInformation("string:{arg1}; currency:{arg2:C}", "my-str", 10.21m);
             var dict = new Dictionary<string, object>();
-            dict.Add("arg1", "my-str");
-            dict.Add("arg2", 10.21m);
-            dict.Add("{OriginalFormat}", "string:{arg1}; currency:{arg2:C}");
 
             var str = "string:my-str; currency:$10.21";
             var state = dict.ToList();
-            var formatter = new ArgsColorFormatter() { Message = str};
+            var formatter = new ArgsColorFormatter() { Message = str, ColorProvider = new ColorProvider() };
             formatter.Init(state);
-            var msg = formatter.FormatMessage(new ColorProvider());
+            var msg = formatter.FormatMessage();
 
             //var msg2 = str.FormatMessage(state, new ColorsProvider());
             //Assert.True(msg,msg2);

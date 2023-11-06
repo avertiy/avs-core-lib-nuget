@@ -149,6 +149,10 @@ namespace AVS.CoreLib.Extensions
             return values.Any(value.EndsWith);
         }
 
+        public static bool EndsWithEither(this string value, params char[] values)
+        {
+            return values.Any(value.EndsWith);
+        }
 
         public static bool EndsWith(this string value, params string[] values)
         {
@@ -197,11 +201,20 @@ namespace AVS.CoreLib.Extensions
 
         #endregion
 
-        public static string Truncate(this string str, int maxLength = -1)
+        public static string Truncate(this string str, int maxLength)
         {
-            if (string.IsNullOrEmpty(str) || maxLength < 0)
+            if (string.IsNullOrEmpty(str) || str.Length <= maxLength)
                 return str;
-            return str.Substring(0, Math.Min(str.Length, maxLength));
+
+            return str.Substring(0, maxLength);
+        }
+
+        public static string Truncate(this string str, int maxLength, string append)
+        {
+            if (string.IsNullOrEmpty(str) || str.Length <= (maxLength + append.Length))
+                return str;
+
+            return str.Substring(0, maxLength)+append;
         }
 
         public static int IndexOfEndOfWord(this string str, int fromIndex = 0)
@@ -222,6 +235,25 @@ namespace AVS.CoreLib.Extensions
             return end;
         }
 
+        public static int IndexOfAny(this string str, params string[] values)
+        {
+            if (str == null || values == null || values.Length == 0)
+            {
+                return -1;
+            }
+
+            int minIndex = str.Length;
+            foreach (string value in values)
+            {
+                int index = str.IndexOf(value);
+                if (index >= 0 && index < minIndex)
+                {
+                    minIndex = index;
+                }
+            }
+
+            return minIndex == str.Length ? -1 : minIndex;
+        }
 
         public static string ReadWord(this string str, int fromIndex = 0)
         {

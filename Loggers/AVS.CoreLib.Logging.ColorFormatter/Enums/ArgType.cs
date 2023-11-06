@@ -5,7 +5,7 @@ public enum ObjType
     Null,
     Boolean,
     Byte,
-    Integer,
+    Number,
     Float,
     String,
     DateTime,
@@ -30,31 +30,45 @@ public enum FormatFlags
     Json =64,
     Brackets = 128,
     SquareBrackets = 256,
-    CurlyBrackets = 512
+    CurlyBrackets = 512,    
 }
 
-
-public enum ArgType
+[Flags]
+public enum NumberFlags
 {
-    Default = 0,
-    Null,
-    Array,
-    DateTime,
-    Enum,
-    Integer,
-    IntegerNegative,
-    Numeric,
-    NumericNegative,
-    Cash,
-    CashNegative,
+    None = 0,
+    Negative =1,
+    Zero =2,
+    Percentage =4,
+    Currency =8,
+    Float =16,
+    Count =32
+}
+
+public enum TextKind
+{
+    /// <summary>
+    /// just some string value
+    /// </summary>
+    None = 0,
+    /// <summary>
+    /// long string or text value
+    /// </summary>
+    Text = 1,
+    Json = 2,
+    Array = 3,
+    /// <summary>
+    /// value in brackets e.g. (str)
+    /// </summary>
+    Brackets,    
     Percentage,
+    //DateTime,
+    Quotes,
+    DoubleQuotes,
+    Url,
+    HttpVerb,
     /// <summary>
-    /// short string
+    /// keywords like Start/End
     /// </summary>
-    String,
-    /// <summary>
-    /// long string
-    /// </summary>
-    Text,
-    TextJson
+    Keyword
 }
