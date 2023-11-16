@@ -7,8 +7,7 @@ using AVS.CoreLib.Logging.ColorFormatter.Extensions;
 namespace AVS.CoreLib.Logging.ColorFormatter.Utils;
 
 /// <summary>
-/// extracts 
-/// format arguments and wrap them in color tags (highlight arguments feature)
+/// Format 
 /// </summary>
 /// <code>
 /// logger.LogInformation("{arg:C}", 1.022); => "<Green>$1.02</Green>"
@@ -16,85 +15,26 @@ namespace AVS.CoreLib.Logging.ColorFormatter.Utils;
 /// </code>
 public class ArgsColorFormatter
 {
-    public string Message { get; set; }
-    public IColorProvider ColorProvider { get; set; }
-    public IReadOnlyList<KeyValuePair<string, object>> State { get; private set; }
-    
-    public string Format { get; private set; }
-    public string[] Keys { get; private set; }
-    public string[] Values { get; private set; }
-    public string Output { get; private set; }
-
-    public void Init(IReadOnlyList<KeyValuePair<string, object>> state)
+    public string OriginalMessage { get; init; }
+    private IColorProvider _colorProvider;
+    public ArgsColorFormatter(IColorProvider colorProvider)
     {
-        State = state;
-        Keys = new string[state.Count - 1];
-        Values = new string[state.Count - 1];
-        Format = (string)state[^1].Value;
-        var startInd = 0;
-        var i = 0;
-
-        foreach (var kp in state.Take(state.Count - 1))
-        {
-            var key = kp.Key;
-            var val = kp.Value;
-
-            var ind = Format.IndexOf('{' + key, startInd, StringComparison.Ordinal) + 1;
-            var closeArgInd = Format.IndexOf('}', ind);
-            var len = closeArgInd - ind;
-
-            var argFormat = key;
-            string valueStr;
-            if (key.Length == len)
-            {
-                valueStr = val?.ToString();
-            }
-            else
-            {
-                // allows to use with logger string format approach {arg:C} or {arg:C -Yellow} would be OK as well! 
-                argFormat = Format.Substring(ind, closeArgInd - ind);
-                var ii = ind + key.Length + 1;
-                var frmt = Format.Substring(ii, closeArgInd - ii);
-                valueStr = CustomFormat(val, frmt);
-            }
-
-            Keys[i] = argFormat;
-            Values[i] = valueStr;
-            i++;
-            startInd = closeArgInd;
-        }
-
+        _colorProvider = colorProvider;
         InitKeywords();
-        InitVerbs();
     }
-
-    private string CustomFormat(object val, string format)
+    
+    public string Format(State state)
     {
-        if (val is string str)
-            return str;
-        
-        str = string.Format($"{{0:{format}}}", val);
-        if (str != format)
-            return str;
+        var sb = new StringBuilder(state.Format);
 
-        var parts = format.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        return string.Format($"{{0:{parts[0]}}}", val);
-    }
-
-    public string FormatMessage()
-    {
-        var sb = new StringBuilder(Format);
-
-        for (var i = 0; i < Keys.Length; i++)
+        for (var i = 0; i < state.Keys.Length; i++)
         {
-            var key = Keys[i];
-            var keyInBrackets = '{' + key + '}';
-            var valueStr = Values[i];
-            var valueObj = State[i].Value;
+            var (key, obj, str) = state[i];
 
-            if (string.IsNullOrEmpty(valueStr) || valueObj == null)
+            var keyInBrackets = '{' + key + '}';
+            if (string.IsNullOrEmpty(str) || obj == null)
             {
-                sb.Replace(keyInBrackets, valueStr);
+                sb.Replace(keyInBrackets, str);
                 continue;
             }
 
@@ -102,60 +42,60 @@ public class ArgsColorFormatter
 
             if (colonInd > 0 && Colors.TryParse(key.Substring(colonInd), out var colors))
             {
-                var formattedStr = colors.FormatWithTags(valueStr);
+                var formattedStr = colors.FormatWithTags(str);
                 sb.Replace(keyInBrackets, formattedStr);
                 continue;
             }
 
-            if (valueObj is string)
+            if (obj is string)
             {
-                var formattedStr = FormatString(valueStr);
+                var formattedStr = FormatString(str);
                 sb.Replace(keyInBrackets, formattedStr);
                 continue;
             }
 
-            if (valueObj.IsNumeric())
+            if (obj.IsNumeric())
             {
-                var flags = valueObj.GetNumberFlags(valueStr);
+                var flags = obj.GetNumberFlags(str);
                 var ind = sb.IndexOf(keyInBrackets) - 1;
                 //highlight # symbol as well
-                if (sb[ind] == '#' || (ind > 1 && sb[ind - 1] == '#'))
+                if (ind >= 0 && sb[ind] == '#' || (ind > 1 && sb[ind - 1] == '#'))
                 {
                     sb.Remove(ind, 1);
-                    valueStr = "#" + valueStr;
+                    str = "#" + str;
                 }
 
-                colors = ColorProvider.GetColors(flags);
-                var formattedStr = colors.FormatWithTags(valueStr);
+                colors = _colorProvider.GetColors(flags);
+                var formattedStr = colors.FormatWithTags(str);
                 sb.Replace(keyInBrackets, formattedStr);
                 continue;
             }
 
-            var objType = valueObj.GetObjType();
+            var objType = obj.GetObjType();
 
             if (objType == ObjType.Object)
             {
-                var formattedStr = FormatObject(valueStr);
+                var formattedStr = FormatObject(str);
                 sb.Replace(keyInBrackets, formattedStr);
                 continue;
             }
             else
             {
-                colors = ColorProvider.GetColors(objType);                
-                var coloredStr = colors.FormatWithTags(valueStr);
+                colors = _colorProvider.GetColors(objType);
+                var coloredStr = colors.FormatWithTags(str);
                 sb.Replace(keyInBrackets, coloredStr);
             }
+
         }
 
-        Output = FrmtStartKeywords(sb.ToString());        
-
-        return Output;
+        var text = sb.ToString();
+        return FrmtStartKeywords(text);
     }
 
     private string FormatObject(string str)
     {
         // obj
-        if (str.StartsWith('{') && str.EndsWithEither('}','.','"',','))
+        if (str.StartsWith('{') && str.EndsWithEither('}', '.', '"', ','))
         {
             if (str.Contains('"') && str.Contains(':'))
                 return Frmt(str, TextKind.Json);
@@ -164,7 +104,7 @@ public class ArgsColorFormatter
         }
 
         // arr
-        if (str.StartsWith('[') && str.EndsWithEither(']','.','"', ','))
+        if (str.StartsWith('[') && str.EndsWithEither(']', '.', '"', ','))
         {
             if (str.Contains('"') && str.Contains(':'))
                 return Frmt(str, TextKind.Json);
@@ -178,6 +118,7 @@ public class ArgsColorFormatter
         str = FrmtStringWithUrl(str, count);
         str = FrmtHttpVerbs(str, count);
         str = FrmtResponse(str, count);
+        str = FrmtKeywords(str, count);
         str = FrmtEndKeywords(str);
         return Frmt(str, TextKind.None);
     }
@@ -185,26 +126,29 @@ public class ArgsColorFormatter
     private string FormatString(string str)
     {
         // json obj
-        if(str.StartsWith('{') && str.EndsWith('}'))
+        if (str.StartsWith('{') && str.EndsWith('}'))
         {
-            if(str.Contains('"') && str.Contains(':'))
+            if (str.Contains('"') && str.Contains(':'))
                 return Frmt(str, TextKind.Json);
 
             return Frmt(str, TextKind.Brackets);
         }
-        
+
         // json arr
         if (str.StartsWith('[') && str.EndsWith(']'))
         {
             if (str.Contains('"') && str.Contains(':'))
                 return Frmt(str, TextKind.Json);
 
-            return Frmt(str, TextKind.Array);            
+            return Frmt(str, TextKind.Array);
         }
 
         // value in square brackets
         if (str.StartsWith('(') && str.EndsWith(')'))
             return Frmt(str, TextKind.Brackets);
+
+        if (str.Length <= 9 && str.Contains('_'))
+            return Frmt(str, TextKind.Symbol);
 
         // url
         if (str.StartsWith("https://") && !str.Contains(' '))
@@ -240,10 +184,37 @@ public class ArgsColorFormatter
             return str;
 
         var ind2 = ind + 4;
-        if (str.Length > ind2 && str[ind2].Either('[','{'))
+        if (str.Length > ind2 && str[ind2].Either('[', '{'))
         {
             var substr = str.Substring(ind2);
             str = str.Replace(substr, Frmt(substr, TextKind.Json));
+        }
+
+        return str;
+    }
+
+    private string FrmtKeywords(string str, int count)
+    {
+        foreach (var keyword in Keywords)
+        {
+            var ind = str.IndexOf(keyword.Key, 0, count);
+
+            if (ind <= 0)
+                continue;
+
+            var startInd = str.IndexOf(' ', 0, ind);
+            if (startInd < 0)
+            {
+                startInd = 0;
+            }
+            else
+            {
+                startInd++;
+            }
+
+            var textToReplace = str.Substring(startInd, ind - startInd + keyword.Key.Length);
+            var value = keyword.Value.Replace(keyword.Key, textToReplace);
+            return str.Replace(textToReplace, value);
         }
 
         return str;
@@ -269,7 +240,7 @@ public class ArgsColorFormatter
     private string FrmtHttpVerbs(string str, int count)
     {
         foreach (var verb in Verbs)
-        {            
+        {
             var ind = str.IndexOf(verb.Key, 0, count);
             if (ind < 0)
                 continue;
@@ -294,11 +265,12 @@ public class ArgsColorFormatter
 
     private string Frmt(string str, TextKind flag)
     {
-        Colors colors = ColorProvider.GetColors(flag);
+        Colors colors = _colorProvider.GetColors(flag);
         return colors.FormatWithTags(str);
     }
 
-    public static Dictionary<string, string> StartKeywords = new(2);
+    public static Dictionary<string, string> StartKeywords = new(9);
+    public static Dictionary<string, string> Keywords = new(2);
     public static Dictionary<string, string> EndKeywords = new(1);
     public static Dictionary<string, string> Verbs = new(5);
 
@@ -307,25 +279,24 @@ public class ArgsColorFormatter
         if (StartKeywords.Any())
             return;
 
-        var keywords = new[] { "Start ", "End " };
+        var keywords = new[] { "Start handling", "Finished handling", "Handling", "Start processing", "Finished processing", "Start loading", "Finished loading", "Start ", "End " };
 
         foreach (var keyword in keywords)
             StartKeywords[keyword] = Frmt(keyword, TextKind.Keyword);
+
+        keywords = new[] { "Request", "Response" };
+
+        foreach (var keyword in keywords)
+            Keywords[keyword] = Frmt(keyword, TextKind.SpecialKeyword);
 
         keywords = new[] { "(FROM CACHE)" };
 
         foreach (var keyword in keywords)
             EndKeywords[keyword] = Frmt(keyword, TextKind.Keyword);
-    }
-
-    private void InitVerbs()
-    {
-        if (Verbs.Any())
-            return;
 
         var httpVerbs = new[] { "GET", "POST", "PUT", "DELETE", "PATCH" };
 
         foreach (var keyword in httpVerbs)
             Verbs[keyword] = Frmt(keyword, TextKind.HttpVerb);
-    }
+    }    
 }

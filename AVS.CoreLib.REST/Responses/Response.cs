@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Net;
 using AVS.CoreLib.Abstractions.Responses;
+using AVS.CoreLib.Extensions;
 
 namespace AVS.CoreLib.REST.Responses
 {
@@ -48,7 +49,13 @@ namespace AVS.CoreLib.REST.Responses
 
         public override string ToString()
         {
-            return Success ? $"Response<{typeof(T).Name}> - OK" : $"Response<{typeof(T).Name}> - Failed ({Error})";
+            if (Success)
+            {
+                var count = Data.GetCount();
+                return count.HasValue ? $"Response<{typeof(T).Name}> - OK (#{count})" : $"Response<{typeof(T).Name}> - OK";
+            }
+
+            return $"Response<{typeof(T).Name}> - Failed ({Error})";
         }
     }
 }

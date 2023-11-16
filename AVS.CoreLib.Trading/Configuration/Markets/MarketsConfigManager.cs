@@ -4,15 +4,17 @@ using System.Collections.Generic;
 using System.Linq;
 using AVS.CoreLib.Guards;
 using AVS.CoreLib.Trading.Enums;
+using AVS.CoreLib.Trading.Helpers;
 
 namespace AVS.CoreLib.Trading.Configuration.Markets
 {
     public interface IMarketsConfigManager
     {
-        bool Contains(string name);
+        bool Contains(string name);        
         string[] GetTradingPairs(string name, AccountType account, Preset preset);
         string[] GetQuoteAssets(string name, AccountType accountType);
         string[] GetBaseAssets(string name, AccountType account, Preset preset, string? quote = null);
+        string GetSymbolsString(string name, AccountType account, Preset preset);
     }
 
     public class MarketsConfigManager : IMarketsConfigManager
@@ -21,7 +23,6 @@ namespace AVS.CoreLib.Trading.Configuration.Markets
 
         public MarketsConfigManager(MarketConfig[] markets)
         {
-            //Guard.AgainstNull(markets, "`markets` config is missing");
             Init(markets);
         }
 
@@ -95,16 +96,43 @@ namespace AVS.CoreLib.Trading.Configuration.Markets
             return combinations;
         }
 
-        /*
-        public string[] GetFuturesPairs(string name, Preset preset = Preset.Default)
+        public string GetSymbolsString(string name, AccountType accountType, Preset preset)
         {
-            var combinations = Get(name).Futures;
-            return combinations?.GetPairs(preset) ?? Array.Empty<string>();
-        }
+            var combinations = Get(name, accountType);
 
-        public string[] GetFuturesQuoteAssets(string name)
-        {
-            return Get(name).Futures?.Select(x => x.Quote).ToArray() ?? Array.Empty<string>();
-        }*/
+            if(combinations == null || combinations.Length == 0)
+                return string.Empty;
+
+            if (combinations.All(x => x[preset] == "*"))
+                return "*";
+            
+            var list = new List<string>(combinations.Length);
+
+            foreach (var combination in combinations)
+            {
+                var presetValue = combination[preset];
+
+                if(string.IsNullOrEmpty(presetValue))
+                    continue;
+
+                if (presetValue == "*")
+                {
+                    list.Add($"*_{combination.Quote}");
+                    continue;
+                }
+
+                if (!presetValue.Contains(','))
+                {
+                    list.Add($"{presetValue}_{combination.Quote}");
+                    continue;
+                }
+
+                var assets = presetValue.Split(',');
+                var pairs = TradingPairHelper.Combine(combination.Quote, assets);
+                list.Add(string.Join(',', pairs));                
+            }
+
+            return string.Join(',', list);
+        }
     }
 }

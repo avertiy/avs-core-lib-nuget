@@ -34,7 +34,7 @@ namespace AVS.CoreLib.REST.Projections
         protected Func<TItem, bool> _where;
         protected IArrayProxy<T, TItem> _proxy;
 
-        public ListProjection(string jsonText, string source, string error = null) : base(jsonText, source, error)
+        public ListProjection(RestResponse response) : base(response)
         {
         }
 

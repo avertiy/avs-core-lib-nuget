@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using AVS.CoreLib.Extensions.Enums;
@@ -45,5 +46,14 @@ namespace AVS.CoreLib.Extensions.Linq
             return orderBy == Enums.Sort.Asc ? source.ThenBy(selector) : source.ThenByDescending(selector);
         }
 
+        public static int Count(this IEnumerable col)
+        {
+            var counter = 0;
+            
+            foreach (var item in col)
+                counter++;
+
+            return counter;
+        }
     }
 }

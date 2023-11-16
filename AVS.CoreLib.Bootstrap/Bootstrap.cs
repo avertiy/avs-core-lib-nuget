@@ -14,7 +14,11 @@ namespace AVS.CoreLib.BootstrapTools
     ///     Bootstrap.ConfigureServices(services => {..register your services..});
     /// 
     ///     // full configuration using Startup class and StartupService 
+    ///     Bootstrap.UseStartup&lt;TStartup&gt;(); 
+    ///     
+    ///     // TStartup could either implement IStartup or you can use Startup&lt;TStartupService&gt;    
     ///     Bootstrap.UseStartup&lt;Startup&lt;StartupService&gt;&gt;(); 
+    ///     StartupService : StartupServiceBase {...}
     /// </code>
     /// </summary>
     public static class Bootstrap

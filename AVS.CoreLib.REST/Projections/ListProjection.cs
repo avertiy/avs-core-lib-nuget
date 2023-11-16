@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using AVS.CoreLib.REST.Json.Newtonsoft;
 using AVS.CoreLib.REST.Responses;
 using Newtonsoft.Json.Linq;
@@ -22,8 +23,7 @@ namespace AVS.CoreLib.REST.Projections
         private Func<TItem, bool> _where;
         private IListProxy<TItem> _proxy;
 
-
-        public ListProjection(string jsonText, string source, string error) : base(jsonText, source, error)
+        public ListProjection(RestResponse response) : base(response)
         {
         }
 

@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
+using AVS.CoreLib.Abstractions.Responses;
 using AVS.CoreLib.Extensions.Collections;
 using AVS.CoreLib.Extensions.Linq;
 
@@ -21,7 +22,7 @@ public sealed class TaskResults<T, TResult> : IEnumerable<KeyValuePair<T,TResult
     /// (ii) IEnumerable
     /// (iii) has countable Data property e.g. Response.Data.Count or Response.Data.Items.Count
     /// </summary>
-    public int TotalCount => Items.Values.Sum(x => x.Count());
+    public int TotalCount => Items.Values.Sum(x => x.GetCount() ?? 0);
 
     public IReadOnlyCollection<T> Keys => Items.Keys;
     public IReadOnlyCollection<TResult> Values => Items.Values;
@@ -70,9 +71,31 @@ public sealed class TaskResults<T, TResult> : IEnumerable<KeyValuePair<T,TResult
 
     public override string ToString()
     {
-        var totalCount = TotalCount;
-        var countStr = totalCount > 0 ? $"{Count} / #{totalCount}" : Count.ToString();
-        return $"TaskResults<{typeof(T).Name},{typeof(TResult).Name}> (#{countStr})";
+        var sb = new StringBuilder($"TaskResults<{typeof(T).Name},{typeof(TResult).Name}>");
+
+        sb.Append($"(#{Count}");
+
+        if(Count > 0)
+        {
+            if (Items.Any(kp => kp.Value is IResponse))
+            {
+                var success = Items.Values.Count(x => ((IResponse)x).Success);
+                var failed = Items.Values.Count(x => ((IResponse)x).Success == false);
+
+                if(success > 0)
+                    sb.Append($" {success} - OK;");
+
+                if (failed > 0)
+                    sb.Append($" {failed} - FAIL;");
+            }
+            var totalCount = TotalCount;
+
+            if(totalCount > 0)
+                sb.Append($" items #{totalCount};");
+        }
+
+        sb.Append(')');
+        return sb.ToString();
     }
 }
 

@@ -28,7 +28,7 @@ namespace AVS.CoreLib.REST
 
         public override string ToString()
         {
-            var content = Content == null ? string.Empty : Content.Truncate(100, "...");
+            var content = Content == null ? string.Empty : Content.Truncate(90, $".. (Length={Content.Length})");
             return IsSuccess ? $"RestResponse - {StatusCode} => {content}" : $"RestResponse - Failed ({StatusCode}) - {Error}";
         }        
 

@@ -14,8 +14,8 @@ namespace AVS.CoreLib.REST.Clients
         public int RateLimit { get; set; } = 1;
         public override string ToString()
         {
-            var authType = AuthType == AuthType.ApiKey ? "SIGNED" : "";
-            return $"{authType} {Method} {BaseUrl}{Path}{QueryString.From(Data)}";
+            var authType = AuthType == AuthType.ApiKey ? " (SIGNED)" : string.Empty;
+            return $"{Method}{authType} {BaseUrl}{Path}{QueryString.From(Data)}";
         }
     }
 }

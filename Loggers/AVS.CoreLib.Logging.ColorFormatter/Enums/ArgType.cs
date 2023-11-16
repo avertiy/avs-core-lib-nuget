@@ -67,8 +67,10 @@ public enum TextKind
     DoubleQuotes,
     Url,
     HttpVerb,
+    Symbol,
     /// <summary>
     /// keywords like Start/End
     /// </summary>
-    Keyword
+    Keyword,
+    SpecialKeyword
 }

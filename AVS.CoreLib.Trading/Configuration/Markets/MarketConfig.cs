@@ -17,10 +17,27 @@ namespace AVS.CoreLib.Trading.Configuration.Markets
         {
             public string Quote { get; set; } = null!;
             public string BaseAssets { get; set; } = null!;
+            public string? All { get; set; }
             public string? Default { get; set; }
             public string? Preset1 { get; set; }
             public string? Preset2 { get; set; }
             public string? Preset3 { get; set; }
+
+            public string? this[Preset preset]
+            {
+                get
+                {
+                    return preset switch
+                    {
+                        Preset.Default => Default,
+                        Preset.Preset1 => Preset1,
+                        Preset.Preset2 => Preset2,
+                        Preset.Preset3 => Preset3,
+                        Preset.All => All ?? BaseAssets,
+                        _ => Default
+                    };
+                }
+            }
         }
     }
 
@@ -58,18 +75,11 @@ namespace AVS.CoreLib.Trading.Configuration.Markets
             }
 
             return result.ToArray();
-        }
-      
+        }        
+
         public static string[] GetBaseAssets(this Combination combination, Preset preset)
         {
-            var str = preset switch
-            {
-                Preset.Default => combination.Default,
-                Preset.Preset1 => combination.Preset1,
-                Preset.Preset2 => combination.Preset2,
-                Preset.Preset3 => combination.Preset3,
-                _ => combination.BaseAssets
-            };
+            var str = combination[preset];
 
             if (str == "*")
                 str = combination.BaseAssets;

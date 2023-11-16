@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using AVS.CoreLib.Extensions;
+using AVS.CoreLib.Guards;
 using AVS.CoreLib.Trading.Enums;
 using AVS.CoreLib.Trading.Helpers;
 
@@ -10,32 +12,41 @@ namespace AVS.CoreLib.Trading.Extensions
     /// </summary>
     public static partial class SymbolExtensions
     {
-        /// <summary>
-        /// returns quote currency for BTC_USDT => USDT
-        /// </summary>
-        [Obsolete("Use symbol.Q()")]
-        public static string QuoteCurrency(this string symbol, SymbolFormat format = SymbolFormat.Normalized)
-        {
-            return format == SymbolFormat.Normalized ? symbol.Split('_')[1] : Normalize(symbol, format).Split('_')[1];
-        }
+        ///// <summary>
+        ///// returns quote currency for BTC_USDT => USDT
+        ///// </summary>
+        //[Obsolete("Use symbol.Q()")]
+        //public static string QuoteCurrency(this string symbol, SymbolFormat format = SymbolFormat.Normalized)
+        //{
+        //    return format == SymbolFormat.Normalized ? symbol.Split('_')[1] : Normalize(symbol, format).Split('_')[1];
+        //}
 
-        /// <summary>
-        /// returns base currency for BTC_USDT => BTC
-        /// </summary>
-        [Obsolete("Use symbol.B()")]
-        public static string BaseCurrency(this string symbol, SymbolFormat format = SymbolFormat.Normalized)
+        ///// <summary>
+        ///// returns base currency for BTC_USDT => BTC
+        ///// </summary>
+        //[Obsolete("Use symbol.B()")]
+        //public static string BaseCurrency(this string symbol, SymbolFormat format = SymbolFormat.Normalized)
+        //{
+        //    return format == SymbolFormat.Normalized ? symbol.Split('_')[0] : Normalize(symbol, format).Split('_')[0];
+        //}
+
+
+        public static string Q(this string symbol, bool replaceIsoCode = true)
         {
-            return format == SymbolFormat.Normalized ? symbol.Split('_')[0] : Normalize(symbol, format).Split('_')[0];
+            var parts = symbol.Split('_');
+            Guard.MustBe.Equal(parts.Length, 2, $"Invalid symbol: `{symbol}`");            
+            return replaceIsoCode ? CoinHelper.GetCurrencySymbol(parts[1]) : parts[1];
         }
 
         /// <summary>
         /// returns quote currency, when possible replace currency iso code with symbol e.g. USDT => $
         /// <seealso cref="CoinHelper.GetCurrencySymbol"/>
         /// </summary>
-        public static string Q(this string symbol, SymbolFormat format = SymbolFormat.Normalized, bool replaceIsoCode = true)
+        public static string Q(this string symbol, SymbolFormat format, bool replaceIsoCode = true)
         {
-            var quote = format == SymbolFormat.Normalized ? symbol.Split('_')[1] : Normalize(symbol, format).Split('_')[1];
-            return replaceIsoCode ? CoinHelper.GetCurrencySymbol(quote) : quote;
+            var parts = (format == SymbolFormat.Normalized ? symbol : Normalize(symbol, format)).Split('_');            
+            Guard.MustBe.Equal(parts.Length, 2, $"Invalid symbol: `{symbol}`");            
+            return replaceIsoCode ? CoinHelper.GetCurrencySymbol(parts[1]) : parts[1];
         }
 
         /// <summary>
@@ -43,7 +54,9 @@ namespace AVS.CoreLib.Trading.Extensions
         /// </summary>
         public static string B(this string symbol, SymbolFormat format = SymbolFormat.Normalized)
         {
-            return format == SymbolFormat.Normalized ? symbol.Split('_')[0] : Normalize(symbol, format).Split('_')[0];
+            var parts = (format == SymbolFormat.Normalized ? symbol : Normalize(symbol, format)).Split('_');
+            Guard.MustBe.Equal(parts.Length, 2, $"Invalid symbol: `{symbol}`");
+            return parts[0];
         }
 
         /// <summary>
@@ -107,8 +120,6 @@ namespace AVS.CoreLib.Trading.Extensions
             symbol = symbol.Insert(str.Length, "_");
             return symbol;
         }
-
-        
 
         public static string Normalize(string symbol, bool isBaseCurrencyFirst)
         {

@@ -50,14 +50,13 @@ namespace AVS.CoreLib.Loggers.TestApp
             var dict = new Dictionary<string, object>();
 
             var str = "string:my-str; currency:$10.21";
-            var state = dict.ToList();
-            var formatter = new ArgsColorFormatter() { Message = str, ColorProvider = new ColorProvider() };
-            formatter.Init(state);
-            var msg = formatter.FormatMessage();
+            if(State.TryParse(dict.ToList(), out var state))
+            {
+                var formatter = new ArgsColorFormatter(new ColorProvider());
+                var msg = formatter.Format(state);
 
-            //var msg2 = str.FormatMessage(state, new ColorsProvider());
-            //Assert.True(msg,msg2);
-
+                _logger.LogInformation("{str} => {msg}", str, msg);
+            }
         }
 
         private void TagFormattingTests()

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using AVS.CoreLib.Trading.Enums;
 using AVS.CoreLib.Trading.Helpers;
 
@@ -136,6 +137,27 @@ namespace AVS.CoreLib.Trading.Types
         public static SymbolPattern From(string pattern)
         {
             return new SymbolPattern(pattern);
+        }
+
+        /// <summary>
+        /// Creates a symbol pattern 
+        /// Takes symbols apply filter if any symbol(s) are dropped than it combines rest of symbols into comma-separated symbols pattern, otherwise return symbol as is
+        /// </summary>
+        public static SymbolPattern From(string[] symbols, string filter)
+        {
+            var pattern = new SymbolPattern(filter);
+            var list = new List<string>(symbols.Length);
+
+            foreach (var symbol in symbols)
+            {
+                if(pattern.Match(symbol))
+                    list.Add(symbol);
+            }
+            
+            if(list.Count == symbols.Length)
+                return pattern;
+
+            return new SymbolPattern(string.Join(',', list));
         }
 
         public enum PatternType

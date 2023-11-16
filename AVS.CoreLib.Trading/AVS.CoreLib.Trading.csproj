@@ -32,8 +32,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Configuration\**" />
     <Compile Remove="Types\Obsolete\**" />
+    <EmbeddedResource Remove="Configuration\**" />
     <EmbeddedResource Remove="Types\Obsolete\**" />
+    <None Remove="Configuration\**" />
     <None Remove="Types\Obsolete\**" />
   </ItemGroup>
 

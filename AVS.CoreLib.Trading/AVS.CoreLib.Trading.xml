@@ -102,18 +102,6 @@
             the Add method implemented explicitly due to model binding mechanics 
             </summary>
         </member>
-        <member name="T:AVS.CoreLib.Trading.Configuration.Markets.Preset">
-            <summary>
-            Define base asset(s) list <see cref="T:AVS.CoreLib.Trading.Configuration.Markets.MarketConfig.Combination"/> that will be combined with quote asset(s) to make trading pairs list
-            <see cref="M:AVS.CoreLib.Trading.Configuration.Markets.MarketConfigExtensions.GetPairs(AVS.CoreLib.Trading.Configuration.Markets.MarketConfig.Combination[],AVS.CoreLib.Trading.Configuration.Markets.Preset)"/>
-            Preset helps to reduce the number of available instruments and focus on a certain list of symbols
-            </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Trading.Configuration.Markets.MarketsConfigManager.GetTradingPairs(System.String,AVS.CoreLib.Trading.Enums.AccountType,AVS.CoreLib.Trading.Configuration.Markets.Preset)">
-            <summary>
-            trading pairs for spot
-            </summary>
-        </member>
         <member name="M:AVS.CoreLib.Trading.ServiceCollectionExtension.AddTradingCore(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             Add trading formatters core services
@@ -1028,16 +1016,6 @@
             supposed to deal with a normalized symbol like BTC_USDT (i.e. currencies are upper case, underscore separator)
             </summary>
         </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolExtensions.QuoteCurrency(System.String,AVS.CoreLib.Trading.Enums.SymbolFormat)">
-            <summary>
-            returns quote currency for BTC_USDT => USDT
-            </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolExtensions.BaseCurrency(System.String,AVS.CoreLib.Trading.Enums.SymbolFormat)">
-            <summary>
-            returns base currency for BTC_USDT => BTC
-            </summary>
-        </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.SymbolExtensions.Q(System.String,AVS.CoreLib.Trading.Enums.SymbolFormat,System.Boolean)">
             <summary>
             returns quote currency, when possible replace currency iso code with symbol e.g. USDT => $
@@ -1477,6 +1455,12 @@
             <summary>
             match given symbol with one of literals (<see cref="F:AVS.CoreLib.Trading.Types.SymbolPattern.ANY"/>, <see cref="F:AVS.CoreLib.Trading.Types.SymbolPattern.FIAT"/> etc.)
             returns true if matches, otherwise - false
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Types.SymbolPattern.From(System.String[],System.String)">
+            <summary>
+            Creates a symbol pattern 
+            Takes symbols apply filter if any symbol(s) are dropped than it combines rest of symbols into comma-separated symbols pattern, otherwise return symbol as is
             </summary>
         </member>
         <member name="F:AVS.CoreLib.Trading.Types.SymbolPattern.PatternType.Any">

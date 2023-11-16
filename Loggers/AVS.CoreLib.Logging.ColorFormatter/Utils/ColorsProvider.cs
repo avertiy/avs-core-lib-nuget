@@ -99,12 +99,16 @@ public class ColorProvider : IColorProvider
                 return new Colors(ConsoleColor.Yellow, null);
             case TextKind.Brackets:
                 return new Colors(ConsoleColor.DarkCyan, null);
-            case TextKind.HttpVerb:
-                return new Colors(ConsoleColor.Blue, null);
             case TextKind.Url:
                 return new Colors(ConsoleColor.Green, null);
+            case TextKind.HttpVerb:
+                return new Colors(ConsoleColor.Blue, null);
+            case TextKind.Symbol:
+                return new Colors(ConsoleColor.Blue, null);
             case TextKind.Keyword:
                 return new Colors(ConsoleColor.Yellow, null);
+            case TextKind.SpecialKeyword:
+                return new Colors(ConsoleColor.DarkYellow, null);
             case TextKind.Percentage:
                 return new Colors(ConsoleColor.Blue, null);
             case TextKind.Quotes:

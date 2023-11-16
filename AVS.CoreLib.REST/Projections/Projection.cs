@@ -27,27 +27,26 @@ namespace AVS.CoreLib.REST.Projections
         public bool IsEmpty => (string.IsNullOrEmpty(JsonText) || JsonText == "{}" || JsonText == "[]") && Error == null;
         public bool HasError => Error != null;
 
-        //protected Projection(HttpStatusCode code, string source, string? jsonText, string? error)
-        //{
-        //    StatusCode = code;
-        //    Source = source;
-        //    Error = GetErrorText(error);
-        //    JsonText = jsonText ?? string.Empty;
-        //}
-
-        //[Obsolete("use c-tor with HttpStatusCode")]
-        protected Projection(string? jsonText, string source, string? error)
+        protected Projection(RestResponse response)
         {
-            JsonText = jsonText ?? string.Empty;
-            Source = source;
-            Error = GetErrorText(error);
+            Source = response.Source;
+            StatusCode = response.StatusCode;
+            JsonText = response.Content ?? string.Empty;            
+            Error = GetErrorText(response.Error);
+            if(Error == null && !response.IsSuccessStatusCode)
+                Error = StatusCode.ToString();
         }
 
         private string? GetErrorText(string? error)
         {
-            if (error != null || string.IsNullOrEmpty(JsonText))
+            if (!string.IsNullOrEmpty(error))
             {
                 return error;
+            }
+
+            if (string.IsNullOrEmpty(JsonText))
+            {
+                return null;
             }
 
             if (JsonText.Length < 200 && JsonText.Contains("code") && JsonText.Contains("message"))

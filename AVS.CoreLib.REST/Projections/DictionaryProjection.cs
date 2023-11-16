@@ -30,7 +30,7 @@ namespace AVS.CoreLib.REST.Projections
         private Func<TKey, bool> _where = null;
 
         [DebuggerStepThrough]
-        public DictionaryProjection(string jsonText, string source, string error = null) : base(jsonText, source ,error)
+        public DictionaryProjection(RestResponse response) : base(response)
         {
         }
 
