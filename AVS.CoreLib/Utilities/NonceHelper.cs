@@ -34,7 +34,7 @@ namespace AVS.CoreLib.Utilities
 
             return CurrentHttpPostNonce.ToString(CultureInfo.InvariantCulture);
         }
-
+                 
         /// <summary>
         /// returns number of milliseconds elapsed since unix epoch
         /// <see cref="DateTimeOffset.ToUnixTimeMilliseconds"/>
@@ -46,7 +46,7 @@ namespace AVS.CoreLib.Utilities
         /// </remarks>
         public static long GetTonce(bool inMilliseconds = true, DateTime? time = null)
         {
-            var offset = new DateTimeOffset(time ?? DateTimeProvider.GetTime());
+            var offset = time == null ? DateTimeOffset.UtcNow : new DateTimeOffset(time.Value);
             return inMilliseconds ? offset.ToUnixTimeMilliseconds() : offset.ToUnixTimeSeconds();
         }
 
@@ -55,9 +55,10 @@ namespace AVS.CoreLib.Utilities
         /// <see cref="DateTimeOffset.ToUnixTimeMilliseconds"/>
         /// (based on <see cref="DateTimeOffset.UtcNow"/>)
         /// </summary>
-        public static long GetTimestamp()
+        public static long GetUnixTimestamp(bool inMilliseconds = true)
         {
-            return DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            var time = DateTimeOffset.UtcNow;
+            return inMilliseconds ? time.ToUnixTimeMilliseconds() : time.ToUnixTimeSeconds();
         }
     }
 }

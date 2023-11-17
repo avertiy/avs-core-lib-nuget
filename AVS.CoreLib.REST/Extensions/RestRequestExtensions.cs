@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.Extensions.Web;
 using AVS.CoreLib.REST.Helpers;
@@ -30,6 +31,19 @@ namespace AVS.CoreLib.REST.Extensions
             if (request.Method == "GET" && request.Data != null && request.Data.Any())
                 url = UrlHelper.Combine(url, request.Data.ToHttpQueryString(orderParameters));
             return url;
+        }
+
+        public static Uri GetUri(this IRequest request, bool orderParameters = true)
+        {
+            var url = request.BaseUrl + request.Path;
+
+            if (request.Method == "GET" && request.Data != null && request.Data.Any())
+            {
+                var queryString = request.Data.ToHttpQueryString(orderParameters);
+                url = UrlHelper.Combine(url, queryString);                
+            }
+                
+            return new Uri(url);
         }
     }
 }

@@ -352,11 +352,13 @@ namespace AVS.CoreLib.Trading.Helpers
         {
             switch (value[0])
             {
-                case 'b':
-                case 'B':
+                case 'b'://buy or bid
+                case 'B'://Buy or Bid
                     return OrderSide.Buy;
-                case 's':
-                case 'S':
+                case 's'://sell
+                case 'S'://Sell
+                case 'a'://ask
+                case 'A'://Ask
                     return OrderSide.Sell;
             }
             throw new ArgumentOutOfRangeException($"{value} unknown OrderSide");
@@ -475,7 +477,8 @@ namespace AVS.CoreLib.Trading.Helpers
             var str = value.ToUpper();
             switch (str[0])
             {
-                case 'N':
+                case 'O'://Open
+                case 'N'://New
                     return OrderState.New;
                 case 'P':
                     return OrderState.PartiallyFilled;
