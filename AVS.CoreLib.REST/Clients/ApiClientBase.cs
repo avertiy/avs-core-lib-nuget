@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions.Rest;
 
@@ -24,7 +23,7 @@ namespace AVS.CoreLib.REST.Clients
         protected virtual async Task<RestResponse> SendRequest(IRequest request, CancellationToken ct = default)
         {
             var response = await Client.SendRequestAsync(request, ct).ConfigureAwait(false);
-            var result = RestResponse.FromResponse(response, Name);
+            var result = RestResponse.FromResponse(response, Name, request);
             return result;
         }        
     }

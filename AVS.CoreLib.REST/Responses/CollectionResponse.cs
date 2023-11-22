@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿#nullable enable
+using System.Collections.ObjectModel;
 using AVS.CoreLib.Abstractions.Responses;
 using AVS.CoreLib.REST.Attributes;
 
@@ -9,7 +10,7 @@ namespace AVS.CoreLib.REST.Responses
         #region Properties
 
         [ArrayProperty(-10, true)]
-        public string Error { get; set; }
+        public string? Error { get; set; }
 
         public virtual bool ShouldSerializeError()
         {
@@ -23,7 +24,8 @@ namespace AVS.CoreLib.REST.Responses
             return false;
         }
 
-        public string Source { get; set; }
+        public string Source { get; set; } = null!;
+        public object? Request { get; set; }
 
         public virtual bool ShouldSerializeSource()
         {

@@ -15,7 +15,7 @@ namespace AVS.CoreLib.REST.Clients
         public override string ToString()
         {
             var authType = AuthType == AuthType.ApiKey ? " (SIGNED)" : string.Empty;
-            return $"{Method}{authType} {BaseUrl}{Path}{QueryString.From(Data)}";
+            return $"{Method} {BaseUrl}{Path}{QueryString.From(Data)}{authType}";
         }
     }
 }

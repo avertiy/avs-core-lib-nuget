@@ -33,6 +33,13 @@ namespace AVS.CoreLib.REST.Responses
             return Source != null;
         }
 
+        public object? Request { get; set; }
+
+        public virtual bool ShouldSerializeRequestedUrl()
+        {
+            return false;
+        }
+
         public override string ToString()
         {
             return (Success ? "Response - OK " : $"Response - Fail [{Error}]").Append(Source, "[Source: {0}]");

@@ -1,186 +1,272 @@
 ﻿#nullable enable
 using System;
-using System.IO;
-using System.Net;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using AVS.CoreLib.Extensions;
-using AVS.CoreLib.Extensions.Reflection;
+using System.Diagnostics;
+using AVS.CoreLib.REST.Json.Newtonsoft;
 using AVS.CoreLib.REST.Responses;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace AVS.CoreLib.REST.Projections
 {
-    public abstract class Projection
+    /// <summary>
+    /// Represent a simple type projection to deserialize json into T type 
+    /// takes <see cref="RestResponse"/> as an input and produces <see cref="Response{T}"/> result
+    /// <code>
+    ///   // 1. T is a concrete type (direct projection)
+    ///   var projection = restResponse.Projection{Order}();
+    ///   Response{Order} response = projection.Map();
+    ///   
+    ///   // 2. T is an abstraction (direct projection)
+    ///   var projection = restResponse.Projection{IOrder}();
+    ///   Response{Order} response = projection.Map{BinanceOrder}();
+    ///   
+    ///   // 3. T is an abstraction/interface (projection via proxy)
+    ///   var projection = restResponse.Projection{IOrderBook}();
+    ///   Response{IOrderBook} response = projection.MapWith{OrderBookBuilder}();
+    /// </code>
+    /// </summary>
+    public class Projection<T> : ProjectionBase
     {
-        public static Regex ErrorRegex =
-            new Regex("(error|err-msg|error-message)\\\\?[\"']:[\\s\\\\\"']+(?<error>[=():/\\-\\.\\?\\w\\s&]+)[\"']?",
-                RegexOptions.IgnoreCase);
+        protected Action<T>? _preProcess;
+        protected Action<T>? _postProcess;
 
-        private string? _selectTokenPath;
-
-        public string JsonText { get; set; }
-        public string Source { get; set; }
-        public string? Error { get; set; }
-        public HttpStatusCode StatusCode { get; set; }
-        public bool IsEmpty => (string.IsNullOrEmpty(JsonText) || JsonText == "{}" || JsonText == "[]") && Error == null;
-        public bool HasError => Error != null;
-
-        protected Projection(RestResponse response)
+        [DebuggerStepThrough]
+        public Projection(RestResponse response) : base(response)
         {
-            Source = response.Source;
-            StatusCode = response.StatusCode;
-            JsonText = response.Content ?? string.Empty;            
-            Error = GetErrorText(response.Error);
-            if(Error == null && !response.IsSuccessStatusCode)
-                Error = StatusCode.ToString();
         }
 
-        private string? GetErrorText(string? error)
+        public Projection<T> PreProcess(Action<T> action)
         {
-            if (!string.IsNullOrEmpty(error))
-            {
-                return error;
-            }
-
-            if (string.IsNullOrEmpty(JsonText))
-            {
-                return null;
-            }
-
-            if (JsonText.Length < 200 && JsonText.Contains("code") && JsonText.Contains("message"))
-            {
-                return JsonText;
-            }
-
-            var match = ErrorRegex.Match(JsonText);
-
-            if (!match.Success)
-                return null;
-
-            error = match.Groups["error"].Value;
-            if (string.IsNullOrEmpty(error))
-                error = JsonText;
-
-            return error;
+            _preProcess = action;
+            return this;
         }
 
-        protected Response<T> CreateResponse<T>() where T : new()
+        public Projection<T> PostProcess(Action<T> action)
         {
-            var response = Response.Create<T>(Source, Error);
-            if (IsEmpty)
-            {
-                response.Data = new T();
-            }
-            return response;
+            _postProcess = action;
+            return this;
         }
 
-        protected Response<T> CreateResponse<T, TProjection>() where TProjection : T, new()
+        public Projection<T> PostProcess<TType>(Action<TType> action) where TType : T
         {
-            var response = Response.Create<T>(Source, Error);
-            if (IsEmpty)
-            {
-                response.Data = new TProjection();
-            }
-            return response;
+            _postProcess = x => action((TType)x!);
+            return this;
         }
 
-        /// <summary>
-        /// Selects a <see cref="T:Newtonsoft.Json.Linq.JToken" /> using a JSONPath expression. Selects the token that matches the object path.
-        /// </summary>
-        /// <param name="path">
-        /// A <see cref="T:System.String" /> that contains a JSONPath expression.
-        /// </param>
-        public void SelectToken(string path)
-        {
-            _selectTokenPath = path;
-        }
-
-        //method is public to allow caller code to debug token deserialization in case map fails without error
-        public TToken LoadToken<TToken>() where TToken : JToken
-        {
-            using var stringReader = new StringReader(JsonText);
-            using var reader = new JsonTextReader(stringReader);
-            var token = JToken.Load(reader);
-
-            if (_selectTokenPath != null)
-            {
-                token = token.SelectToken(_selectTokenPath);
-                if (token == null)
-                    throw new JsonReaderException($"Invalid token path {_selectTokenPath}");
-            }
-
-            if (token is TToken tToken)
-            {
-                return tToken;
-            }
-
-            throw new JsonReaderException($"Unexpected JTokenType {token.Type}, expected {typeof(TToken).Name} [json: {JsonText.Truncate(100)}]");
-        }
-
-        protected void LoadToken(Action<JToken> action)
+        public T? InspectDeserialization(Action<JToken, T> inspect, out Exception? err)
         {
             try
             {
-                var token = LoadToken<JToken>();
-                action(token);
+                var obj = Activator.CreateInstance<T>();
+                var jToken = LoadToken<JToken>();
+                inspect(jToken, obj);
+                JsonHelper.Populate(jToken, obj);
+                err = null;
+                return obj;
             }
             catch (Exception ex)
             {
-                throw;
-                //throw new MapException("LoadToken failed", ex) {JsonText = JsonText, Source = Source };
+                err = ex;
+                return default;
             }
         }
 
-        protected void LoadToken<TToken, T, TItem>(Action<TToken> action) where TToken : JContainer
+        public Response<T> Map()
         {
             try
             {
-                var token = LoadToken<TToken>();
-                action(token);
-            }
-            catch (Exception ex)
-            {
-                throw;
-                //throw new MapJsonException<T, TItem>(ex) { JsonText = JsonText, Source = Source };
-            }
-        }
+                var response = Response.Create<T>(Source, Error, Request);
+                if (HasError)
+                    return response;
 
-        protected void LoadToken<TToken, TProjection>(Action<TToken> action) where TToken : JContainer
-        {
-            try
-            {
-                var token = LoadToken<TToken>();
-                action(token);
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
+                var obj = Activator.CreateInstance<T>();
+                _preProcess?.Invoke(obj);
 
-        protected Response<T> MapInternal<T>(Action<Response<T>> map)
-        {
-            var response = Response.Create<T>(Source, Error);
-            if (HasError)
-                return response;
-            try
-            {
-                map(response);
+                if (IsEmpty)
+                {
+                    response.Data = obj;
+                }
+                else
+                {
+                    var token = LoadToken<JToken>();
+                    JsonHelper.Populate(token, obj);
+                    _postProcess?.Invoke(obj);
+                    response.Data = obj;
+                }
+
                 return response;
             }
-            catch (MapException) { throw; }
             catch (Exception ex)
             {
-                throw new MapException($"{this.GetType().GetReadableName()}::Map json failed.", ex) { JsonText = JsonText, Source = Source };
+                throw new MapException(ex, this);
+            }            
+        }
+
+        public Response<T> Map<TType>() where TType : T, new()
+        {
+            try
+            {
+                var response = Response.Create<T>(Source, Error, Request);
+                if (HasError)
+                    return response;
+
+                var obj = new TType();
+                _preProcess?.Invoke(obj);
+
+                if (IsEmpty)
+                {
+                    response.Data = obj;
+                }
+                else
+                {
+                    var token = LoadToken<JToken>();
+                    JsonHelper.Populate(token, obj);
+                    _postProcess?.Invoke(obj);
+                    response.Data = obj;
+                }
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                throw new MapException(ex, this);
             }
         }
 
-        protected Task<Response<T>> MapAsyncInternal<T>(Func<Response<T>> map)
+        public Response<T> MapWith<TProxy>(Action<TProxy>? configure = null) where TProxy : class, IProxy<T>, new()
         {
-            return IsEmpty || JsonText.Length < 2000 ? Task.FromResult(map()) : Task.Factory.StartNew(map);
+            try
+            {
+                var response = Response.Create<T>(Source, Error, Request);
+                if (HasError)
+                    return response;
+
+                var proxy = new TProxy();
+                configure?.Invoke(proxy);
+
+                if (!IsEmpty)
+                {
+                    var jToken = LoadToken<JToken>();
+                    JsonHelper.Populate(jToken, proxy);
+                }
+
+                var obj = proxy.Create();
+                _postProcess?.Invoke(obj);                
+                response.Data = obj;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                throw new MapException(ex, this);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Represent json projection when T is an abstraction, TType is an implementation of T
+    /// <code>
+    ///   //1. simple direct projection
+    ///   var projection = restResponse.Projection{IOrder, Order}();
+    ///   Response{IOrder} response = projection.Map();
+    /// </code>
+    /// </summary>
+    public class Projection<T, TType> : ProjectionBase where TType : T
+    {
+        protected Action<TType>? _postProcess;
+        protected Action<TType>? _preProcess;
+
+        [DebuggerStepThrough]
+        public Projection(RestResponse response) : base(response)
+        {
         }
 
+        public Projection<T, TType> PreProcess(Action<TType> action)
+        {
+            _preProcess = action;
+            return this;
+        }
+
+        public Projection<T,TType> PostProcess(Action<TType> action)
+        {
+            _postProcess = action;
+            return this;
+        }        
+
+        public T? InspectDeserialization(Action<JToken, TType> inspect, out Exception? err)
+        {
+            try
+            {
+                var obj = Activator.CreateInstance<TType>();
+                var jToken = LoadToken<JToken>();
+                inspect(jToken, obj);
+                JsonHelper.Populate(jToken, obj);
+                err = null;
+                return obj;
+            }
+            catch (Exception ex)
+            {
+                err = ex;
+                return default;
+            }
+        }
+
+        public Response<T> Map()
+        {
+            try
+            {
+                var response = Response.Create<T>(Source, Error, Request);
+                if (HasError)
+                    return response;
+
+                var obj = Activator.CreateInstance<TType>();
+                _preProcess?.Invoke(obj);
+
+                if (!IsEmpty)
+                {
+                    var jToken = LoadToken<JToken>();
+                    JsonHelper.Populate(jToken, obj);
+                }
+
+                _postProcess?.Invoke(obj);
+                response.Data = obj;
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                throw new MapException(ex, this);
+            }
+        }
+
+        [Obsolete("looks not needed, IndirectProjection<T,TType> should cover it i guess")]
+        public Response<T> Map<TProxy>() where TProxy : class, IProxy<TType,T>, new()
+        {
+            try
+            {
+                var response = Response.Create<T>(Source, Error, Request);
+                if (HasError)
+                    return response;
+
+                var proxy = new TProxy();
+
+                var obj = Activator.CreateInstance<TType>();
+                _preProcess?.Invoke(obj);
+
+                if (!IsEmpty)
+                {
+                    var jToken = LoadToken<JToken>();
+                    JsonHelper.Populate(jToken, obj);
+                }
+
+                _postProcess?.Invoke(obj);
+                proxy.Add(obj);
+                response.Data = proxy.Create();
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                throw new MapException(ex, this);
+            }
+        }
     }
 }

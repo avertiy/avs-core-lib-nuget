@@ -87,7 +87,21 @@ namespace AVS.CoreLib.Extensions.Reflection
             return null;
         }
 
-        
+        public static string GetTypeName(this object obj, int? maxLength = null, bool fullNamePreferably = false)
+        {
+            var type = obj.GetType();
+            var name = type.Name;
+            if (fullNamePreferably && type.FullName?.Length < 80)
+                name = type.FullName;
+
+            if (!type.IsGenericType)
+                return name;
+
+            var args = type.GetGenericArguments();
+            var limitArgs = maxLength == null ? 4 : (int?)null;
+            return ToStringNotation(type.Name, args, limitArgs, maxLength);
+        }
+
         public static string GetReadableName(this Type type, int? maxLength = null, bool fullNamePreferably = false)
         {
             var name = type.Name;

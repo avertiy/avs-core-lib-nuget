@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using AVS.CoreLib.Abstractions.Responses;
 using AVS.CoreLib.Collections;
 using AVS.CoreLib.REST.Attributes;
@@ -45,6 +44,8 @@ namespace AVS.CoreLib.REST.Responses
             return Source != null;
         }
 
+        public object? Request { get; set; }
+
         #endregion
 
         public void ForEach(Action<string, dynamic> success, Action<string, string> failed = null)
@@ -79,16 +80,16 @@ namespace AVS.CoreLib.REST.Responses
             return Success ? $"AggregatedResponse [{string.Join(",", Keys)}]" : $"AggregatedResponse=> Fail [{Error}]";
         }
 
-        public static implicit operator Response<T>(AggregatedResponse<T> response)
-        {
-            if (!response.Success)
-                return new Response<T>() { Error = response.Error };
+        //public static implicit operator Response<T>(AggregatedResponse<T> response)
+        //{
+        //    if (!response.Success)
+        //        return Response.Create<T>(response.Source, response.Error, response.RequestedUrl);
 
-            if (response.Count == 1)
-                return response.First().Value;
+        //    if (response.Count == 1)
+        //        return response.First().Value;
 
-            var type = typeof(T).Name;
-            throw new InvalidCastException($"AggregatedResponse<{type}> must contain exact one item of Response<{type}>");
-        }
+        //    var type = typeof(T).Name;
+        //    throw new InvalidCastException($"AggregatedResponse<{type}> must contain exact one item of Response<{type}>");
+        //}
     }
 }

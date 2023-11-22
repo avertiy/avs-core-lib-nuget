@@ -50,27 +50,33 @@ namespace AVS.CoreLib.REST.Clients
 
         public async Task<RestResponse> GetResponse(IRequest request, CancellationToken ct = default)
         {
+            var client = _httpClientFactory.CreateClient(Source);
+
             // 1. rate limit
             await RateLimit(count: request.RateLimit, ct);
+
             // 2. prepare http request message
             using var requestMessage = GetHttpRequestMessage(request);
-            // 3. send request and get response
-            var response = await GetResponse(requestMessage, ct);
+
+            // 3. send request
+            var responseMessage = await SendAsync(client, requestMessage, FetchAttempts, ct);
+
+            // 4. prepare response
+            var response = await PrepareResponse(request, responseMessage);
+            
             return response;
         }
 
-        protected async Task<RestResponse> GetResponse(HttpRequestMessage request, CancellationToken ct)
+        protected virtual async ValueTask<RestResponse> PrepareResponse(IRequest request, HttpResponseMessage responseMessage)
         {
-            var client = _httpClientFactory.CreateClient(Source);
-            LastRequestedUrl = request.RequestUri.ToString();
-
-            var responseMessage = await SendAsync(client, request, FetchAttempts, ct);
-
+            // 1. adjust rate limit by status code
             AdjustRateLimit(responseMessage);
-            
+
+            // 2. verify 429 status code
             var error = await VerifyStatusCode(responseMessage);
 
-            var response = new RestResponse(Source, responseMessage.StatusCode);
+            var response = new RestResponse(Source, request, responseMessage.StatusCode);
+
             if (error != null)
                 response.Error = error;
             else
@@ -150,6 +156,9 @@ namespace AVS.CoreLib.REST.Clients
         
         protected async Task<HttpResponseMessage> SendAsync(HttpClient client, HttpRequestMessage request, int attempts, CancellationToken ct)
         {
+            var requestedUrl = request.RequestUri.ToString();
+            LastRequestedUrl = requestedUrl;
+
             var attempt = 0;
             EnsureRequestDelay();
             start:

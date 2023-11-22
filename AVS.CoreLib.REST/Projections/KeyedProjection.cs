@@ -13,7 +13,7 @@ namespace AVS.CoreLib.REST.Projections
     /// </summary>
     /// <typeparam name="T">abstraction/interface type of keyed collection, for example IBookTicker</typeparam>
     /// <typeparam name="TItem">The concrete type of the item (value), for example ExmoMarketData</typeparam>
-    public class KeyedProjection<T, TItem> : Projection
+    public class KeyedProjection<T, TItem> : ProjectionBase
     {
         protected Action<T> _postProcessAction;
         protected Action<T> _preProcessAction;

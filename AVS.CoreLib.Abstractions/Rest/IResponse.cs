@@ -1,14 +1,17 @@
-﻿namespace AVS.CoreLib.Abstractions.Responses
+﻿#nullable enable
+
+namespace AVS.CoreLib.Abstractions.Responses
 {
     public interface IResponse
     {
-        string Error { get; set; }
-        bool Success { get; }
         string Source { get; set; }
+        object? Request { get; set; }
+        string? Error { get; set; }
+        bool Success { get; }
     }
 
     public interface IResponse<T> : IResponse
     {
-        T Data { get; set; }
+        T? Data { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
 using System.Text.RegularExpressions;
+using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Guards;
 using AVS.CoreLib.REST.Extensions;
@@ -14,32 +15,35 @@ namespace AVS.CoreLib.REST
     public class RestResponse
     {
         public string Source { get; set; }
+        public IRequest? Request { get; set; }
         public string? Content { get; set; }
         public string? Error { get; set; }
         public HttpStatusCode StatusCode { get; set; }
         public bool IsSuccess => Error == null && IsSuccessStatusCode;
         public bool IsSuccessStatusCode => ((int)StatusCode) >= 200 && (int)StatusCode < 300;
 
-        public RestResponse(string source, HttpStatusCode code)
+        public RestResponse(string source, IRequest? request, HttpStatusCode code)
         {
             Source = source;
             StatusCode = code;
+            Request = request;
         }
+              
 
         public override string ToString()
         {
             var content = Content == null ? string.Empty : Content.Truncate(90, $".. (Length={Content.Length})");
             return IsSuccess ? $"RestResponse - {StatusCode} => {content}" : $"RestResponse - Failed ({StatusCode}) - {Error}";
-        }        
-
-        public static RestResponse OK(string source, HttpStatusCode code, string content)
-        {
-            return new RestResponse(source, code) { Content = content };
         }
 
-        public static RestResponse FromResponse(HttpWebResponse response, string source)
+        public static RestResponse OK(string source, string? content = null, IRequest? request = null, HttpStatusCode code = HttpStatusCode.OK)
         {
-            var result = new RestResponse(source, response.StatusCode);
+            return new RestResponse(source, request, code) { Content = content };
+        }
+
+        internal static RestResponse FromResponse(HttpWebResponse response, string source, IRequest request)
+        {
+            var result = new RestResponse(source, request, response.StatusCode);
 
             if(response.StatusCode == HttpStatusCode.OK)
                 result.Content = response.GetContent();
@@ -52,6 +56,15 @@ namespace AVS.CoreLib.REST
 
     public static class RestResponseExtensions
     {
+        public static RestResponse Copy(this RestResponse response, string? content = null)
+        {
+            return new RestResponse(response.Source,response.Request, response.StatusCode)
+            {
+                Content = content,
+                Error = response.Error,
+            };
+        }
+
         /// <summary>
         /// Match JsonText with a regex pattern to select property value which is either json object or json array
         /// <code>
@@ -72,8 +85,8 @@ namespace AVS.CoreLib.REST
             Guard.MustBe.OneOf(tokenType, JTokenType.Object, JTokenType.Array);
 
             var regex = tokenType == JTokenType.Object
-                ? $"\"{name}\":(?<data>{{.+?}})"
-                : $"\"{name}\":(?<data>\\[.+?\\])";
+                ? $"\"{name}\":(?<data>{{.*?}})"
+                : $"\"{name}\":(?<data>\\[.*?\\])";
 
             var re = new Regex(regex);
             var match = re.Match(result.Content);
@@ -81,7 +94,7 @@ namespace AVS.CoreLib.REST
             if (match.Success)
             {
                 var text = match.Groups["data"].Success ? match.Groups["data"].Value : match.Value;
-                return RestResponse.OK(result.Source, result.StatusCode, text);
+                return result.Copy(text);
             }
 
             result.Error = $"Invalid format [json text must match a regex pattern: {regex}]";
@@ -109,7 +122,7 @@ namespace AVS.CoreLib.REST
             if (match.Success)
             {
                 var text = match.Groups["data"].Success ? match.Groups["data"].Value : match.Value;
-                return RestResponse.OK(result.Source, result.StatusCode, text);
+                return result.Copy(text);
             }
 
             result.Error = errorText ?? result.Error ?? $"Invalid format [json text must match a regex pattern: {regexPattern}]";
@@ -134,7 +147,7 @@ namespace AVS.CoreLib.REST
                 }
 
                 var text = $"[{string.Join(",", items)}]";
-                return RestResponse.OK(result.Source, result.StatusCode, text);
+                return result.Copy(text);
             }
 
             result.Error = errorText ?? result.Error ?? $"Invalid format [json text must match a regex pattern: {regexPattern}]";

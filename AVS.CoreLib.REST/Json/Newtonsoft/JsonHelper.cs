@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -7,9 +8,16 @@ namespace AVS.CoreLib.REST.Json.Newtonsoft
 {
     public static class JsonHelper
     {
-        public static Lazy<JsonSerializer> Serializer => new Lazy<JsonSerializer>(() => new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore });
+        public static Lazy<JsonSerializer> LazySerializer => new Lazy<JsonSerializer>(
+            () => new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore });
+        public static JsonSerializer Serializer => LazySerializer.Value;
 
-        public static bool IsSimpleType(Type type)
+        public static T? Deserialize<T>(JToken jToken)
+        {
+            return Serializer.Deserialize<T>(jToken.CreateReader());
+        }
+
+        internal static bool IsSimpleType(Type type)
         {
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
                 // nullable type, check if the nested type is simple.
@@ -23,21 +31,13 @@ namespace AVS.CoreLib.REST.Json.Newtonsoft
         /// <summary>
         /// populate the JSON values onto the target object
         /// by utilizing JsonSerializer.Populate(jObject.CreateReader(), target); 
-        /// </summary>
-        public static void Populate(object target, JObject jObject)
+        /// </summary>        
+        public static void Populate<T>(JToken jToken, T target)
         {
-            Serializer.Value.Populate(jObject.CreateReader(), target);
+            Serializer.Populate(jToken.CreateReader(), target!);
         }
 
-        public static T ParseObject<T>(JObject jObject) where T : new()
-        {
-            var result = new T();
-
-            Serializer.Value.Populate(jObject.CreateReader(), result);
-            return result;
-        }
-
-        public static List<T> ParseList<T>(JArray jArray, Type itemType, Action<T> foreachItem = null, Func<T, bool> predicate = null)
+        public static List<T> ParseList<T>(JArray jArray, Type itemType, Action<T?>? foreachItem = null, Func<T?, bool>? predicate = null)
         {
             var list = new List<T>();
             if (!jArray.HasValues)
@@ -47,7 +47,9 @@ namespace AVS.CoreLib.REST.Json.Newtonsoft
             {
                 if (token.Type == JTokenType.Object)
                 {
-                    var value = (T)Serializer.Value.Deserialize(token.CreateReader(), itemType);
+                    var value = Deserialize<T>((JObject)token);
+                    if (value == null)
+                        throw new JsonSerializationException($"Deserialize<{typeof(T).Name}> returned null");
                     foreachItem?.Invoke(value);
                     if (predicate == null || predicate(value))
                         list.Add(value);
@@ -56,10 +58,10 @@ namespace AVS.CoreLib.REST.Json.Newtonsoft
 
                 if (token.Type == JTokenType.Array)
                 {
-                    var value = ParseJArray<T>(itemType, Serializer.Value, (JArray)token);
+                    var value = ParseJArray<T>(itemType, Serializer, (JArray)token);
                     foreachItem?.Invoke(value);
                     if (predicate == null || predicate(value))
-                        list.Add(value);
+                        list.Add(value!);
                     continue;
                 }
 
@@ -77,30 +79,31 @@ namespace AVS.CoreLib.REST.Json.Newtonsoft
 
             foreach (var kp in jObject)
             {
-                var item = convertFunc(kp.Key, kp.Value);
+                var item = convertFunc(kp.Key, kp.Value!);
                 list.Add(item);
             }
 
             return list;
         }
 
-        public static T Deserialize<T>(JToken token, Type itemType)
+        public static T? Deserialize<T>(JToken token, Type itemType)
         {
-            try
-            {
-                return (T)Serializer.Value.Deserialize(token.CreateReader(), itemType);
-            }
-            catch (Exception ex)
-            {
-                throw new JsonSerializationException($"Deserialize<{typeof(T).Name}> failed: " + ex.Message, ex);
-            }
+            return (T?)Serializer.Deserialize(token.CreateReader(), itemType);
+            //try
+            //{
+            //    return (T?)Serializer.Deserialize(token.CreateReader(), itemType);
+            //}
+            //catch (Exception ex)
+            //{
+            //    throw new JsonSerializationException($"Deserialize<{typeof(T).Name}> failed: " + ex.Message, ex);
+            //}
         }
 
-        internal static T ParseJArray<T>(Type itemType, JsonSerializer serializer, JArray token)
+        internal static T? ParseJArray<T>(Type itemType, JsonSerializer serializer, JArray token)
         {
             try
             {
-                return (T)serializer.Deserialize(token.CreateReader(), itemType);
+                return (T?)serializer.Deserialize(token.CreateReader(), itemType);
             }
             catch (JsonSerializationException ex)
             {
@@ -120,10 +123,10 @@ namespace AVS.CoreLib.REST.Json.Newtonsoft
                 return dictionary;
 
             foreach (var kp in jObject)
-                if (kp.Value.Type == JTokenType.String)
+                if (kp.Value!.Type == JTokenType.String)
                 {
                     var value = ((JValue)kp.Value).Value<string>();
-                    dictionary.Add(keyFunc(kp.Key), valFunc(value));
+                    dictionary.Add(keyFunc(kp.Key), valFunc(value!));
                 }
                 else if (kp.Value.Type == JTokenType.Boolean)
                 {
@@ -143,7 +146,7 @@ namespace AVS.CoreLib.REST.Json.Newtonsoft
                 else
                 {
                     var obj = kp.Value.Value<object>();
-                    dictionary.Add(keyFunc(kp.Key), valFunc(obj));
+                    dictionary.Add(keyFunc(kp.Key), valFunc(obj!));
                 }
 
             return dictionary;

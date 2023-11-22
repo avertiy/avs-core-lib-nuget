@@ -1,6 +1,7 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
-using System.Net;
+using AVS.CoreLib.Extensions.Reflection;
 using AVS.CoreLib.REST.Json.Newtonsoft;
 using AVS.CoreLib.REST.Responses;
 using Newtonsoft.Json.Linq;
@@ -8,141 +9,229 @@ using Newtonsoft.Json.Linq;
 namespace AVS.CoreLib.REST.Projections
 {
     /// <summary>
-    /// Map json of array type structure into <see cref="List{TItem}"/>.
+    /// ListProjection{T} is a simple list projection 
+    /// when json array [...] needs to be deserialized into <see cref="List{T}"/>.
+    /// <code>
+    ///    // 1. T is a concrete type
+    ///    var projection = response.ListProjection{Order}();
+    ///    Response{List{Order}} list = projection.Map();
+    /// 
+    ///    // 2. T is an abstraction/interface
+    ///    var projection = response.ListProjection{IOrder}();
+    ///    Response{List{IOrder}} list = projection.Map{Order}();
+    ///     
+    ///    // 3. indirect projection via proxy (concreate types)
+    ///    var projection = response.ListProjection{Ticker}();
+    ///    Response{List{Ticker}}  = projection.MapWith{TickerListBuilder}();    
+    ///    
+    ///    // 4. indirect projection via proxy (abstraction)
+    ///    var projection = response.ListProjection{ITicker}();
+    ///    Response{List{Ticker}} volume = projection.MapWith{TickerListBuilder, BinanceTicker}();  
+    /// </code>
     /// </summary>
-    /// <typeparam name="TItem">could be either a concrete type or an interface </typeparam>
-    /// <example>
-    /// Response{List{BinanceMarketData}} response = jsonResult.AsList{BinanceMarketData}().Map();
-    /// Response{List{IMarketData}} response = jsonResult.AsList{IMarketData}().Map{BinanceMarketData}(); 
-    /// </example>
-    public class ListProjection<TItem> : Projection where TItem : class
+    public class ListProjection<T> : ProjectionBase
     {
-        private Action<List<TItem>> _postProcessAction;
-
-        private Action<TItem> _itemAction;
-        private Func<TItem, bool> _where;
-        private IListProxy<TItem> _proxy;
+        private Func<T, bool>? _where;
+        private Action<T>? _itemAction;
+        private Action<List<T>>? _postProcess;
 
         public ListProjection(RestResponse response) : base(response)
         {
         }
 
-        public ListProjection<TItem> PostProcess(Action<List<TItem>> action)
-        {
-            _postProcessAction = action;
-            return this;
-        }
-
-        public ListProjection<TItem> ForEach(Action<TItem> action)
-        {
-            _itemAction = action;
-            return this;
-        }
-
-        public ListProjection<TItem> Where(Func<TItem, bool> predicate)
+        public ListProjection<T> Where(Func<T, bool> predicate)
         {
             _where = predicate;
             return this;
         }
 
-        public ListProjection<TItem> UseProxy<TProxy>(Action<TProxy> initialize = null)
-            where TProxy : class, IListProxy<TItem>, new()
+        public ListProjection<T> ForEach(Action<T> action)
         {
-            var builder = new TProxy();
-            initialize?.Invoke(builder);
-            _proxy = builder;
+            _itemAction = action;
             return this;
         }
 
-        public Response<List<TItem>> Map()
+        public ListProjection<T> PostProcess(Action<List<T>> action)
         {
-            var response = MapInternal<List<TItem>>(response =>
-            {
-                if (IsEmpty)
-                {
-                    response.Data = _proxy == null ? new List<TItem>() : _proxy.Create();
-                }
-                else
-                {
-                    LoadToken<JArray, TItem>(jArray =>
-                    {
-                        foreach (var jToken in jArray)
-                        {
-                            var item = JsonHelper.Deserialize<TItem>(jToken, typeof(TItem));
-
-                            _itemAction?.Invoke(item);
-
-                            if (_where != null && !_where(item))
-                                continue;
-
-                            if (_proxy == null)
-                                response.Data.Add(item);
-                            else
-                                _proxy.Add(item);
-
-                        }
-                    });
-
-                    if (_proxy == null)
-                    {
-                        _postProcessAction?.Invoke(response.Data);
-                    }
-                    else
-                    {
-                        var data = _proxy.Create();
-                        _postProcessAction?.Invoke(data);
-                        response.Data = data;
-                    }
-                }
-            });
-
-            return response;
+            _postProcess = action;
+            return this;
         }
 
-        public Response<List<TItem>> Map<TProjection>()
-            where TProjection : TItem
+        public Response<List<T>> Map(int take = 0)
         {
-            var response = MapInternal<List<TItem>>(response =>
+            try
             {
+                var response = Response.Create<List<T>>(Source, Error, Request);
+                if (HasError)
+                    return response;
+
                 if (IsEmpty)
                 {
-                    response.Data = _proxy == null ? new List<TItem>() : _proxy.Create();
+                    response.Data = new List<T>();
                 }
                 else
                 {
-                    LoadToken<JArray, TProjection>(jArray =>
+                    var jArray = LoadToken<JArray>();
+                    var list = new List<T>(jArray.Count);
+                    var type = typeof(T);
+                    var i = 0;
+                    foreach (var jToken in jArray)
                     {
-                        foreach (var jToken in jArray)
+                        i++;
+                        try
                         {
-                            var item = JsonHelper.Deserialize<TProjection>(jToken, typeof(TProjection));
-
-                            _itemAction?.Invoke(item);
+                            var item = JsonHelper.Deserialize<T>(jToken, type);
+                            if (item == null)
+                                continue;
 
                             if (_where != null && !_where(item))
                                 continue;
 
-                            if (_proxy == null)
-                                response.Data.Add(item);
-                            else
-                                _proxy.Add(item);
+                            _itemAction?.Invoke(item);
+                            list.Add(item);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception($"Failed to process {type.Name} item at index={i} [jtoken: {jToken}]", ex);
+                        }
+
+                        if (take > 0 && i == take)
+                            break;
+                    }
+
+                    _postProcess?.Invoke(list);
+                    response.Data = list;
+                }
+
+                return response;
+            }
+            catch (MapException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new MapException(ex, this);
+            }
+        }
+
+        public Response<List<T>> Map<TType>(int take = 0)
+            where TType : T
+        {
+            try
+            {
+                var response = Response.Create<List<T>>(Source, Error, Request);
+                if (HasError)
+                    return response;
+
+                if (IsEmpty)
+                {
+                    response.Data = new List<T>();
+                }
+                else
+                {
+                    var jArray = LoadToken<JArray>();
+                    var list = new List<T>(jArray.Count);
+                    var type = typeof(TType);
+                    var i = 0;
+                    foreach (var jToken in jArray)
+                    {
+                        i++;
+                        try
+                        {
+                            var item = JsonHelper.Deserialize<TType>(jToken, type);
+                            if (item == null)
+                                continue;
+
+                            if (_where != null && !_where(item))
+                                continue;
+
+                            _itemAction?.Invoke(item);
+                            list.Add(item);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception($"Failed to process {type.Name} item at index={i} [jtoken: {jToken}]", ex);
+                        }
+
+                        if(take > 0 && i == take)
+                            break;
+                    }
+
+                    _postProcess?.Invoke(list);
+                    response.Data = list;
+                }
+
+                return response;
+            }            
+            catch (Exception ex)
+            {
+                throw new MapException($"{this.GetTypeName()}.{nameof(MapWith)} failed - {ex.Message}", ex);
+            }
+        }
+
+        public Response<List<T>> MapWith<TProxy>(Action<TProxy>? configure = null, int take = 0) where TProxy : IProxy<T, List<T>>, new()
+        {
+            return MapWith<TProxy, T>(configure, take);
+        }
+
+        public Response<List<T>> MapWith<TProxy, TType>(Action<TProxy>? configure = null, int take =0)            
+            where TProxy : IProxy<T, List<T>>, new()
+            where TType : T
+        {
+            try
+            {
+                var response = Response.Create<List<T>>(Source, Error, Request);
+                if (HasError)
+                    return response;
+
+                var proxy = new TProxy();
+                configure?.Invoke(proxy);
+                if (IsEmpty)
+                {
+                    response.Data = proxy.Create();
+                }
+                else
+                {
+                    var jArray = LoadToken<JArray>();
+                    var i = 0;
+                    var itemType = typeof(TType);
+                    foreach (var jToken in jArray)
+                    {
+                        i++;
+                        try
+                        {
+                            var item = JsonHelper.Deserialize<T>(jToken, itemType);
+                            if (item == null)
+                                continue;
+
+                            if (_where != null && !_where(item))
+                                continue;
+
+                            _itemAction?.Invoke(item);
+                            proxy!.Add(item);
 
                         }
-                    });
+                        catch (Exception ex)
+                        {
+                            throw new Exception($"Failed to process {itemType.Name} item at index={i} [jtoken: {jToken}]", ex);
+                        }
 
-                    if (_proxy == null)
-                    {
-                        _postProcessAction?.Invoke(response.Data);
+                        if (take > 0 && i == take)
+                            break;
                     }
-                    else
-                    {
-                        var data = _proxy.Create();
-                        _postProcessAction?.Invoke(data);
-                        response.Data = data;
-                    }
+
+                    var data = proxy!.Create();
+                    _postProcess?.Invoke(data);
+                    response.Data = data;
                 }
-            });
 
-            return response;
+                return response;
+            }
+            catch (Exception ex)
+            {
+                throw new MapException($"{this.GetTypeName()}.{nameof(MapWith)} failed - {ex.Message}", ex);
+            }
         }
     }
 }

@@ -9,7 +9,7 @@ namespace AVS.CoreLib.REST.Extensions
     {
         public static IResponse<T> OnSuccess<T>(this IResponse response, Func<T> func, string errorMessage = null)
         {
-            var newResponse = CreateResponse<T>(response, errorMessage);
+            var newResponse = CopyResponse<T>(response, errorMessage);
             if (response.Success)
             {
                 try
@@ -44,7 +44,7 @@ namespace AVS.CoreLib.REST.Extensions
 
         public static async Task<IResponse<T>> OnSuccess<T>(this IResponse response, Func<Task<T>> func, string errorMessage = null)
         {
-            var newResponse = CreateResponse<T>(response, errorMessage);
+            var newResponse = CopyResponse<T>(response, errorMessage);
             if (response.Success)
             {
                 try
@@ -59,11 +59,11 @@ namespace AVS.CoreLib.REST.Extensions
             return newResponse;
         }
 
-        private static IResponse<T> CreateResponse<T>(IResponse response, string errorMessage = null)
+        private static IResponse<T> CopyResponse<T>(IResponse response, string errorMessage = null)
         {
             return Response.Create(default(T),
                     response.Source,
-                    GetErrorText(response.Error, errorMessage));            
+                    GetErrorText(response.Error, errorMessage), response.Request);            
         }
 
         private static string GetErrorText(string error, string errorMessage)

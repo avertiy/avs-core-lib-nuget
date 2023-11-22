@@ -19,7 +19,7 @@ namespace AVS.CoreLib.REST.Projections
     /// </summary>
     /// <typeparam name="TKey">The type of keys in the dictionary, for example string</typeparam>
     /// <typeparam name="TValue">The type of values in the dictionary, it could be interface/abstraction, for example ICurrencyInfo</typeparam>
-    public class DictionaryProjection<TKey, TValue> : Projection
+    public class DictionaryProjection<TKey, TValue> : ProjectionBase
         where TKey : class
     {
         private Action<IDictionary<TKey, TValue>> _preProcessAction;
@@ -321,47 +321,7 @@ namespace AVS.CoreLib.REST.Projections
                 throw new MapException($"Unexpected JToken type {token.Type}") { JsonText = JsonText };
             }
         }
-
-        /// <summary>
-        /// Maps json into TProjection 
-        /// </summary>
-        /// <typeparam name="TProjection">implementation of the TValue interface, in case TValue is IList&lt;IEntity> TProjection must be implementation of IEntity</typeparam>
-        public virtual MapResult<TKey, TValue> MapResult<TProjection>()
-            where TProjection : new()
-        {
-            var result = new MapResult<TKey, TValue>() { Source = Source, Error = Error };
-            if (HasError)
-                return result;
-
-            if (IsEmpty)
-            {
-                result.Data = new Dictionary<TKey, TValue>();
-                return result;
-            }
-
-            using (var stringReader = new StringReader(JsonText))
-            using (var reader = new JsonTextReader(stringReader))
-            {
-                var token = JToken.Load(reader);
-                if (token.Type == JTokenType.Object)
-                {
-                    var jObject = (JObject)token;
-                    try
-                    {
-                        result.Data = ParseDictionary<TProjection>(jObject);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new MapException($"ParseDictionary<{typeof(TKey).Name},{typeof(TValue).GetReadableName()}> with projection of {typeof(TProjection).GetReadableName()}> failed", ex) { JsonText = JsonText };
-                    }
-                }
-                else
-                {
-                    throw new MapException($"Unexpected JToken type {token.Type}") {JsonText = JsonText};
-                }
-            }
-            return result;
-        }
+              
 
         /// <summary>
         /// Use MapAsync when expected number ot items (i.e. to parse json more than 100 otherwise it has no sence to run maaping in async manner)

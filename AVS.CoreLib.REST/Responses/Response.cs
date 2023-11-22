@@ -1,6 +1,6 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Diagnostics;
-using System.Net;
 using AVS.CoreLib.Abstractions.Responses;
 using AVS.CoreLib.Extensions;
 
@@ -11,29 +11,24 @@ namespace AVS.CoreLib.REST.Responses
     public class Response : ResponseBase
     {
         #region Create static methods
-        public static Response Create(string source, string error = null)
+        public static Response<T> Create<T>(string source, string? error, object? request = null)
         {
-            return new Response() { Source = source, Error = error };
+            return new Response<T>(source, error: error, request: request);
         }
 
-        public static Response<T> Create<T>(string source, string error)
+        internal static Response<T> Create<T>(T? data, string source, string? error, object? request = null)
         {
-            return new Response<T>() { Source = source, Error = error};
+            return new Response<T>(source, data, error, request);
         }
 
-        public static Response<T> Create<T>(T data, string source, string error)
+        public static Response<T> OK<T>(T data, string source, object? request = null)
         {
-            return new Response<T>() { Data = data, Source = source, Error = error };
+            return new Response<T>(source, data, request: request);
         }
 
-        public static Response<T> OK<T>(T data, string source, string error = null)
+        public static IResponse<T> Failed<T>(Exception ex, string source, object? request = null)
         {
-            return new Response<T>() { Data = data, Source = source, Error = error };
-        }
-
-        public static IResponse<T> Failed<T>(Exception ex, string source)
-        {
-            return new Response<T>() { Source = source, Error = ex.Message };
+            return new Response<T>(source, error: ex.Message, request:request);
         }
 
         #endregion
@@ -43,9 +38,18 @@ namespace AVS.CoreLib.REST.Responses
     public class Response<T> : IResponse<T>
     {
         public string Source { get; set; }
-        public string Error { get; set; }
-        public T Data { get; set; }
+        public object? Request { get; set; }
+        public string? Error { get; set; }
+        public T? Data { get; set; }
         public virtual bool Success => Error == null;
+
+        public Response(string source, T? data = default, string? error = null, object? request = null)
+        {
+            Source = source;
+            Error = error;
+            Data = data;
+            Request = request;
+        }
 
         public override string ToString()
         {
