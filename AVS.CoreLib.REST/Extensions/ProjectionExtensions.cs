@@ -6,6 +6,7 @@ namespace AVS.CoreLib.REST.Extensions
 {
     public static class ProjectionExtensions
     {
+        #region Projection<T> and Projection<T,TType>
         /// <summary>
         /// Creates <see cref="Projections.Projection{T}"/>
         /// <code>
@@ -42,6 +43,9 @@ namespace AVS.CoreLib.REST.Extensions
         {
             return new Projection<T, TType>(response);
         }
+
+
+        #endregion
 
         /// <summary>
         /// Create <see cref="Projections.IndirectProjection{T,TType}"/> projection
@@ -152,5 +156,22 @@ namespace AVS.CoreLib.REST.Extensions
         }
 
         #endregion
+
+        /// <summary>
+        /// Creates <see cref="DictionaryProjection<TValue>"/>
+        /// <code>
+        ///     // 1. map dictionary direct mapping
+        ///     var projection = response.Dictionary{ICancelOrderResult}();
+        ///     Response{IDictionary{string,ICancelOrderResult}} = projection.Map{CancelOrderResult}();
+        ///     
+        ///     // 2. map dictionary via proxy
+        ///     var projection = response.Dictionary{ICancelOrderResult}();
+        ///     Response{IDictionary{string,ICancelOrderResult}} = projection.MapWith{OrdersBuilder}();
+        /// </code>
+        /// </summary>
+        public static DictionaryProjection<TValue> Dictionary<TValue>(this RestResponse response)
+        {
+            return new DictionaryProjection<TValue>(response);
+        }
     }
 }

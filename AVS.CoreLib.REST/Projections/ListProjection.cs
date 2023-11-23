@@ -9,8 +9,8 @@ using Newtonsoft.Json.Linq;
 namespace AVS.CoreLib.REST.Projections
 {
     /// <summary>
-    /// ListProjection{T} is a simple list projection 
-    /// when json array [...] needs to be deserialized into <see cref="List{T}"/>.
+    /// ListProjection{T} represent json mapper 
+    /// when json array [..] needs to be deserialized into <see cref="List{T}"/>.
     /// <code>
     ///    // 1. T is a concrete type
     ///    var projection = response.ListProjection{Order}();

@@ -9,7 +9,9 @@ using Newtonsoft.Json.Linq;
 namespace AVS.CoreLib.REST.Projections
 {
     /// <summary>
-    /// Represents a keyed projection of json object with key/value pairs
+    /// Represents a json mapper
+    /// when json object structure needs to be mapped to model which is a keyed collection, and keys are strings
+    /// e.g. { "key": value, .. } or { "key": {..}, .. }, or { "key": [..], .. }
     /// </summary>
     /// <typeparam name="T">abstraction/interface type of keyed collection, for example IBookTicker</typeparam>
     /// <typeparam name="TItem">The concrete type of the item (value), for example ExmoMarketData</typeparam>
@@ -89,11 +91,6 @@ namespace AVS.CoreLib.REST.Projections
             return this;
         } 
         #endregion
-
-        public Task<Response<T>> MapAsync()
-        {
-            return base.MapAsyncInternal(Map);
-        }
 
         public Response<T> Map()
         {
@@ -269,15 +266,6 @@ namespace AVS.CoreLib.REST.Projections
         {
             if (_proxy == null)
                 throw new AppException("Proxy is not initialized", "You might need to use UseProxy<TProxy>() method first");
-        }
-
-        [Obsolete("use UseProxy instead")]
-        public KeyedProjection<T, TItem> UseBuilder<TBuilder>(Action<TBuilder> initialize = null) where TBuilder : class, IKeyedCollectionProxy<T, TItem>, new()
-        {
-            var builder = new TBuilder();
-            initialize?.Invoke(builder);
-            _proxy = builder;
-            return this;
-        }
+        }        
     }
 }

@@ -3,10 +3,8 @@
     /// <summary>
     /// Proxy{in T,out TResult} provides an interface to add T item(s) and produce the TResult     
     /// </summary>
-    public interface IProxy<in T, out TResult>
+    public interface IProxy<in T, out TResult> : IContainer<T>, IProxy<TResult>
     {
-        void Add(T item);
-        TResult Create();
     }
 
 
@@ -30,5 +28,15 @@
     {
         void Add(string key, TItem item);
         T Create();
+    }
+
+    public interface IContainer<in T>
+    {
+        void Add(T item);
+    }
+
+    public interface IContainer<in TKey, in TValue>
+    {
+        void Add(TKey key, TValue value);
     }
 }

@@ -39,6 +39,7 @@
     <Compile Remove="Json\Newtonsoft\Converters\ResponseConverter.cs" />
     <Compile Remove="Json\Newtonsoft\Converters\TimestampNanoSecondsConverter.cs" />
     <Compile Remove="Projections\IndirectListProjection.cs" />
+    <Compile Remove="Projections\KeyedProjection.cs" />
     <Compile Remove="Responses\CodeResponse.cs" />
     <Compile Remove="Responses\ResponseFactory.cs" />
   </ItemGroup>

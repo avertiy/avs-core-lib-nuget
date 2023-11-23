@@ -86,8 +86,11 @@ namespace AVS.CoreLib.REST.Json.Newtonsoft
             return list;
         }
 
-        public static T? Deserialize<T>(JToken token, Type itemType)
+        public static T? Deserialize<T>(JToken? token, Type itemType)
         {
+            if (token == null)
+                return default;
+
             return (T?)Serializer.Deserialize(token.CreateReader(), itemType);
             //try
             //{
