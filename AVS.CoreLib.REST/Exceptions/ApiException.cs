@@ -1,5 +1,7 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Net;
+using AVS.CoreLib.Abstractions.Responses;
 
 namespace AVS.CoreLib.REST
 {
@@ -9,9 +11,15 @@ namespace AVS.CoreLib.REST
     public class ApiException : Exception
     {   
         public HttpStatusCode? StatusCode { get; set; }
-
+        public string? RequestInfo { get; set; }
         public ApiException(string message) : base(message)
         {
+        }
+
+        public ApiException(IResponse response) : base(response.Error)
+        {
+            Source = response.Source;
+            RequestInfo = response.Request?.ToString();
         }
 
         public ApiException(string message, Exception innerException) : base(message, innerException)
@@ -51,6 +59,11 @@ namespace AVS.CoreLib.REST
                 return 418;
 
             return null;
+        }
+
+        public override string ToString()
+        {
+            return $"{nameof(ApiException)} {Source} {RequestInfo}".TrimEnd();
         }
     }
 }

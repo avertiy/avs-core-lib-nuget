@@ -26,13 +26,13 @@ namespace AVS.CoreLib.REST.Extensions
 
         public static void ThrowOnError(this IResponse response)
         {
-            var error = response.Error;
-            if (string.IsNullOrEmpty(error))
+            if (string.IsNullOrEmpty(response.Error))
                 return;
 
-            throw new ApiException(error) { Source = response.Source };
+            throw new ApiException(response);
         }
 
+        [Obsolete("looks obsolete")]
         public static void OnError(this IResponse response, Action<string> action)
         {
             var error = response.Error;
@@ -42,6 +42,7 @@ namespace AVS.CoreLib.REST.Extensions
             action(error);
         }
 
+        [Obsolete("looks obsolete")]
         public static async Task<IResponse<T>> OnSuccess<T>(this IResponse response, Func<Task<T>> func, string errorMessage = null)
         {
             var newResponse = CopyResponse<T>(response, errorMessage);

@@ -46,6 +46,11 @@ namespace AVS.CoreLib.Extensions.Linq
             return orderBy == Enums.Sort.Asc ? source.ThenBy(selector) : source.ThenByDescending(selector);
         }
 
+        public static IEnumerable<T> Limit<T>(this IEnumerable<T> source, int limit)
+        {
+            return limit > 0 ? source.Take(limit) : source;
+        }
+
         public static int Count(this IEnumerable col)
         {
             var counter = 0;

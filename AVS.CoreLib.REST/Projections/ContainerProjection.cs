@@ -143,10 +143,11 @@ namespace AVS.CoreLib.REST.Projections
                             if (item == null)
                                 continue;
 
+                            _itemAction?.Invoke(item);
+
                             if (_where != null && !_where(item))
                                 continue;
-
-                            _itemAction?.Invoke(item);
+                            
                             data.Add(item);
                         }
                         catch (Exception ex)
@@ -198,10 +199,11 @@ namespace AVS.CoreLib.REST.Projections
                             if (item == null)
                                 continue;
 
+                            _itemAction?.Invoke(item);
+
                             if (_where != null && !_where(item))
                                 continue;
-
-                            _itemAction?.Invoke(item);
+                            
                             add(container, item);
                         }
                         catch (Exception ex)
@@ -253,10 +255,11 @@ namespace AVS.CoreLib.REST.Projections
                             if (item == null)
                                 continue;
 
+                            _itemAction?.Invoke(item);
+
                             if (_where != null && !_where(item))
                                 continue;
-
-                            _itemAction?.Invoke(item);
+                            
                             proxy.Add(item);
                         }
                         catch (Exception ex)
@@ -371,6 +374,8 @@ namespace AVS.CoreLib.REST.Projections
                 if (item == null)
                     throw new NullReferenceException($"Deserialized {itemType.Name} value is null [key={key}; token:{jToken}]");
 
+                _itemAction?.Invoke(item);
+
                 if (_where != null && !_where(item))
                     return;
 
@@ -378,7 +383,7 @@ namespace AVS.CoreLib.REST.Projections
                     return;
 
                 _keyValueAction?.Invoke(key, item);
-                _itemAction?.Invoke(item);
+                
                 data.Add(key, item);
             }
             catch (Exception ex)

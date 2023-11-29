@@ -44,7 +44,7 @@ namespace AVS.CoreLib.Trading.Helpers
         }
 
         /// <summary>
-        /// combine <see cref="quoteCurrency"/> with <see cref="baseCurrencies"/>
+        /// combine <paramref name="quoteCurrency"/>   with <paramref name="baseCurrencies"/>
         /// e.g. USDT + [BTC,ETH,XRP] => [BTC_USDT, ETH_USDT, XRP_USDT]
         /// </summary>
         public static string[] Combine(string quoteCurrency, params string[] baseCurrencies)
@@ -52,7 +52,7 @@ namespace AVS.CoreLib.Trading.Helpers
             var symbols = new List<string>();
             foreach (var baseCurr in baseCurrencies)
             {
-                if (baseCurr == quoteCurrency)
+                if (baseCurr == quoteCurrency || string.IsNullOrEmpty(baseCurr))
                     continue;
 
                 symbols.Add(baseCurr + "_" + quoteCurrency);

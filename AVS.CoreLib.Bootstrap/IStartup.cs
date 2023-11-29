@@ -67,7 +67,7 @@ public class Startup<TStartupService> : IStartup where TStartupService : class, 
         builder.AddEnvironmentVariables();
         builder.AddAppSettings(ENVIRONMENT);
         if (CustomUserSecretsEnabled)
-            builder.AddCustomUserSecrets();
+            builder.AddCustomUserSecrets(AppName);
         return builder.Build();
     }
 

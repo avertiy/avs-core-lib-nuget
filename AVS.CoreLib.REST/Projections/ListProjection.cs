@@ -84,10 +84,11 @@ namespace AVS.CoreLib.REST.Projections
                             if (item == null)
                                 continue;
 
+                            _itemAction?.Invoke(item);
+
                             if (_where != null && !_where(item))
                                 continue;
-
-                            _itemAction?.Invoke(item);
+                            
                             list.Add(item);
                         }
                         catch (Exception ex)
@@ -143,10 +144,11 @@ namespace AVS.CoreLib.REST.Projections
                             if (item == null)
                                 continue;
 
+                            _itemAction?.Invoke(item);
+
                             if (_where != null && !_where(item))
                                 continue;
-
-                            _itemAction?.Invoke(item);
+                            
                             list.Add(item);
                         }
                         catch (Exception ex)
@@ -205,12 +207,12 @@ namespace AVS.CoreLib.REST.Projections
                             if (item == null)
                                 continue;
 
+                            _itemAction?.Invoke(item);
+
                             if (_where != null && !_where(item))
                                 continue;
-
-                            _itemAction?.Invoke(item);
+                            
                             proxy!.Add(item);
-
                         }
                         catch (Exception ex)
                         {

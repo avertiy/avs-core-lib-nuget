@@ -94,6 +94,11 @@ namespace AVS.CoreLib.Trading.Types
             return PatternType.Symbol;
         }
 
+        public override string ToString()
+        {
+            return $"{nameof(SymbolPattern)} {Type}: {Pattern}";
+        }
+
         public static bool IsLiteral(string str)
         {
             return str switch
@@ -145,6 +150,11 @@ namespace AVS.CoreLib.Trading.Types
         /// </summary>
         public static SymbolPattern From(string[] symbols, string filter)
         {
+            if(filter == ANY)
+            {
+                return new SymbolPattern(string.Join(',', symbols));
+            }
+
             var pattern = new SymbolPattern(filter);
             var list = new List<string>(symbols.Length);
 

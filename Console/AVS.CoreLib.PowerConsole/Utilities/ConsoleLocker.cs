@@ -4,9 +4,12 @@ using System.Threading;
 namespace AVS.CoreLib.PowerConsole.Utilities
 {
     /// <summary>
-    /// Synchronize output to console for multi threading flows,
+    /// Synchronize output to console for multi-threading flows,
     /// remember and restore console color scheme <see cref="ColorScheme"/>
-    /// usage: using(var locker = ConsoleLocker.Create()){  console write operations..}
+    /// usage: 
+    /// <code>
+    /// using(var locker = ConsoleLocker.Create()){  console write operations..}
+    /// </code>
     /// </summary>
     public sealed class ConsoleLocker : IDisposable
     {

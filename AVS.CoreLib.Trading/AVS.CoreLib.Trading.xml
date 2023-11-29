@@ -1219,7 +1219,7 @@
         </member>
         <member name="M:AVS.CoreLib.Trading.Helpers.TradingPairHelper.Combine(System.String,System.String[])">
             <summary>
-            combine <see cref="!:quoteCurrency"/> with <see cref="!:baseCurrencies"/>
+            combine <paramref name="quoteCurrency"/>   with <paramref name="baseCurrencies"/>
             e.g. USDT + [BTC,ETH,XRP] => [BTC_USDT, ETH_USDT, XRP_USDT]
             </summary>
         </member>

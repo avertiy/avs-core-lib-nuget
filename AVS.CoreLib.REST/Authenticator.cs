@@ -1,6 +1,4 @@
-﻿using System;
-using System.Security;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 using AVS.CoreLib.Abstractions.Rest;
 
@@ -9,6 +7,7 @@ namespace AVS.CoreLib.REST
     public class Authenticator<TAlgorithm> : IAuthenticator
         where TAlgorithm : KeyedHashAlgorithm, new()
     {
+        private object _lock = new();
         public string PublicKey { get; private set; }
         public string PrivateKey { get; private set; }
 
@@ -39,21 +38,24 @@ namespace AVS.CoreLib.REST
             Encryptor.Key = Encoding.GetBytes(privateKey);
         }
 
-        public virtual byte[] Sign(byte[] bytes)
+        public virtual byte[] ComputeHash(byte[] bytes)
         {
-            return Encryptor.ComputeHash(bytes);
+            lock (_lock)
+            {
+                return Encryptor.ComputeHash(bytes);
+            }
         }
 
         public virtual byte[] Sign(string payload)
         {
             var postBytes = Encoding.GetBytes(payload);
-            return Encryptor.ComputeHash(postBytes);
+            return ComputeHash(postBytes);
         }
 
         public virtual byte[] Sign(string payload, out byte[] bytes)
         {
             bytes = Encoding.GetBytes(payload);
-            return Encryptor.ComputeHash(bytes);
+            return ComputeHash(bytes);
         }
     }
 
