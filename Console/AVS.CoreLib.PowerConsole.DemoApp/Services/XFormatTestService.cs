@@ -2,8 +2,6 @@
 using System.Threading.Tasks;
 using AVS.CoreLib.BootstrapTools;
 using AVS.CoreLib.Text;
-using AVS.CoreLib.Trading.Formatters;
-using AVS.CoreLib.Trading.Models;
 
 namespace AVS.CoreLib.PowerConsole.DemoApp.Services
 {
@@ -13,36 +11,17 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
         {
             try
             {
-                X.FormatProvider.AppendFormatter(new OhlcFormatter());
-                X.FormatProvider.AppendFormatter(new PriceFormatter());
-                X.FormatProvider.AppendFormatter(new PairStringFormatter());
-                X.FormatProvider.AppendFormatter(new TradingEnumsFormatter());
-                X.FormatProvider.AppendFormatter(new CurrencySymbolFormatter());
-                //PowerConsole.Format = X.Format;
-                //PriceFormatterDemo();
-                OhlcFormatterDemo();
+                //X.FormatProvider.AppendFormatter(new OhlcFormatter());
+                //X.FormatProvider.AppendFormatter(new PriceFormatter());
+                //X.FormatProvider.AppendFormatter(new PairStringFormatter());
+                //X.FormatProvider.AppendFormatter(new TradingEnumsFormatter());
+                //X.FormatProvider.AppendFormatter(new CurrencySymbolFormatter());
             }
             catch (Exception ex)
             {
                 PowerConsole.PrintError(ex);
             }
             return Task.CompletedTask;
-        }
-
-        private void OhlcFormatterDemo()
-        {
-            var ohlc = new Bar() { Open = 36000, Close = 35999, High = 38000, Low = 35500 };
-            PowerConsole.PrintHeader($"OHLC formatter");
-            var formatted = X.Format($"{ohlc:OHLC}");
-            PowerConsole.Print($"OHLC => {formatted}");
-            formatted = X.Format($"{ohlc:t}");
-            PowerConsole.Print($"candle type => {formatted}");
-            formatted = X.Format($"{ohlc:h}");
-            PowerConsole.Print($"candle height => {formatted}");
-            formatted = X.Format($"{ohlc:c}");
-            PowerConsole.Print($"candle color => {formatted}");
-            formatted = X.Format($"{ohlc:s}");
-            PowerConsole.Print($"candle size => {formatted}");
         }
 
         private void PriceFormatterDemo()

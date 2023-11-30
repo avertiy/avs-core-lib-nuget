@@ -1,7 +1,6 @@
 ﻿using AVS.CoreLib.BootstrapTools;
 using AVS.CoreLib.BootstrapTools.Extensions;
 using AVS.CoreLib.PowerConsole.DemoApp.Services;
-using AVS.CoreLib.Trading;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AVS.CoreLib.PowerConsole.DemoApp
@@ -13,7 +12,6 @@ namespace AVS.CoreLib.PowerConsole.DemoApp
             Bootstrap.ConfigureServices(services =>
                 {
                     services
-                        .AddTradingCore()
                         .AddTransient<ITestService, PrinterTestService>()
                         .AddTransient<ITestService, PrintTableTestService>()
                         .AddTransient<ITestService, XFormatTestService>()

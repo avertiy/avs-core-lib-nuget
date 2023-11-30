@@ -11,9 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\AVS.CoreLib.Bootstrap\AVS.CoreLib.Bootstrap.csproj" />
     <ProjectReference Include="..\..\AVS.CoreLib.Extensions\AVS.CoreLib.Extensions.csproj" />
     <ProjectReference Include="..\..\AVS.CoreLib\AVS.CoreLib.csproj" />
+    <ProjectReference Include="..\..\Console\AVS.CoreLib.Bootstrap\AVS.CoreLib.Bootstrap.csproj" />
     <ProjectReference Include="..\AVS.CoreLib.ConsoleLogger\AVS.CoreLib.ConsoleLogger.csproj" />
     <ProjectReference Include="..\AVS.CoreLib.FileLogger\AVS.CoreLib.FileLogger.csproj" />
     <ProjectReference Include="..\AVS.CoreLib.Logging.ColorFormatter\AVS.CoreLib.Logging.ColorFormatter.csproj" />

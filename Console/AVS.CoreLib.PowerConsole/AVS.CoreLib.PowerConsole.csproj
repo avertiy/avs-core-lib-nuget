@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageIcon>command-line-icon.jpg</PackageIcon>
@@ -9,18 +10,16 @@
     <RepositoryUrl>https://github.com/avertiy/avs-core-lib-nuget</RepositoryUrl>
     <RepositoryType>public</RepositoryType>
     <PackageTags>Console PowerConsole avs</PackageTags>
-    <AssemblyVersion>2.1.2</AssemblyVersion>
-    <FileVersion>2.1.2</FileVersion>
+    <AssemblyVersion>7.0.0</AssemblyVersion>
+    <FileVersion>1.0.0</FileVersion>
     <Copyright>Artem Vertii</Copyright>
     <PackageIcon>command-line-icon.jpg</PackageIcon>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <NeutralLanguage />
-    <Version>2.1.2</Version>
+    <Version>7.0.0</Version>
     <Description>contains vairous useful console utility methods, including print table, print array, colored printing by means of color formatted string, console get/set font, read key, prompting etc.</Description>
-    <Authors>Artem Vertii</Authors>
-    <Company>AV Studio</Company>
-    <Product>PowerConsole</Product>
-    <LangVersion>9</LangVersion>
+    <Authors>Artem Vertii</Authors>    
+    <Product>PowerConsole</Product>    
     <Nullable>enable</Nullable>
     <Title>PowerConsole</Title>
   </PropertyGroup>

@@ -1,6 +1,4 @@
 ﻿using AVS.CoreLib.BootstrapTools;
-using AVS.CoreLib.Trading.Enums.Futures;
-using AVS.CoreLib.Trading.Enums;
 using AVS.CoreLib.PowerConsole.ConsoleTable;
 using AVS.CoreLib.PowerConsole.Utilities;
 using System.Collections.Generic;
@@ -132,10 +130,10 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
         {
             var arr = new List<NewOrderFuturesRequest>
             {
-                new() { Symbol = "BTC_USDT", Price = 1.887123m, Qty = 0.01m, Side = OrderSide.Buy, Type = OrderType.Limit, TimeInForce = TimeInForce.GTC, ClientOrderId = "client_order_Id:123213:0"},
-                new() { Symbol = "BTC_USDT", Price = 0.892123m, Qty = 0.14m, Side = OrderSide.Sell, Type = OrderType.Limit, TimeInForce = TimeInForce.GTC},
-                new() { Symbol = "BTC_USDT", Price = 27200, Qty = 0.01m, Side = OrderSide.Sell, Type = OrderType.Limit, TimeInForce = TimeInForce.GTC},
-                new() { Symbol = "BTC_USDT", Price = 27200, Qty = 0.12m, Side = OrderSide.Sell, Type = OrderType.Limit, TimeInForce = TimeInForce.GTC}
+                new() { Symbol = "BTC_USDT", Price = 1.887123m, Qty = 0.01m, ClientOrderId = "client_order_Id:123213:0"},
+                new() { Symbol = "BTC_USDT", Price = 0.892123m, Qty = 0.14m },
+                new() {Symbol = "BTC_USDT", Price = 27200, Qty = 0.01m},
+                new() {Symbol = "BTC_USDT", Price = 27200, Qty = 0.12m}
             };
             return arr.ToArray();
         }
@@ -146,16 +144,11 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
     {
         public string Symbol { get; set; } = null!;
         public string ClientOrderId { get; set; }
-        public OrderSide Side { get; set; }
-        public OrderType Type { get; set; }
-        public TimeInForce TimeInForce { get; set; }
-        public WorkingType WorkingType { get; set; }
         public decimal Qty { get; set; }
         public decimal Price { get; set; }
         public decimal StopPrice { get; set; }
         public decimal ActivationPrice { get; set; }
         public decimal CallbackRate { get; set; }
-        public PositionSide PositionSide { get; set; }
         public bool ClosePosition { get; set; }
         public string PriceProtect { get; set; }
     }

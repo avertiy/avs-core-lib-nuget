@@ -5,7 +5,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <ApplicationIcon />
     <StartupObject />
-    <LangVersion>9</LangVersion>
+    <LangVersion>10</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,8 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\AVS.CoreLib.Bootstrap\AVS.CoreLib.Bootstrap.csproj" />
-    <ProjectReference Include="..\..\AVS.CoreLib.Trading\AVS.CoreLib.Trading.csproj" />
+    <ProjectReference Include="..\AVS.CoreLib.Bootstrap\AVS.CoreLib.Bootstrap.csproj" />
     <ProjectReference Include="..\AVS.CoreLib.PowerConsole\AVS.CoreLib.PowerConsole.csproj" />
   </ItemGroup>
 

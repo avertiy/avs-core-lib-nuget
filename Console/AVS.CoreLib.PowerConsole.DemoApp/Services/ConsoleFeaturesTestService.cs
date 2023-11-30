@@ -6,7 +6,6 @@ using AVS.CoreLib.BootstrapTools;
 using AVS.CoreLib.PowerConsole.Enums;
 using AVS.CoreLib.Text;
 using AVS.CoreLib.Text.FormatPreprocessors;
-using AVS.CoreLib.Trading.Enums;
 
 namespace AVS.CoreLib.PowerConsole.DemoApp.Services
 {
@@ -47,16 +46,9 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
         {
             PowerConsole.PrintHeader($"Format Preprocessor Test");
             X.FormatPreprocessor.Add(new EnumFormatPreprocessor());
-            PowerConsole.PrintF($"Supposed to be DarkGray: {TradeType.Buy}");
-            PowerConsole.PrintF($"Supposed to be Cyan: {TradeType.Sell}");
+            PowerConsole.PrintF($"Supposed to be DarkGray: {ColorMode.AnsiCodes}");
+            PowerConsole.PrintF($"Supposed to be Cyan: {ColorMode.PlainText}");
         }
-
-        //private void PrintColorPaletteTest()
-        //{
-        //    PowerConsole.PrintHeader($"ColorPalette print test");
-        //    PowerConsole.PrintF($"some text {TradeType.Buy} some other text {TradeType.Sell}", ColorPalette.RedGreen);
-        //    PowerConsole.PrintF($"some text {TradeType.Buy} some other text {TradeType.Sell}", new[] { ConsoleColor.DarkYellow, ConsoleColor.Cyan });
-        //}
 
         public void PrintColorString()
         {
@@ -69,11 +61,6 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
             PowerConsole.PrintHeader($"This is a header");
             PowerConsole.Print("this is regular text");
         }
-
-        //public void ColorSchemeTests()
-        //{
-        //    PowerConsole.Print("this is (dark blue / white) color scheme", new ColorScheme(ConsoleColor.White, ConsoleColor.DarkBlue));
-        //}
 
         public void PrintArrayTests()
         {
@@ -158,13 +145,6 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
             PowerConsole.PrintF($"{100500:-Red} {"abc":--DarkGray} {DateTime.Today:-DarkGreen dd/MM/yyyy}");
             PowerConsole.Print("2. PrintF($\"{arguments[0]:-Green}; {arguments[0]:--Green}; {arguments[0]:!-Blue}\":");
             PowerConsole.PrintF($"{arguments[0]:-Green}; {arguments[0]:--Green}; {arguments[0]:!-Blue}");
-
-            var tradingTypes = new object[] { OrderSide.Buy, TradeType.Sell, PositionType.Long };
-
-            PowerConsole.PrintF($"{tradingTypes[0]}; {tradingTypes[0]:-Yellow c}; {tradingTypes[0]:-Blue --Yellow n}");
-
-
-            //PowerConsole.PrintF($"2) @text before `arg[0]: {arguments[0]:--DarkYellow};``arg[1]: {arguments[1]:!-DarkRed};``arg[2]: {arguments[2]:!}`");
 
             //PowerConsole.PrintF($"4) <square>5x5:`abc`</square>");
         }

@@ -15,7 +15,7 @@
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <LangVersion>preview</LangVersion>
     <AssemblyVersion>7.0.0</AssemblyVersion>
-    <FileVersion>7.0.0</FileVersion>
+    <FileVersion>1.0.0</FileVersion>
     <Version>7.0.0</Version>
   </PropertyGroup>
 

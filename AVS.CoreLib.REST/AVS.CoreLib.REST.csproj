@@ -1,7 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
     <RootNamespace>AVS.CoreLib.REST</RootNamespace>
     <AssemblyName>AVS.CoreLib.REST</AssemblyName>
     <AssemblyName>AVS.CoreLib.REST</AssemblyName>
@@ -10,16 +11,15 @@
     <Company>AV Stuido</Company>
     <Product>CoreLib</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>2.1.1.0</AssemblyVersion>
-    <FileVersion>2.1.1.0</FileVersion>
+    <AssemblyVersion>7.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
     <Description>CoreLib REST tools, RestClient </Description>
     <Copyright>Artem Vertii</Copyright>
     <PackageProjectUrl>https://github.com/avertiy/avs-core-lib-nuget</PackageProjectUrl>
     <PackageTags>RestClient avs</PackageTags>
     <RepositoryUrl>https://github.com/avertiy/avs-core-lib-nuget</RepositoryUrl>
     <RepositoryType>public</RepositoryType>
-    <Version>2.1.1.0</Version>
-    <LangVersion>9</LangVersion>
+    <Version>7.0.0.0</Version>    
   </PropertyGroup>
 
   <ItemGroup>
