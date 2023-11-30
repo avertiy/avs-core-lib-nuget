@@ -247,6 +247,7 @@ _Pvt_Extensions
 # FAKE - F# Make
 .fake/
 
+/_archive
 /_ReSharper.Caches
 /AVS.CoreLib.Console/*.xml
 /AVS.CoreLib.REST/*.xml
