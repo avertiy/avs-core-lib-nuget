@@ -49,6 +49,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.Mapper", "AVS.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.Bootstrap", "Console\AVS.CoreLib.Bootstrap\AVS.CoreLib.Bootstrap.csproj", "{D8F771A8-6D65-4435-AF49-AA9114294FB2}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AVS.CoreLib.Messaging", "AVS.CoreLib.Messaging\AVS.CoreLib.Messaging.csproj", "{B2E1AA43-A8E7-49E6-AF76-B4595BA8C30A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -135,6 +137,10 @@ Global
 		{D8F771A8-6D65-4435-AF49-AA9114294FB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8F771A8-6D65-4435-AF49-AA9114294FB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D8F771A8-6D65-4435-AF49-AA9114294FB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2E1AA43-A8E7-49E6-AF76-B4595BA8C30A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2E1AA43-A8E7-49E6-AF76-B4595BA8C30A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2E1AA43-A8E7-49E6-AF76-B4595BA8C30A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2E1AA43-A8E7-49E6-AF76-B4595BA8C30A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
