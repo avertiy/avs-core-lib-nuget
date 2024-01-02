@@ -927,6 +927,11 @@
             <param name="bullFactor">how many bullish bars should be in a row</param>
             <param name="timeframe"></param>
         </member>
+        <member name="M:AVS.CoreLib.Trading.Helpers.MarketDataGenerator.Generate(System.Decimal[],AVS.CoreLib.Trading.Enums.TimeFrame)">
+            <summary>
+            generate bars based on close prices input array
+            </summary>
+        </member>
         <member name="T:AVS.CoreLib.Trading.Helpers.TradingPairHelper">
             <summary>
             helps to generate trading pairs (aka symbols) combining quote and base currencies

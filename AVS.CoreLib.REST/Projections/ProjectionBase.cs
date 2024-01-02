@@ -15,9 +15,11 @@ namespace AVS.CoreLib.REST.Projections
 {
     public abstract class ProjectionBase
     {
-        public static Regex ErrorRegex =
-            new Regex("(error|err-msg|error-message)\\\\?[\"']:[\\s\\\\\"']+(?<error>[=():/\\-\\.\\?\\w\\s&]+)[\"']?",
-                RegexOptions.IgnoreCase);
+        const string REGEX_PATTERN = "\"(?<msg>message|error|err-msg|error-message)\"[\\s:]+\"(?<err>.+)\"";
+        //public static Regex ErrorRegex =
+        //    new Regex("(error|err-msg|error-message)\\\\?[\"']:[\\s\\\\\"']+(?<error>[=():/\\-\\.\\?\\w\\s&]+)[\"']?",
+        //        RegexOptions.IgnoreCase);
+        public static Regex ErrorRegex = new Regex(REGEX_PATTERN, RegexOptions.IgnoreCase);
 
         private string? _selectTokenPath;
 
@@ -53,21 +55,23 @@ namespace AVS.CoreLib.REST.Projections
                 return null;
             }
 
-            if (JsonText.Length < 200 && JsonText.Contains("code") && JsonText.Contains("message"))
-            {
-                return JsonText;
-            }
+            if(JsonText.Length > 500)
+                return null;
 
             var match = ErrorRegex.Match(JsonText);
 
             if (!match.Success)
                 return null;
 
-            error = match.Groups["error"].Value;
-            if (string.IsNullOrEmpty(error))
-                return JsonText;
-            else
-                return error;
+            if (match.Groups["msg"].Value == "message")
+            {
+                var c_ind = JsonText.IndexOf("code");
+                if (c_ind == -1 || JsonText.IndexOf("200", c_ind) > 0)
+                    return null;
+            }
+
+            error = match.Groups["err"].Value;
+            return string.IsNullOrEmpty(error) ? JsonText : error;
         }
 
         protected Response<T> CreateResponse<T>() where T : new()

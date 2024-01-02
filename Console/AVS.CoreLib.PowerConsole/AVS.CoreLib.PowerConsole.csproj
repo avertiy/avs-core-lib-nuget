@@ -64,7 +64,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AVS.CoreLib.Console.ColorFormatting" Version="2.1.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
@@ -88,6 +87,7 @@
     <ProjectReference Include="..\..\AVS.CoreLib.Abstractions\AVS.CoreLib.Abstractions.csproj" />
     <ProjectReference Include="..\..\AVS.CoreLib.Extensions\AVS.CoreLib.Extensions.csproj" />
     <ProjectReference Include="..\..\AVS.CoreLib.Text\AVS.CoreLib.Text.csproj" />
+    <ProjectReference Include="..\AVS.CoreLib.Console.ColorFormatting\AVS.CoreLib.Console.ColorFormatting.csproj" />
   </ItemGroup>
 
 </Project>
