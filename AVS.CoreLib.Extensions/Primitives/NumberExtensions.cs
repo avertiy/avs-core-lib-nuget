@@ -153,9 +153,7 @@ namespace AVS.CoreLib.Extensions
 
         public static decimal Abs(this decimal value)
         {
-            if (value < 0)
-                value = value * -1;
-            return value;
+            return value < 0 ? -value : value;
         }
 
         public static bool IsEqual(this decimal value, decimal valueToCompare, decimal tolerance)
@@ -224,6 +222,11 @@ namespace AVS.CoreLib.Extensions
                 return number;
             var n = Math.Floor((double)(number + roundBasis) / roundBasis) - 1;
             return Convert.ToInt32(n) * roundBasis;
+        }
+
+        public static int Abs(this int value)
+        {
+            return value < 0 ? -value : value;
         }
 
         #endregion

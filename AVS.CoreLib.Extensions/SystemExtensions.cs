@@ -60,9 +60,9 @@ namespace AVS.CoreLib.Extensions
 
             var list = new List<string>(lines.Length);
             // take first few lines and lines that point to source code, omit stack in between of those 
-            if (lines.Length > 6 && format != ReductionFormat.None)
+            if (lines.Length > 8 + extraLines && format != ReductionFormat.None)
             {
-                var n = format == ReductionFormat.Truncated ? 3 : 5;
+                var n = format == ReductionFormat.Truncated ? 4 : 7;
                 list.AddRange(lines.Take(n + extraLines));
                 list.Add("...");
                 list.AddRange(lines.Where(x => x.Contains(":line")));

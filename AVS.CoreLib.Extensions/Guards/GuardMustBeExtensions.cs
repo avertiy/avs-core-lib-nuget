@@ -138,6 +138,21 @@ public static class GuardMustBeExtensions
                 throw new ArgumentOutOfRangeException(message ?? $"{arg} must be within range ({range.from};{range.to})");
         }
     }
+
+    public static void WithinRange(this IMustBeGuardClause guardClause, decimal arg, (decimal from, decimal to) range, bool inclusiveRange = true, string? message = null)
+    {
+        if (inclusiveRange)
+        {
+            if (arg < range.from || arg > range.to)
+                throw new ArgumentOutOfRangeException(message ?? $"{arg} must be within range [{range.from};{range.to}]");
+        }
+        else
+        {
+            if (arg <= range.from || arg >= range.to)
+                throw new ArgumentOutOfRangeException(message ?? $"{arg} must be within range ({range.from};{range.to})");
+        }
+    }
+
     #endregion
 
     #region GreaterThan / GreaterThanOrEqual

@@ -1,0 +1,1107 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AVS.CoreLib.Trading</name>
+    </assembly>
+    <members>
+        <member name="T:AVS.CoreLib.Trading.Abstractions.IBar">
+            <summary>
+            represent a bar chart unit (synonym candle or simply bar)  
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Abstractions.IBar.Total">
+            <summary>
+            Amount of quote asset
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Abstractions.IOhlcv.Volume">
+            <summary>
+            Amount of base asset
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Abstractions.IMutOhlcv.Volume">
+            <summary>
+            Amount of base asset
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Collections.CurrencyCollection.System#Collections#Generic#ICollection{System#String}#Add(System.String)">
+            <summary>
+            the Add method implemented explicitly due to model binding mechanics 
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Collections.StringCollection">
+            <summary>
+            base type to make bind-able string[] parameter type <see cref="T:AVS.CoreLib.Trading.Collections.Exchanges"/>
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Collections.StringCollection.System#Collections#Generic#ICollection{System#String}#Add(System.String)">
+            <summary>
+            the Add method implemented explicitly due to model binding mechanics 
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.ServiceCollectionExtension.AddTradingCore(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Add trading formatters core services
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Enums.BarSize">
+            <summary>
+            Classify bar by length 
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.BarSize.Short">
+            <summary>
+            short bar is a bar with a little price difference between Low and High
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.BarSize.Long">
+            <summary>
+            Long bar is a bar with a significant a few (2-3) times bigger than average bar
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.BarSize.Paranormal">
+            <summary>
+            Extreme big or paranormal bar is a bar with a significant length several times bigger than average bar
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.VolumeSize.Reduced">
+            <summary>
+            2 times smaller volume than the average volume for the last 12 bars
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.VolumeSize.Increased">
+            <summary>
+            2 times bigger volume than the average volume for the last 12 bars
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.BarType.None">
+            <summary>
+            doji Open=Close
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.BarType.Bearish">
+            <summary>
+            Open > Close
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "F:AVS.CoreLib.Trading.Enums.BarType.Bullish" -->
+        <member name="F:AVS.CoreLib.Trading.Enums.CandleType.Doji">
+            <summary>
+            opens and closes at the same price with bi-directional price fluctuation
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.CandleType.Gravestone">
+            <summary>
+            open and close at the same price with upper price fluctuation
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.CandleType.Dragonfly">
+            <summary>
+            open and close at the same price with down price fluctuation
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.CandleType.Whirligig">
+            <summary>
+            High - Open = Close - Low or High - Close = Open - Low with short body
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.CandleType.HangingMan">
+            <summary>
+            ohlc.High == ohlc.Open and ohlc.Close - ohlc.Low > body * 2
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.CandleType.InverseHammer">
+            <summary>
+            ohlc.Low == ohlc.Open and ohlc.High - ohlc.Close > body * 2
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.CandleType.ShootingStar">
+            <summary>
+            ohlc.Low == ohlc.Close and ohlc.High - ohlc.Open > body * 2
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Enums.Bars.Color">
+            <summary>
+            Represents a 2 color + neutral (none) enum
+            Used to color MA/BB and other simply indicating bearish/bullish direction with a color
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Coins.CoinCap.BigCap">
+            <summary>
+            1+ billion ~ top 50 coins
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Coins.CoinCap.MidCap">
+            <summary>
+            250M+ (rank 50 - 125)
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Coins.CoinCap.SmallCap">
+            <summary>
+            50M - 250M (rank 125-375)
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Coins.CoinCap.MicroCap">
+            <summary>
+            2M - 50M (rank 375-1200)
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Coins.CoinCap.SeedCap">
+            <summary>
+            200k - 2M (rank 1200 - 2000)
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Coins.AssetClass.Top">
+            <summary>
+            Top BTC;ETH;BNB;XRP
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Coins.AssetClass.TopRelated">
+            <summary>
+            Ecosystem around Top asset for example: ETH-> UNI,AAVE, MKR; TRX -> SUN,JST,APENFT
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Coins.AssetClass.SecondTier">
+            <summary>
+            DASH, XMR, EOS, BCH,FIL etc.
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Coins.AssetClass.Other">
+            <summary>
+            3rd tier or other coins with not prominent even weak perspectives like XEM etc.
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Coins.AssetClass.Blud">
+            <summary>
+            DOGE, SHIB, FLOKI etc.
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Coins.AssetClass.DarkHorse">
+            <summary>
+            things like PARA, THETA etc.
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Coins.AssetClass.Shit">
+            <summary>
+            dangerous things that has no or very poor fundamental, and might scam
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason">
+            <summary>
+            Account update reason
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.Deposit">
+            <summary>
+            Deposit
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.Withdraw">
+            <summary>
+            Withdraw
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.Order">
+            <summary>
+            Order
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.FundingFee">
+            <summary>
+            Funding Fee
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.WithdrawReject">
+            <summary>
+            Withdraw Reject
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.Adjustment">
+            <summary>
+            Adjustment
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.InsuranceClear">
+            <summary>
+            Insurance Clear
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.AdminDeposit">
+            <summary>
+            Admin Deposit
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.AdminWithdraw">
+            <summary>
+            Admin Withdraw
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.MarginTransfer">
+            <summary>
+            Margin Transfer
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.MarginTypeChange">
+            <summary>
+            Margin Type Change
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.AssetTransfer">
+            <summary>
+             Asset Transfer
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.OptionsPremiumFee">
+            <summary>
+            Options Premium Fee
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.OptionsSettleProfit">
+            <summary>
+            Options Settle Profit
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.CoinSwapWithdraw">
+            <summary>
+            Coin swap withdraw
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason.CoinSwapDeposit">
+            <summary>
+            Coin swap deposit
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Enums.Futures.ContractType">
+            <summary>
+            Type of contract
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ContractType.Perpetual">
+            <summary>
+            Perpetual
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ContractType.CurrentMonth">
+            <summary>
+            Current month
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ContractType.CurrentQuarter">
+            <summary>
+            Current quarter
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ContractType.CurrentQuarterDelivering">
+            <summary>
+            Current quarter delivering
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ContractType.NextQuarter">
+            <summary>
+            Next quarter
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ContractType.NextQuarterDelivering">
+            <summary>
+            Next quarter delivering
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ContractType.NextMonth">
+            <summary>
+            Next month
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ContractType.Unknown">
+            <summary>
+            Unknown
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Enums.Futures.ExecutionType">
+            <summary>
+            The type of execution
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ExecutionType.New">
+            <summary>
+            New
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ExecutionType.Canceled">
+            <summary>
+            Canceled
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ExecutionType.Replaced">
+            <summary>
+            Replaced
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ExecutionType.Rejected">
+            <summary>
+            Rejected
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ExecutionType.Trade">
+            <summary>
+            Trade
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ExecutionType.Expired">
+            <summary>
+            Expired
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ExecutionType.Amendment">
+            <summary>
+            Amendment
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.ExecutionType.TradePrevention">
+            <summary>
+            Self trade prevented
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Enums.Futures.FuturesOrderType">
+            <summary>
+            Order type for a futures order
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.FuturesOrderType.Limit">
+            <summary>
+            Limit orders will be placed at a specific price. If the price isn't available in the order book for that asset the order will be added in the order book for someone to fill.
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.FuturesOrderType.Market">
+            <summary>
+            Market order will be placed without a price. The order will be executed at the best price available at that time in the order book.
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.FuturesOrderType.Stop">
+            <summary>
+            Stop order. Execute a limit order when price reaches a specific Stop price
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.FuturesOrderType.StopMarket">
+            <summary>
+            Stop market order. Execute a market order when price reaches a specific Stop price
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.FuturesOrderType.TakeProfit">
+            <summary>
+            Take profit order. Will execute a limit order when the price rises above a price to sell and therefor take a profit
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.FuturesOrderType.TakeProfitMarket">
+            <summary>
+            Take profit market order. Will execute a market order when the price rises above a price to sell and therefor take a profit
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.FuturesOrderType.TrailingStopMarket">
+            <summary>
+            A trailing stop order will execute an order when the price drops below a certain percentage from its all time high since the order was activated
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.FuturesOrderType.Liquidation">
+            <summary>
+            A liquidation order
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Enums.Futures.IncomeType">
+            <summary>
+            Type of futures income
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.COMMISSION">
+            <summary>
+            Futures trading commission
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.FUNDING_FEE">
+            <summary>
+            Futures funding fee
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.REALIZED_PNL">
+            <summary>
+            Futures realized profit
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.TRANSFER">
+            <summary>
+            Transfer into account
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.WELCOME_BONUS">
+            <summary>
+            Futures welcome bonus
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.INSURANCE_CLEAR">
+            <summary>
+            Insurance clear
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.REFERRAL_KICKBACK">
+            <summary>
+            Referral kickback
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.COMMISSION_REBATE">
+            <summary>
+            Commission rebate
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.API_REBATE">
+            <summary>
+            Api rebate
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.CONTEST_REWARD">
+            <summary>
+            Contest reward
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.CrossCollateralTransfer">
+            <summary>
+            Cross collateral transfer
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.OPTIONS_PREMIUM_FEE">
+            <summary>
+            Options premium fee
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.OPTIONS_SETTLEMENT_PROFIT">
+            <summary>
+            Options settle profit
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.INTERNAL_TRANSFER">
+            <summary>
+            Internal transfer
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.AUTO_EXCHANGE">
+            <summary>
+            Auto exchange
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.DELIVERED_SETTLEMENT">
+            <summary>
+            Delivered settlement
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.COIN_SWAP_DEPOSIT">
+            <summary>
+            Coin swap deposit
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.COIN_SWAP_WITHDRAW">
+            <summary>
+            Coin swap withdraw
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.IncomeType.POSITION_LIMIT_INCREASE_FEE">
+            <summary>
+            Position limit increase fee
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Enums.Futures.PositionSide">
+            <summary>
+            Position mode
+            1. One-way mode [DEFAULT] - you can only hold positions in one direction under one contract.
+               Opening positions in both directions would cancel one another out or reduce their sizes.
+            
+            2. Hedge mode - you can simultaneously hold positions in both long and short directions under the same contract.
+               If you open long position on higher TF, but anticipate that in short term the price will move down, you want to open a short position as well
+            </summary>
+            <remarks>
+            Hedge mode is a trading strategy used by futures traders to mitigate their risk exposure to the market. It involves opening two opposite positions, a long and a short, to profit from any market movement while minimizing potential losses.
+            </remarks>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.PositionSide.Both">
+            <summary>
+            In ONE-WAY mode they return BOTH i.e. you can identify the actual long/short direction by amount sign
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Enums.Futures.Direction">
+            <summary>
+            clearly defines position direction SHORT / LONG
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.Direction.None">
+            <summary>
+            Undefined means position amount is 0 
+            On practice the exchange will close current position, and open a new one with the next trade
+            But for testing purposes it's easier to track one position instead of multiple small ones
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Enums.Futures.WorkingType">
+            <summary>
+            Type of working
+            Stop price is triggered by: "MARK_PRICE" or "CONTRACT_PRICE". Default "CONTRACT_PRICE") 
+            </summary>
+            <remarks>
+            MARK PRICE refers to an estimated true value of a contract, it takes into consideration the fair value of an asset
+            to prevent unnecessary liquidations during a volatile market
+            Calculated as an average of the Last Price and the underlying asset’s Spot Price to avoid price manipulation of a single order book or exchange.
+            (проливы и пампы и даже тыки цены на минутке все равно стопы рвёт так что сглаживание ну такое себе, хотя может потому что by default is Contract price)
+            </remarks>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.WorkingType.Contract">
+            <summary>
+            Contract price type
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.Futures.WorkingType.Mark">
+            <summary>
+            Mark price type
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.SymbolFormat.Normalized">
+            <summary>
+            BTC_USDT
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.SymbolFormat.NoUnderscore">
+            <summary>
+            BTCUSDT
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.SymbolFormat.LowerCase">
+            <summary>
+            btcusdt
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.SymbolFormat.Flipped">
+            <summary>
+            USDT_BTC
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderCondition.BuyIfAskRise">
+            <summary>
+            когда мы собираемся войти в рынок в long как только будет преодолена трендовая линия
+            но текущая цена ниже чем та по которой мы хотим купить
+            к примеру текущая цена 400$ а мы ждем пока преодолеем уровень 500$ 
+            и  только тогда затариваемся в лонг
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderCondition.SellIfBidFall">
+            <summary>
+            когда мы собираемся войти в рынок в short при падении ниже трендовой линии
+            но текущая цена пока выше и не понятно будет ли дальнейшее снижение
+            например: текущая цена 500$ а мы ждем падения ниже линии до 400$ только тогда открываем шорт
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Enums.OrderResponseType">
+            <summary>
+            Response type
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderResponseType.Acknowledge">
+            <summary>
+            Ack only
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderResponseType.Result">
+            <summary>
+            Resulting order
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderResponseType.Full">
+            <summary>
+            Full order info, only valid on SPOT orders  
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.Limit">
+            <summary>
+            Limit orders will be placed at a specific price. If the price isn't available in the order book for that asset the order will be added in the order book for someone to fill.
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.Market">
+            <summary>
+            Market order will be placed without a price. The order will be executed at the best price available at that time in the order book.
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.LimitMaker">
+            <summary>
+            Maker or "post-only" order is a conditional limit order, that serves to add liquidity to the order book so it is charged with a maker fee. 
+            If order price crosses market spread the order will be rejected.
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.Stop">
+            <summary>
+            Stop order. Execute a limit order when price reaches a specific Stop price
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.StopMarket">
+            <summary>
+            Stop market order. Execute a market order when price reaches a specific Stop price
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.TakeProfit">
+            <summary>
+            Take profit order. Will execute a limit order when the price rises above a price to sell and therefor take a profit
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.TakeProfitMarket">
+            <summary>
+            Take profit market order. Will execute a market order when the price rises above a price to sell and therefor take a profit
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.TrailingStopMarket">
+            <summary>
+            A trailing stop order will execute an order when the price drops below a certain percentage from its all time high since the order was activated
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeInForce.GTC">
+            <summary>
+            good till cancel
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeInForce.IOC">
+            <summary>
+            immediate or cancel
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeInForce.FOK">
+            <summary>
+            Fill or kill
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeInForce.DAY">
+            <summary>
+            A day order remains in effect only for the given trading session (NYSE/Nasdaq)
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeInForce.GTX">
+            <summary>
+            Good Till Crossing (Post Only) 
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeInForce.GTE_GTC">
+            <summary>
+            GTE seems good till expire, GTC good till cancel
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Enums.TimeFrame">
+            <summary>Represents a time frame of a market.</summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.S1">
+            <summary> interval of 1 second </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.S30">
+            <summary> interval of 30 seconds </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.M1">
+            <summary>A time interval of 1 minute</summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.M3">
+            <summary>A time interval of 3 minutes</summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.M5">
+            <summary>A time interval of 5 minutes</summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.M15">
+            <summary>A time interval of 15 minutes</summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.M30">
+            <summary>A time interval of 30 minutes</summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.H1">
+            <summary>A time interval of 1 hour</summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.H2">
+            <summary>A time interval of 2 hours</summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.H3">
+            <summary>A time interval of 3 hours</summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.H4">
+            <summary>A time interval of 4 hours</summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.H12">
+            <summary>A time interval of 12 hours</summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.D">
+            <summary>A time interval of a day</summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.Week">
+            <summary>A time interval of 7 days</summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrame.Month">
+            <summary>A time interval of 30 days</summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrameType.Micro">
+            <summary>
+            less then 5 minutes
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrameType.Small">
+            <summary>
+            5M / 15M / 30M
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrameType.Intraday">
+            <summary>
+            1H / 4H  (from 1 hour but less than 1D)
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrameType.Day">
+            <summary>
+            1D
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TimeFrameType.Week">
+            <summary>
+            Week
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Enums.TraderSide">
+            <summary>
+            trader side (Maker/Taker) usually influence an exchange's trade fees
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TraderSide.Maker">
+            <summary>
+            trader played a limit order 
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.TraderSide.Taker">
+            <summary>
+            trader placed a market order
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.BarExtensions.Contains(AVS.CoreLib.Trading.Abstractions.IOhlc,System.Decimal,System.Boolean)">
+            <summary>
+            determines whether price is within (Low, High) range;
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.BarLengthExtensions.GetLength(AVS.CoreLib.Trading.Abstractions.IOhlc,System.Int32)">
+            <summary>
+            Get candle length in % formula: (High - Low)/Close * 100
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.BarLengthExtensions.GetBodyLength(AVS.CoreLib.Trading.Abstractions.IOhlc,System.Int32)">
+            <summary>
+            get abs candle body length in %
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.BarLengthExtensions.GetShadowLength(AVS.CoreLib.Trading.Abstractions.IOhlc,System.Int32)">
+            <summary>
+            for bullish candles return upper shadow, for bearish - lower
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.BarLengthExtensions.HasLongShadow(AVS.CoreLib.Trading.Abstractions.IOhlc,System.Int32)">
+            <summary>
+            long shadow means bar length is a <see cref="!:k"/> times bigger than body length
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.BarLengthExtensions.GetBarSize(AVS.CoreLib.Trading.Abstractions.IOhlc,System.Decimal)">
+            <summary>
+            Estimate bar size based on avg bar length  
+            </summary>
+            <param name="ohlc">bar</param>
+            <param name="avgLength">bar length in % e.g. 1% not 0.01</param>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.BarLengthExtensions.GetBarSizeAbs(AVS.CoreLib.Trading.Abstractions.IOhlc,AVS.CoreLib.Trading.Enums.TimeFrame,System.Decimal)">
+            <summary>
+            Estimate absolute bar size based on a timeframe and assumption that roughly avg bar size on H1 ~1.75% (1.5%-2% for big cap markets like BTC/ETH/TRX etc.)
+            Thus we can omit avg bar length calculation, hence the absolute size as it is estimated comparatively to absolute mean
+            </summary>
+            <param name="ohlc">bar</param>
+            <param name="timeFrame">timeframe</param>
+            <param name="avgH1Length">(optional)</param>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.DecimalExtensions.Deduct(System.Decimal,System.Decimal)">
+            <summary>
+            deducts specified percent from the value
+            e.g. commission 0.25%, buy 100 xrp in real you will get 100-0.25% = 99.75 xrp 
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.TimeFrameExtensions.CalcTimespan(AVS.CoreLib.Trading.Enums.TimeFrame,System.Int32)">
+            <summary>
+            Calculate timespan = (int)timeframe x count 
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.TimeFrameExtensions.CalcBarCount(AVS.CoreLib.Trading.Enums.TimeFrame,System.Double)">
+            <summary>
+            Calculate bar count = period / (int)timeframe
+            i.e. how many bars (count) cover the specified period
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.TimeFrameExtensions.CalcBarCountFrom(AVS.CoreLib.Trading.Enums.TimeFrame,System.DateTime)">
+            <summary>
+            Calculate bar count from <see cref="!:fromDate"/> till <see cref="P:System.DateTime.Now"/>
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.TimeFrameExtensions.GetVolatilityByTimeFrame(AVS.CoreLib.Trading.Enums.TimeFrame)">
+            <summary>
+            Volatility is kind of average* bar length at a given scale (timeframe)
+            *average calculated taking into account only normal-size bars, similar princip as for ATR (short, long and paranormal bars are ignored as they are unusual)
+            e.g.. tf:D ~7-8%, tf:H1 ~ 1.2-1.8%
+            for some assets it could differ but in most cases ATR bar will 
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.FormatNumberExtensions.FormatPrices(System.Double[],System.String)">
+            <summary>
+            format numbers to string using n.FormatPrice()
+            leading zeros will be replaced by replacement
+            (e.g. 0.0001234 => 0..1234) 
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.NumberExtensions.GetLeastExpDiff(System.Double,System.Double)">
+            <summary>
+            Determines the lowest exp for the value so the value*10^exp. > n
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.NumberExtensions.Normalize(System.Double)">
+            <summary>
+            Rounds value to 8 digits AwayFromZero
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.OhlcExtensions.GetCandleType(AVS.CoreLib.Trading.Abstractions.IOhlc)">
+            <summary>
+            not implemented to classify all candle types but some basic candle classification is possible
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.PriceExtensions.IsAboutTheSame(System.Decimal,System.Decimal,System.Nullable{System.Decimal})">
+            <summary>
+            compare prices if price difference is tiny returns true (about the same), otherwise false
+            when tolerance is not provided, comparison relies on price meaningful digits
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Extensions.SymbolExtensions">
+            <summary>
+            supposed to deal with a normalized symbol like BTC_USDT (i.e. currencies are upper case, underscore separator)
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolExtensions.Q(System.String,AVS.CoreLib.Trading.Enums.SymbolFormat,System.Boolean)">
+            <summary>
+            returns quote currency, when possible replace currency iso code with symbol e.g. USDT => $
+            <seealso cref="M:AVS.CoreLib.Trading.Helpers.CoinHelper.GetCurrencySymbol(System.String)"/>
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolExtensions.B(System.String,AVS.CoreLib.Trading.Enums.SymbolFormat)">
+            <summary>
+            returns base currency for BTC_USDT => BTC
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolExtensions.Normalize(System.String,AVS.CoreLib.Trading.Enums.SymbolFormat)">
+            <summary>
+            normalize symbol e.g. btcusdt => BTC_USDT
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolPatternExtensions.Match(System.String,AVS.CoreLib.Trading.Types.SymbolPattern)">
+            <summary>
+            match symbol (e.g. `BTC_USDT`) with a symbol pattern (e.g. `USDT*`) <see cref="T:AVS.CoreLib.Trading.Types.SymbolPattern"/>
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolPatternExtensions.Match(System.String[],AVS.CoreLib.Trading.Types.SymbolPattern)">
+            <summary>
+            if any symbol matches pattern <see cref="T:AVS.CoreLib.Trading.Types.SymbolPattern"/> returns true, otherwise false 
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.SymbolPatternExtensions.Filter(System.String[],System.String)">
+            <summary>
+            filter symbols applying symbol pattern (filter) <see cref="T:AVS.CoreLib.Trading.Types.SymbolPattern"/>
+            </summary>        
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Helpers.CoinHelper.Top">
+            <summary>
+            BTC,ETH,BNB,XRP,TRX - i.e. symbols that might serve as quote asset in trading pairs
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Helpers.IRankHelper.GetRank(System.Decimal,System.String)">
+            <summary>
+            estimates trade total rank
+            was it a micro trade or a large one
+            the greater rank the larger the trade was
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Helpers.MarketDataGenerator.GenerateAsc(System.Int32,System.Int32,AVS.CoreLib.Trading.Enums.TimeFrame)">
+            <summary>
+            Generate random series of bars in ascending price movement
+            </summary>
+            <param name="length">bar series length</param>
+            <param name="bullFactor">how many bullish bars should be in a row</param>
+            <param name="timeframe"></param>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Helpers.MarketDataGenerator.Generate(System.Decimal[],AVS.CoreLib.Trading.Enums.TimeFrame)">
+            <summary>
+            generate bars based on close prices input array
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Helpers.TradingPairHelper">
+            <summary>
+            helps to generate trading pairs (aka symbols) combining quote and base currencies
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Helpers.TradingPairHelper.CombineAll(System.String[],System.String[])">
+            <summary>
+            combines all quote assets with all base assets
+            e.g. ["USDT","BUSD"] + ["BTC","XRP"] => ["BTC_USDT","BTC_BUSD", "XRP_USDT","XRP_BUSD"]
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Helpers.TradingPairHelper.CombineWithQuoteAssets(System.String,System.String[])">
+            <summary>
+            combines base asset with quote asset(s)
+            e.g. "BTC" + ["USDT","BUSD"] => ["BTC_USDT","BTC_BUSD"]
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Helpers.TradingPairHelper.Combine(System.String,System.String[])">
+            <summary>
+            combine <paramref name="quoteCurrency"/>   with <paramref name="baseCurrencies"/>
+            e.g. USDT + [BTC,ETH,XRP] => [BTC_USDT, ETH_USDT, XRP_USDT]
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Models.Balance.BalanceBook.Count">
+            <summary>
+            Gets the number of currencies in balance book 
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Models.Balance.BalanceBook.Parse(System.String)">
+            <summary>
+            Can parse BalanceBook from strings like "0.2 BTC;10 USD; 25 TRX;0.05 ETH" 
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Prices.PriceHelper.Prices">
+            <summary>
+            these are indicative prices for purposes like ranking coins by value relative to other coins
+            indicative means for example BTC is ~10 times bigger than ETH or ~100 times bigger than BCH, LTC etc. 
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Symbols.SymbolDescriptor">
+            <summary>
+            descriptors should help to classify coin-zoo 
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Symbols.SymbolDescriptor.Markets">
+            <summary>
+            what exchanges have trading pairs with this symbol possible values
+            - `*` - widely accepted listed on many exchanges e.g. LTC
+            - `Binance+` - listed on Binance and other markets
+            - `Binance!` - listed on Binance but not listed on other big markets usually new listings on Binance 
+            - `Gate` - listed on gate.io i.e. not listed on Binance
+            - `DEX` - listed on DEX only
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Symbols.SymbolDescriptor.Blud(System.String,System.Int32,System.String,AVS.CoreLib.Trading.Enums.Coins.CoinType)">
+            <summary>
+            Блудняк like DOGE, FLOKI etc.
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Symbols.SymbolDescriptorService.Query(AVS.CoreLib.Trading.Symbols.SymbolDescriptorsQuery)">
+            <summary>
+            Get descriptors filtered by <see cref="T:AVS.CoreLib.Trading.Symbols.SymbolDescriptorsQuery"/> 
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Types.CurrencyPair">
+            <summary>
+            in `BTC_USDT`, BTC is a base currency, USDT is a quote currency
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Types.CurrencyPair.Parse(System.String,System.Boolean)">
+            <summary>
+            Parse <see cref="T:AVS.CoreLib.Trading.Types.CurrencyPair"/> instance from symbol/pair string
+            </summary>
+            <param name="value">symbols like `BTC_USDT` or pairs like 'BTC/USDT' </param>
+            <param name="isBaseCurrencyFirst">base currency in `BTC_USDT` is BTC</param>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Types.CurrencyValue">
+            <summary>
+            Represents values like 10.00 UAH, 2.2 XRP etc.
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Types.CurrencyValue.Parse(System.String)">
+            <summary>
+            parses string for the value
+            </summary>
+            <param name="str">"100.00 UAH"</param>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Types.SymbolPattern">
+            <summary>
+            Represents a symbol pattern which could be on of 7 pattern types <see cref="T:AVS.CoreLib.Trading.Types.SymbolPattern.PatternType"/>
+            e.g. `*`, `USD*`, `FIAT` (means fiat currencies), `ETH`, `*_ETH`, `ETH_*`, `BTC_USDT,ETH_USDT`, `ETH_USDT`
+            SymbolPattern is designed to filter/match symbol(s) 
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Types.SymbolPattern.ANY">
+            <summary>
+            * means any symbol is ok 
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Types.SymbolPattern.USD_LIKE">
+            <summary>
+            USD* means USD + USDT,USDC,BUSD,DAI etc. 
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Types.SymbolPattern.TOP_COINS">
+            <summary>
+            BTC* means BTC + ETH,BNB,TRX etc. i.e. any TOP symbol that might serve as a quote symbol in trading pairs
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Types.SymbolPattern.STABLECOIN">
+            <summary>
+            USDT* means USDT + USDC,BUSD,USDJ,USDD,TUSD,VAI,DAI etc. i.e. any stable or pegged coin
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Types.SymbolPattern.FIAT">
+            <summary>
+            FIAT means USD,EUR,UAH etc. <see cref="T:AVS.CoreLib.Trading.Enums.Coins.Fiat"/>
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Types.SymbolPattern.MatchAny(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            if any match found returns true, otherwise false
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Types.SymbolPattern.MatchLiteral(System.String,System.String)">
+            <summary>
+            match given symbol with one of literals (<see cref="F:AVS.CoreLib.Trading.Types.SymbolPattern.ANY"/>, <see cref="F:AVS.CoreLib.Trading.Types.SymbolPattern.FIAT"/> etc.)
+            returns true if matches, otherwise - false
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Types.SymbolPattern.From(System.String[],System.String)">
+            <summary>
+            Creates a symbol pattern 
+            Takes symbols apply filter if any symbol(s) are dropped than it combines rest of symbols into comma-separated symbols pattern, otherwise return symbol as is
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Types.SymbolPattern.PatternType.Any">
+            <summary>
+            *
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Types.SymbolPattern.PatternType.Literal">
+            <summary>
+            FIAT or USD*
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Types.SymbolPattern.PatternType.Symbol">
+            <summary>
+            exact symbol e.g. BTC_USD
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Types.SymbolPattern.PatternType.MultiSymbol">
+            <summary>
+            comma-separated symbols e.g. BTC_USDT,ETH_BTC
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Types.SymbolPattern.PatternType.Asset">
+            <summary>
+            e.g.`ETH` means any pair with ETH as a base or quote asset
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Types.SymbolPattern.PatternType.QuoteAsset">
+            <summary>
+            *_USDT means any pair quoted to USDT 
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Types.SymbolPattern.PatternType.BaseAsset">
+            <summary>
+            ATOM_* means any pair with ATOM as a base asset
+            </summary>
+        </member>
+    </members>
+</doc>

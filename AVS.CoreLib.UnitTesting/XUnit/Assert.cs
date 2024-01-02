@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using AVS.CoreLib.Abstractions.Responses;
+using AVS.CoreLib.Extensions;
 using AVS.CoreLib.UnitTesting.XUnit.Exceptions;
 #nullable enable
 namespace AVS.CoreLib.UnitTesting.xUnit
@@ -101,6 +102,13 @@ namespace AVS.CoreLib.UnitTesting.xUnit
         public static void Equal(decimal expected, decimal actual, string userMessage)
         {
             if (expected != actual)
+                throw new EqualException(expected, actual, userMessage);
+        }
+
+        public static void Equal(decimal expected, decimal actual, decimal tolerance, string userMessage)
+        {
+            var diff = expected - actual;
+            if (diff.Abs() > tolerance)
                 throw new EqualException(expected, actual, userMessage);
         }
 
