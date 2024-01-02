@@ -25,7 +25,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>K:\WORK\AVS.NET-CORE\avs-core-lib\AVS.CoreLib.PowerConsole\AVS.CoreLib.PowerConsole.xml</DocumentationFile>
+    <DocumentationFile></DocumentationFile>
     <NoWarn>1701;1702;1591</NoWarn>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
@@ -64,13 +64,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AVS.CoreLib.Console.ColorFormatting" Version="2.1.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
-    <PackageReference Include="NuGet.CommandLine" Version="6.5.0">
+    <PackageReference Include="NuGet.CommandLine" Version="6.8.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -88,6 +87,7 @@
     <ProjectReference Include="..\..\AVS.CoreLib.Abstractions\AVS.CoreLib.Abstractions.csproj" />
     <ProjectReference Include="..\..\AVS.CoreLib.Extensions\AVS.CoreLib.Extensions.csproj" />
     <ProjectReference Include="..\..\AVS.CoreLib.Text\AVS.CoreLib.Text.csproj" />
+    <ProjectReference Include="..\AVS.CoreLib.Console.ColorFormatting\AVS.CoreLib.Console.ColorFormatting.csproj" />
   </ItemGroup>
 
 </Project>
