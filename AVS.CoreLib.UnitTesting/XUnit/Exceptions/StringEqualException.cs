@@ -30,19 +30,7 @@ namespace AVS.CoreLib.UnitTesting.XUnit.Exceptions
                 "\\0"
             }
         };
-        private string message;
-
-        ///// <summary>
-        ///// Creates a new instance of the <see cref="T:Xunit.Sdk.EqualException" /> class.
-        ///// </summary>
-        ///// <param name="expected">The expected object value</param>
-        ///// <param name="actual">The actual object value</param>
-        //public EqualException(object expected, object actual, string userMessage)
-        //    : base(expected, actual, $"Assert.Equal() Failure\r\n{userMessage}", (string)null, (string)null)
-        //{
-        //    this.ActualIndex = -1;
-        //    this.ExpectedIndex = -1;
-        //}
+        private string? _message = null;
 
         /// <summary>
         /// Creates a new instance of the <see cref="T:Xunit.Sdk.EqualException" /> class for string comparisons.
@@ -51,8 +39,8 @@ namespace AVS.CoreLib.UnitTesting.XUnit.Exceptions
         /// <param name="actual">The actual string value</param>
         /// <param name="expectedIndex">The first index in the expected string where the strings differ</param>
         /// <param name="actualIndex">The first index in the actual string where the strings differ</param>
-        public StringEqualException(string expected, string actual, string userMessage, int expectedIndex = -1, int actualIndex = -1)
-            : base(expected, actual, $"Assert.Equal() Failure\r\n{userMessage}", (string)null, (string)null)
+        public StringEqualException(string? expected, string? actual, string userMessage, int expectedIndex = -1, int actualIndex = -1)
+            : base(expected, actual, $"Assert.Equal() Failure\r\n{userMessage}")
         {
             this.ActualIndex = actualIndex;
             this.ExpectedIndex = expectedIndex;
@@ -75,9 +63,9 @@ namespace AVS.CoreLib.UnitTesting.XUnit.Exceptions
         {
             get
             {
-                if (this.message == null)
-                    this.message = this.CreateMessage();
-                return this.message;
+                if (this._message == null)
+                    this._message = this.CreateMessage();
+                return this._message;
             }
         }
 

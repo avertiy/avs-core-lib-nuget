@@ -17,164 +17,85 @@ namespace AVS.CoreLib.Mapper
     /// </code>
     public class Mapper : IMapper
     {
-        protected Dictionary<string, Delegate> Mappings { get; set; } = new();
+        protected Dictionary<string, Delegate> Delegates { get; set; } = new();
 
+        public string[] Keys => Delegates.Keys.ToArray();
+
+        public void RegisterDelegate(string mappingKey, Delegate del)
+        {
+            Delegates.Add(mappingKey, del);
+        }
+
+        public Delegate this[string mappingKey]
+        {
+            get 
+            {
+                if (!Delegates.ContainsKey(mappingKey))
+                    throw new MappingNotFoundException(mappingKey);
+
+                return Delegates[mappingKey]; 
+            }
+        }
+
+        #region Map
         /// <summary>
-        /// Register type mapping  delegate
-        /// <code>
-        /// usage:
-        /// mapper.Register&lt;Model,Source&gt;(x =&gt; new Model { ... });
-        /// </code>
+        /// Register type mapping delegate to PRODUCE NEW <see cref="TDestination"/>
+        /// <seealso cref="Map{TSource, TDestination}(TSource)"/>
         /// </summary>
         /// <typeparam name="TSource">source type</typeparam>
-        /// <typeparam name="TModel">model (destination) type</typeparam>
+        /// <typeparam name="TDestination">destination type</typeparam>
         /// <param name="func">delegate to do the mapping</param>
-        public void Register<TSource, TModel>(Func<TSource, TModel> func)
+        public void Register<TSource, TDestination>(Func<TSource, TDestination> func)
         {
-            var mappingKey = $"{typeof(TSource).Name}->{typeof(TModel).Name}";
-            Mappings.Add(mappingKey, func);
+            var mappingKey = $"{typeof(TSource).Name}->{typeof(TDestination).Name}";
+            RegisterDelegate(mappingKey, func);
         }
 
-        public void Register<TSource, TContext, TModel>(Func<TSource, TContext, TModel> func)
-        {
-            var mappingKey = $"({typeof(TSource).Name},{typeof(TContext).Name})->{typeof(TModel).Name}";
-            Mappings.Add(mappingKey, func);
-        }
-
-        public void Register<TSource, TModel>(Action<TSource, TModel> func)
-        {
-            var mappingKey = $"({typeof(TSource).Name},{typeof(TModel).Name})";
-            Mappings.Add(mappingKey, func);
-        }
-
-        public void Register<TSource, TModel, TContext>(Action<TSource, TModel, TContext> func)
-        {
-            var mappingKey = $"({typeof(TSource).Name},{typeof(TModel).Name},{typeof(TContext).Name})";
-            Mappings.Add(mappingKey, func);
-        }
-
-        /// <summary>
-        /// Map one-to-one <see cref="TSource"/> to <see cref="TModel"/>
+        /// <summary>        
+        /// Execute one-to-one mapping to PRODUCE NEW <see cref="TDestination"/> object
         /// <code>
-        ///	var model = mapper.Map&lt;Model,Source&gt;(Source source)
+        ///	var model = mapper.Map&lt;Source,Model&gt;(source)
         /// </code>
-        /// </summary>
+        /// </summary>        
         /// <typeparam name="TSource">source type</typeparam>
-        /// <typeparam name="TModel">model (destination) type</typeparam>
-        public TModel Map<TSource, TModel>(TSource source)
+        /// <typeparam name="TDestination">model (destination) type</typeparam>
+        public TDestination Map<TSource, TDestination>(TSource source)
         {
-            var mappingKey = $"{typeof(TSource).Name}->{typeof(TModel).Name}";
-
-            if (!Mappings.ContainsKey(mappingKey))
-                throw new MappingNotFoundException(mappingKey);
-
-            var del = Mappings[mappingKey];
-            var func = (Func<TSource, TModel>)del;
+            var mappingKey = $"{typeof(TSource).Name}->{typeof(TDestination).Name}";
+            var del = this[mappingKey];
+            var func = (Func<TSource, TDestination>)del;
             return func(source);
-        }        
+        } 
+        #endregion
 
-        public TModel Map<TSource, TContext, TModel>(TSource source, TContext context)
-        {
-            var mappingKey = $"({typeof(TSource).Name},{typeof(TContext).Name})->{typeof(TModel).Name}";
-
-            if (!Mappings.ContainsKey(mappingKey))
-                throw new MappingNotFoundException(mappingKey);
-
-            var del = Mappings[mappingKey];
-            var func = (Func<TSource, TContext, TModel>)del;
-            return func(source, context);
-        }
-
+        #region Update
         /// <summary>
-        /// Map many <see cref="TSource"/> to many <see cref="TModel"/>
-        /// <code>
-        /// mapper.Register&lt;Model,Source&gt;(x =&gt; new Model { ... });
-        /// </code>
+        /// Register type mapping delegate to update existing <see cref="TDestination"/> object
+        /// <seealso cref="Update{TDestination, TSource}(TDestination, TSource)"/>
         /// </summary>
+        public void RegisterUpdate<TDestination, TSource>(Action<TDestination, TSource> func)
+        {
+            var mappingKey = $"({typeof(TDestination).Name},{typeof(TSource).Name})";
+            Delegates.Add(mappingKey, func);
+        }
+
+        /// <summary>        
+        /// Execute one-to-one mapping to UPDATE EXISTING <see cref="TDestination"/> object
+        /// <code>
+        ///	var updatedEntity = mapper.Update(existingEntity, source);
+        /// </code>
+        /// </summary>        
         /// <typeparam name="TSource">source type</typeparam>
-        /// <typeparam name="TModel">model (destination) type</typeparam>
-        public IEnumerable<TModel> MapAll<TSource, TModel>(IEnumerable<TSource> source)
+        /// <typeparam name="TDestination">destination type</typeparam>
+        public TDestination Update<TDestination, TSource>(TDestination destination, TSource source)
         {
-            var mappingKey = $"{typeof(TSource).Name}->{typeof(TModel).Name}";
-
-            if (!Mappings.ContainsKey(mappingKey))
-                throw new MappingNotFoundException(mappingKey);
-
-            var del = Mappings[mappingKey];
-            var func = (Func<TSource, TModel>)del;
-            return source.Select(x => func(x));
+            var mappingKey = $"({typeof(TDestination).Name},{typeof(TSource).Name})";
+            var del = this[mappingKey];
+            var func = (Action<TDestination, TSource>)del;
+            func(destination,source);
+            return destination;
         }
-
-        public Func<TSource, TModel> GetMapper<TSource, TModel>()
-        {
-            var mappingKey = $"{typeof(TSource).Name}->{typeof(TModel).Name}";
-
-            if (!Mappings.ContainsKey(mappingKey))
-                throw new MappingNotFoundException(mappingKey);
-
-            var del = Mappings[mappingKey];
-            var func = (Func<TSource, TModel>)del;
-            return func;
-        }
-
-        public Func<TSource, TContext, TModel> GetMapper<TSource, TContext, TModel>()
-        {
-            var mappingKey = $"({typeof(TSource).Name},{typeof(TContext).Name})->{typeof(TModel).Name}";
-
-            if (!Mappings.ContainsKey(mappingKey))
-                throw new MappingNotFoundException(mappingKey);
-
-            var del = Mappings[mappingKey];
-            var func = (Func<TSource, TContext, TModel >)del;
-            return func;
-        }
-
-        public void Fill<TSource, TModel>(TSource source, TModel model)
-        {
-            var mappingKey = $"({typeof(TSource).Name},{typeof(TModel).Name})";
-
-            if (!Mappings.ContainsKey(mappingKey))
-                throw new MappingNotFoundException(mappingKey);
-
-            var del = Mappings[mappingKey];
-            var func = (Action<TSource, TModel>)del;
-            func(source, model);
-        }
-
-        public void Fill<TSource, TModel, TContext>(TSource source, TModel model, TContext context)
-        {
-            var mappingKey = $"({typeof(TSource).Name},{typeof(TModel).Name},{typeof(TContext).Name})";
-
-            if (!Mappings.ContainsKey(mappingKey))
-                throw new MappingNotFoundException(mappingKey);
-
-            var del = Mappings[mappingKey];
-            var func = (Action<TSource, TModel, TContext>)del;
-            func(source, model, context);
-        }
-
-        public Action<TSource, TModel> GetFiller<TSource, TModel>()
-        {
-            var mappingKey = $"({typeof(TSource).Name},{typeof(TModel).Name})";
-
-            if (!Mappings.ContainsKey(mappingKey))
-                throw new MappingNotFoundException(mappingKey);
-
-            var del = Mappings[mappingKey];
-            var func = (Action<TSource, TModel>)del;
-            return func;
-        }
-
-        public Action<TSource, TModel, TContext> GetFiller<TSource, TModel, TContext>()
-        {
-            var mappingKey = $"({typeof(TSource).Name},{typeof(TModel).Name},{typeof(TContext).Name})";
-
-            if (!Mappings.ContainsKey(mappingKey))
-                throw new MappingNotFoundException(mappingKey);
-
-            var del = Mappings[mappingKey];
-            var func = (Action<TSource, TModel, TContext>)del;
-            return func;
-        }
+        
+        #endregion
     }
 }

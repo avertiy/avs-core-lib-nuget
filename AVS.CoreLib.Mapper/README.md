@@ -1,15 +1,14 @@
-## avs.corelib.mapper (slim mapper)
+## avs.corelib.mapper (slim mapper) based on delegates
 
 An incredibly simple, light and easy to use mapper based on Func<T,TResult> delegate.
- - no debug headache 
+ - easy debug expirience (allows to step into map/update mapping delegates)
  - easy setup
  - pure mapping
-
-Fuck you AutoMapper sect adherents =))
-
-# Slim mapper
-
+ - map or create behaviour - mapping to a new destination object    
+ - update - mapping to an existing destination object
+ - supports MapAll and UpdateAll to deal with collection of objects
  
+# Slim mapper
  
 1. Register mappings
 
@@ -32,6 +31,13 @@ public static class MapperProfile
 			
 		});		
 		
+        mapper.RegisterUpdate<FuturesPosition, IPosition>((x,y) => 
+		{
+			x.Symbol = y.Symbol,			
+			...
+			x.UpdateTime = y.UpdateTime
+		});	
+
 		return mapper;
 	}
 }
@@ -39,10 +45,13 @@ public static class MapperProfile
 2. Do the mapping:
  
 ```
-IPosition source = await GetPositon(...);
-FuturesPosition position = _mapper.Map<IPosition, FuturesPosition>(source);
+Position source = await GetPositon(...);
+FuturesPosition position = mapper.Map<Position, FuturesPosition>(source);
 
-List<IPosition> items = await GetOpenPositons(...);
-List<FuturesPosition> positions = _mapper.MapAll<IPosition, FuturesPosition>(items);
+List<Position> items = await GetOpenPositons(...);
+List<FuturesPosition> positions = mapper.MapAll<Position, FuturesPosition>(items);
+
+var updatedItems = ...
+mapper.UpdateAll<IPosition, FuturesPosition>(positions, updatedItems);
 
 ```

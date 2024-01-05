@@ -3,30 +3,47 @@
 namespace AVS.CoreLib.Mapper
 {
     /// <summary>
-    /// simple & easy to use mapper 
+    /// simple and easy to use mapper     
     /// <code>
-    /// //register mappings:
+    /// //register CREATE NEW mappings:    
     /// mapper.Register&lt;Model,Source&gt;(x =&gt; new Model { ... });
-    ///
     /// //map one
     ///	var model = mapper.Map&lt;Model,Source&gt;(Source source)
-    ///
     /// //map many
     /// var items = mapper.MapAll&lt;Model,Source&gt;(IEnumerable&lt;Source&gt; source)
+    /// 
+    /// //register UPDATE EXISTING mappings:
+    /// mapper.RegisterUpdate&lt;Entity,Source&gt;((x, src) =&gt; { x.Prop = src.Prop; ...});
+    /// //update one
+    ///	var updatedEntity = mapper.Update&lt;Entity,Source&gt;(existingEntity, src)    
     /// </code>
     /// </summary>
-    public interface IMapper
+    public interface IMapper //: ICreateMapper, IUpdateMapper
     {
-        void Register<TSource, TModel>(Func<TSource, TModel> func);
-        void Register<TSource,TContext, TModel>(Func<TSource, TContext, TModel> func);
-        void Register<TSource, TModel>(Action<TSource, TModel> action);
-        void Register<TSource, TModel, TContext>(Action<TSource, TModel, TContext> action);
-        TModel Map<TSource, TModel>(TSource source);
-        TModel Map<TSource, TContext, TModel>(TSource source, TContext context);
-        Func<TSource, TModel> GetMapper<TSource, TModel>();
-        Func<TSource, TContext, TModel> GetMapper<TSource, TContext, TModel>();
-        void Fill<TSource, TModel>(TSource source, TModel model);
-        void Fill<TSource, TModel,TContext>(TSource source, TModel model, TContext context);
-        
+        string[] Keys { get; }
+        void RegisterDelegate(string mappingKey, Delegate del);
+        Delegate this[string mappingKey] { get; }
+
+        /// <summary>
+        /// Execute one-to-one mapping to PRODUCE NEW <see cref="TDestination"/> object
+        /// <seealso cref="Map{TSource, TDestination}(TSource)"/>
+        /// </summary>
+        void Register<TSource, TDestination>(Func<TSource, TDestination> func);
+
+        /// <summary>        
+        /// Execute one-to-one mapping to PRODUCE NEW <see cref="TDestination"/> object
+        /// </summary>
+        TDestination Map<TSource, TDestination>(TSource source);
+
+        /// <summary>
+        /// Register type mapping delegate to update existing <see cref="TDestination"/> object
+        /// <seealso cref="Update{TDestination, TSource}(TDestination, TSource)"/>
+        /// </summary>
+        void RegisterUpdate<TDestination, TSource>(Action<TDestination, TSource> action);
+
+        /// <summary>
+        /// Execute one-to-one mapping to UPDATE EXISTING <see cref="TTarget"/> object        
+        /// </summary>
+        TTarget Update<TTarget, TSource>(TTarget target, TSource source);
     }
 }

@@ -52,12 +52,13 @@ namespace AVS.CoreLib.UnitTesting.xUnit
             int index2 = -1;
             int num1 = 0;
             int num2 = 0;
-            if (expected == null)
-            {
-                if (actual == null)
-                    return;
-            }
-            else if (actual != null)
+            if (expected == null && actual == null)
+                return;
+
+            if (expected == actual)
+                return;
+            
+            if (actual != null && expected != null)
             {
                 index1 = 0;
                 index2 = 0;
@@ -94,25 +95,26 @@ namespace AVS.CoreLib.UnitTesting.xUnit
                     }
                 }
             }
+
             if (index1 < num1 || index2 < num2)
                 throw new StringEqualException(expected, actual, userMessage, index1, index2);
         }
 
 
-        public static void Equal(decimal expected, decimal actual, string userMessage)
+        public static void Equal(decimal expected, decimal actual, string? userMessage = null)
         {
             if (expected != actual)
                 throw new EqualException(expected, actual, userMessage);
         }
 
-        public static void Equal(decimal expected, decimal actual, decimal tolerance, string userMessage)
+        public static void Equal(decimal expected, decimal actual, decimal tolerance, string? userMessage = null)
         {
             var diff = expected - actual;
             if (diff.Abs() > tolerance)
                 throw new EqualException(expected, actual, userMessage);
         }
 
-        public static void Equal(double expected, double actual, string userMessage)
+        public static void Equal(double expected, double actual, string? userMessage = null)
         {
             if (expected != actual)
                 throw new EqualException(expected, actual, userMessage);
@@ -132,7 +134,7 @@ namespace AVS.CoreLib.UnitTesting.xUnit
             }
             catch
             {
-                throw new EqualException(expected, actual, userMessage);
+                throw new EqualException(expected!, actual!, userMessage);
             }
         }
         #endregion
