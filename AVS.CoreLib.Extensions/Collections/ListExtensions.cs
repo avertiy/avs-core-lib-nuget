@@ -6,16 +6,74 @@ namespace AVS.CoreLib.Extensions.Collections
 {
     public static class ListExtensions
     {
-        public static void AddRange<T>(this IList<T> source, params T[] items)
+        /// <summary>
+        /// Adds the elements of the given collection one-by-one to the end of this list.
+        /// </summary>        
+        public static int AddRange<T>(this IList<T> list, params T[] items)
         {
+            var counter = 0;
             foreach (var item in items)
-                source.Add(item);
+            {
+                list.Add(item);
+                counter++;
+            }
+
+            return counter;
         }
 
-        public static void AddRange<T>(this IList<T> source, IEnumerable<T> items)
+        /// <summary>
+        /// Adds the elements of the given collection one-by-one to the end of this list.
+        /// </summary>        
+        public static int AddRange<T>(this IList<T> list, IEnumerable<T> collection, bool distinct = false)
         {
+            var counter = 0;
+            foreach (var item in collection)
+            {
+                list.Add(item);
+                counter++;
+            }
+
+            return counter;
+        }
+
+        /// <summary>
+        /// Adds distinct elements one-by-one to the end of this list.
+        /// </summary>        
+        public static int AddDistinct<T>(this IList<T> list, params T[] items)
+        {
+            if(items == null || items.Length == 0)
+                return 0;
+
+            var counter = 0;
             foreach (var item in items)
-                source.Add(item);
+            {
+                if (list.Contains(item))
+                    continue;
+
+                list.Add(item);
+                counter++;
+            }
+            return counter;
+        }
+
+        /// <summary>
+        /// Adds distinct elements one-by-one to the end of this list.
+        /// </summary>        
+        public static int AddDistinct<T>(this IList<T> list, IEnumerable<T>? collection)
+        {
+            if (collection == null)
+                return 0;
+
+            var counter = 0;
+            foreach (var item in collection)
+            {
+                if (list.Contains(item))
+                    continue;
+
+                list.Add(item);
+                counter++;
+            }
+            return counter;
         }
 
         /// <summary>
@@ -55,6 +113,8 @@ namespace AVS.CoreLib.Extensions.Collections
             }
             return counter;
         }
+
+        
 
         public static bool ContainsAll<T>(this IList<T> source, params T[] items)
         {
