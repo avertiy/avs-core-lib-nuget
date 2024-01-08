@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
 using AVS.CoreLib.Abstractions.Messaging;
-using AVS.CoreLib.Abstractions.Messaging.PubSub;
+using AVS.CoreLib.Messaging.Abstractions.PubSub;
 using Microsoft.Extensions.Logging;
 
 namespace AVS.CoreLib.Messaging.PubSub
 {
     /// <summary>
-    /// Represent an event consumer
-    /// <remarks>Don't forget to register consumer in DI</remarks>
+    /// Represents base class for the event consumer <see cref="IEventConsumer{TEvent, TContext}"/>
     /// </summary>
     public abstract class EventConsumer<TEvent, TContext> : IEventConsumer<TEvent, TContext>
         where TEvent : IEvent

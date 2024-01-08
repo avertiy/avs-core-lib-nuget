@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions.Messaging;
-using AVS.CoreLib.Abstractions.Messaging.CommandBus;
+using AVS.CoreLib.Messaging.Abstractions.CommandBus;
 
 namespace AVS.CoreLib.Messaging.CommandBus
 {

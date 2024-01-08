@@ -2,10 +2,13 @@
 using System.Threading;
 using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions.Messaging;
-using AVS.CoreLib.Abstractions.Messaging.PubSub;
+using AVS.CoreLib.Messaging.Abstractions.PubSub;
 
 namespace AVS.CoreLib.Messaging.PubSub
 {
+    /// <summary>
+    /// Represents a null (do nothing) implementation of <see cref="IEventPublisher"/>
+    /// </summary>
     public class NullEventPublisher : IEventPublisher
     {
         public void Publish(IEvent @event, IPublishContext context)

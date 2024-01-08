@@ -5,15 +5,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions.Messaging;
-using AVS.CoreLib.Abstractions.Messaging.PubSub;
 using AVS.CoreLib.Extensions;
+using AVS.CoreLib.Messaging.Abstractions.PubSub;
 using Microsoft.Extensions.Logging;
 
 namespace AVS.CoreLib.Messaging.PubSub
 {
     /// <summary>
-    /// Represents pub/sub (one-to-many) model of in-app communication.
-    /// <see cref="IEventConsumerFactory"/> resolve consumers by event 
+    /// Represents in-app implementation of the <see cref="IEventPublisher"/> (pub/sub approach to decouple app modules).
     /// </summary>
     public class EventPublisher : IEventPublisher
     {

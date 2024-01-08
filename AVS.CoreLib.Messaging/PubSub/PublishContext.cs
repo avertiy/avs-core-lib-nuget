@@ -1,6 +1,6 @@
 ﻿using System;
 using AVS.CoreLib.Abstractions.Messaging;
-using AVS.CoreLib.Abstractions.Messaging.PubSub;
+using AVS.CoreLib.Messaging.Abstractions.PubSub;
 
 namespace AVS.CoreLib.Messaging.PubSub
 {

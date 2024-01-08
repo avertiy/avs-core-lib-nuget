@@ -1,6 +1,6 @@
 ﻿using AVS.CoreLib.Abstractions.Messaging;
-using AVS.CoreLib.Abstractions.Messaging.CommandBus;
-using AVS.CoreLib.Abstractions.Messaging.PubSub;
+using AVS.CoreLib.Messaging.Abstractions.CommandBus;
+using AVS.CoreLib.Messaging.Abstractions.PubSub;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 

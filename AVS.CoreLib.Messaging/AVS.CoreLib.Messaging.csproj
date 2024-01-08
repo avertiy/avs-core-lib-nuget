@@ -8,7 +8,7 @@
     <Authors>Artem Vertii</Authors>    
     <Product>CoreLib</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>7.0.0.0</AssemblyVersion>
+    <AssemblyVersion>7.0.1</AssemblyVersion>
     <FileVersion>1.0.0</FileVersion>
     <Description>contains useful utilities, types and extensions</Description>
     <Copyright>Artem Vertii</Copyright>
@@ -16,17 +16,13 @@
     <PackageTags>avs corelib pubsub</PackageTags>
     <RepositoryUrl>https://github.com/avertiy/avs-core-lib-nuget</RepositoryUrl>
     <RepositoryType>public</RepositoryType>
-    <Version>7.0.0.0</Version>
+    <Version>7.0.1</Version>
     <LangVersion>9</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\AVS.CoreLib.Abstractions\AVS.CoreLib.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

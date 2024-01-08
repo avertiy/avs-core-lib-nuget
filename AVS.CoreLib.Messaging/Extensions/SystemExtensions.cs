@@ -3,7 +3,7 @@ using System.Text;
 
 namespace AVS.CoreLib.Extensions
 {
-    public static class SystemExtensions
+    internal static class SystemExtensions
     {
         public static string ToStringNotation(this Type type)
         {

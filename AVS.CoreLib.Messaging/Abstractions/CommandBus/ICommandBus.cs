@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
+using AVS.CoreLib.Abstractions.Messaging;
 
-namespace AVS.CoreLib.Abstractions.Messaging.CommandBus
+namespace AVS.CoreLib.Messaging.Abstractions.CommandBus
 {
     /// <summary>
     /// Represents 1-to-1 model of message communication.

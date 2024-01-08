@@ -1,4 +1,6 @@
-﻿namespace AVS.CoreLib.Abstractions.Messaging.CommandBus
+﻿using AVS.CoreLib.Abstractions.Messaging;
+
+namespace AVS.CoreLib.Messaging.Abstractions.CommandBus
 {
     /// <summary>
     /// It is expected that a single service instance performs the command action.

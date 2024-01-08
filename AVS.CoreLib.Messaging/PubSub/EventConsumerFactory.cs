@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AVS.CoreLib.Abstractions.Messaging.PubSub;
+using AVS.CoreLib.Messaging.Abstractions.PubSub;
 
 namespace AVS.CoreLib.Messaging.PubSub
 {
     /// <summary>
-    /// resolve event consumer(s), if any registered in DI as <seealso cref="IEventConsumer{TEvent,TContext}"/>" 
+    /// Represents an utility class to resolve event consumer(s), if any registered in DI as <seealso cref="IEventConsumer{TEvent,TContext}"/>" 
     /// </summary>
     internal sealed class EventConsumerFactory : IEventConsumerFactory
     {
