@@ -61,6 +61,25 @@ namespace AVS.CoreLib.Dates
             return From <= range.From && To >= range.To;
         }
 
+        /// <summary>
+        /// Increase/decrease date range by adding/subtracting milliseconds from <see cref="To"/> property
+        /// </summary>
+        public DateRange Add(double milliseconds)
+        {
+            var to = To.AddMilliseconds(milliseconds);
+            return new DateRange(From, to);
+        }
+
+        /// <summary>
+        /// Increase/decrease date range by adding/subtracting milliseconds to <see cref="From"/> and <see cref="To"/> properties
+        /// </summary>
+        public DateRange Add(double millisecondsFrom, double millisecondsTo)
+        {
+            var from = From.AddMilliseconds(millisecondsFrom);
+            var to = From.AddMilliseconds(millisecondsTo);
+            return new DateRange(from, to);
+        }
+
         #region implicit conversions
         public static implicit operator DateRange((DateTime, DateTime) tuple)
         {
