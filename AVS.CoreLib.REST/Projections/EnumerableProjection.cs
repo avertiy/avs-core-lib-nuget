@@ -107,7 +107,7 @@ namespace AVS.CoreLib.REST.Projections
                 i++;
                 try
                 {
-                    var obj = JsonHelper.Deserialize<T>(jToken, itemType);
+                    var obj = NewtonsoftJsonHelper.Deserialize<T>(jToken, itemType);
                     if (obj == null)
                         continue;
 

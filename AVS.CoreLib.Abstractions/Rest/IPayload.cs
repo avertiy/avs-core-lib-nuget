@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace AVS.CoreLib.Abstractions.Rest
 {
+    [Obsolete("Use IRequest instead")]
     public interface IPayload : IEnumerable<KeyValuePair<string, string>>
     {
         string RelativeUrl { get; set; }

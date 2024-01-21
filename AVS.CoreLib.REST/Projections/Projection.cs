@@ -59,7 +59,7 @@ namespace AVS.CoreLib.REST.Projections
                 var obj = Activator.CreateInstance<T>();
                 var jToken = LoadToken<JToken>();
                 inspect(jToken, obj);
-                JsonHelper.Populate(jToken, obj);
+                NewtonsoftJsonHelper.Populate(jToken, obj);
                 err = null;
                 return obj;
             }
@@ -88,7 +88,7 @@ namespace AVS.CoreLib.REST.Projections
                 else
                 {
                     var token = LoadToken<JToken>();
-                    JsonHelper.Populate(token, obj);
+                    NewtonsoftJsonHelper.Populate(token, obj);
                     _postProcess?.Invoke(obj);
                     response.Data = obj;
                 }
@@ -119,7 +119,7 @@ namespace AVS.CoreLib.REST.Projections
                 else
                 {
                     var token = LoadToken<JToken>();
-                    JsonHelper.Populate(token, obj);
+                    NewtonsoftJsonHelper.Populate(token, obj);
                     _postProcess?.Invoke(obj);
                     response.Data = obj;
                 }
@@ -146,7 +146,7 @@ namespace AVS.CoreLib.REST.Projections
                 if (!IsEmpty)
                 {
                     var jToken = LoadToken<JToken>();
-                    JsonHelper.Populate(jToken, proxy);
+                    NewtonsoftJsonHelper.Populate(jToken, proxy);
                 }
 
                 var obj = proxy.Create();
@@ -198,7 +198,7 @@ namespace AVS.CoreLib.REST.Projections
                 var obj = Activator.CreateInstance<TType>();
                 var jToken = LoadToken<JToken>();
                 inspect(jToken, obj);
-                JsonHelper.Populate(jToken, obj);
+                NewtonsoftJsonHelper.Populate(jToken, obj);
                 err = null;
                 return obj;
             }
@@ -223,7 +223,7 @@ namespace AVS.CoreLib.REST.Projections
                 if (!IsEmpty)
                 {
                     var jToken = LoadToken<JToken>();
-                    JsonHelper.Populate(jToken, obj);
+                    NewtonsoftJsonHelper.Populate(jToken, obj);
                 }
 
                 _postProcess?.Invoke(obj);
@@ -254,7 +254,7 @@ namespace AVS.CoreLib.REST.Projections
                 if (!IsEmpty)
                 {
                     var jToken = LoadToken<JToken>();
-                    JsonHelper.Populate(jToken, obj);
+                    NewtonsoftJsonHelper.Populate(jToken, obj);
                 }
 
                 _postProcess?.Invoke(obj);

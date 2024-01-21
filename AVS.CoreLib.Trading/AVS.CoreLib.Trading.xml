@@ -120,12 +120,6 @@
             ohlc.Low == ohlc.Close and ohlc.High - ohlc.Open > body * 2
             </summary>
         </member>
-        <member name="T:AVS.CoreLib.Trading.Enums.Bars.Color">
-            <summary>
-            Represents a 2 color + neutral (none) enum
-            Used to color MA/BB and other simply indicating bearish/bullish direction with a color
-            </summary>
-        </member>
         <member name="F:AVS.CoreLib.Trading.Enums.Coins.CoinCap.BigCap">
             <summary>
             1+ billion ~ top 50 coins
@@ -784,8 +778,10 @@
         </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.BarLengthExtensions.GetBodyLength(AVS.CoreLib.Trading.Abstractions.IOhlc,System.Int32)">
             <summary>
-            get abs candle body length in %
-            </summary>
+            get body length in % 
+            for bullish bars length &gt; 0; 
+            for bearish bars length &lt; 0;   
+            </summary>        
         </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.BarLengthExtensions.GetShadowLength(AVS.CoreLib.Trading.Abstractions.IOhlc,System.Int32)">
             <summary>

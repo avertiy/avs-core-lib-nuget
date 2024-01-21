@@ -139,7 +139,7 @@ namespace AVS.CoreLib.REST.Projections
                         i++;
                         try
                         {
-                            var item = JsonHelper.Deserialize<TItem>(jToken, type);
+                            var item = NewtonsoftJsonHelper.Deserialize<TItem>(jToken, type);
                             if (item == null)
                                 continue;
 
@@ -195,7 +195,7 @@ namespace AVS.CoreLib.REST.Projections
                         i++;
                         try
                         {
-                            var item = JsonHelper.Deserialize<TItem>(jToken, type);
+                            var item = NewtonsoftJsonHelper.Deserialize<TItem>(jToken, type);
                             if (item == null)
                                 continue;
 
@@ -251,7 +251,7 @@ namespace AVS.CoreLib.REST.Projections
                         i++;
                         try
                         {
-                            var item = JsonHelper.Deserialize<TItem>(jToken, type);
+                            var item = NewtonsoftJsonHelper.Deserialize<TItem>(jToken, type);
                             if (item == null)
                                 continue;
 
@@ -369,7 +369,7 @@ namespace AVS.CoreLib.REST.Projections
                 if (_whereKey != null && !_whereKey(key))
                     return;
 
-                var item = JsonHelper.Deserialize<TItem>(jToken, itemType);
+                var item = NewtonsoftJsonHelper.Deserialize<TItem>(jToken, itemType);
 
                 if (item == null)
                     throw new NullReferenceException($"Deserialized {itemType.Name} value is null [key={key}; token:{jToken}]");

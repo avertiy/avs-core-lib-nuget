@@ -1,5 +1,7 @@
-﻿using AVS.CoreLib.Abstractions.Rest;
+﻿using AVS.CoreLib.Abstractions.Json;
+using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.REST.Clients;
+using AVS.CoreLib.REST.Json;
 using AVS.CoreLib.REST.RequestBuilders;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,6 +18,7 @@ namespace AVS.CoreLib.REST
             services.AddTransient<IPublicRequestMessageBuilder, PublicRequestMessageBuilder>();            
             services.AddTransient<IRateLimiter, RateLimiter>();
             services.AddTransient<IPublicRestClient, PublicRestClient>();
+            services.AddSingleton<IJsonService, JsonService>();
 
             //services.TryAddSingleton<IAuthenticator, Authenticator<HMACSHA512>>();
             //services.AddTransient<IRequestMessageBuilder, RequestMessageBuilder>();
@@ -40,12 +43,5 @@ namespace AVS.CoreLib.REST
             });
             services.AddSingleton(x => (IAuthenticator)x.GetService<HMACSHA256Authenticator>());
         }
-
-        //[Obsolete("use AddREST()")]
-        //public static void AddRestClient(this IServiceCollection services)
-        //{
-        //    services.TryAddScoped<IHttpRequestBuilder, HttpRequestBuilder>();
-        //    services.TryAddScoped<IRestClient, RestClient>();
-        //}
     }
 }

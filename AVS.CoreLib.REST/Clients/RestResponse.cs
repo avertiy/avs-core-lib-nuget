@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net;
@@ -7,10 +8,11 @@ using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Guards;
 using AVS.CoreLib.REST.Extensions;
+using AVS.CoreLib.REST.Json;
 using Newtonsoft.Json.Linq;
 
 namespace AVS.CoreLib.REST
-{   
+{
     [DebuggerDisplay("{ToString()}")]
     public class RestResponse
     {
@@ -52,10 +54,38 @@ namespace AVS.CoreLib.REST
 
             return result;
         }
+
+        public T? Deserialize<T>()
+        {
+            try
+            {
+                return JsonHelper.DeserializeObject<T>(Content);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"RestResponse.Deserialize<{typeof(T).Name}>() failed", ex);
+            }
+        }
     }
 
     public static class RestResponseExtensions
     {
+        public static bool TryDeserialize<T>(this RestResponse response, out T? value, out string? error)
+        {
+            try
+            {
+                value = response.Deserialize<T>();
+                error = null;
+                return true;
+            }
+            catch (Exception ex)
+            {
+                value = default;
+                error = ex.ToString();
+                return false;
+            }
+        }
+
         public static RestResponse Copy(this RestResponse response, string? content = null)
         {
             return new RestResponse(response.Source,response.Request, response.StatusCode)

@@ -1,7 +1,8 @@
-﻿using System;
-using System.IO;
+﻿#nullable enable
+using System;
 using System.Reflection;
-using AVS.CoreLib.REST.Json.Newtonsoft;
+using AVS.CoreLib.Extensions.Reflection;
+using AVS.CoreLib.REST.Json;
 using Newtonsoft.Json;
 
 namespace AVS.CoreLib.REST.Extensions
@@ -13,20 +14,20 @@ namespace AVS.CoreLib.REST.Extensions
             var converterAttribute = prop.GetJsonConverterAttribute();
             if (converterAttribute != null)
                 writer.WriteRawValue(value.Serialize(converterAttribute));
-            else if (JsonHelper.IsSimpleType(prop.PropertyType))
+            else if (prop.PropertyType.IsSimpleType())
                 writer.WriteValue(value);
             else
                 serializer.Serialize(writer, value);
         }
 
-        public static string Serialize(this object value, JsonConverterAttribute attr)
+        private static string Serialize(this object value, JsonConverterAttribute attr)
         {
-            return JsonConvert.SerializeObject(value, (JsonConverter)Activator.CreateInstance(attr.ConverterType));
+            return JsonHelper.SerializeObject(value, null, attr.ConverterType);            
         }
 
-        public static JsonConverterAttribute GetJsonConverterAttribute(this PropertyInfo prop)
+        private static JsonConverterAttribute? GetJsonConverterAttribute(this PropertyInfo prop)
         {
-            return (JsonConverterAttribute)prop.GetCustomAttribute(typeof(JsonConverterAttribute));
+            return (JsonConverterAttribute?)prop.GetCustomAttribute(typeof(JsonConverterAttribute));
         }
 
         public static bool HasIgnoreAttribute(this PropertyInfo prop)
@@ -46,19 +47,19 @@ namespace AVS.CoreLib.REST.Extensions
             }
             return true;
         }
-
+        
         public static string ToJson(this object obj)
         {
-            return JsonConvert.SerializeObject(obj);
+            return JsonHelper.SerializeObject(obj);
         }
 
         public static string ToJsonOrToString(this object obj)
         {
             try
             {
-                return JsonConvert.SerializeObject(obj);
+                return JsonHelper.SerializeObject(obj);
             }
-            catch (Exception ex)
+            catch
             {
                 return obj.ToString();
             }
@@ -68,7 +69,7 @@ namespace AVS.CoreLib.REST.Extensions
         {
             try
             {
-                return JsonConvert.SerializeObject(obj);
+                return JsonHelper.SerializeObject(obj);
             }
             catch (Exception ex)
             {
@@ -76,43 +77,10 @@ namespace AVS.CoreLib.REST.Extensions
             }
         }
 
-        public static T Deserialize<T>(this string json) where T : new()
+        [Obsolete("Use JsonHelper.DeserializeObject or IJsonService instead")]
+        public static T? Deserialize<T>(this string? json)
         {
-            return JsonConvert.DeserializeObject<T>(json);
-        }
-
-        public static T Deserialize<T>(this RestResponse jsonResult)
-        {
-            using var stringReader = new StringReader(jsonResult.Content);
-            using var jsonTextReader = new JsonTextReader(stringReader);
-            try
-            {
-                var serializer = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore };
-                return (T)serializer.Deserialize(jsonTextReader, typeof(T));
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Deserialization of type {typeof(T).Name} failed", ex);
-            }
-        }
-
-        public static bool TryDeserialize<T>(this RestResponse jsonResult, out T value, out string error)
-        {
-            using var stringReader = new StringReader(jsonResult.Content);
-            using var jsonTextReader = new JsonTextReader(stringReader);
-            try
-            {
-                var serializer = new JsonSerializer() { NullValueHandling = NullValueHandling.Ignore };
-                value = (T)serializer.Deserialize(jsonTextReader, typeof(T));
-                error = null;
-                return true;
-            }
-            catch (Exception ex)
-            {
-                value = default;
-                error = ex.Message;
-                return false;
-            }
-        }
+            return JsonHelper.DeserializeObject<T>(json);
+        }        
     }
 }

@@ -80,7 +80,7 @@ namespace AVS.CoreLib.REST.Projections
                         i++;
                         try
                         {
-                            var item = JsonHelper.Deserialize<T>(jToken, type);
+                            var item = NewtonsoftJsonHelper.Deserialize<T>(jToken, type);
                             if (item == null)
                                 continue;
 
@@ -140,7 +140,7 @@ namespace AVS.CoreLib.REST.Projections
                         i++;
                         try
                         {
-                            var item = JsonHelper.Deserialize<TType>(jToken, type);
+                            var item = NewtonsoftJsonHelper.Deserialize<TType>(jToken, type);
                             if (item == null)
                                 continue;
 
@@ -203,7 +203,7 @@ namespace AVS.CoreLib.REST.Projections
                         i++;
                         try
                         {
-                            var item = JsonHelper.Deserialize<T>(jToken, itemType);
+                            var item = NewtonsoftJsonHelper.Deserialize<T>(jToken, itemType);
                             if (item == null)
                                 continue;
 

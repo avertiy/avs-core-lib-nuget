@@ -175,7 +175,7 @@ namespace AVS.CoreLib.REST.Projections
                     if (_filterByKey != null && !_filterByKey(key))
                         continue;
 
-                    value = JsonHelper.Deserialize<TValue>(kp.Value, valueType);
+                    value = NewtonsoftJsonHelper.Deserialize<TValue>(kp.Value, valueType);
 
                     if (value == null)
                         throw new NullReferenceException("value is null");

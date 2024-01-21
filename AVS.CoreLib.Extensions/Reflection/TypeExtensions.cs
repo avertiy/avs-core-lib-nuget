@@ -159,5 +159,20 @@ namespace AVS.CoreLib.Extensions.Reflection
 
             return true;
         }
+
+        /// <summary>
+        /// Determines if type is simple
+        /// simply type is either  primitive, string, decimal or any of those wrapped in Nullable
+        /// </summary>
+        public static bool IsSimpleType(this Type type)
+        {
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+                // nullable type, check if the nested type is simple.
+                return IsSimpleType(type.GetGenericArguments()[0]);
+            return type.IsPrimitive
+                   || type.IsEnum
+                   || type == typeof(string)
+                   || type == typeof(decimal);
+        }
     }
 }
