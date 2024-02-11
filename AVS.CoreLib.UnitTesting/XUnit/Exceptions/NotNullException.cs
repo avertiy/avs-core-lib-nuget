@@ -36,6 +36,17 @@ namespace AVS.CoreLib.UnitTesting.XUnit.Exceptions
         }
     }
 
+    public class FalseException : XunitException
+    {
+        /// <summary>
+        /// Creates a new instance of the <see cref="T:Xunit.Sdk.NotNullException" /> class.
+        /// </summary>
+        public FalseException(string userMessage, bool condition)
+            : base($"Assert.False({condition}) Failure\r\n{userMessage}")
+        {
+        }
+    }
+
     public class RangeException : XunitException
     {
         /// <summary>

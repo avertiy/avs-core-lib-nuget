@@ -125,10 +125,10 @@ namespace AVS.CoreLib.REST.Clients
             if (response.Error != null)
                 return;
 
-            if (string.IsNullOrEmpty(response.Error))
+            if (string.IsNullOrEmpty(response.Content))
                 return;
-
-            var re = new Regex("(error|err-msg|error-message)[\"']?:[\"']?(?<error>.*?)[\"',}]", RegexOptions.IgnoreCase);
+            
+            var re = new Regex("(error|err-msg|error-message)\"?:\"?(?<error>.+?)\"", RegexOptions.IgnoreCase);
             var match = re.Match(response.Content);
 
             if (match.Success)

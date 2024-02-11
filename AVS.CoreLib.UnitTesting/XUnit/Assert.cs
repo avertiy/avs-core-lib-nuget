@@ -9,7 +9,8 @@ namespace AVS.CoreLib.UnitTesting.xUnit
     {
         public static void Success(IResponse response, string userMessage)
         {
-            True(response.Success, $"\r\n {userMessage}\r\n Error: {response.Error}");
+            if (!response.Success)
+                throw new TrueException($"\r\n {userMessage}\r\n Error: {response.Error}", response.Success);            
         }
 
         public static void Null([MaybeNull] object? obj, string userMessage = "Expected null value")
@@ -26,8 +27,14 @@ namespace AVS.CoreLib.UnitTesting.xUnit
 
         public static new void True(bool condition, string userMessage)
         {
-            if (condition)
+            if (!condition)
                 throw new TrueException(userMessage, condition);
+        }
+
+        public static new void False(bool condition, string userMessage)
+        {
+            if (condition)
+                throw new FalseException(userMessage, condition);
         }
 
         public static void WithinRange(decimal actual, (decimal from, decimal to) range, string userMessage)

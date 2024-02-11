@@ -180,6 +180,36 @@
             dangerous things that has no or very poor fundamental, and might scam
             </summary>
         </member>
+        <member name="T:AVS.CoreLib.Trading.Enums.ExecType">
+            <summary>
+            defined in ByBit unified API docs
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.ExecType.AdlTrade">
+            <summary>
+            Auto-Deleveraging
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.ExecType.Funding">
+            <summary>
+            Funding fee
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.ExecType.BustTrade">
+            <summary>
+            Liquidation
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.ExecType.BlockTrade">
+            <summary>
+            ?? - хз не описано в доках к апи 
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.ExecType.MovePosition">
+            <summary>
+            
+            </summary>
+        </member>
         <member name="T:AVS.CoreLib.Trading.Enums.Futures.AccountUpdateReason">
             <summary>
             Account update reason
@@ -607,35 +637,18 @@
             Full order info, only valid on SPOT orders  
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.Limit">
+        <member name="T:AVS.CoreLib.Trading.Enums.OrderType">
             <summary>
-            Limit orders will be placed at a specific price. If the price isn't available in the order book for that asset the order will be added in the order book for someone to fill.
+            Order can be executed either as limit order (with marker fees) or as market order (taker fees)
+            rest options are conditional perks 
+            to quickly identify market/limit type use sign:
+             &gt;0 - limit order 
+             &lt;0 - market order 
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.Market">
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.OcoOrder">
             <summary>
-            Market order will be placed without a price. The order will be executed at the best price available at that time in the order book.
-            </summary>
-        </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.LimitMaker">
-            <summary>
-            Maker or "post-only" order is a conditional limit order, that serves to add liquidity to the order book so it is charged with a maker fee. 
-            If order price crosses market spread the order will be rejected.
-            </summary>
-        </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.Stop">
-            <summary>
-            Stop order. Execute a limit order when price reaches a specific Stop price
-            </summary>
-        </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.StopMarket">
-            <summary>
-            Stop market order. Execute a market order when price reaches a specific Stop price
-            </summary>
-        </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.TakeProfit">
-            <summary>
-            Take profit order. Will execute a limit order when the price rises above a price to sell and therefor take a profit
+            One cancels the other - conditional order
             </summary>
         </member>
         <member name="F:AVS.CoreLib.Trading.Enums.OrderType.TakeProfitMarket">
@@ -646,6 +659,51 @@
         <member name="F:AVS.CoreLib.Trading.Enums.OrderType.TrailingStopMarket">
             <summary>
             A trailing stop order will execute an order when the price drops below a certain percentage from its all time high since the order was activated
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.StopMarket">
+            <summary>
+            Stop market order. Execute a market order when price reaches a specific Stop price
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.Market">
+            <summary>
+            Market order will be placed without a price. The order will be executed at the best price available at that time in the order book.
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.Funding">
+            <summary>
+            Mainly, it is used to refer to internal operation for charging funding fees
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.Limit">
+            <summary>
+            Limit orders will be placed at a specific price. If the price isn't available in the order book for that asset the order will be added in the order book for someone to fill.
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.LimitMaker">
+            <summary>
+            Maker or "post-only" order serves to add liquidity to orderbook, it is charged with a maker fee. 
+            If order price crosses market spread the order will be rejected.        
+            </summary>
+            <remarks>
+            releavent for Poloniex API (LIMIT_MARKER)
+            </remarks>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.Stop">
+            <summary>
+            Stop order. Execute a limit order when price reaches a specific Stop price
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.TrailingStop">
+            <summary>
+            A trailing stop order will post a limit order when the price drops below a certain percentage 
+            from its all time high since the order was activated
+            </summary>
+        </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.OrderType.TakeProfit">
+            <summary>
+            Take profit order. Will execute a limit order when the price rises above a price to sell and therefor take a profit
             </summary>
         </member>
         <member name="F:AVS.CoreLib.Trading.Enums.TimeInForce.GTC">
