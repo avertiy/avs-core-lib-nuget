@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using AVS.CoreLib.Extensions.Attributes;
@@ -74,6 +75,31 @@ namespace AVS.CoreLib.Extensions.Reflection
 
             return dict;
         }
+
+        public static PropertyInfo[] SearchProperties(this Type type, string selector, BindingFlags flags)
+        {
+            //selector examples: close or close,high or close,high,time
+            var parts = selector.Split(',');
+            var props = type.GetProperties(flags);
+            var list = new List<PropertyInfo>(props.Length);
+
+            var strComparison = flags.HasFlag(BindingFlags.IgnoreCase) ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+
+            foreach (var part in parts)
+            {
+                foreach (var prop in props)
+                {
+                    if (prop.Name.Equals(part, strComparison))
+                    {
+                        list.Add(prop);
+                        break;
+                    }
+                }
+            }
+
+            return list.ToArray();
+        }
+
 
         public static Type? FindGenericType(this Type type, string name)
         {
@@ -173,6 +199,42 @@ namespace AVS.CoreLib.Extensions.Reflection
                    || type.IsEnum
                    || type == typeof(string)
                    || type == typeof(decimal);
+        }        
+    }
+
+    public static class ReflectionHelper
+    {
+        /// <summary>
+        /// You should cache this delegate, because constantly recompiling Linq expressions can be expensive
+        /// </summary>
+        public static Func<object> CreateDefaultConstructor(Type type)
+        {
+            // Create a new lambda expression with the NewExpression as the body.
+            var lambda = Expression.Lambda<Func<object>>(Expression.New(type));
+            // Compile our new lambda expression.
+            return lambda.Compile();
+        }
+
+        public static Type ConstructList(Type item)
+        {
+            var generic = typeof(List<>);
+            var type = generic.MakeGenericType(item);
+            return type;
+        }
+
+        public static Type ConstructDictionary<TKey>(Type value)
+        {
+            var generic = typeof(Dictionary<,>);
+            var type = generic.MakeGenericType(typeof(TKey), value);
+            return type;
+        }
+
+        public static Type ConstructDictionary(Type key, Type value)
+        {
+            var generic = typeof(Dictionary<,>);
+            var type = generic.MakeGenericType(key, value);
+            return type;
         }
     }
+
 }

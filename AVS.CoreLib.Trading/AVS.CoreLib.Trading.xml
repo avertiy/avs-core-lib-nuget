@@ -14,6 +14,54 @@
             Amount of quote asset
             </summary>
         </member>
+        <member name="T:AVS.CoreLib.Trading.Abstractions.IBarProps">
+            <summary>
+            Contains set of calculated extra properties to extend bar info
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Abstractions.IBarProps.ATR">
+            <summary>
+            take 3-5 last bars sum of (High - Low)
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Abstractions.IBarProps.Length">
+            <summary>
+            indicates length in %
+            formula: (High - Low)/Close * 100 
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Abstractions.IBarProps.BodyLength">
+            <summary>
+            indicates body abs. size in %
+            formula: 100 * (Open > Close ? (Open - Close)/Close : (Close - Open)/Open)
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Abstractions.IBarProps.Oc2">
+            <summary>
+            (Open+Close)/2
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Abstractions.IBarProps.Hl2">
+            <summary>
+            (High+Low)/2
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Abstractions.IBarProps.Hlc3">
+            <summary>
+            (High+Low+Close)/3
+            </summary>
+        </member>
+        <member name="P:AVS.CoreLib.Trading.Abstractions.IBarProps.SizeAbs">
+            <summary>
+            Indicates bar size (length) relative to avg bar length
+            </summary>
+        </member>
+        <member name="T:AVS.CoreLib.Trading.Abstractions.ICalculatedProps">
+            <summary>
+            represent a dynamic set of calculated Bar properties with decimal values
+            e.g. MovingStatistic like AvgLength, AvgVolume, AvgDistance, WeekHigh, WeekLow etc.
+            </summary>
+        </member>
         <member name="P:AVS.CoreLib.Trading.Abstractions.IOhlcv.Volume">
             <summary>
             Amount of base asset
@@ -39,6 +87,11 @@
             the Add method implemented explicitly due to model binding mechanics 
             </summary>
         </member>
+        <member name="F:AVS.CoreLib.Trading.Constants.TradingConstants.MinOrderAmountThreshold">
+            <summary>
+            10 USD
+            </summary>
+        </member>
         <member name="M:AVS.CoreLib.Trading.ServiceCollectionExtension.AddTradingCore(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
             Add trading formatters core services
@@ -59,9 +112,14 @@
             Long bar is a bar with a significant a few (2-3) times bigger than average bar
             </summary>
         </member>
+        <member name="F:AVS.CoreLib.Trading.Enums.BarSize.Impulse">
+            <summary>
+            Longer usually full-body bar
+            </summary>
+        </member>
         <member name="F:AVS.CoreLib.Trading.Enums.BarSize.Paranormal">
             <summary>
-            Extreme big or paranormal bar is a bar with a significant length several times bigger than average bar
+            Paranormal bar has length few times bigger than average (normal) bar
             </summary>
         </member>
         <member name="F:AVS.CoreLib.Trading.Enums.VolumeSize.Reduced">
@@ -74,50 +132,19 @@
             2 times bigger volume than the average volume for the last 12 bars
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.BarType.None">
-            <summary>
-            doji Open=Close
-            </summary>
-        </member>
         <member name="F:AVS.CoreLib.Trading.Enums.BarType.Bearish">
             <summary>
-            Open > Close
+            Open &gt; Close (Bearish)
             </summary>
         </member>
-        <!-- Badly formed XML comment ignored for member "F:AVS.CoreLib.Trading.Enums.BarType.Bullish" -->
-        <member name="F:AVS.CoreLib.Trading.Enums.CandleType.Doji">
+        <member name="F:AVS.CoreLib.Trading.Enums.BarType.None">
             <summary>
-            opens and closes at the same price with bi-directional price fluctuation
+            Open=Close (Doji)
             </summary>
         </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.CandleType.Gravestone">
+        <member name="F:AVS.CoreLib.Trading.Enums.BarType.Bullish">
             <summary>
-            open and close at the same price with upper price fluctuation
-            </summary>
-        </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.CandleType.Dragonfly">
-            <summary>
-            open and close at the same price with down price fluctuation
-            </summary>
-        </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.CandleType.Whirligig">
-            <summary>
-            High - Open = Close - Low or High - Close = Open - Low with short body
-            </summary>
-        </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.CandleType.HangingMan">
-            <summary>
-            ohlc.High == ohlc.Open and ohlc.Close - ohlc.Low > body * 2
-            </summary>
-        </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.CandleType.InverseHammer">
-            <summary>
-            ohlc.Low == ohlc.Open and ohlc.High - ohlc.Close > body * 2
-            </summary>
-        </member>
-        <member name="F:AVS.CoreLib.Trading.Enums.CandleType.ShootingStar">
-            <summary>
-            ohlc.Low == ohlc.Close and ohlc.High - ohlc.Open > body * 2
+            Open &lt; Close (Bullish)
             </summary>
         </member>
         <member name="F:AVS.CoreLib.Trading.Enums.Coins.CoinCap.BigCap">
@@ -831,19 +858,23 @@
         </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.BarLengthExtensions.GetLength(AVS.CoreLib.Trading.Abstractions.IOhlc,System.Int32)">
             <summary>
-            Get candle length in % formula: (High - Low)/Close * 100
+            Length(%) = (High - Low)/Close * 100
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.BarLengthExtensions.GetBodyLength(AVS.CoreLib.Trading.Abstractions.IOhlc,System.Int32)">
             <summary>
-            get body length in % 
-            for bullish bars length &gt; 0; 
-            for bearish bars length &lt; 0;   
+            Body Length(%) = (Close > Open ? (Close - Open) / Open : (Open - Close) / Close) * 100
             </summary>        
         </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.BarLengthExtensions.GetShadowLength(AVS.CoreLib.Trading.Abstractions.IOhlc,System.Int32)">
+        <member name="M:AVS.CoreLib.Trading.Extensions.BarLengthExtensions.GetWickLength(AVS.CoreLib.Trading.Abstractions.IOhlc,System.Int32)">
             <summary>
+            Wick (shadow) Length(%)  = Close > Open ? (High-Close) : (Close-Low) / Close *100
             for bullish candles return upper shadow, for bearish - lower
+            </summary>
+        </member>
+        <member name="M:AVS.CoreLib.Trading.Extensions.BarLengthExtensions.IsFullBody(AVS.CoreLib.Trading.Abstractions.IOhlc)">
+            <summary>
+            long shadow means bar length is a <see cref="!:k"/> times bigger than body length
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.BarLengthExtensions.HasLongShadow(AVS.CoreLib.Trading.Abstractions.IOhlc,System.Int32)">
@@ -912,11 +943,6 @@
         <member name="M:AVS.CoreLib.Trading.Extensions.NumberExtensions.Normalize(System.Double)">
             <summary>
             Rounds value to 8 digits AwayFromZero
-            </summary>
-        </member>
-        <member name="M:AVS.CoreLib.Trading.Extensions.OhlcExtensions.GetCandleType(AVS.CoreLib.Trading.Abstractions.IOhlc)">
-            <summary>
-            not implemented to classify all candle types but some basic candle classification is possible
             </summary>
         </member>
         <member name="M:AVS.CoreLib.Trading.Extensions.PriceExtensions.IsAboutTheSame(System.Decimal,System.Decimal,System.Nullable{System.Decimal})">
