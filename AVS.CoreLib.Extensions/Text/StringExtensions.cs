@@ -279,6 +279,8 @@ namespace AVS.CoreLib.Extensions
         {
             if (!string.IsNullOrEmpty(str) && str.Length > 1)
             {
+                if (str.Length < 4)
+                    return str.ToLower();
                 return Char.ToLowerInvariant(str[0]) + str.Substring(1);
             }
 
