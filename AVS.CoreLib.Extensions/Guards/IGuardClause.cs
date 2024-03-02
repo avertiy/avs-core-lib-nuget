@@ -37,14 +37,14 @@ public interface IAgainstGuardClause : IGuardClause
 }
 
 /// <summary>
-/// Aggregates Array & List&lt;T&gt; guard methods (Guard.Array.XXX)
+/// Aggregates Items & List&lt;T&gt; guard methods (Guard.Items.XXX)
 /// </summary>
 public interface IArrayGuardClause : IGuardClause
 {
 }
 
 /// <summary>
-/// Aggregates Array & List&lt;T&gt; guard methods (Guard.Array.XXX)
+/// Aggregates Items & List&lt;T&gt; guard methods (Guard.Items.XXX)
 /// </summary>
 public interface IDictionaryGuardClause : IGuardClause
 {

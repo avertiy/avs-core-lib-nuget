@@ -5,7 +5,7 @@ namespace AVS.CoreLib.Guards;
 
 public static class GuardArrayExtensions
 {
-    #region Array guards
+    #region Items guards
     /// <summary>
     /// check array index, it should be in range [0,arr.Length] 
     /// </summary>
