@@ -6,7 +6,7 @@ namespace AVS.CoreLib.Utilities
 {
     public class QueryString
     {
-        public string BaseUrl { get; set; }
+        public string BaseUrl { get; set; } = null!;
         public IDictionary<string, object> Params { get; } = new Dictionary<string, object>();
 
         public QueryString()

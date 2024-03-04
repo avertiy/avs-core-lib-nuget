@@ -32,7 +32,7 @@ namespace AVS.CoreLib.Debugging
             return instance.DumpElement(element);
         }
 
-        private string DumpElement(object element)
+        private string DumpElement(object? element)
         {
             if (element == null || element is ValueType || element is string)
             {
@@ -74,7 +74,7 @@ namespace AVS.CoreLib.Debugging
                             if (!AlreadyTouched(item))
                                 DumpElement(item);
                             else
-                                Write("{{{0}}} <-- bidirectional reference found", item.GetType().FullName);
+                                Write("{{{0}}} <-- bidirectional reference found", item.GetType().FullName!);
                         }
                     }
                     _level--;
@@ -93,7 +93,7 @@ namespace AVS.CoreLib.Debugging
                 {
                     Write("{");
                     _level++;
-                    MemberInfo[] members = element.GetType().GetMembers(BindingFlags.Public | BindingFlags.Instance);
+                    var members = element.GetType().GetMembers(BindingFlags.Public | BindingFlags.Instance);
                     foreach (var memberInfo in members)
                     {
                         var fieldInfo = memberInfo as FieldInfo;
@@ -102,10 +102,10 @@ namespace AVS.CoreLib.Debugging
                         if (fieldInfo == null && propertyInfo == null)
                             continue;
 
-                        var type = fieldInfo != null ? fieldInfo.FieldType : propertyInfo.PropertyType;
-                        object value = fieldInfo != null
+                        var type = fieldInfo != null ? fieldInfo.FieldType : propertyInfo!.PropertyType;
+                        var value = fieldInfo != null
                                            ? fieldInfo.GetValue(element)
-                                           : propertyInfo.GetValue(element, null);
+                                           : propertyInfo!.GetValue(element, null);
 
                         if (type.IsValueType || type == typeof(string))
                         {
@@ -143,7 +143,7 @@ namespace AVS.CoreLib.Debugging
             return _stringBuilder.ToString();
         }
 
-        private bool AlreadyTouched(object value)
+        private bool AlreadyTouched(object? value)
         {
             if (value == null)
                 return false;
@@ -157,14 +157,14 @@ namespace AVS.CoreLib.Debugging
             return false;
         }
 
-        private void WriteInline(string value, params object[] args)
+        private void WriteInline(string value, params object[]? args)
         {
             if (_stringBuilder.Length > 3 &&  (_stringBuilder[^3] == '[' || _stringBuilder[^3] == '{'))
             {
                 _stringBuilder.Length -= 2;
             }
 
-            if (args != null && args.Length > 0)
+            if (args is { Length: > 0 })
                 value = string.Format(value, args);
 
             _stringBuilder.Append(' '+ value);
@@ -174,33 +174,24 @@ namespace AVS.CoreLib.Debugging
         {
             var space = new string(' ', _level * _indentSize);
 
-            if (args != null && args.Length > 0)
+            if (args is { Length: > 0 })
                 value = string.Format(value, args);
 
             _stringBuilder.AppendLine(space + value);
         }
 
-        private string FormatValue(object o)
+        private string FormatValue(object? o)
         {
-            if (o == null)
-                return ("null");
-
-            if (o is DateTime)
-                return (((DateTime)o).ToShortDateString());
-
-            if (o is string)
-                return string.Format("\"{0}\"", o);
-
-            if (o is char && (char)o == '\0')
-                return string.Empty;
-
-            if (o is ValueType)
-                return (o.ToString());
-
-            if (o is IEnumerable)
-                return ("...");
-
-            return ("{ }");
+            return o switch
+            {
+                null => ("null"),
+                DateTime time => (time.ToShortDateString()),
+                string => string.Format("\"{0}\"", o),
+                char c when c == '\0' => string.Empty,
+                ValueType => (o.ToString()!),
+                IEnumerable => ("..."),
+                _ => ("{ }")
+            };
         }
     }
 }

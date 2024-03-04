@@ -1,4 +1,5 @@
 ﻿using System;
+using AVS.CoreLib.Exceptions;
 
 namespace AVS.CoreLib.WebSockets
 {

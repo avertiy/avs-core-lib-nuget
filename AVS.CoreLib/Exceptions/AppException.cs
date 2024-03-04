@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace AVS.CoreLib
+namespace AVS.CoreLib.Exceptions
 {
     public class AppException : Exception
     {
-        public string Hint { get; set; }
+        public string? Hint { get; set; }
         public AppException(string message) : base(message)
         {            
         }

@@ -15,7 +15,7 @@ namespace AVS.CoreLib.Configuration
     {
         
 
-        public static IConfigurationRoot LoadConfiguration(string appName = null, string environment = null, bool reloadOnChange = false)
+        public static IConfigurationRoot LoadConfiguration(string? appName = null, string? environment = null, bool reloadOnChange = false)
         {
             var builder = new ConfigurationBuilder();
             builder.AddAppSettingsJson(environment, reloadOnChange);
@@ -35,9 +35,9 @@ namespace AVS.CoreLib.Configuration
             return builder.Build();
         }
 
-        public static ConfigurationBuilder AddCustomUserSecrets(this ConfigurationBuilder builder, string appname = null, bool reloadOnChange = false)
+        public static ConfigurationBuilder AddCustomUserSecrets(this ConfigurationBuilder builder, string? appName = null, bool reloadOnChange = false)
         {
-            var path = CustomUserSecrets.GetUserSecretsPath(appname);
+            var path = CustomUserSecrets.GetUserSecretsPath(appName);
             builder.AddJsonFile(path, optional: true, reloadOnChange);
             return builder;
         }
@@ -46,14 +46,16 @@ namespace AVS.CoreLib.Configuration
         /// load (add json file) custom user secrets to configuration
         /// in .NET 6 ConfigurationBuilder was replaced with ConfigurationManager
         /// </summary>
-        public static ConfigurationManager AddCustomUserSecrets(this ConfigurationManager configuration, string appname = null, bool reloadOnChange = false)
+        public static ConfigurationManager AddCustomUserSecrets(this ConfigurationManager configuration,
+            string? appName = null, bool reloadOnChange = false)
         {
-            var path = CustomUserSecrets.GetUserSecretsPath(appname);
+            var path = CustomUserSecrets.GetUserSecretsPath(appName);
             configuration.AddJsonFile(path, optional: true, reloadOnChange);
             return configuration;
         }
 
-        public static ConfigurationBuilder AddAppSettingsJson(this ConfigurationBuilder builder, string environment = null, bool reloadOnChange = false)
+        public static ConfigurationBuilder AddAppSettingsJson(this ConfigurationBuilder builder, string? environment = null,
+            bool reloadOnChange = false)
         {
             builder.AddJsonFile("appsettings.json", optional: true, reloadOnChange);
             if (environment != null)
@@ -69,9 +71,9 @@ namespace AVS.CoreLib.Configuration
     [AttributeUsage(AttributeTargets.Class, Inherited = true)]
     public class ConfigurationAttribute : Attribute
     {
-        public string AppName { get; set; }
+        public string AppName { get; set; } = null!;
         public bool UseCustomUserSecrets { get; set; } = true;
-        public string Environment { get; set; }
+        public string Environment { get; set; } = null!;
         public bool ReloadOnChange { get; set; }
     }
 }

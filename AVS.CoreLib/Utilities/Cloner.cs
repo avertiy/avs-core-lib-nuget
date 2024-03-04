@@ -20,7 +20,7 @@ namespace AVS.CoreLib.Utilities
             if (obj is ICloneable cloneable)
                 return (TInterface)cloneable.Clone();
 
-            return Cloner<TImplementation>.Clone((TImplementation)obj);
+            return Cloner<TImplementation>.Clone(((TImplementation)obj!));
         }
     }
 

@@ -9,25 +9,25 @@ namespace AVS.CoreLib.Debugging
     {
         private static int Counter = 1000;
         public T Obj { get; }
-        public TResult Result { get; set; }
-        public Exception Error { get; private set; }
-        public Exception InnerException => Error.InnerException;
-        public string Label { get; set; }
+        public TResult? Result { get; set; }
+        public Exception? Error { get; private set; }
+        public Exception? InnerException => Error?.InnerException;
+        public string? Label { get; set; }
 
         public Stopwatch Timer = new Stopwatch();
 
-        private Action<T> Action { get; }
-        private Func<T, TResult> Func { get; }
-        private Func<T, Task<TResult>> FuncAsync { get; }
+        private Action<T>? Action { get; }
+        private Func<T, TResult>? Func { get; }
+        private Func<T, Task<TResult>>? FuncAsync { get; }
 
-        private Action<Exception> _onError;
-        private Action<TResult> _onSuccess;
-        private Func<T, bool> _breakpointCondition;
-        private Func<T, T> _breakpointCallback;
+        private Action<Exception>? _onError;
+        private Action<TResult>? _onSuccess;
+        private Func<T, bool>? _breakpointCondition;
+        private Func<T, T>? _breakpointCallback;
         private bool _success = false;
 
         [DebuggerStepThrough]
-        public TryContext(T obj, Action<T> action, string label = null)
+        public TryContext(T obj, Action<T> action, string? label = null)
         {
             Obj = obj;
             Action = action;
@@ -36,7 +36,7 @@ namespace AVS.CoreLib.Debugging
         }
 
         [DebuggerStepThrough]
-        public TryContext(T obj, Func<T, TResult> func, string label = null)
+        public TryContext(T obj, Func<T, TResult> func, string? label = null)
         {
             Obj = obj;
             Func = func;
@@ -45,7 +45,7 @@ namespace AVS.CoreLib.Debugging
         }
 
         [DebuggerStepThrough]
-        public TryContext(T obj, Func<T, Task<TResult>> func, string label = null)
+        public TryContext(T obj, Func<T, Task<TResult>> func, string? label = null)
         {
             Obj = obj;
             FuncAsync = func;
@@ -91,7 +91,7 @@ namespace AVS.CoreLib.Debugging
         [DebuggerStepThrough]
         public TryContext<T, TResult> OnSuccess(Action<TResult> action)
         {
-            if (Error == null && _success)
+            if (Error == null && _success && Result != null)
             {
                 action?.Invoke(Result);
             }
@@ -103,7 +103,7 @@ namespace AVS.CoreLib.Debugging
         [DebuggerStepThrough]
         public TryContext<T, TResult> OnSuccess(Func<TResult, bool> condition, Action<TResult> callback)
         {
-            if (Error == null && _success)
+            if (Error == null && _success && Result != null)
             {
                 if (condition?.Invoke(Result) ?? false)
                 {
@@ -123,7 +123,7 @@ namespace AVS.CoreLib.Debugging
         }
 
         [DebuggerStepThrough]
-        public TryContext<T, TResult> Catch(out Exception error)
+        public TryContext<T, TResult> Catch(out Exception? error)
         {
             Execute();
             error = Error;
@@ -138,7 +138,7 @@ namespace AVS.CoreLib.Debugging
         }
 
         [DebuggerStepThrough]
-        public TryContext<T, TResult> Execute(out string error)
+        public TryContext<T, TResult> Execute(out string? error)
         {
             var res = Execute();
             error = Error?.ToString();
@@ -163,7 +163,7 @@ namespace AVS.CoreLib.Debugging
                     Debug.WriteLine($"TRY {label} => SUCCESS ({Timer.ElapsedMilliseconds} ms)");
                     Debug.WriteLine($"RESULT: {Result}");
                     _success = true;
-                    _onSuccess?.Invoke(Result);
+                    _onSuccess?.Invoke(Result!);
                     return this;
                 }
 
@@ -171,7 +171,7 @@ namespace AVS.CoreLib.Debugging
                 Timer.Stop();
                 Debug.WriteLine($"TRY {label} => SUCCESS ({Timer.ElapsedMilliseconds} ms)");
                 _success = true;
-                _onSuccess?.Invoke(Result);
+                _onSuccess?.Invoke(Result!);
             }
             catch (Exception ex)
             {
@@ -194,7 +194,7 @@ namespace AVS.CoreLib.Debugging
                 AttachDebugger();
                 Timer.Start();
 
-                if (Func != null)
+                if (FuncAsync !=null)
                 {
                     var res = await FuncAsync(Obj);
                     SetResult(res);
@@ -202,7 +202,7 @@ namespace AVS.CoreLib.Debugging
                     Debug.WriteLine($"TRY {label} => SUCCESS ({Timer.ElapsedMilliseconds} ms)");
                     Debug.WriteLine($"RESULT: {Result}");
                     _success = true;
-                    _onSuccess?.Invoke(Result);
+                    _onSuccess?.Invoke(Result!);
                     return this;
                 }
 
@@ -222,7 +222,7 @@ namespace AVS.CoreLib.Debugging
             return this;
         }
 
-        public static implicit operator TResult(TryContext<T, TResult> ctx)
+        public static implicit operator TResult?(TryContext<T, TResult> ctx)
         {
             return ctx.Result;
         }

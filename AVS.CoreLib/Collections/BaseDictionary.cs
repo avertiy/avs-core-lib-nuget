@@ -4,7 +4,7 @@ using AVS.CoreLib.Extensions.Stringify;
 
 namespace AVS.CoreLib.Collections
 {
-    public abstract class BaseDictionary<TKey, TValue> : IDictionary<TKey, TValue>
+    public abstract class BaseDictionary<TKey, TValue> : IDictionary<TKey, TValue> where TKey : notnull
     {
         protected IDictionary<TKey, TValue> Data;
         protected bool ShouldSerializeData() => false;

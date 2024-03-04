@@ -21,18 +21,18 @@ namespace AVS.CoreLib.Tasks
         public static async Task CreateTask(Action<EventHandler> addHandler, Action<EventHandler> removeHandler)
         {
             var taskEventProducer = new TaskProducer<object>();
-            addHandler(taskEventProducer.Handler);
+            addHandler(taskEventProducer.Handler!);
             await taskEventProducer.Task;
-            removeHandler(taskEventProducer.Handler);
+            removeHandler(taskEventProducer.Handler!);
         }
 
         public static async Task<T> CreateTask<T>(Action<EventHandler> addHandler, Action<EventHandler> removeHandler)
         {
             var taskEventProducer = new TaskProducer<T>();
 
-            addHandler(taskEventProducer.Handler);
+            addHandler(taskEventProducer.Handler!);
             var task = await taskEventProducer.Task;
-            removeHandler(taskEventProducer.Handler);
+            removeHandler(taskEventProducer.Handler!);
             return task;
         }
 
@@ -45,9 +45,9 @@ namespace AVS.CoreLib.Tasks
             return task;
         }
 
-        class TaskProducer<T>
+        private class TaskProducer<T>
         {
-            readonly TaskCompletionSource<T> _tcs = new TaskCompletionSource<T>();
+            private readonly TaskCompletionSource<T> _tcs = new TaskCompletionSource<T>();
 
             public void Handler(object sender, EventArgs args)
             {

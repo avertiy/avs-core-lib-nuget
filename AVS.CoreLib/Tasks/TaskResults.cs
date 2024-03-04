@@ -11,7 +11,7 @@ using AVS.CoreLib.Extensions.Linq;
 
 namespace AVS.CoreLib.Extensions.Tasks;
 
-public sealed class TaskResults<T, TResult> : IEnumerable<KeyValuePair<T,TResult>>
+public sealed class TaskResults<T, TResult> : IEnumerable<KeyValuePair<T,TResult>> where T : notnull
 {
     internal Dictionary<T, TResult> Items { get; private set; }
     public int Count => Items.Count;
@@ -42,7 +42,7 @@ public sealed class TaskResults<T, TResult> : IEnumerable<KeyValuePair<T,TResult
         return Items.Values.Select(selector).FirstOrDefault();
     }
 
-    public TResult GetValue(Func<TResult, bool>? predicate = null)
+    public TResult? GetValue(Func<TResult, bool>? predicate = null)
     {
         return predicate == null ? Items.Values.FirstOrDefault() : Items.Values.FirstOrDefault(predicate);
     }
@@ -79,8 +79,8 @@ public sealed class TaskResults<T, TResult> : IEnumerable<KeyValuePair<T,TResult
         {
             if (Items.Any(kp => kp.Value is IResponse))
             {
-                var success = Items.Values.Count(x => ((IResponse)x).Success);
-                var failed = Items.Values.Count(x => ((IResponse)x).Success == false);
+                var success = Items.Values.Count(x => ((IResponse)x!).Success);
+                var failed = Items.Values.Count(x => ((IResponse)x!).Success == false);
 
                 if(success > 0)
                     sb.Append($" {success} - OK;");
@@ -101,7 +101,7 @@ public sealed class TaskResults<T, TResult> : IEnumerable<KeyValuePair<T,TResult
 
 public static class TaskResultsExtensions
 {
-    public static string? GetErrors<T,TResult>(this TaskResults<T, TResult> results, Func<TResult, string?> selector, Func<T, string>? keySelector = null)
+    public static string? GetErrors<T,TResult>(this TaskResults<T, TResult> results, Func<TResult, string?> selector, Func<T, string>? keySelector = null) where T : notnull
     {
         if (results.Count == 0)
             return null;
@@ -127,7 +127,7 @@ public static class TaskResultsExtensions
         return sb.ToString();
     }
 
-    public static List<TResult> ToList<T, TResult>(this TaskResults<T, TResult> results)
+    public static List<TResult> ToList<T, TResult>(this TaskResults<T, TResult> results) where T : notnull
     {   
         return results.Items.Values.ToList();
     }
@@ -135,7 +135,7 @@ public static class TaskResultsExtensions
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static List<TItem> PickUniqueItems<T,TResult, TItem, TKey>(this TaskResults<T,TResult> tasks,
-        Func<TResult, IEnumerable<TItem>> selector, Func<TItem, TKey> keySelector, Func<TResult, bool>? isValid = null)
+        Func<TResult, IEnumerable<TItem>> selector, Func<TItem, TKey> keySelector, Func<TResult, bool>? isValid = null) where T : notnull
     {
         return 
             isValid == null 
@@ -146,7 +146,7 @@ public static class TaskResultsExtensions
     [DebuggerStepThrough]
     public static List<TItem> PickUniqueItems<T,TResult, TItem, TKey>(this TaskResults<T,TResult> tasks,  
         Func<TResult, IEnumerable<TItem>> selector,
-        Func<TItem, TKey> keySelector, Enums.Sort orderDirection, Func<TResult, bool>? isValid = null)
+        Func<TItem, TKey> keySelector, Enums.Sort orderDirection, Func<TResult, bool>? isValid = null) where T : notnull
     {
         var values = tasks.Items.Values.AsEnumerable();
         if (isValid != null)
@@ -159,7 +159,7 @@ public static class TaskResultsExtensions
 
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static HashSet<TItem> PickUniqueItems<T,TResult, TItem>(this TaskResults<T,TResult> tasks, Func<TResult, IEnumerable<TItem>> selector, Func<TResult, bool>? isValid = null)
+    public static HashSet<TItem> PickUniqueItems<T,TResult, TItem>(this TaskResults<T,TResult> tasks, Func<TResult, IEnumerable<TItem>> selector, Func<TResult, bool>? isValid = null) where T : notnull
     {
         return isValid == null ? tasks.Items.PickUniqueItems(selector) : tasks.Items.Values.Where(isValid).PickUniqueItems(selector);
     }

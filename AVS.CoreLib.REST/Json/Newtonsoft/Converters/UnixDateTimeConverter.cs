@@ -1,6 +1,6 @@
 ﻿using System;
 using AVS.CoreLib.Dates;
-using AVS.CoreLib.Utilities;
+using AVS.CoreLib.Extensions.Reflection;
 using Newtonsoft.Json;
 
 namespace AVS.CoreLib.REST.Json.Newtonsoft.Converters
@@ -21,7 +21,7 @@ namespace AVS.CoreLib.REST.Json.Newtonsoft.Converters
            
             if (reader.TokenType == JsonToken.Null)
             {
-                var nullable = ReflectionUtils.IsNullable(objectType);
+                var nullable = objectType.IsNullable();
                 if (nullable)
                     return null;
 

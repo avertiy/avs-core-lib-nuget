@@ -101,7 +101,7 @@ namespace AVS.CoreLib.Dates
             return From.Equals(other.From) && To.Equals(other.To);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return obj is DateRange other && Equals(other);
         }
@@ -431,7 +431,7 @@ namespace AVS.CoreLib.Dates
             return DateRange.TryParse(str, out range);
         }
 
-        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        public override bool CanConvertFrom(ITypeDescriptorContext? context, Type sourceType)
         {
             if (sourceType == typeof(string))
             {
@@ -440,8 +440,8 @@ namespace AVS.CoreLib.Dates
             return base.CanConvertFrom(context, sourceType);
         }
 
-        public override object ConvertFrom(ITypeDescriptorContext context,
-            CultureInfo culture, object value)
+        public override object? ConvertFrom(ITypeDescriptorContext? context,
+            CultureInfo? culture, object value)
         {
             if (value is string)
             {
@@ -451,11 +451,6 @@ namespace AVS.CoreLib.Dates
                 }
             }
             return base.ConvertFrom(context, culture, value);
-        }
-
-        public override StandardValuesCollection GetStandardValues(ITypeDescriptorContext context)
-        {
-            return base.GetStandardValues(context);
         }
     }
 

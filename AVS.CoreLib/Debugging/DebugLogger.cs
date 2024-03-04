@@ -8,9 +8,9 @@ namespace AVS.CoreLib.Debugging
         private List<string> _log = new List<string>();
         private int _counter = 0;
         //this is just to lookup with what args a method has been called;
-        private Dictionary<int, object> _stack = new Dictionary<int, object>();
+        private Dictionary<int, object?> _stack = new();
 
-        public Dictionary<int, object> CallStack => _stack;
+        public Dictionary<int, object?> CallStack => _stack;
         public List<string> Logs => _log;
 
         public void Log(string method, params object[] args)

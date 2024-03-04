@@ -15,7 +15,7 @@ namespace AVS.CoreLib.Collections
         private readonly object _lock = new object();
         private readonly Dictionary<DateTime, StrongBox<T>> _items = new Dictionary<DateTime, StrongBox<T>>();
 
-        public T this[DateTime time, int roundToSeconds = 60]
+        public T? this[DateTime time, int roundToSeconds = 60]
         {
             get
             {
@@ -25,7 +25,7 @@ namespace AVS.CoreLib.Collections
             }
         }
 
-        public T[] Values => _items.Values.Select(x => x.Value).ToArray();
+        public T?[] Values => _items.Values.Select(x => x.Value).ToArray();
         public Dictionary<DateTime, StrongBox<T>>.KeyCollection Keys => _items.Keys;
 
         public void AddOrUpdate(DateTime key, T value)
@@ -35,17 +35,12 @@ namespace AVS.CoreLib.Collections
                 lock (_lock)
                 {
                     var box = new StrongBox<T>(value);
-                    if (!_items.ContainsKey(key))
-                    {
-                        _items.Add(key, box);
+                    if (_items.TryAdd(key, box))
                         added = true;
-                    }
                 }
 
             if (!added)
-            {
                 SetValue(key, value);
-            }
         }
 
         public bool ContainsKey(DateTime key)
@@ -59,7 +54,7 @@ namespace AVS.CoreLib.Collections
             Interlocked.Exchange(ref box.Value, value);
         }
 
-        public T GetValue(DateTime key)
+        public T? GetValue(DateTime key)
         {
             return _items[key].Value;
         }
@@ -70,8 +65,7 @@ namespace AVS.CoreLib.Collections
                 lock (_lock)
                 {
                     var box = new StrongBox<T>(new T());
-                    if (!_items.ContainsKey(key))
-                        _items.Add(key, box);
+                    _items.TryAdd(key, box);
                 }
         }
 

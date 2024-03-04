@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 using AVS.CoreLib.Enums;
+using AVS.CoreLib.Extensions.Reflection;
 using AVS.CoreLib.Utilities;
 using Newtonsoft.Json;
 
@@ -36,7 +37,7 @@ namespace AVS.CoreLib.REST.Json.Newtonsoft.Converters
         {
             if (reader.TokenType == JsonToken.Null || reader.Value == null)
             {
-                var nullable = ReflectionUtils.IsNullable(objectType);
+                var nullable = objectType.IsNullable();
                 if (nullable)
                     return null;
 

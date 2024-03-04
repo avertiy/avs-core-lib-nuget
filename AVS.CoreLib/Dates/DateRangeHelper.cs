@@ -9,7 +9,7 @@ namespace AVS.CoreLib.Dates
         internal static bool TryParseExact(string str, out DateRange range)
         {
             range = new DateRange();
-            string[] parts = null;
+            string[]? parts = null;
 
             if (str.Contains('-') || str.Contains(';'))
             {

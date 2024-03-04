@@ -13,10 +13,10 @@ namespace AVS.CoreLib.Collections
     /// <typeparam name="TValue2">The type of the second value</typeparam>
     [Serializable]
     public class Trictionary<TKey, TValue1, TValue2>
-        : Dictionary<TKey, DualObject<TValue1, TValue2>>
+        : Dictionary<TKey, DualObject<TValue1, TValue2>> where TKey : notnull
     {
-        public IEnumerable<TValue1> Values1 => this.Values.Select(v => v.Value1);
-        public IEnumerable<TValue2> Values2 => this.Values.Select(v => v.Value2);
+        public IEnumerable<TValue1?> Values1 => this.Values.Select(v => v.Value1);
+        public IEnumerable<TValue2?> Values2 => this.Values.Select(v => v.Value2);
 
         /// <summary>
         /// Initializes a new instance of the Trictionary class
@@ -45,21 +45,14 @@ namespace AVS.CoreLib.Collections
         /// <returns>Returns the DualObject associated with this key</returns>
         public new DualObject<TValue1, TValue2> this[TKey key]
         {
-            get
-            {
-                return base[key];
-            }
+            get => base[key];
 
             set
             {
-                if (this.ContainsKey(key))
-                {
+                if (ContainsKey(key))
                     base[key].Set(value);
-                }
                 else
-                {
                     base[key] = value;
-                }
             }
         }
 

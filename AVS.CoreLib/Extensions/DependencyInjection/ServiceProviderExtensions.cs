@@ -22,13 +22,13 @@ namespace AVS.CoreLib.Extensions.DependencyInjection
             where TOptions : class, new()
         {
             var snapshot = sp.GetService<IOptionsMonitor<TOptions>>();
-            var options = snapshot.Get(name);
+            var options = snapshot?.Get(name);
             if (required)
                 Guard.Against.Null(options, $"{typeof(TOptions).Name}:{name} has not been configured.");
-            return options;
+            return options!;
         }
 
-        public static void Scoped<TService>(this IServiceProvider serviceProvider, Action<TService> action)
+        public static void Scoped<TService>(this IServiceProvider serviceProvider, Action<TService> action) where TService : notnull
         {
             using (var scope = serviceProvider.CreateScope())
             {

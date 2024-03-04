@@ -23,7 +23,7 @@ namespace AVS.CoreLib.Types
 
         public static implicit operator string(RawString str)
         {
-            return str?.Value;
+            return str?.Value!;
         }
     }
 }

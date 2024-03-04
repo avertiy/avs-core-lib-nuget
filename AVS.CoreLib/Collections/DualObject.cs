@@ -52,11 +52,11 @@ namespace AVS.CoreLib.Collections
             this.Value2 = value;
         }
 
-        private bool isFirstValueSet;
+        private bool _isFirstValueSet;
 
-        private TValue1 _value1;
+        private TValue1? _value1;
 
-        public TValue1 Value1
+        public TValue1? Value1
         {
             get
             {
@@ -66,15 +66,15 @@ namespace AVS.CoreLib.Collections
             set
             {
                 this._value1 = value;
-                this.isFirstValueSet = true;
+                this._isFirstValueSet = true;
             }
         }
 
-        private bool isSecondValueSet;
+        private bool _isSecondValueSet;
 
-        private TValue2 _value2;
+        private TValue2? _value2;
 
-        public TValue2 Value2
+        public TValue2? Value2
         {
             get
             {
@@ -84,7 +84,7 @@ namespace AVS.CoreLib.Collections
             set
             {
                 this._value2 = value;
-                this.isSecondValueSet = true;
+                this._isSecondValueSet = true;
             }
         }
 
@@ -93,7 +93,7 @@ namespace AVS.CoreLib.Collections
         /// </summary>
         /// <param name="dualObject">The DualObject to convert from</param>
         /// <returns>The converted object</returns>
-        public static implicit operator TValue1(
+        public static implicit operator TValue1?(
             DualObject<TValue1, TValue2> dualObject)
         {
             return dualObject.Value1;
@@ -104,7 +104,7 @@ namespace AVS.CoreLib.Collections
         /// </summary>
         /// <param name="dualObject">The DualObject to convert from</param>
         /// <returns>The converted object</returns>
-        public static implicit operator TValue2(
+        public static implicit operator TValue2?(
             DualObject<TValue1, TValue2> dualObject)
         {
             return dualObject.Value2;
@@ -157,12 +157,12 @@ namespace AVS.CoreLib.Collections
         /// to copy the values from</param>
         public void Set(DualObject<TValue1, TValue2> dualObject)
         {
-            if (dualObject.isFirstValueSet)
+            if (dualObject._isFirstValueSet)
             {
                 this.Value1 = dualObject.Value1;
             }
 
-            if (dualObject.isSecondValueSet)
+            if (dualObject._isSecondValueSet)
             {
                 this.Value2 = dualObject.Value2;
             }
@@ -178,14 +178,16 @@ namespace AVS.CoreLib.Collections
         /// </summary>
         /// <param name="other">The DualObject to compare with</param>
         /// <returns>True if the objects are equal</returns>
-        public bool Equals(DualObject<TValue1, TValue2> other)
+        public bool Equals(DualObject<TValue1, TValue2>? other)
         {
-            bool firstEqual = this.Value1 == null ?
+            var firstEqual = this.Value1 == null ?
                 other.Value1 == null :
                 this.Value1.Equals(other.Value1);
-            bool secondEqual = this.Value2 == null ?
+
+            var secondEqual = this.Value2 == null ?
                 other.Value2 == null :
                 this.Value2.Equals(other.Value2);
+
             return firstEqual || secondEqual;
         }
 

@@ -6,7 +6,7 @@ namespace AVS.CoreLib.Utilities
 {
     public static class CustomUserSecrets
     {
-        private static string _userSecretsPath = null;
+        private static string? _userSecretsPath = null;
 
         public static bool Enabled { get; set; } = true;
         /// <summary>
@@ -19,12 +19,12 @@ namespace AVS.CoreLib.Utilities
             set => _userSecretsPath = value;
         }
 
-        public static string GetUserSecretsPath(string applicationName = null, bool createPathIfNotExists = true, bool createEmptySecretsFileIfNotExists = false)
+        public static string GetUserSecretsPath(string? applicationName = null, bool createPathIfNotExists = true, bool createEmptySecretsFileIfNotExists = false)
         {
             if (_userSecretsPath == null)
             {
                 var appName = applicationName ?? Assembly.GetEntryAssembly()?.GetName().Name ??
-                    Assembly.GetCallingAssembly().GetName().Name;
+                    Assembly.GetCallingAssembly().GetName().Name ?? "DefaultAppName";
                 var userFolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile);
                 _userSecretsPath = Path.Combine(userFolder, ".secrets", appName, "secrets.json");
             }

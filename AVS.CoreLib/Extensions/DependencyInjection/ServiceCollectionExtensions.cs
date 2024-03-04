@@ -24,8 +24,8 @@ namespace AVS.CoreLib.Extensions.DependencyInjection
         /// <returns></returns>
         public static IServiceCollection AddOptions<TOptions>(this IServiceCollection services,
             IConfiguration configuration,
-            string name = null,
-            Action<TOptions> configure = null)
+            string? name = null,
+            Action<TOptions>? configure = null)
             where TOptions : class
         {
             if (services == null)
@@ -46,7 +46,8 @@ namespace AVS.CoreLib.Extensions.DependencyInjection
             return services;
         }
 
-        public static IServiceCollection AddOptions<TOptions>(this IServiceCollection services, Action<TOptions> configureOptions, string name = null)
+        public static IServiceCollection AddOptions<TOptions>(this IServiceCollection services, Action<TOptions> configureOptions,
+            string? name = null)
             where TOptions : class
         {
             if (services == null)
@@ -82,74 +83,70 @@ namespace AVS.CoreLib.Extensions.DependencyInjection
         public static IServiceCollection AsSelf(this IServiceCollection services)
         {
             var lastRegistration = services.LastOrDefault();
-            if (lastRegistration != null)
+            if (lastRegistration == null) 
+                return services;
+
+            var implementationType = GetImplementationType(lastRegistration) 
+                                     ?? throw new InvalidOperationException($"implementation type is null");
+
+            // When the last registration service type was already registered
+            // as its implementation type, bail out.
+            if (lastRegistration.ServiceType == implementationType)
+                return services;
+
+            if (lastRegistration.ImplementationInstance == null)
             {
-                var implementationType = GetImplementationType(lastRegistration);
+                // Remove last registration
+                services.Remove(lastRegistration);
 
-                // When the last registration service type was already registered
-                // as its implementation type, bail out.
-                if (lastRegistration.ServiceType == implementationType)
-                {
+                if (lastRegistration.ImplementationType == null)
                     return services;
-                }
 
-                if (lastRegistration.ImplementationInstance != null)
+                // Register "self" registration first
+                if (lastRegistration.ImplementationFactory != null)
                 {
-                    // Register "self" registration as the same instance
+                    // Factory-based
                     services.Add(new ServiceDescriptor(
-                        implementationType,
-                        lastRegistration.ImplementationInstance));
+                        lastRegistration.ImplementationType,
+                        lastRegistration.ImplementationFactory,
+                        lastRegistration.Lifetime));
                 }
                 else
                 {
-                    // Remove last registration
-                    services.Remove(lastRegistration);
-
-                    // Register "self" registration first
-                    if (lastRegistration.ImplementationFactory != null)
-                    {
-                        // Factory-based
-                        services.Add(new ServiceDescriptor(
-                            lastRegistration.ImplementationType,
-                            lastRegistration.ImplementationFactory,
-                            lastRegistration.Lifetime));
-                    }
-                    else
-                    {
-                        // Type-based
-                        services.Add(new ServiceDescriptor(
-                            lastRegistration.ImplementationType,
-                            lastRegistration.ImplementationType,
-                            lastRegistration.Lifetime));
-                    }
-
-                    // Re-register last registration, proxying our specific registration
+                    // Type-based
                     services.Add(new ServiceDescriptor(
-                        lastRegistration.ServiceType,
-                        provider => provider.GetService(implementationType),
+                        lastRegistration.ImplementationType,
+                        lastRegistration.ImplementationType,
                         lastRegistration.Lifetime));
                 }
+
+                // Re-register last registration, proxying our specific registration
+                services.Add(new ServiceDescriptor(
+                    lastRegistration.ServiceType,
+                    provider => provider.GetService(implementationType)!,
+                    lastRegistration.Lifetime));
+            }
+            else
+            {
+                // Register "self" registration as the same instance
+                services.Add(new ServiceDescriptor(
+                    implementationType,
+                    lastRegistration.ImplementationInstance));
             }
 
             return services;
         }
 
-        private static Type GetImplementationType(ServiceDescriptor descriptor)
+        private static Type? GetImplementationType(ServiceDescriptor descriptor)
         {
             if (descriptor.ImplementationType != null)
-            {
                 return descriptor.ImplementationType;
-            }
 
             if (descriptor.ImplementationInstance != null)
-            {
                 return descriptor.ImplementationInstance.GetType();
-            }
 
             if (descriptor.ImplementationFactory != null)
-            {
                 return descriptor.ImplementationFactory.GetType().GenericTypeArguments[1];
-            }
 
             return null;
         }

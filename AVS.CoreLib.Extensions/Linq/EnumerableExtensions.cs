@@ -8,10 +8,9 @@ namespace AVS.CoreLib.Extensions.Linq
 {
     public static class EnumerableExtensions
     {
-        public static void ForEach(this IEnumerable enumerable, Action<object> action)
+        public static IEnumerable<TResult> Cast<T,TResult>(this IEnumerable<T> source)
         {
-            foreach (var item in enumerable)
-                action(item);
+            return new CastIterator<T, TResult>(source);
         }
 
         public static void ForEach<T>(this IEnumerable<T> items, Action<T> action)

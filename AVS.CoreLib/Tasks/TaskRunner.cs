@@ -63,7 +63,7 @@ public class TaskRunner<TResult>
         return fn(arg);
     }
 
-    public async Task<TaskResults<T,TResult>> RunAll<T>(IEnumerable<T> args, CancellationToken ct = default)
+    public async Task<TaskResults<T,TResult>> RunAll<T>(IEnumerable<T> args, CancellationToken ct = default) where T : notnull
     {
         if (BatchSize > 0)
             return await ExecuteInBatchMode(args, ct);
@@ -81,7 +81,7 @@ public class TaskRunner<TResult>
         return results;
     }
 
-    private async Task<TaskResults<T, TResult>> ExecuteInBatchMode<T>(IEnumerable<T> args, CancellationToken ct)
+    private async Task<TaskResults<T, TResult>> ExecuteInBatchMode<T>(IEnumerable<T> args, CancellationToken ct) where T : notnull
     {
         var fn = (Func<T, Task<TResult>>)_job;
 
@@ -129,7 +129,7 @@ public class TaskRunner<TResult>
         return results;
     }
 
-    private Dictionary<T, Task<TResult>> StartAll<T>(IEnumerable<T> args)
+    private Dictionary<T, Task<TResult>> StartAll<T>(IEnumerable<T> args) where T : notnull
     {
         var fn = (Func<T, Task<TResult>>)_job;
         var tasks = new Dictionary<T, Task<TResult>>();
@@ -170,7 +170,7 @@ public static class TaskRunner
             BatchTimespan = options.BatchTimespan };
     }
 
-    public static async Task<TaskResults<T,TResult>> ExecuteOne<T,TResult>(this TaskRunner<TResult> runner, T arg)
+    public static async Task<TaskResults<T,TResult>> ExecuteOne<T,TResult>(this TaskRunner<TResult> runner, T arg) where T : notnull
     {
         var res = await runner.Start(arg);
         var results = new TaskResults<T, TResult>
@@ -181,7 +181,7 @@ public static class TaskRunner
     }
 
     [DebuggerStepThrough]
-    public static Task<TaskResults<T, TResult>> RunAll<T, TResult>(this TaskRunner<TResult> runner, params T[] args)
+    public static Task<TaskResults<T, TResult>> RunAll<T, TResult>(this TaskRunner<TResult> runner, params T[] args) where T : notnull
     {
         return args.Length switch
         {
@@ -192,7 +192,7 @@ public static class TaskRunner
     }
 
     [DebuggerStepThrough]
-    public static Task<TaskResults<T, TResult>> RunAll<T, TResult>(this TaskRunner<TResult> runner, IList<T> args, CancellationToken ct = default)
+    public static Task<TaskResults<T, TResult>> RunAll<T, TResult>(this TaskRunner<TResult> runner, IList<T> args, CancellationToken ct = default) where T : notnull
     {
         return args.Count switch
         {
@@ -204,7 +204,7 @@ public static class TaskRunner
 
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static async Task<TOutput> RunAll<T, TResult, TOutput>(this TaskRunner<TResult> runner, IEnumerable<T> args, Func<TaskResults<T, TResult>, TOutput> selector)
+    public static async Task<TOutput> RunAll<T, TResult, TOutput>(this TaskRunner<TResult> runner, IEnumerable<T> args, Func<TaskResults<T, TResult>, TOutput> selector) where T : notnull
     {
         return selector(await runner.RunAll(args));
     }
