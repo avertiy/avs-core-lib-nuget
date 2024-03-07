@@ -2,6 +2,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using AVS.CoreLib.Guards;
 
 namespace AVS.CoreLib.Collections;
@@ -76,6 +78,42 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
         return false;
     }
 
+    /// <summary>
+    /// Put item on top of the list (if item already exists, removes it and add to the end)
+    /// </summary>
+    public void Put(T item)
+    {   
+        var ind = IndexOf(item);
+        
+        if (ind == -1)
+        {
+            Add(item, force: true);
+            return;
+        }
+
+        if (ind == Count - 1)
+            return;
+
+        if (ind == 0 && IsFull)
+        {
+            //e.g. head = 1, item=2 [1,*2,3,4,5,6] => [1,2,*3,4,5,6];
+            Head++;
+            return;
+        }
+
+        //head = 0 [*1,2,(3),4,5,6] item=3 (ind:2) => [*1,2,(4,5,6)];
+        if (Head == 0)
+        {
+            Array.Copy(Items, ind + 1, Items, ind, Count - ind - 1);
+            Items[^1] = item;
+            return;
+        }
+        
+        RemoveAt(ind);
+        Add(item, true);
+    }
+
+
     public IEnumerator<T> GetEnumerator()
     {
         for (var i = 0; i < Count; i++)
@@ -131,14 +169,15 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
     {
         for (var i = 0; i < Count; i++)
         {
-            if (EqualityComparer<T>.Default.Equals(this[i], item))
+            var currentItem = Items[(Head + i) % Capacity];
+            if (EqualityComparer<T>.Default.Equals(currentItem, item))
             {
                 return i;
             }
         }
         return -1;
     }
-
+    
     public void Insert(int index, T item)
     {
         if (Count < Capacity && Head == 0)
@@ -181,23 +220,30 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
     public void RemoveAt(int index)
     {
         Guard.MustBe.WithinRange(index, 0, Count - 1);
-        Count--;
         if (Head == 0)
         {
+            Count--;
             Array.Copy(Items, index + 1, Items, index, Count - index);
         }
         else
         {
             var items = new T[Capacity];
 
-            for (var i = 0; i < Count; i++)
+            for (var i = 0; i < Count-1; i++)
             {
-                var ind = (Head + i) % Capacity;
-                if (index == ind)
-                    continue;
-                items[i] = Items[ind];
+                if (i < index)
+                {
+                    var ind = (Head + i) % Capacity;
+                    items[i] = Items[ind];
+                }
+                else
+                {
+                    var ind = (Head + i+1) % Capacity;
+                    items[i] = Items[ind];
+                }
             }
 
+            Count--;
             Array.Copy(items, 0, Items, 0, Count);
             Head = 0;
         }

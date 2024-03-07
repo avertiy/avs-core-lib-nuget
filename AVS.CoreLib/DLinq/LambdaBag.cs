@@ -16,7 +16,7 @@ public class LambdaBag
     /// </summary>
     public static LambdaBag Lambdas { get; set; } = new();
 
-    private readonly FixedQueue<string> _keys = new(10);
+    private readonly FixedList<string> _keys = new(10);
 
     private readonly Dictionary<string, Delegate> _delegates = new();
     public int Capacity { get; set; } = 1000;
@@ -26,13 +26,13 @@ public class LambdaBag
     {
         get
         {
-            _keys.Enqueue(key);
+            RefreshKey(key);
             return _delegates[key];
         }
         set
         {
             CleanUp();
-            _keys.Enqueue(key);
+            RefreshKey(key);
             _delegates[key] = value;
         }
     }
@@ -59,6 +59,11 @@ public class LambdaBag
     public T? DynamicInvoke<T>(string key, params object?[]? args)
     {
         return (T?)_delegates[key].DynamicInvoke(args);
+    }
+
+    private void RefreshKey(string key)
+    {
+        _keys.Put(key);
     }
 }
 
@@ -130,6 +135,18 @@ public static class LambdaBagExtensions
 
         //x => new Dictionary<string,object>(props.Length) { {Prop1 = (object)x.Prop1}, {Prop2 = (object)x.Prop2},... }
         var lambda = LambdaBuilder.SelectDictionaryExpr<T>(props, paramType);
+        var func = lambda.Compile();
+        bag[key] = func;
+        return func;
+    }
+
+    public static Func<object, object> Cast(this LambdaBag bag, Type targetType)
+    {
+        var key = $"Func<object,object>(x => ({targetType.Name})x)";
+        if (bag.TryGetFunc(key, out Func<object, object>? fn))
+            return fn!;
+
+        var lambda = LambdaBuilder.CastExpr(targetType);
         var func = lambda.Compile();
         bag[key] = func;
         return func;

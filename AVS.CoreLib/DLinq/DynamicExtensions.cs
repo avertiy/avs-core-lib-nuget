@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using AVS.CoreLib.Extensions.Linq;
 
@@ -71,5 +72,22 @@ public static class DynamicExtensions
         var props = DynamicSelector.LookupProperties(typeArg, selector ?? "*");
         var relevantProps = props.Where(x => x.PropertyType.IsAssignableTo(typeof(TResult))).ToArray();
         return source.SelectDict<T, TResult>(relevantProps, typeArg);
+    }
+
+    /// <summary>
+    /// dynamic cast  Func{object,object}(x => (TargetType)x);
+    /// </summary>
+    public static object Cast<T>(this T obj, Type targetType)
+    {
+        var fn = LambdaBag.Lambdas.Cast(targetType);
+        return fn(obj!);
+    }
+    /// <summary>
+    /// cast from abstraction to concrete type (use case json serialization IBar bar - serializer need a concrete type)
+    /// </summary>
+    public static object ToConcreteType<T>(this T obj)
+    {
+        var fn = LambdaBag.Lambdas.Cast(obj!.GetType());
+        return fn(obj);
     }
 }

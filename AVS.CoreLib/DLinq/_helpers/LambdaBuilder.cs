@@ -71,6 +71,18 @@ internal static class LambdaBuilder
         return Expression.Lambda<Func<T, TResult>>(propExpr, paramExpr);
     }
 
+    public static Expression<Func<object, object>> CastExpr(Type targetType)
+    {
+        // Create parameter expressions
+        var valueParam = Expression.Parameter(typeof(object), "x");
+
+        // Create convert expression
+        var convert = Expression.Convert(valueParam, targetType);
+
+        // Compile the expression
+        return Expression.Lambda<Func<object, object>>(convert, valueParam);
+    }
+
     /// <summary>
     /// Creates lambda expression: x => new Dictionary{string,TValue}(props.Length) { {Prop1 = x.Prop1}, {Prop2 = x.Prop2},... }
     /// </summary>

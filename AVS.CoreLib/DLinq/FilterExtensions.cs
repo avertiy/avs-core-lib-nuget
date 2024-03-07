@@ -9,7 +9,7 @@ public static class FilterExtensions
 {
     public static IEnumerable Filter<T>(this IList<T> source, string? filter)
     {
-        if (filter == null || source.Count == 0)
+        if (filter == null || source.Count == 0 || FilterHelper.IsAny(filter))
             return source;
 
         FilterHelper.ValidateFilterExpression(filter);
@@ -25,7 +25,7 @@ public static class FilterExtensions
 
     public static IEnumerable Filter<T>(this IEnumerable<T> source, string? filter, Type? type = null)
     {
-        if (filter == null)
+        if (filter == null || FilterHelper.IsAny(filter))
             return source;
 
         FilterHelper.ValidateFilterExpression(filter);
@@ -41,12 +41,16 @@ public static class FilterExtensions
 
 internal static class FilterHelper
 {
+    private const string ANY = "*";
+
+    internal static bool IsAny(string? filter) => string.IsNullOrEmpty(filter) || filter == ANY;
+
     internal static void ValidateFilterExpression(string filter)
     {
         if (filter.StartsWith(".."))
             throw new NotSupportedException($"Filter expression `{filter}` contains a recursive operator `..`, recursive search not supported");
 
-        if (filter.ContainsAny('[', '*', '>', '<', '=', '@'))
+        if (filter.ContainsAny('[', '>', '<', '=', '@'))
             throw new NotSupportedException($"Filter expression `{filter}` contains not supported operators / symbols");
 
     }

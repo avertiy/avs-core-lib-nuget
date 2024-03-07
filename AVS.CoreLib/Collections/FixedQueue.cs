@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using AVS.CoreLib.Guards;
 
 namespace AVS.CoreLib.Collections;
@@ -16,7 +17,7 @@ public class FixedQueue<T> : Queue<T>
     }
 
     public new void Enqueue(T item)
-    {
+    {   
         if (Count < Capacity)
         {
             base.Enqueue(item);
@@ -52,6 +53,7 @@ public class FixedQueue<T> : Queue<T>
             throw new ExceedCapacityException($"Queue reached a max number of elements ({Capacity})");
         }   
     }
+
 }
 
 public class ExceedCapacityException : Exception
