@@ -102,7 +102,7 @@ public static class LambdaBagExtensions
 
     public static Func<T, TResult> GetSelector<T, TResult>(this LambdaBag bag, PropertyInfo prop, Type? paramType)
     {
-        var key = $"Func<{typeof(T).Name},{typeof(TResult).Name}>(x => x.{prop.Name})";
+        var key = $"Func<{typeof(T).Name},{typeof(TResult).Name}>(x => x.{prop.Name}, type: {paramType?.Name})";
         if (bag.TryGetFunc(key, out Func<T, TResult>? fn))
             return fn!;
 
@@ -115,7 +115,7 @@ public static class LambdaBagExtensions
     public static Func<T, Dictionary<string, TValue>> GetDictSelector<T, TValue>(this LambdaBag bag, PropertyInfo[] props, Type? paramType)
     {
         var propsStr = string.Join(",", props.Select((x => x.Name)));
-        var key = $"Func<{typeof(T).Name},Dict<string, {typeof(TValue).Name}>>(props:{propsStr})";
+        var key = $"Func<{typeof(T).Name},Dict<string, {typeof(TValue).Name}>>(props:{propsStr}, type: {paramType?.Name})";
         if (bag.TryGetFunc(key, out Func<T, Dictionary<string, TValue>>? fn))
             return fn!;
 
@@ -129,7 +129,7 @@ public static class LambdaBagExtensions
     public static Func<T, Dictionary<string, object>> GetDictSelector<T>(this LambdaBag bag, PropertyInfo[] props, Type? paramType)
     {
         var propsStr = string.Join(",", props.Select((x => x.Name)));
-        var key = $"Func<{typeof(T).Name},Dict<string, object>>(props:{propsStr})";
+        var key = $"Func<{typeof(T).Name},Dict<string, object>>(props:{propsStr}, type: {paramType?.Name})";
         if (bag.TryGetFunc(key, out Func<T, Dictionary<string, object>>? fn))
             return fn!;
 

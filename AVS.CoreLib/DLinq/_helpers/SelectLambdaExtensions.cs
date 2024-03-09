@@ -11,7 +11,7 @@ internal static class SelectLambdaExtensions
 {
     internal static Func<IEnumerable<T>, IEnumerable> GetSelectFn<T>(this LambdaBag bag, PropertyInfo prop, Type? paramType)
     {
-        var key = $"{nameof(Select)}<{typeof(T).Name},{prop.PropertyType.Name}>(source, prop, {paramType?.Name}))";
+        var key = $"{nameof(Select)}<{typeof(T).Name},{prop.PropertyType.Name}>(source, {prop.Name}, {paramType?.Name}))";
         if (bag.TryGetFunc(key, out Func<IEnumerable<T>, IEnumerable>? fn))
             return fn!;
 
