@@ -11,7 +11,7 @@ internal static class ListLambdaExtensions
 {
     internal static Func<IEnumerable<T>, IEnumerable> GetSelectListFn<T>(this LambdaBag bag, PropertyInfo prop, Type? paramType)
     {
-        var key = $"{nameof(SelectList)}<{typeof(T).Name},{prop.PropertyType.Name}>(source, prop, paramType))";
+        var key = $"{nameof(SelectList)}<{typeof(T).Name},{prop.PropertyType.Name}>(source, prop, {paramType?.Name}))";
         if (bag.TryGetFunc(key, out Func<IEnumerable<T>, IEnumerable>? fn))
             return fn!;
 
@@ -29,7 +29,7 @@ internal static class ListLambdaExtensions
     internal static Func<IEnumerable<T>, IEnumerable> GetSelectListOfDictFn<T>(this LambdaBag bag, PropertyInfo[] props, Type? paramType)
     {
         var propsStr = string.Join(",", props.Select((x => x.Name)));
-        var key = $"{nameof(SelectListOfDict)}<{typeof(T).Name}>(source, props: [{propsStr}], {paramType?.Name ?? ""}))";
+        var key = $"{nameof(SelectListOfDict)}<{typeof(T).Name}>(source, props: [{propsStr}], {paramType?.Name}))";
         if (bag.TryGetFunc(key, out Func<IEnumerable<T>, IEnumerable>? fn))
             return fn!;
 
@@ -49,7 +49,7 @@ internal static class ListLambdaExtensions
     internal static Func<IEnumerable<T>, IEnumerable> GetSelectListOfDictFn<T>(this LambdaBag bag, Type valueType, PropertyInfo[] props, Type? paramType)
     {
         var propsStr = string.Join(",", props.Select((x => x.Name)));
-        var key = $"{nameof(SelectListOfTypedDict)}<{typeof(T).Name},{valueType.Name}>(source, props: [{propsStr}], {paramType?.Name ?? ""}))";
+        var key = $"{nameof(SelectListOfTypedDict)}<{typeof(T).Name},{valueType.Name}>(source, props: [{propsStr}], {paramType?.Name}))";
         if (bag.TryGetFunc(key, out Func<IEnumerable<T>, IEnumerable>? fn))
             return fn!;
 

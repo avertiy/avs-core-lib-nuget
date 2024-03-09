@@ -16,7 +16,7 @@ public class LambdaBag
     /// </summary>
     public static LambdaBag Lambdas { get; set; } = new();
 
-    private readonly FixedList<string> _keys = new(10);
+    private readonly FixedList<string> _keys = new(20);
 
     private readonly Dictionary<string, Delegate> _delegates = new();
     public int Capacity { get; set; } = 1000;
