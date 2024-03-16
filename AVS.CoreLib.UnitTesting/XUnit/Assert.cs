@@ -2,6 +2,14 @@
 using AVS.CoreLib.Abstractions.Responses;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.UnitTesting.XUnit.Exceptions;
+using Xunit.Sdk;
+using EqualException = AVS.CoreLib.UnitTesting.XUnit.Exceptions.EqualException;
+using FalseException = AVS.CoreLib.UnitTesting.XUnit.Exceptions.FalseException;
+using NotEqualException = AVS.CoreLib.UnitTesting.XUnit.Exceptions.NotEqualException;
+using NotNullException = AVS.CoreLib.UnitTesting.XUnit.Exceptions.NotNullException;
+using NullException = AVS.CoreLib.UnitTesting.XUnit.Exceptions.NullException;
+using TrueException = AVS.CoreLib.UnitTesting.XUnit.Exceptions.TrueException;
+
 #nullable enable
 namespace AVS.CoreLib.UnitTesting.xUnit
 {
@@ -175,8 +183,14 @@ namespace AVS.CoreLib.UnitTesting.xUnit
             {
                 throw new NotEqualException(expected, actual, userMessage);
             }
-        } 
+        }
         #endregion
+
+        public static new void Same(object? expected, object? actual)
+        {
+            if (!object.ReferenceEquals(expected, actual))
+                throw new SameException(expected, actual);
+        }
 
         private static bool IsLineEnding(char c)
         {
