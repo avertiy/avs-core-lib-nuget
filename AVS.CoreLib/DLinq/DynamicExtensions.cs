@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Metrics;
 using System.Linq;
 using AVS.CoreLib.Extensions.Linq;
 
@@ -21,7 +20,7 @@ public static class DynamicExtensions
     public static IEnumerable Select<T>(this IEnumerable<T> source, string? selector, Type? type = null)
     {
         var typeArg = type ?? typeof(T);
-        var props = DynamicSelector.LookupProperties(typeArg, selector ?? "*");
+        var props = DynamicSelector.LookupProperties(selector ?? "*", typeArg);
         return source.Select(props, typeArg);
     }
 
@@ -34,7 +33,7 @@ public static class DynamicExtensions
     public static IEnumerable<TResult> Select<T, TResult>(this IEnumerable<T> source, string? selector, Type? type = null)
     {
         var typeArg = type ?? typeof(T);
-        var props = DynamicSelector.LookupProperties(typeArg, selector ?? "*");
+        var props = DynamicSelector.LookupProperties(selector ?? "*", typeArg);
         var relevantProps = props.Where(x => x.PropertyType.IsAssignableTo(typeof(TResult))).ToArray();
         return relevantProps.Length == 0 ? source.Cast<T, TResult>() : source.Select<T, TResult>(relevantProps[0], typeArg);
     }
@@ -52,7 +51,7 @@ public static class DynamicExtensions
     public static IEnumerable<Dictionary<string, object>> SelectDict<T>(this IEnumerable<T> source, string? selector, Type? type = null)
     {
         var typeArg = type ?? typeof(T);
-        var props = DynamicSelector.LookupProperties(typeArg, selector ?? "*");
+        var props = DynamicSelector.LookupProperties(selector ?? "*", typeArg);
         return source.SelectDict(props, typeArg);
     }
 
@@ -69,7 +68,7 @@ public static class DynamicExtensions
         string? selector, Type? type = null)
     {
         var typeArg = type ?? typeof(T);
-        var props = DynamicSelector.LookupProperties(typeArg, selector ?? "*");
+        var props = DynamicSelector.LookupProperties(selector ?? "*", typeArg);
         var relevantProps = props.Where(x => x.PropertyType.IsAssignableTo(typeof(TResult))).ToArray();
         return source.SelectDict<T, TResult>(relevantProps, typeArg);
     }

@@ -224,6 +224,11 @@ namespace AVS.CoreLib.Extensions
             return Convert.ToInt32(n) * roundBasis;
         }
 
+        public static int GetSmallerValue(this int value, int other)
+        {
+            return value <= other ? value : other;
+        }
+        
         public static int Abs(this int value)
         {
             return value < 0 ? -value : value;

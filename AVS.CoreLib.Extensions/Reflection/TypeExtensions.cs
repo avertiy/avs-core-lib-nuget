@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -75,6 +76,76 @@ namespace AVS.CoreLib.Extensions.Reflection
             return dict;
         }
 
+        public static MethodInfo GetIndexerRequired(this Type type, Type typeArg)
+        {
+            var methodInfo = type.GetMethod(type.IsArray ? "Get" : "get_Item", BindingFlags.Instance | BindingFlags.Public, [typeArg]);
+
+            if(methodInfo == null)
+                throw new ArgumentException($"Indexer [get_Item({typeArg.Name})] not found in {type.Name} type definition.");
+
+            return methodInfo;
+        }
+
+        public static MethodInfo? GetIndexer(this Type type)
+        {
+            if (type.IsArray)
+                return type.GetMethod("Get", BindingFlags.Instance | BindingFlags.Public, [typeof(int)]);
+            else
+                return type.GetMethod("get_Item", BindingFlags.Instance | BindingFlags.Public, [typeof(int)]);
+        }
+
+        public static MethodInfo? GetKeyIndexer(this Type type)
+        {
+            return type.GetMethod("get_Item", BindingFlags.Instance | BindingFlags.Public, [typeof(string)]);
+        }
+
+        public static PropertyInfo[] GetProperties(this Type type, BindingFlags flags, IEnumerable<string> properties)
+        {
+            var props = type.GetProperties(flags);
+
+            var list = new List<PropertyInfo>(props.Length);
+
+            var strComparison = flags.HasFlag(BindingFlags.IgnoreCase) ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+
+            foreach (var name in properties)
+            {
+                foreach (var prop in props)
+                {
+                    if (prop.Name.Equals(name, strComparison))
+                    {
+                        list.Add(prop);
+                        break;
+                    }
+                }
+            }
+
+            return list.ToArray();
+        }
+
+        public static Dictionary<string,PropertyInfo> SearchProperties(this Type type, BindingFlags flags, IEnumerable<string> properties)
+        {
+            var props = type.GetProperties(flags);
+
+            var dict = new Dictionary<string, PropertyInfo>(props.Length);
+
+            var strComparison = flags.HasFlag(BindingFlags.IgnoreCase) ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+
+            foreach (var name in properties)
+            {
+                foreach (var prop in props)
+                {
+                    if (prop.Name.Equals(name, strComparison))
+                    {
+                        dict.Add(name, prop);
+                        break;
+                    }
+                }
+            }
+
+            return dict;
+        }
+
+        [Obsolete("To-do rename to GetProperties, search should return Dictionary<string,PropertyInfo>")]
         public static PropertyInfo[] SearchProperties(this Type type, string selector, BindingFlags flags)
         {
             //selector examples: close or close,high or close,high,time

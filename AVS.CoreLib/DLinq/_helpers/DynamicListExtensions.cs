@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using AVS.CoreLib.DLinq.Extensions;
 
 namespace AVS.CoreLib.DLinq;
 
@@ -24,7 +25,7 @@ internal static class DynamicListExtensions
         return source.ToListOfDictionary(props, paramType);
     }
 
-    private static IEnumerable ToList<T>(this IEnumerable<T> source, PropertyInfo prop, Type? paramType)
+    internal static IEnumerable ToList<T>(this IEnumerable<T> source, PropertyInfo prop, Type? paramType)
     {
         var selectFn = LambdaBag.Lambdas.GetSelectListFn<T>(prop, paramType);
         return selectFn.Invoke(source);

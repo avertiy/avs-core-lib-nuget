@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using AVS.CoreLib.Extensions.Reflection;
 
-namespace AVS.CoreLib.DLinq;
+namespace AVS.CoreLib.DLinq.Extensions;
 
 internal static class SelectLambdaExtensions
 {
@@ -16,7 +16,7 @@ internal static class SelectLambdaExtensions
             return fn!;
 
         // Construct and invoke Select<T, TResult> using expression trees
-        var method = typeof(SelectLambdaExtensions).ConstructStaticMethod(nameof(Select),typeof(T), prop.PropertyType);
+        var method = typeof(SelectLambdaExtensions).ConstructStaticMethod(nameof(Select), typeof(T), prop.PropertyType);
         var lambda = LambdaBuilder.InvokeExpr<T>(method, bag, prop, paramType);
         var func = lambda.Compile();
         bag[key] = func;
@@ -35,7 +35,7 @@ internal static class SelectLambdaExtensions
     /// </summary>
     internal static Func<IEnumerable<T>, IEnumerable> GetSelectDictFn<T>(this LambdaBag bag, PropertyInfo[] props, Type? paramType)
     {
-        var propsStr = string.Join(",", props.Select((x => x.Name)));
+        var propsStr = string.Join(",", props.Select(x => x.Name));
         var key = $"{nameof(SelectDict)}<{typeof(T).Name}>(source, props: [{propsStr}], {paramType?.Name})";
         if (bag.TryGetFunc(key, out Func<IEnumerable<T>, IEnumerable>? fn))
             return fn!;
@@ -61,7 +61,7 @@ internal static class SelectLambdaExtensions
     /// </summary>
     internal static Func<IEnumerable<T>, IEnumerable> GetSelectDictFn<T>(this LambdaBag bag, Type valueType, PropertyInfo[] props, Type? paramType)
     {
-        var propsStr = string.Join(",", props.Select((x => x.Name)));
+        var propsStr = string.Join(",", props.Select(x => x.Name));
         var key = $"{nameof(SelectTypedDict)}<{typeof(T).Name},{valueType.Name}>(source, props: [{propsStr}], {paramType?.Name})";
         if (bag.TryGetFunc(key, out Func<IEnumerable<T>, IEnumerable>? fn))
             return fn!;

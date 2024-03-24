@@ -1,57 +1,47 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using AVS.CoreLib.Extensions;
 
 namespace AVS.CoreLib.DLinq;
 
 public static class FilterExtensions
 {
+    private static bool IsAny(string filter)
+    {
+        return filter is "*" or ".*";
+    }
+
     public static IEnumerable Filter<T>(this IList<T> source, string? filter)
     {
-        if (filter == null || source.Count == 0 || FilterHelper.IsAny(filter))
+        if (string.IsNullOrEmpty(filter) || source.Count == 0 || IsAny(filter))
             return source;
-
-        FilterHelper.ValidateFilterExpression(filter);
 
         var typeArg = source[0]!.GetType();
-        var props = DynamicSelector.LookupProperties(typeArg, filter);
 
-        if (props.Length == 0)
-            return source;
+        if (ExpressionEngine.IsSimple(filter))
+        {
+            var props = DynamicSelector.LookupProperties(filter, typeArg);
+            return props.Length == 0 ? source : source.ToList(props, typeArg);
+        }
 
-        return source.ToList(props, typeArg);
+        var engine = new ExpressionEngine();
+        return engine.Process(source, filter, typeArg);
     }
 
     public static IEnumerable Filter<T>(this IEnumerable<T> source, string? filter, Type? type = null)
     {
-        if (filter == null || FilterHelper.IsAny(filter))
+        if (filter == null || IsAny(filter))
             return source;
 
-        FilterHelper.ValidateFilterExpression(filter);
-        var typeArg = type ?? typeof(T);
-        var props = DynamicSelector.LookupProperties(typeArg, filter);
+        if (ExpressionEngine.IsSimple(filter))
+        {
+            var typeArg = type ?? typeof(T);
+            var props = DynamicSelector.LookupProperties(filter, typeArg);
 
-        if (props.Length == 0)
-            return source;
+            return props.Length == 0 ? source : source.ToList(props, typeArg);
+        }
 
-        return source.ToList(props, typeArg);
-    }
-}
-
-internal static class FilterHelper
-{
-    private const string ANY = "*";
-
-    internal static bool IsAny(string? filter) => string.IsNullOrEmpty(filter) || filter == ANY;
-
-    internal static void ValidateFilterExpression(string filter)
-    {
-        if (filter.StartsWith(".."))
-            throw new NotSupportedException($"Filter expression `{filter}` contains a recursive operator `..`, recursive search not supported");
-
-        if (filter.ContainsAny('[', '>', '<', '=', '@'))
-            throw new NotSupportedException($"Filter expression `{filter}` contains not supported operators / symbols");
-
+        var engine = new ExpressionEngine();
+        return engine.Process(source, filter, type);
     }
 }

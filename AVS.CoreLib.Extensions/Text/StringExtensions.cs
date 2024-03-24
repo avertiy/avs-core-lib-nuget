@@ -298,7 +298,6 @@ namespace AVS.CoreLib.Extensions
             }
             return count;
         }
-
     }
 
 }

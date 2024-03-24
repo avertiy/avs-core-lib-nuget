@@ -1,4 +1,6 @@
-﻿namespace AVS.CoreLib.Extensions
+﻿using System;
+
+namespace AVS.CoreLib.Extensions
 {
     public static class TupleExtensions
     {
@@ -39,5 +41,7 @@
         {
             return tuple.Item1 < tuple.Item2 ? tuple.Item2 : tuple.Item1;
         }
+
+        
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace AVS.CoreLib.Extensions;
+﻿using System;
+
+namespace AVS.CoreLib.Extensions;
 
 public static class ArrayExtensions
 {
@@ -14,5 +16,10 @@ public static class ArrayExtensions
         }
 
         return true;
+    }
+
+    public static int GetShortestLength(this Array arr, Array other)
+    {
+        return arr.Length <= other.Length ? arr.Length : other.Length;
     }
 }

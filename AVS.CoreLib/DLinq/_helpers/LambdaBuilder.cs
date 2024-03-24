@@ -8,10 +8,37 @@ using AVS.CoreLib.Extensions;
 
 namespace AVS.CoreLib.DLinq;
 
-internal static class LambdaBuilder
+internal static class InvokeExpr
 {
     /// <summary>
-    /// Creates a lambda expression to invoke static method for one property:
+    /// Creates a lambda expression to invoke static extension method: 
+    /// <code>
+    ///  source.method(bag, spec);
+    /// </code>
+    /// </summary>
+    public static Expression<Func<IEnumerable<T>, IEnumerable>> GetExpr<T>(MethodInfo mi, LambdaBag bag, ListDictLambdaSpec<T> spec)
+    {
+        var sourceParam = Expression.Parameter(typeof(IEnumerable<T>), "source");
+        var bagParam = Expression.Constant(bag);
+        var specParam = Expression.Constant(spec);
+
+        // Select(prop, paramType)
+        var call = Expression.Call(null, mi, sourceParam, bagParam, specParam);
+
+        // Create lambda expression
+        var lambda = Expression.Lambda<Func<IEnumerable<T>, IEnumerable>>(call, sourceParam);
+        return lambda;
+    }
+}
+
+
+internal static class LambdaBuilder
+{
+    
+
+
+    /// <summary>
+    /// Creates a lambda expression to invoke static method for one property: source.method(bag, prop, paramType);
     /// <code>
     ///  SelectList{T, TValue}(IEnumerable{T} source, LambdaBag bag, PropertyInfo prop, Type? paramType)
     /// </code>
@@ -25,6 +52,50 @@ internal static class LambdaBuilder
 
         // Select(prop, paramType)
         var call = Expression.Call(null, mi, sourceParam, bagParam, propParam, paramTypeParam);
+
+        // Create lambda expression
+        var lambda = Expression.Lambda<Func<IEnumerable<T>, IEnumerable>>(call, sourceParam);
+        return lambda;
+    }
+
+    /// <summary>
+    /// Creates a lambda expression to invoke static method for one property: source.method(bag, prop, index, paramType);
+    /// <code>
+    ///  SelectByIndexAsList{T, TValue}(IEnumerable{T} source, LambdaBag bag, PropertyInfo prop, int index, Type? paramType)
+    /// </code>
+    /// </summary>
+    public static Expression<Func<IEnumerable<T>, IEnumerable>> InvokeExpr<T>(MethodInfo mi, LambdaBag bag, PropertyInfo prop, int index, Type? paramType)
+    {
+        var sourceParam = Expression.Parameter(typeof(IEnumerable<T>), "source");
+        var bagParam = Expression.Constant(bag);
+        var propParam = Expression.Constant(prop);
+        var indParam = Expression.Constant(index);
+        var paramTypeParam = Expression.Constant(paramType);
+
+        // Select(prop, paramType)
+        var call = Expression.Call(null, mi, sourceParam, bagParam, propParam, indParam, paramTypeParam);
+
+        // Create lambda expression
+        var lambda = Expression.Lambda<Func<IEnumerable<T>, IEnumerable>>(call, sourceParam);
+        return lambda;
+    }
+
+    /// <summary>
+    /// Creates a lambda expression to invoke static method for one property: source.method(bag, prop, key, paramType);
+    /// <code>
+    ///  SelectByIndexAsList{T, TValue}(IEnumerable{T} source, LambdaBag bag, PropertyInfo prop, string key, Type? paramType)
+    /// </code>
+    /// </summary>
+    public static Expression<Func<IEnumerable<T>, IEnumerable>> InvokeExpr<T>(MethodInfo mi, LambdaBag bag, PropertyInfo prop, string key, Type? paramType)
+    {
+        var sourceParam = Expression.Parameter(typeof(IEnumerable<T>), "source");
+        var bagParam = Expression.Constant(bag);
+        var propParam = Expression.Constant(prop);
+        var keyParam = Expression.Constant(key);
+        var paramTypeParam = Expression.Constant(paramType);
+
+        // Select(prop, paramType)
+        var call = Expression.Call(null, mi, sourceParam, bagParam, propParam, keyParam, paramTypeParam);
 
         // Create lambda expression
         var lambda = Expression.Lambda<Func<IEnumerable<T>, IEnumerable>>(call, sourceParam);
@@ -55,7 +126,7 @@ internal static class LambdaBuilder
     }
 
     /// <summary>
-    /// Creates lambda expression to select property: x => x.Prop
+    /// Creates lambda expression to select property: x => (Type) x.Prop
     /// </summary>
     public static Expression<Func<T, TResult>> SelectPropertyExpr<T, TResult>(PropertyInfo prop, Type? paramType)
     {
@@ -71,6 +142,59 @@ internal static class LambdaBuilder
         return Expression.Lambda<Func<T, TResult>>(propExpr, paramExpr);
     }
 
+    /// <summary>
+    /// expression: x => (paramType) x.prop[index]
+    /// </summary>
+    public static Expression<Func<T, TResult>> SelectItemOfPropertyExpr<T, TResult>(PropertyInfo prop, int index, Type? paramType)
+    {
+        // Define parameter expression for the input of the lambda expression
+        var paramExpr = Expression.Parameter(typeof(T), "x");
+
+        // Access the property specified by the PropertyInfo
+        var propExpr = paramType == null
+            ? Expression.Property(paramExpr, prop)
+            : Expression.Property(Expression.Convert(paramExpr, paramType), prop);
+
+        var indexExpr = Expression.Constant(index);
+
+        Expression indexerExpr;
+
+        if (prop.PropertyType.IsArray)
+        {
+            indexerExpr = Expression.ArrayIndex(propExpr, indexExpr);
+        }
+        else
+        {
+            var indexerPropName = "Item";//Item is a default's name
+            indexerExpr = Expression.Property(propExpr, indexerPropName, indexExpr);
+        }
+
+        // Create lambda expression representing accessing the property
+        return Expression.Lambda<Func<T, TResult>>(indexerExpr, paramExpr);
+    }
+
+    /// <summary>
+    /// expression: x => (paramType) x.prop[key]
+    /// </summary>
+    public static Expression<Func<T, TResult>> SelectItemOfPropertyExpr<T, TResult>(PropertyInfo prop, string key, Type? paramType)
+    {
+        // Define parameter expression for the input of the lambda expression
+        var paramExpr = Expression.Parameter(typeof(T), "x");
+
+        // Access the property specified by the PropertyInfo
+        var propExpr = paramType == null
+            ? Expression.Property(paramExpr, prop)
+            : Expression.Property(Expression.Convert(paramExpr, paramType), prop);
+
+        var indexExpr = Expression.Constant(key);
+
+        var indexerPropName = "Item"; //Item is a default's name
+        var indexerExpr = Expression.Property(propExpr, indexerPropName, indexExpr);
+
+        // Create lambda expression representing accessing the property
+        return Expression.Lambda<Func<T, TResult>>(indexerExpr, paramExpr);
+    }
+
     public static Expression<Func<object, object>> CastExpr(Type targetType)
     {
         // Create parameter expressions
@@ -84,7 +208,16 @@ internal static class LambdaBuilder
     }
 
     /// <summary>
-    /// Creates lambda expression: x => new Dictionary{string,TValue}(props.Length) { {Prop1 = x.Prop1}, {Prop2 = x.Prop2},... }
+    /// Creates lambda expression:
+    /// <code>
+    ///  x => {
+    ///      var dict = new Dictionary{string,TValue}(props.Length);
+    ///      dict.Add(prop1.Name.ToCamelCase(), (ParamType)x).Prop1);
+    ///      dict.Add(prop2.Name.ToCamelCase(), (ParamType)x).Prop2);
+    ///      ....
+    ///      return dict;
+    /// }
+    /// </code> 
     /// </summary>
     public static Expression<Func<T, Dictionary<string, TValue>>> SelectDictionaryExpr<T, TValue>(PropertyInfo[] props, Type? paramType)
     {
@@ -102,8 +235,6 @@ internal static class LambdaBuilder
 
         //var dict = new Dictionary<string, TValue>(props.Length);
         var dictAssignExpr = Expression.Assign(dictExpr, Expression.New(dictConstructor, Expression.Constant(props.Length)));
-        //var dictAssignExpr = Expression.Assign(dictExpr, Expression.New(dictType));
-
 
         var list = new List<Expression>(props.Length + 2) { dictAssignExpr };
 

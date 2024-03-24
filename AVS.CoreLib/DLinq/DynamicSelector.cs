@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using AVS.CoreLib.Extensions.Reflection;
 
@@ -27,9 +28,15 @@ public static class DynamicSelector
     /// </code>
     /// - case in-sensitive (ignore case)
     /// </summary>
-    public static PropertyInfo[] LookupProperties(Type type, string? selectExpression)
+    public static PropertyInfo[] LookupProperties(string? selectExpression, Type type)
     {
-        var expr = selectExpression == null ? string.Empty : selectExpression.Replace("x.", "");
+        if (string.IsNullOrEmpty(selectExpression))
+            return Array.Empty<PropertyInfo>();
+
+        var expr = selectExpression.Replace("x.", "");
         return type.SearchProperties(expr, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
     }
 }
+
+
+
