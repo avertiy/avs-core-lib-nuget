@@ -3,21 +3,31 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using AVS.CoreLib.DLinq;
 using AVS.CoreLib.DLinq.Extensions;
+using AVS.CoreLib.DLinq0.LambdaSpec0;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Reflection;
 
-namespace AVS.CoreLib.DLinq;
-
+namespace AVS.CoreLib.DLinq0;
+// TODO  
+// 1. rework static lambdas to be based on lambda spec see ListDictLambdaSpec<T> 
+// 2. two-layered lambda delegates seems excessive, this could be simplified to simply build at once the required expression
 public class ExpressionEngine
 {
-    internal static bool IsSimple(string filter)
+    /// <summary>
+    /// simple expressions are:
+    /// - `*` or `.*` - mean pick all data
+    /// - comma-separated e.g. `close,high`
+    ///
+    /// non-simple expressions include operators such as [] or `.` (nested properties)  e.g. `close[5]`, `property["key1"]`, `prop.child`
+    /// </summary>
+    internal static bool IsSimpleExpression(string filter)
     {
         // simple filter might contain property or comma-separated properties
         // any operator like indexer [], dot `.`, or comparison operators is a complex expression that needs to be parsed with engine
         return !filter.ContainsAny('[', '.', '@', '=', '<', '>');
     }
-
 
     private readonly LexemeParser _parser = new();
 
@@ -34,9 +44,7 @@ public class ExpressionEngine
         var typeArg = targetType ?? typeof(T);
 
         if (lexemes.Length == 1)
-        {
             return ProcessLexeme(source, lexemes[0], typeArg);
-        }
 
         if (lexemes.All(x => x.IsSimple))
         {
@@ -58,16 +66,16 @@ public class ExpressionEngine
 
         foreach (var lexeme in lexemes)
         {
-            if(!propsDict.ContainsKey(lexeme.Property))
+            if (!propsDict.ContainsKey(lexeme.Property))
                 continue;
 
             var prop = propsDict[lexeme.Property];
-            spec.AddItem(lexeme, prop);
+            spec.AddItem(lexeme.ToDictSpecItem(prop));
 
             var type = lexeme.GetResultType(prop);
             resultType ??= type;
 
-            if(commonResultType && type != resultType)
+            if (commonResultType && type != resultType)
                 commonResultType = false;
         }
 
@@ -109,24 +117,31 @@ public class ExpressionEngine
         switch (lexeme.GetExpressionType())
         {
             case ExpressionType.Compound:
-                throw new NotImplementedException("Compound expressions (inner props) not supported yet");
+                {
+                    var resultType = lexeme.GetResultType(prop);
+                    var specItem = lexeme.ToSpecItem(prop);
 
+                    throw new NotImplementedException("Compound expressions (inner props) not supported yet");
+                    //item.GetExpression()
+                    //selectFn = LambdaBag.Lambdas.GetSelectListOfObjectDictFn(spec);
+                    //break;
+                }
             case ExpressionType.Index:
-            {
-                selectFn = LambdaBag.Lambdas.GetSelectListByIndexFn<T>(prop, lexeme.Index, targetType);
-                break;
-            }
+                {
+                    selectFn = LambdaBag.Lambdas.GetSelectListByIndexFn<T>(prop, lexeme.Index, targetType);
+                    break;
+                }
             case ExpressionType.Key:
-            {
-                selectFn = LambdaBag.Lambdas.GetSelectListByKeyFn<T>(prop, lexeme.Key!, targetType);
-                break;
-            }
+                {
+                    selectFn = LambdaBag.Lambdas.GetSelectListByKeyFn<T>(prop, lexeme.Key!, targetType);
+                    break;
+                }
             case ExpressionType.Default:
             default:
-            {
-                selectFn = LambdaBag.Lambdas.GetSelectListFn<T>(prop, targetType);
-                break;
-            }
+                {
+                    selectFn = LambdaBag.Lambdas.GetSelectListFn<T>(prop, targetType);
+                    break;
+                }
         }
 
         return selectFn.Invoke(source);

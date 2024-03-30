@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Reflection;
+using AVS.CoreLib.DLinq0.LambdaSpec0;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Reflection;
 
-namespace AVS.CoreLib.DLinq;
+namespace AVS.CoreLib.DLinq0;
 
 public class Lexeme
 {
@@ -37,13 +38,9 @@ public class Lexeme
 
         string str;
         if (Key != null || Index > -1)
-        {
             str = $"{Property}[{Key ?? Index.ToString()}]{Inner}";
-        }
         else
-        {
             str = $"{Property}{Inner}";
-        }
 
         return str;
     }
@@ -52,12 +49,12 @@ public class Lexeme
     {
         var key = Inner switch
         {
-            null when Key == null && Index == -1 => Property,
-            null => Key ?? $"{Property}[{Index}]",
+            null when Key == null && Index == -1 => Property.ToCamelCase(),
+            null => Key ?? $"{Property.ToCamelCase()}[{Index}]",
             _ => Inner.GetResultKey()
         };
 
-        return key.ToCamelCase();
+        return key;
     }
 
     public Type GetResultType(PropertyInfo prop)
@@ -71,10 +68,10 @@ public class Lexeme
             case null:
                 return prop.PropertyType.GetIndexerRequired(typeof(string)).ReturnType;
             default:
-            {
-                var innerProp = GetInnerProperty(prop);
-                return Inner.GetResultType(innerProp);
-            }
+                {
+                    var innerProp = GetInnerProperty(prop);
+                    return Inner.GetResultType(innerProp);
+                }
         }
     }
 
@@ -105,13 +102,47 @@ public class Lexeme
         return innerProp;
     }
 
+    public SpecItem ToSpecItem(PropertyInfo propertyInfo)
+    {
+        var lex = this;
+        var prop = propertyInfo;
+        var item = new SpecItem(prop) { Key = lex.Key, Index = lex.Index };
+
+        while (lex.Inner != null)
+        {
+            prop = lex.GetInnerProperty(prop);
+            var inner = new SpecItem(prop) { Key = lex.Inner.Key, Index = lex.Inner.Index };
+            item.Add(inner);
+            lex = lex.Inner;
+        }
+
+        return item;
+    }
+
+    public DictSpecItem ToDictSpecItem(PropertyInfo propertyInfo)
+    {
+        var key = GetResultKey();
+        var lex = this;
+        var prop = propertyInfo;
+        var item = new DictSpecItem(key, prop) { Key = lex.Key, Index = lex.Index };
+
+        while (lex.Inner != null)
+        {
+            prop = lex.GetInnerProperty(prop);
+            var inner = new DictSpecItem(key, prop) { Key = lex.Inner.Key, Index = lex.Inner.Index };
+            item.Add(inner);
+            lex = lex.Inner;
+        }
+
+        return item;
+    }
 
 }
 
 public enum ExpressionType
 {
     Default = 0,
-    Index =1,
-    Key =2,
-    Compound =3
+    Index = 1,
+    Key = 2,
+    Compound = 3
 }

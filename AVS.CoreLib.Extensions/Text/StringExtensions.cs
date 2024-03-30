@@ -139,17 +139,22 @@ namespace AVS.CoreLib.Extensions
             return values.Any(value.StartsWith);
         }
 
-        public static bool StartsWithEither(this string value, params string[] values)
+        public static bool StartsWithAny(this string value, params char[] chars)
+        {
+            return chars.Any(value.StartsWith);
+        }
+
+        public static bool StartsWithAny(this string value, params string[] values)
         {
             return values.Any(value.StartsWith);
         }
 
-        public static bool EndsWithEither(this string value, params string[] values)
+        public static bool EndsWithAny(this string value, params char[] values)
         {
             return values.Any(value.EndsWith);
         }
 
-        public static bool EndsWithEither(this string value, params char[] values)
+        public static bool EndsWithAny(this string value, params string[] values)
         {
             return values.Any(value.EndsWith);
         }
@@ -201,20 +206,31 @@ namespace AVS.CoreLib.Extensions
 
         #endregion
 
-        public static string Truncate(this string str, int maxLength)
-        {
-            if (string.IsNullOrEmpty(str) || str.Length <= maxLength)
-                return str;
+        #region IndexOfAny / IndexOfEndOfWord / IndexesOfKeywords
 
-            return str.Substring(0, maxLength);
+        public static int IndexOfAny(this string str, params char[] anyOf)
+        {
+            return str.IndexOfAny(anyOf);
         }
 
-        public static string Truncate(this string str, int maxLength, string append)
+        public static int IndexOfAny(this string? str, params string[] values)
         {
-            if (string.IsNullOrEmpty(str) || str.Length <= (maxLength + append.Length))
-                return str;
+            if (str == null || values.Length == 0)
+            {
+                return -1;
+            }
 
-            return str.Substring(0, maxLength)+append;
+            var minIndex = str.Length;
+            foreach (var value in values)
+            {
+                var index = str.IndexOf(value, StringComparison.Ordinal);
+                if (index >= 0 && index < minIndex)
+                {
+                    minIndex = index;
+                }
+            }
+
+            return minIndex == str.Length ? -1 : minIndex;
         }
 
         public static int IndexOfEndOfWord(this string str, int fromIndex = 0)
@@ -235,33 +251,47 @@ namespace AVS.CoreLib.Extensions
             return end;
         }
 
-        public static int IndexOfAny(this string str, params string[] values)
+        public static Dictionary<string, int> IndexesOfKeywords(this string str, params string[] keywords)
         {
-            if (str == null || values == null || values.Length == 0)
+            var dict = new Dictionary<string, int>(keywords.Length);
+
+            var startIndex = 0;
+            foreach (var keyword in keywords)
             {
-                return -1;
+                var index = str.IndexOf(keyword, startIndex, StringComparison.Ordinal);
+                dict[keyword] = index;
+                if (index >= 0)
+                    startIndex = index + keyword.Length;
             }
 
-            int minIndex = str.Length;
-            foreach (string value in values)
-            {
-                int index = str.IndexOf(value);
-                if (index >= 0 && index < minIndex)
-                {
-                    minIndex = index;
-                }
-            }
+            return dict;
+        }
+        #endregion
 
-            return minIndex == str.Length ? -1 : minIndex;
+        public static string Truncate(this string str, int maxLength)
+        {
+            if (string.IsNullOrEmpty(str) || str.Length <= maxLength)
+                return str;
+
+            return str.Substring(0, maxLength);
         }
 
-        public static string ReadWord(this string str, int fromIndex = 0)
+        public static string Truncate(this string str, int maxLength, string append)
         {
-            if (str.Length <= fromIndex)
-                throw new ArgumentOutOfRangeException($"{nameof(fromIndex)} {fromIndex} exceeds {nameof(str)} length {str.Length}");
+            if (string.IsNullOrEmpty(str) || str.Length <= (maxLength + append.Length))
+                return str;
 
-            var end = str.IndexOfEndOfWord(fromIndex);
-            return str.Substring(fromIndex, end - fromIndex);
+            return str.Substring(0, maxLength)+append;
+        }
+
+        public static string ReplaceAll(this string input, char[] oldChars, char newChar)
+        {
+            var sb = new StringBuilder(input);
+            foreach (var oldChar in oldChars)
+            {
+                sb.Replace(oldChar, newChar);
+            }
+            return sb.ToString();
         }
 
         public static string ReplaceAll(this string input, string[] values, string replacement = "")
@@ -277,14 +307,14 @@ namespace AVS.CoreLib.Extensions
 
         public static string ToCamelCase(this string str)
         {
-            if (!string.IsNullOrEmpty(str) && str.Length > 1)
-            {
-                if (str.Length < 4)
-                    return str.ToLower();
-                return Char.ToLowerInvariant(str[0]) + str.Substring(1);
-            }
-
+            if (str.Length > 1)
+                return str.Length < 4 ? str.ToLower() : char.ToLowerInvariant(str[0]) + str.Substring(1);
             return str;
+        }
+
+        public static string Capitalize(this string str)
+        {
+            return str.Length > 1 ? char.ToUpperInvariant(str[0]) + str.Substring(1) : str;
         }
 
         public static int Count(this string text, string str)
@@ -297,6 +327,43 @@ namespace AVS.CoreLib.Extensions
                 index += str.Length;
             }
             return count;
+        }
+        
+        public static string ReadWord(this string str, int fromIndex = 0)
+        {
+            if (str.Length <= fromIndex)
+                throw new ArgumentOutOfRangeException($"{nameof(fromIndex)} {fromIndex} exceeds {nameof(str)} length {str.Length}");
+
+            var end = str.IndexOfEndOfWord(fromIndex);
+            return str.Substring(fromIndex, end - fromIndex);
+        }
+
+        public static string WrapInQuotes(this string str, char quote = '"')
+        {
+            return quote + str + quote;
+        }
+
+        public static string WrapIn(this string str, string wrap)
+        {
+            return wrap + str + wrap;
+        }
+
+        public static string SanitizePropertyName(this string str, char replacement = '_')
+        {
+            var sb = new StringBuilder(str.Trim());
+            for (var i = 0; i < sb.Length; i++)
+            {
+                if (!char.IsLetterOrDigit(sb[i]))
+                    sb[i] = replacement;
+            }
+
+            if (char.IsLetter(sb[0]))
+            {
+                sb[0] = char.ToUpperInvariant(sb[0]);
+                return sb.ToString();
+            }
+
+            return replacement + sb.ToString();
         }
     }
 

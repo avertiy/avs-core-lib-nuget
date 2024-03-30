@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using AVS.CoreLib.DLinq;
+using AVS.CoreLib.DLinq.Extensions;
+using AVS.CoreLib.DLinq.LambdaSpec;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -52,7 +53,7 @@ public class DLinqFilterTests
 
         // act
         var result = source.Filter("day,hour");
-        var list = result as List<Dictionary<string,int>>;
+        var list = result as List<IDictionary<string,int>>;
         
         //assert
         Assert.IsNotNull(list);
@@ -75,7 +76,7 @@ public class DLinqFilterTests
 
         // act
         var result = source.Filter("day,ticks,DayOfWeek");
-        var list = result as List<Dictionary<string, object>>;
+        var list = result as List<IDictionary<string, object>>;
 
         //assert
         Assert.IsNotNull(list);
@@ -85,10 +86,10 @@ public class DLinqFilterTests
         dict.Keys.Count.Should().Be(3);
         dict.ContainsKey("day").Should().BeTrue();
         dict.ContainsKey("ticks").Should().BeTrue();
-        dict.ContainsKey("dayOfWeek").Should().BeTrue();
+        dict.ContainsKey("DayOfWeek").Should().BeTrue();
         dict["day"].Should().Be(time.Day);
         dict["ticks"].Should().Be(time.Ticks);
-        dict["dayOfWeek"].Should().Be(time.DayOfWeek);
+        dict["DayOfWeek"].Should().Be(time.DayOfWeek);
     }
 
     [TestMethod]
@@ -184,7 +185,7 @@ public class DLinqFilterTests
         // act
         var result = source.Filter("prop[\"key2\"],prop[\"key3\"]");
         
-        var list = result as List<Dictionary<string, int>>;
+        var list = result as List<IDictionary<string, int>>;
 
         //assert
         Assert.IsNotNull(list);
@@ -217,7 +218,7 @@ public class DLinqFilterTests
         // act
         var result = source.Filter("prop[\"key2\"].day,prop[\"key3\"].hour");
 
-        var list = result as List<Dictionary<string, int>>;
+        var list = result as List<IDictionary<string, int>>;
 
         //assert
         Assert.IsNotNull(list);
@@ -250,7 +251,7 @@ public class DLinqFilterTests
         // act
         var result = source.Filter("prop[\"key2\"].day,prop[\"key3\"].ticks,prop.keys.count");
 
-        var list = result as List<Dictionary<string, object>>;
+        var list = result as List<IDictionary<string, object>>;
 
         //assert
         Assert.IsNotNull(list);
@@ -263,5 +264,44 @@ public class DLinqFilterTests
         list[0]["day"].Should().Be(time.AddDays(1).Day);
         list[1]["day"].Should().Be(time.AddDays(2).Day);
         list[2]["day"].Should().Be(time.AddDays(3).Day);
+    }
+
+    [TestMethod]
+    public void Filter_Multiple_Properties_By_Key_When_Some_Item_Contains_Null_Should_Return_Default_Value()
+    {
+        //arrange
+        var source = new[] { new { Prop = new Dictionary<string, DateTime>() }, new { Prop = new Dictionary<string, DateTime>() }, new { Prop = new Dictionary<string, DateTime>() } };
+        var time = DateTime.Now;
+        source[0].Prop.Add("key1", time);
+        source[0].Prop.Add("key2", time.AddDays(1));
+        source[0].Prop.Add("key3", time.AddDays(10));
+        source[1].Prop.Add("key1", time.AddHours(1));
+        //source[1].Prop.Add("key2", time.AddDays(2).AddHours(1)); //null value
+        source[1].Prop.Add("key3", time.AddDays(10).AddHours(1));
+        source[2].Prop.Add("key1", time.AddHours(2));
+        source[2].Prop.Add("key2", time.AddDays(3).AddHours(2));
+        source[2].Prop.Add("key3", time.AddDays(10).AddHours(2));
+
+        //TODO ideally add nullable operator ? e.g. prop["key2"]?.day even prop["key2"]?.day ?? 0
+
+        // act
+        var result = source.Filter("prop[\"key2\"].day,prop[\"key3\"].ticks,prop.keys.count", mode: SpecMode.ToListSafe);
+
+        var list = result as List<IDictionary<string, object>>;
+
+        //assert
+        Assert.IsNotNull(list);
+        list.Count.Should().Be(source.Length);
+        list[0].ContainsKey("key2").Should().BeFalse();
+        list[0].ContainsKey("day").Should().BeTrue();
+        list[0].ContainsKey("ticks").Should().BeTrue();
+        list[0].ContainsKey("count").Should().BeTrue();
+        list[0].Count.Should().Be(3);
+
+        list[1].Count.Should().Be(3);
+        list[1].ContainsKey("day").Should().BeTrue();
+        list[1]["day"].Should().Be(0);
+        list[1].ContainsKey("ticks").Should().BeTrue();
+        list[1].ContainsKey("count").Should().BeTrue();
     }
 }

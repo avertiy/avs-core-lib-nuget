@@ -145,7 +145,51 @@ namespace AVS.CoreLib.Extensions.Reflection
             return dict;
         }
 
-        [Obsolete("To-do rename to GetProperties, search should return Dictionary<string,PropertyInfo>")]
+        public static PropertyInfo[] GetProperties(this Type type, BindingFlags flags, params string[] properties)
+        {
+            //selector examples: close or close,high or close,high,time
+            var props = type.GetProperties(flags);
+
+            if (!properties.Any())
+                return props;
+
+            var list = new List<PropertyInfo>(props.Length);
+
+            var strComparison = flags.HasFlag(BindingFlags.IgnoreCase) ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+
+            foreach (var name in properties)
+            {
+                foreach (var prop in props)
+                {
+                    if (name.Equals(prop.Name, strComparison))
+                    {
+                        list.Add(prop);
+                        break;
+                    }
+                }
+            }
+
+            return list.ToArray();
+        }
+
+        /// <summary>
+        /// Lookup public instance properties that match a pattern.
+        /// `*` and  `.*` patterns return all properties. 
+        /// Pattern might include comma-separated property names e.g. close,high (note ignore case flag is applied)
+        /// Pattern might also be kind of x.prop e.g. pattern: x.close,x.high
+        /// </summary>
+        public static PropertyInfo[] LookupProperties(this Type type, string pattern)
+        {
+            var flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase;
+            if (pattern == "*" || pattern == ".*")
+                return type.GetProperties(flags);
+
+            var str = pattern.Replace("x.", "");
+            var parts = str.Split(',');
+            return parts.Any() ? type.GetProperties(flags, parts) : Array.Empty<PropertyInfo>();
+        }
+
+        [Obsolete("Use GetProperties(flags, string[] properties). Search methods should return Dictionary<string,PropertyInfo>")]
         public static PropertyInfo[] SearchProperties(this Type type, string selector, BindingFlags flags)
         {
             //selector examples: close or close,high or close,high,time

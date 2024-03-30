@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using AVS.CoreLib.Guards;
 
-namespace AVS.CoreLib.DLinq;
+namespace AVS.CoreLib.DLinq0;
 
 public class LexemeParser
 {
@@ -24,7 +24,7 @@ public class LexemeParser
             var lexeme = Parse(part);
             list.Add(lexeme);
         }
-        
+
         return list.ToArray();
     }
 
@@ -46,7 +46,7 @@ public class LexemeParser
         var str = input;
         if (input[0] == '.')
             str = input.Substring(1);
-        else if(input.StartsWith("x."))
+        else if (input.StartsWith("x."))
             str = input.Substring(2);
 
 
@@ -96,17 +96,11 @@ public class LexemeParser
         var str = input.Substring(startIndex + 1, length);
 
         if (int.TryParse(str, out var index))
-        {
             result.Index = index;
-        }
         else if (str.StartsWith('"') && str.Length > 2 && str.EndsWith('"'))
-        {
             result.Key = str.Substring(1, str.Length - 2);
-        }
         else
-        {
             throw new ArgumentException($"Invalid expression `{input}` - key should be wrapped in quotes [\"key\"], index should be an integer value");
-        }
 
         if (endIndex < input.Length - 1)
         {

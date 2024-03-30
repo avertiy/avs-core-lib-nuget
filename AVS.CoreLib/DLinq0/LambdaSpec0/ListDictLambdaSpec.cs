@@ -2,9 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
+using AVS.CoreLib.DLinq;
 
-namespace AVS.CoreLib.DLinq;
+namespace AVS.CoreLib.DLinq0.LambdaSpec0;
+
+public class ListLambdaSpec<T>
+{
+    public Type TypeArg { get; set; }
+    public Type ValueType { get; set; }
+
+    public List<SpecItem> Items { get; set; }
+
+    public int Count => Items.Count;
+
+    public ListLambdaSpec(int capacity, Type typeArg)
+    {
+        Items = new List<SpecItem>(capacity);
+        ValueType = typeof(object);
+        TypeArg = typeArg;
+    }
+}
 
 public class ListDictLambdaSpec<T>
 {
@@ -23,32 +40,19 @@ public class ListDictLambdaSpec<T>
 
     public string GetCacheKey(string methodName)
     {
-        var propsStr = string.Join(",", Items.Select((x => x.Key)));
-        var key = $"source.{methodName}<{typeof(T).Name},{ValueType.Name}>(spec: {{ { propsStr}], {TypeArg.Name} }})";
+        var propsStr = string.Join(",", Items.Select(x => x.ItemKey));
+        var key = $"source.{methodName}<{typeof(T).Name},{ValueType.Name}>(spec: {{ {propsStr}], {TypeArg.Name} }})";
         return key;
     }
 
-    public void AddItem(Lexeme lexeme, PropertyInfo propertyInfo)
+    public void AddItem(DictSpecItem item)
     {
-        var key = lexeme.GetResultKey();
-        var lex = lexeme;
-        var prop = propertyInfo;
-        var item = new DictSpecItem(key, prop) { ValueKey = lex.Key, ValueIndex = lex.Index };
-
-        while (lex.Inner != null)
-        {
-            prop = lex.GetInnerProperty(prop);
-            var inner = new DictSpecItem(key, prop) { ValueKey = lex.Inner.Key, ValueIndex = lex.Inner.Index };
-            item.Add(inner);
-            lex = lex.Inner;
-        }
-
         Items.Add(item);
     }
 
     public override string ToString()
     {
-        var propsStr = string.Join(",", Items.Select((x => x.Key)));
+        var propsStr = string.Join(",", Items.Select(x => x.ItemKey));
         return $"[{ValueType.Name}, [{propsStr}], {TypeArg.Name}]";
     }
 
@@ -59,7 +63,7 @@ public class ListDictLambdaSpec<T>
         var sourceType = typeof(T);
         var paramExpr = Expression.Parameter(sourceType, "x");
         var paramCastExpr = Expression.Convert(paramExpr, TypeArg ?? sourceType);
-        
+
         var dictType = typeof(Dictionary<string, object>);
         var addMethodInfo = dictType.GetMethod("Add")!;
 

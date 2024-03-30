@@ -254,3 +254,4 @@ _Pvt_Extensions
 /AVS.CoreLib.WebApi/*.xml
 /AVS.CoreLib.WebSockets/*.xml
 /AVS.CoreLib/*.xml
+/Loggers/AVS.CoreLib.Loggers.TestApp/MnemonicPhraseGenerator.cs

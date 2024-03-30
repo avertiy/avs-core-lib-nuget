@@ -1,0 +1,42 @@
+﻿using System;
+using System.Linq.Expressions;
+using AVS.CoreLib.Extensions;
+using AVS.CoreLib.Extensions.Reflection;
+
+namespace AVS.CoreLib.DLinq.LambdaSpec;
+
+public class KeySpec : PropSpec
+{
+    public string Key { get; set; }
+
+    public KeySpec(string key)
+    {
+        Key = key;
+    }
+    
+    protected override Expression BuildValueExpr(Expression argExpr)
+    {
+        var expr = base.BuildValueExpr(argExpr);
+        var type = expr.Type;
+        var methodInfo = type.GetKeyIndexer();
+
+        if (methodInfo == null)
+            throw new ArgumentException($"Indexer this[string key] not found in {type.Name} type definition.");
+
+        expr = Expression.Call(expr, methodInfo, Expression.Constant(Key));
+        return expr;
+    }
+
+    public override string ToString(SpecView view)
+    {
+        switch (view)
+        {
+            case SpecView.Expr:
+                return Name == null ? $"[\"{Key}\"]" : $".{Name.Capitalize()}[\"{Key}\"]";
+            case SpecView.Key:
+                return Name == null ? Key : $"{Name.Capitalize()}_{Key}";
+            default:
+                return ToString();
+        }
+    }
+}

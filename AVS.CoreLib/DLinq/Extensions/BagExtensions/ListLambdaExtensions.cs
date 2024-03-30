@@ -27,6 +27,12 @@ internal static class ListLambdaExtensions
         return func;
     }
 
+    private static List<TValue> SelectList<T, TValue>(this IEnumerable<T> source, LambdaBag bag, PropertyInfo prop, Type? paramType)
+    {
+        var selector = bag.GetSelector<T, TValue>(prop, paramType);
+        return source.Select(selector).ToList();
+    }
+
     /// <summary>
     /// GetSelectListFn represent an expression source.SelectByIndexAsList(prop, type) source.Select(x =>x.Property[index]).ToList()
     /// </summary>
@@ -113,11 +119,7 @@ internal static class ListLambdaExtensions
         return func;
     }
 
-    private static List<TValue> SelectList<T, TValue>(this IEnumerable<T> source, LambdaBag bag, PropertyInfo prop, Type? paramType)
-    {
-        var selector = bag.GetSelector<T, TValue>(prop, paramType);
-        return source.Select(selector).ToList();
-    }
+    
 
     private static List<TValue> SelectByIndex<T, TValue>(this IEnumerable<T> source, LambdaBag bag, PropertyInfo prop, int index, Type? paramType)
     {
@@ -128,6 +130,7 @@ internal static class ListLambdaExtensions
     private static List<TValue> SelectByKey<T, TValue>(this IEnumerable<T> source, LambdaBag bag, PropertyInfo prop, string key, Type? paramType)
     {
         var selector = bag.GetSelector<T, TValue>(prop, key, paramType);
+        //todo add predicate source.Where(x => ... contains key) or select expression add statements need to be wrapped into try...catch
         return source.Select(selector).ToList();
     }
 

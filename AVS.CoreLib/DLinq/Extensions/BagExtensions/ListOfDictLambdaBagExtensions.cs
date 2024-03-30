@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using AVS.CoreLib.DLinq0.LambdaSpec0;
 using AVS.CoreLib.Extensions.Reflection;
 
 namespace AVS.CoreLib.DLinq.Extensions;
@@ -58,7 +60,7 @@ internal static class ListOfDictLambdaBagExtensions
 
     private static List<Dictionary<string, object>> SelectListOfObjectDict<T>(this IEnumerable<T> source, LambdaBag bag, ListDictLambdaSpec<T> spec)
     {
-        var selector = bag.GetDictSelector<T>(spec);
+        var selector = bag.GetDictSelector(spec);
         return source.Select(selector).ToList();
     }
 }

@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AVS.CoreLib.Loggers.TestApp;
 
-internal class Program
+public class Program
 {
     private static void Main()
     {
@@ -107,6 +107,9 @@ internal class Program
         }
 
     }
+
+
+    
 }
 
 public class ScheduledTaskTest : ScheduledTask

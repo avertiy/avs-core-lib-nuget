@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using AVS.CoreLib.Extensions.Linq;
+using AVS.CoreLib.Extensions.Reflection;
 
-namespace AVS.CoreLib.DLinq;
+namespace AVS.CoreLib.DLinq.Extensions;
 
 public static class DynamicExtensions
 {
@@ -20,7 +21,7 @@ public static class DynamicExtensions
     public static IEnumerable Select<T>(this IEnumerable<T> source, string? selector, Type? type = null)
     {
         var typeArg = type ?? typeof(T);
-        var props = DynamicSelector.LookupProperties(selector ?? "*", typeArg);
+        var props = typeArg.LookupProperties(selector ?? "*");
         return source.Select(props, typeArg);
     }
 
@@ -33,7 +34,7 @@ public static class DynamicExtensions
     public static IEnumerable<TResult> Select<T, TResult>(this IEnumerable<T> source, string? selector, Type? type = null)
     {
         var typeArg = type ?? typeof(T);
-        var props = DynamicSelector.LookupProperties(selector ?? "*", typeArg);
+        var props = typeArg.LookupProperties(selector ?? "*");
         var relevantProps = props.Where(x => x.PropertyType.IsAssignableTo(typeof(TResult))).ToArray();
         return relevantProps.Length == 0 ? source.Cast<T, TResult>() : source.Select<T, TResult>(relevantProps[0], typeArg);
     }
@@ -51,7 +52,7 @@ public static class DynamicExtensions
     public static IEnumerable<Dictionary<string, object>> SelectDict<T>(this IEnumerable<T> source, string? selector, Type? type = null)
     {
         var typeArg = type ?? typeof(T);
-        var props = DynamicSelector.LookupProperties(selector ?? "*", typeArg);
+        var props = typeArg.LookupProperties(selector ?? "*");
         return source.SelectDict(props, typeArg);
     }
 
@@ -68,7 +69,7 @@ public static class DynamicExtensions
         string? selector, Type? type = null)
     {
         var typeArg = type ?? typeof(T);
-        var props = DynamicSelector.LookupProperties(selector ?? "*", typeArg);
+        var props = typeArg.LookupProperties(selector ?? "*");
         var relevantProps = props.Where(x => x.PropertyType.IsAssignableTo(typeof(TResult))).ToArray();
         return source.SelectDict<T, TResult>(relevantProps, typeArg);
     }
@@ -78,7 +79,7 @@ public static class DynamicExtensions
     /// </summary>
     public static object Cast<T>(this T obj, Type targetType)
     {
-        var fn = LambdaBag.Lambdas.Cast(targetType);
+        var fn = LambdaBag.Lambdas.CastTo(targetType);
         return fn(obj!);
     }
     /// <summary>
@@ -86,7 +87,7 @@ public static class DynamicExtensions
     /// </summary>
     public static object ToConcreteType<T>(this T obj)
     {
-        var fn = LambdaBag.Lambdas.Cast(obj!.GetType());
+        var fn = LambdaBag.Lambdas.CastTo(obj!.GetType());
         return fn(obj);
     }
 }

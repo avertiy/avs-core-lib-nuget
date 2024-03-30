@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using AVS.CoreLib.Collections;
 using System.Reflection;
 using AVS.CoreLib.Extensions.Reflection;
+using AVS.CoreLib.DLinq0.LambdaSpec0;
 
 namespace AVS.CoreLib.DLinq;
 
@@ -141,7 +142,7 @@ public static class LambdaBagExtensions
         return func;
     }
 
-    public static Func<object, object> Cast(this LambdaBag bag, Type targetType)
+    public static Func<object, object> CastTo(this LambdaBag bag, Type targetType)
     {
         var key = $"Func<object,object>(x => ({targetType.Name})x)";
         if (bag.TryGetFunc(key, out Func<object, object>? fn))

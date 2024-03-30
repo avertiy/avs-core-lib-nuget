@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using AVS.CoreLib.DLinq0.LambdaSpec0;
 using AVS.CoreLib.Extensions;
 
 namespace AVS.CoreLib.DLinq;
@@ -34,9 +35,7 @@ internal static class InvokeExpr
 
 internal static class LambdaBuilder
 {
-    
-
-
+   
     /// <summary>
     /// Creates a lambda expression to invoke static method for one property: source.method(bag, prop, paramType);
     /// <code>
@@ -165,12 +164,15 @@ internal static class LambdaBuilder
         }
         else
         {
+            //Expression.Call(propExpr, methodInfo, indexExpr);
             var indexerPropName = "Item";//Item is a default's name
             indexerExpr = Expression.Property(propExpr, indexerPropName, indexExpr);
         }
 
+        var body = WrapInTryCatch(indexerExpr, typeof(TResult));
+
         // Create lambda expression representing accessing the property
-        return Expression.Lambda<Func<T, TResult>>(indexerExpr, paramExpr);
+        return Expression.Lambda<Func<T, TResult>>(body, paramExpr);
     }
 
     /// <summary>
@@ -190,21 +192,10 @@ internal static class LambdaBuilder
 
         var indexerPropName = "Item"; //Item is a default's name
         var indexerExpr = Expression.Property(propExpr, indexerPropName, indexExpr);
+        var body = WrapInTryCatch(indexerExpr, typeof(TResult));
 
         // Create lambda expression representing accessing the property
-        return Expression.Lambda<Func<T, TResult>>(indexerExpr, paramExpr);
-    }
-
-    public static Expression<Func<object, object>> CastExpr(Type targetType)
-    {
-        // Create parameter expressions
-        var valueParam = Expression.Parameter(typeof(object), "x");
-
-        // Create convert expression
-        var convert = Expression.Convert(valueParam, targetType);
-
-        // Compile the expression
-        return Expression.Lambda<Func<object, object>>(convert, valueParam);
+        return Expression.Lambda<Func<T, TResult>>(body, paramExpr);
     }
 
     /// <summary>
@@ -301,5 +292,59 @@ internal static class LambdaBuilder
         var blockExpr = Expression.Block(dictType, new[] { dictExpr }, list);
         var lambda = Expression.Lambda<Func<T, Dictionary<string, object>>>(blockExpr, paramExpr);
         return lambda;
+    }
+
+    public static TryExpression WrapInTryCatch(Expression expr)
+    {
+        TryExpression tryExpr;
+        if (expr.Type == typeof(void))
+        {
+            tryExpr = Expression.TryCatch(
+                // Try block: return x[key]
+                Expression.Block(expr),
+                // Catch block: return default / null
+                Expression.Catch(typeof(Exception), Expression.Empty())
+            );
+        }
+        else
+        {
+            tryExpr = Expression.TryCatch(
+                // Try block: return x[key]
+                Expression.Block(expr),
+                // Catch block: return default / null
+                Expression.Catch(typeof(Exception), Expression.Default(expr.Type))
+            );
+        }
+
+        return tryExpr;
+    }
+
+    public static TryExpression WrapInTryCatch(Expression expr, Type resultType)
+    {
+        var tryCatchExpr = Expression.TryCatch(
+            // Try block: return x[key]
+            Expression.Block(
+                resultType,
+                expr
+            ),
+            // Catch block: return default / null
+            Expression.Catch(typeof(Exception), resultType.IsValueType
+                ? Expression.Default(resultType)
+                : Expression.Constant(null))
+        );
+
+        return tryCatchExpr;
+    }
+
+    public static Expression<Func<object, object>> CastExpr(Type targetType)
+    {
+        // Create parameter expressions
+        var valueParam = Expression.Parameter(typeof(object), "x");
+
+        // Create convert expression
+        var convert = Expression.Convert(valueParam, targetType);
+
+        // Compile the expression
+        return Expression.Lambda<Func<object, object>>(convert, valueParam);
     }
 }

@@ -95,7 +95,7 @@ public class ArgsColorFormatter
     private string FormatObject(string str)
     {
         // obj
-        if (str.StartsWith('{') && str.EndsWithEither('}', '.', '"', ','))
+        if (str.StartsWith('{') && str.EndsWithAny('}', '.', '"', ','))
         {
             if (str.Contains('"') && str.Contains(':'))
                 return Frmt(str, TextKind.Json);
@@ -104,7 +104,7 @@ public class ArgsColorFormatter
         }
 
         // arr
-        if (str.StartsWith('[') && str.EndsWithEither(']', '.', '"', ','))
+        if (str.StartsWith('[') && str.EndsWithAny(']', '.', '"', ','))
         {
             if (str.Contains('"') && str.Contains(':'))
                 return Frmt(str, TextKind.Json);

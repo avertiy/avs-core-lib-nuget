@@ -46,7 +46,7 @@ public static class ReflectionHelper
 
     public static MethodInfo ConstructStaticMethod(this Type type, string methodName, params Type[] typeArguments)
     {
-        var method = type.GetMethod(methodName, BindingFlags.Static | BindingFlags.NonPublic)!;
+        var method = type.GetMethod(methodName, BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)!;
         return method.MakeGenericMethod(typeArguments);
     }
 }
