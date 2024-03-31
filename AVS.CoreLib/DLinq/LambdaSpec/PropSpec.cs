@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Xml.Linq;
 using AVS.CoreLib.Extensions;
 
 namespace AVS.CoreLib.DLinq.LambdaSpec;
@@ -13,15 +14,7 @@ public class PropSpec : Spec, ISpecItem
 {
     public string? Name { get; set; }
 
-    protected static PropertyInfo LookupProperty(Type type, string name)
-    {
-        var prop = type.GetProperty(name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-
-        if (prop == null)
-            throw new ArgumentException($"Public {name} property not found in {type.Name} type definition.");
-
-        return prop;
-    }
+    
     
     public override string ToString(SpecView view)
     {
@@ -42,8 +35,30 @@ public class PropSpec : Spec, ISpecItem
             return argExpr;
 
         var type = argExpr.Type;
-        var prop = LookupProperty(type, Name);
-        var expr = Expression.Property(argExpr, prop);
+
+        var prop = type.GetProperty(Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+
+        var expr = argExpr;
+
+        if (prop == null)
+        {
+
+        }
+        else
+        {
+            expr = Expression.Property(argExpr, prop);
+        }
+
         return expr;
+    }
+
+    private static PropertyInfo LookupProperty(Type type, string name)
+    {
+        var prop = type.GetProperty(name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+
+        if (prop == null)
+            throw new ArgumentException($"Public {name} property not found in {type.Name} type definition.");
+
+        return prop;
     }
 }

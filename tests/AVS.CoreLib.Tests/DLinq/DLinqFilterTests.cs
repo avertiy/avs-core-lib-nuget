@@ -112,6 +112,38 @@ public class DLinqFilterTests
     }
 
     [TestMethod]
+    public void Filter_By_Index_Skip_Expression_Should_Be_Handled_Properly()
+    {
+        //arrange
+        var source = new object[] { new { Prop = new[] { 1, 2 } }, new { Prop = new[] { 3, 4 } }, new { Prop = new[] { 5, 6 } } };
+
+        // act
+        var result = source.Filter("prop[1] SKIP 2");
+        var list = result as List<int>;
+
+        //assert
+        Assert.IsNotNull(list);
+        list.Count.Should().Be(1);
+        list[0].Should().Be(6);
+    }
+
+    [TestMethod]
+    public void Filter_By_Index_Skip_And_Take_Expressions_Should_Be_Handled_Properly()
+    {
+        //arrange
+        var source = new object[] { new { Prop = new[] { 1, 2 } }, new { Prop = new[] { 3, 4 } }, new { Prop = new[] { 5, 6 } }, new { Prop = new[] { 7, 8 } } };
+
+        // act
+        var result = source.Filter("prop[1] SKIP 2 TAKE 1");
+        var list = result as List<int>;
+
+        //assert
+        Assert.IsNotNull(list);
+        list.Count.Should().Be(1);
+        list[0].Should().Be(6);
+    }
+
+    [TestMethod]
     public void Filter_By_Index_For_Single_Property_Of_List_Type_Should_Return_List_Of_Values()
     {
         //arrange

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -17,7 +18,7 @@ public class ValueExprSpec : Spec, ISpecItem
 
     public void AddProp(string prop)
     {
-        Parts.Add(new PropSpec() {Name = prop});
+        Parts.Add(new PropSpec() {Name = prop, Raw = Raw });
     }
 
     public void AddIndex(int index)
@@ -27,18 +28,18 @@ public class ValueExprSpec : Spec, ISpecItem
 
     public void AddKey(string key)
     {
-        Parts.Add(new KeySpec(key));
+        Parts.Add(new KeySpec(key){ Raw = Raw });
     }
 
     public void AddIndex(string input)
     {
         if (int.TryParse(input, out var index))
         {
-            Parts.Add(new IndexSpec(index));
+            Parts.Add(new IndexSpec(index) { Raw = Raw });
         }
         else
         {
-            Parts.Add(new KeySpec(input.Trim('"', '\'')));
+            Parts.Add(new KeySpec(input.Trim('"', '\'')) { Raw = Raw });
         }
     }
 

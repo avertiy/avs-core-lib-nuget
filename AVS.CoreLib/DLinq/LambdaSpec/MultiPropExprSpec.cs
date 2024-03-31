@@ -143,4 +143,10 @@ public class MultiPropExprSpec : Spec
 
         return sb.ToString();
     }
+
+    public override string ToString()
+    {
+        var items = string.Join(", ", Items.Select(x => x.ToString()));
+        return $"{GetType().Name}: {Mode} items: #{Items.Count} [{items}]";
+    }
 }

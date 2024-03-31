@@ -21,9 +21,17 @@ internal static class LambdaBagExtensions
         return func;
     }
 
-    internal static IEnumerable Execute<T>(this LambdaBag bag, ILambdaSpec spec, IEnumerable<T> source)
+    internal static IEnumerable Execute<T>(this LambdaBag bag, Spec spec, IEnumerable<T> source)
     {
         var fn = bag.GetSelectFn<T>(spec);
-        return fn.Invoke(source);
+
+        try
+        {
+            return fn.Invoke(source);
+        }
+        catch (Exception ex)
+        {
+            throw new DLinqException($"Invoke lambda fn failed - {ex.Message} [spec:{spec}]", ex) { Spec = spec };
+        }
     }
 }

@@ -29,7 +29,7 @@ public abstract class Spec: ILambdaSpec
         }
         catch (Exception ex)
         {
-            throw new DLinqException($"Can't build lambda spec: {Raw}", ex);
+            throw new DLinqException($"Can't build spec - {ex.Message}", ex) { Spec = this };
         }
     }
     
@@ -45,7 +45,7 @@ public abstract class Spec: ILambdaSpec
         var selectExpr = Expression.Call(null, selectMethod, sourceParam, selectorExpr);
         var body = selectExpr;
 
-        if (Mode == SpecMode.ToList)
+        if (Mode.HasFlag(SpecMode.ToList))
         {
             var toListMethod = LinqHelper.GetToListMethodInfo(resultType);
             // add ToList() call: source.Select(selector).ToList();
@@ -85,12 +85,11 @@ public abstract class Spec: ILambdaSpec
         return Mode.HasFlag(SpecMode.Safe) ? LambdaBuilder.WrapInTryCatch(expr) : expr;
     }
 
-
     #region GetCacheKey 
     public virtual string GetCacheKey<T>()
     {
         var body = GetBodyExpr();
-        return FormatMode($"Select({typeof(T).GetReadableName()} {body})");
+        return FormatMode($"Select({typeof(T).GetReadableName()} {body}) [mode:{Mode}]");
     }
 
     protected virtual string GetBodyExpr()
@@ -116,6 +115,6 @@ public abstract class Spec: ILambdaSpec
 
     public override string ToString()
     {
-        return $"{GetType().Name}: {GetBodyExpr()}";
+        return $"{GetType().Name}: {Mode} {Raw ?? GetBodyExpr()}";
     }
 }
