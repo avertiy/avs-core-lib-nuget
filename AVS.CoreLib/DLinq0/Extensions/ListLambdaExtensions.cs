@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using AVS.CoreLib.DLinq;
+using AVS.CoreLib.DLinq.Extensions;
 using AVS.CoreLib.Extensions.Reflection;
 
-namespace AVS.CoreLib.DLinq.Extensions;
+namespace AVS.CoreLib.DLinq0.Extensions;
 
 internal static class ListLambdaExtensions
 {
@@ -119,7 +120,7 @@ internal static class ListLambdaExtensions
         return func;
     }
 
-    
+
 
     private static List<TValue> SelectByIndex<T, TValue>(this IEnumerable<T> source, LambdaBag bag, PropertyInfo prop, int index, Type? paramType)
     {

@@ -13,9 +13,9 @@ public class IndexSpec : PropSpec
         Index = index;
     }
 
-    protected override Expression BuildValueExpr(Expression argExpr)
+    protected override Expression BuildValueExpr(Expression argExpr, Func<Expression, Type?> resolveType)
     {
-        var expr = base.BuildValueExpr(argExpr);
+        var expr = base.BuildValueExpr(argExpr, resolveType);
         var indexExpr = Expression.Constant(Index);
         var type = expr.Type;
 

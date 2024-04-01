@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Xml.Linq;
 using AVS.CoreLib.Extensions;
 
 namespace AVS.CoreLib.DLinq.LambdaSpec;
@@ -13,8 +12,6 @@ namespace AVS.CoreLib.DLinq.LambdaSpec;
 public class PropSpec : Spec, ISpecItem
 {
     public string? Name { get; set; }
-
-    
     
     public override string ToString(SpecView view)
     {
@@ -28,30 +25,36 @@ public class PropSpec : Spec, ISpecItem
                 return ToString();
         }
     }
-
-    protected override Expression BuildValueExpr(Expression argExpr)
+    
+    protected override Expression BuildValueExpr(Expression argExpr, Func<Expression, Type?> resolveType)
     {
         if (string.IsNullOrEmpty(Name))
             return argExpr;
 
-        var type = argExpr.Type;
+        var expr = argExpr;
+        var type = ArgType ?? expr.Type;
 
         var prop = type.GetProperty(Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
 
-        var expr = argExpr;
+        if (prop == null && ArgType == null)
+        {
+            type = resolveType(expr);
+            // if resolveType returns null => source collection is empty we can simply return
+            if (type == null) 
+                return expr;
+
+            prop = type.GetProperty(Name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+            expr = Expression.Convert(expr, type);
+        }
 
         if (prop == null)
-        {
+            throw new ArgumentException($"Public {Name} property not found in {type.Name} type definition.");
 
-        }
-        else
-        {
-            expr = Expression.Property(argExpr, prop);
-        }
+        expr = Expression.Property(expr, prop);
 
         return expr;
     }
-
+    
     private static PropertyInfo LookupProperty(Type type, string name)
     {
         var prop = type.GetProperty(name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);

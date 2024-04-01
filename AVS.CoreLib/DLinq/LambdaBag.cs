@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using AVS.CoreLib.Collections;
 using System.Reflection;
 using AVS.CoreLib.Extensions.Reflection;
-using AVS.CoreLib.DLinq0.LambdaSpec0;
+using AVS.CoreLib.Expressions;
 
 namespace AVS.CoreLib.DLinq;
 
@@ -72,22 +71,6 @@ public class LambdaBag
 
 public static class LambdaBagExtensions
 {
-    public static bool TryGetFunc<T, TResult>(this LambdaBag bag, string key, out Func<T, string, TResult>? func)
-    {
-        func = null;
-
-        if (!bag.ContainsKey(key))
-            return false;
-
-        if (bag[key] is Func<T, string, TResult> fn)
-        {
-            func = fn;
-            return true;
-        }
-
-        return false;
-    }
-
     public static bool TryGetFunc<T, TResult>(this LambdaBag bag, string key, out Func<T, TResult>? func)
     {
         func = null;
@@ -116,46 +99,20 @@ public static class LambdaBagExtensions
         return func;
     }
 
-    public static Func<T, TResult> GetSelector<T, TResult>(this LambdaBag bag, PropertyInfo prop, int index, Type? paramType)
+    public static Func<T, object> CastTo<T>(this LambdaBag bag, Type targetType)
     {
-        //TResult is a type of item that we get from property value i.e. item = x.Prop[i], item.GetType() should be TResult
-        var key = $"Func<{typeof(T).Name},{typeof(TResult).Name}>(x => x.{prop.Name}[{index}], type: {paramType?.Name})";
-        if (bag.TryGetFunc(key, out Func<T, TResult>? fn))
+        var key = $"Func<{typeof(T).GetReadableName()},object>(x => ({targetType.Name})x)";
+        if (bag.TryGetFunc(key, out Func<T, object>? fn))
             return fn!;
 
-        var lambda = LambdaBuilder.SelectItemOfPropertyExpr<T, TResult>(prop, index, paramType);
-        var func = lambda.Compile();
-        bag[key] = func;
-        return func;
-    }
-
-    public static Func<T, TResult> GetSelector<T, TResult>(this LambdaBag bag, PropertyInfo prop, string key, Type? paramType)
-    {
-        //TResult is a type of item that we get from property value i.e. item = x.Prop[i], item.GetType() should be TResult
-        var fnKey = $"Func<{typeof(T).Name},{typeof(TResult).Name}>(x => x.{prop.Name}[{key}], type: {paramType?.Name})";
-        if (bag.TryGetFunc(fnKey, out Func<T, TResult>? fn))
-            return fn!;
-
-        var lambda = LambdaBuilder.SelectItemOfPropertyExpr<T, TResult>(prop, key, paramType);
-        var func = lambda.Compile();
-        bag[fnKey] = func;
-        return func;
-    }
-
-    public static Func<object, object> CastTo(this LambdaBag bag, Type targetType)
-    {
-        var key = $"Func<object,object>(x => ({targetType.Name})x)";
-        if (bag.TryGetFunc(key, out Func<object, object>? fn))
-            return fn!;
-
-        var lambda = LambdaBuilder.CastExpr(targetType);
+        var lambda = Lmbd.Cast<T>(targetType);
         var func = lambda.Compile();
         bag[key] = func;
         return func;
     }
 }
 
-public static class LambdaBagDictSelectorExtensions
+internal static class LambdaBagDictSelectorExtensions
 {
     public static Func<T, Dictionary<string, TValue>> GetDictSelector<T, TValue>(this LambdaBag bag, PropertyInfo[] props, Type? paramType)
     {
@@ -199,53 +156,10 @@ public static class LambdaBagDictSelectorExtensions
         bag[key] = func;
         return func;
     }
-
-    public static Func<T, Dictionary<string, object>> GetDictSelector<T>(this LambdaBag bag, ListDictLambdaSpec<T> spec)
-    {
-        var key = FuncHelper.GetKey<T, Dictionary<string, object>>($"spec: {spec}");
-        if (bag.TryGetFunc(key, out Func<T, Dictionary<string, object>>? fn))
-            return fn!;
-
-        // build lambda expression like this:
-        //  x => {
-        //      var dict = new Dictionary{string,object}(spec.Count);
-        //      dict.Add(key, (TypeArg)x).Prop);
-        //      or 
-        //      dict.Add(key, (TypeArg)x).Prop[index]);
-        //      or
-        //      dict.Add(key, (TypeArg)x).Prop[key]); 
-        //      ....
-        //      return dict;
-        // }
-
-        var lambda = spec.BuildLambda();
-
-        //Expression<Func<T, Dictionary<string, object>>> lambda = LambdaBuilder.SelectDictionaryExpr<T>(spec);
-        var func = lambda.Compile();
-        bag[key] = func;
-        return func;
-    }
-
-    public static Func<T, Dictionary<string, TValue>> GetDictSelector<T, TValue>(this LambdaBag bag, ListDictLambdaSpec<T> spec)
-    {
-        var key = FuncHelper.GetKey<T, Dictionary<string, TValue>>($"spec: {spec}");
-        if (bag.TryGetFunc(key, out Func<T, Dictionary<string, TValue>>? fn))
-            return fn!;
-
-        var lambda = spec.BuildLambda<TValue>();
-        var func = lambda.Compile();
-        bag[key] = func;
-        return func;
-    }
 }
 
 internal static class FuncHelper
 {
-    public static string GetKey<T, TResult>(string arg)
-    {
-        return $"Func<{typeof(T).GetReadableName()},{typeof(TResult).GetReadableName()}>({arg})";
-    }
-
     public static string GetKey<T, TResult>(string arg1, string? arg2)
     {
         if(arg2 == null)

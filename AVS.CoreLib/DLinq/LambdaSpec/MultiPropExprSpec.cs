@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using AVS.CoreLib.Expressions;
 using AVS.CoreLib.Extensions.Reflection;
 using AVS.CoreLib.Utilities;
 
@@ -72,13 +73,13 @@ public class MultiPropExprSpec : Spec
     } 
     #endregion
 
-    protected override Expression BuildValueExpr(Expression argExpr)
+    protected override Expression BuildValueExpr(Expression argExpr, Func<Expression, Type?> resolveType)
     {
         if (Items.Count == 0)
             return argExpr;
 
         if (Items.Count == 1)
-            return Items.First().Value.GetValueExpr(argExpr);
+            return Items.First().Value.GetValueExpr(argExpr, resolveType);
 
         var keys = new string[Items.Count];
         var expressions = new List<Expression>(Items.Count);
@@ -88,7 +89,7 @@ public class MultiPropExprSpec : Spec
         foreach (var kp in Items)
         {
             var key = kp.Key;//.SanitizePropertyName();
-            var valueExpr = kp.Value.GetValueExpr(argExpr);
+            var valueExpr = kp.Value.GetValueExpr(argExpr, resolveType);
 
             keys[expressions.Count] = key;
             expressions.Add(valueExpr);
@@ -97,7 +98,7 @@ public class MultiPropExprSpec : Spec
                 sameType = false;
         }
 
-        var expr = XActivator.CreateDictionaryExpr(keys, expressions.ToArray());
+        var expr = Expr.CreateDictionaryExpr(keys, expressions.ToArray());
         return expr;
     }
 

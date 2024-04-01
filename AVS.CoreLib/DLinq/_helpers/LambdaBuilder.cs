@@ -4,38 +4,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using AVS.CoreLib.DLinq0.LambdaSpec0;
 using AVS.CoreLib.Extensions;
 
 namespace AVS.CoreLib.DLinq;
 
-internal static class InvokeExpr
-{
-    /// <summary>
-    /// Creates a lambda expression to invoke static extension method: 
-    /// <code>
-    ///  source.method(bag, spec);
-    /// </code>
-    /// </summary>
-    public static Expression<Func<IEnumerable<T>, IEnumerable>> GetExpr<T>(MethodInfo mi, LambdaBag bag, ListDictLambdaSpec<T> spec)
-    {
-        var sourceParam = Expression.Parameter(typeof(IEnumerable<T>), "source");
-        var bagParam = Expression.Constant(bag);
-        var specParam = Expression.Constant(spec);
-
-        // Select(prop, paramType)
-        var call = Expression.Call(null, mi, sourceParam, bagParam, specParam);
-
-        // Create lambda expression
-        var lambda = Expression.Lambda<Func<IEnumerable<T>, IEnumerable>>(call, sourceParam);
-        return lambda;
-    }
-}
-
-
 internal static class LambdaBuilder
 {
-   
+    /// <summary>
+    /// Creates lambda expression to select property: x => (Type) x.Prop
+    /// </summary>
+    public static Expression<Func<T, TResult>> SelectPropertyExpr<T, TResult>(PropertyInfo prop, Type? paramType)
+    {
+        // Define parameter expression for the input of the lambda expression
+        var paramExpr = Expression.Parameter(typeof(T), "x");
+
+        // Access the property specified by the PropertyInfo
+        var propExpr = paramType == null
+            ? Expression.Property(paramExpr, prop)
+            : Expression.Property(Expression.Convert(paramExpr, paramType), prop);
+
+        // Create lambda expression representing accessing the property
+        return Expression.Lambda<Func<T, TResult>>(propExpr, paramExpr);
+    }
+
+
     /// <summary>
     /// Creates a lambda expression to invoke static method for one property: source.method(bag, prop, paramType);
     /// <code>
@@ -123,81 +115,8 @@ internal static class LambdaBuilder
         var lambda = Expression.Lambda<Func<IEnumerable<T>, IEnumerable>>(call, sourceParam);
         return lambda;
     }
-
-    /// <summary>
-    /// Creates lambda expression to select property: x => (Type) x.Prop
-    /// </summary>
-    public static Expression<Func<T, TResult>> SelectPropertyExpr<T, TResult>(PropertyInfo prop, Type? paramType)
-    {
-        // Define parameter expression for the input of the lambda expression
-        var paramExpr = Expression.Parameter(typeof(T), "x");
-
-        // Access the property specified by the PropertyInfo
-        var propExpr = paramType == null
-            ? Expression.Property(paramExpr, prop)
-            : Expression.Property(Expression.Convert(paramExpr, paramType), prop);
-
-        // Create lambda expression representing accessing the property
-        return Expression.Lambda<Func<T, TResult>>(propExpr, paramExpr);
-    }
-
-    /// <summary>
-    /// expression: x => (paramType) x.prop[index]
-    /// </summary>
-    public static Expression<Func<T, TResult>> SelectItemOfPropertyExpr<T, TResult>(PropertyInfo prop, int index, Type? paramType)
-    {
-        // Define parameter expression for the input of the lambda expression
-        var paramExpr = Expression.Parameter(typeof(T), "x");
-
-        // Access the property specified by the PropertyInfo
-        var propExpr = paramType == null
-            ? Expression.Property(paramExpr, prop)
-            : Expression.Property(Expression.Convert(paramExpr, paramType), prop);
-
-        var indexExpr = Expression.Constant(index);
-
-        Expression indexerExpr;
-
-        if (prop.PropertyType.IsArray)
-        {
-            indexerExpr = Expression.ArrayIndex(propExpr, indexExpr);
-        }
-        else
-        {
-            //Expression.Call(propExpr, methodInfo, indexExpr);
-            var indexerPropName = "Item";//Item is a default's name
-            indexerExpr = Expression.Property(propExpr, indexerPropName, indexExpr);
-        }
-
-        var body = WrapInTryCatch(indexerExpr, typeof(TResult));
-
-        // Create lambda expression representing accessing the property
-        return Expression.Lambda<Func<T, TResult>>(body, paramExpr);
-    }
-
-    /// <summary>
-    /// expression: x => (paramType) x.prop[key]
-    /// </summary>
-    public static Expression<Func<T, TResult>> SelectItemOfPropertyExpr<T, TResult>(PropertyInfo prop, string key, Type? paramType)
-    {
-        // Define parameter expression for the input of the lambda expression
-        var paramExpr = Expression.Parameter(typeof(T), "x");
-
-        // Access the property specified by the PropertyInfo
-        var propExpr = paramType == null
-            ? Expression.Property(paramExpr, prop)
-            : Expression.Property(Expression.Convert(paramExpr, paramType), prop);
-
-        var indexExpr = Expression.Constant(key);
-
-        var indexerPropName = "Item"; //Item is a default's name
-        var indexerExpr = Expression.Property(propExpr, indexerPropName, indexExpr);
-        var body = WrapInTryCatch(indexerExpr, typeof(TResult));
-
-        // Create lambda expression representing accessing the property
-        return Expression.Lambda<Func<T, TResult>>(body, paramExpr);
-    }
-
+    
+    
     /// <summary>
     /// Creates lambda expression:
     /// <code>
@@ -292,59 +211,5 @@ internal static class LambdaBuilder
         var blockExpr = Expression.Block(dictType, new[] { dictExpr }, list);
         var lambda = Expression.Lambda<Func<T, Dictionary<string, object>>>(blockExpr, paramExpr);
         return lambda;
-    }
-
-    public static TryExpression WrapInTryCatch(Expression expr)
-    {
-        TryExpression tryExpr;
-        if (expr.Type == typeof(void))
-        {
-            tryExpr = Expression.TryCatch(
-                // Try block: return x[key]
-                Expression.Block(expr),
-                // Catch block: return default / null
-                Expression.Catch(typeof(Exception), Expression.Empty())
-            );
-        }
-        else
-        {
-            tryExpr = Expression.TryCatch(
-                // Try block: return x[key]
-                Expression.Block(expr),
-                // Catch block: return default / null
-                Expression.Catch(typeof(Exception), Expression.Default(expr.Type))
-            );
-        }
-
-        return tryExpr;
-    }
-
-    public static TryExpression WrapInTryCatch(Expression expr, Type resultType)
-    {
-        var tryCatchExpr = Expression.TryCatch(
-            // Try block: return x[key]
-            Expression.Block(
-                resultType,
-                expr
-            ),
-            // Catch block: return default / null
-            Expression.Catch(typeof(Exception), resultType.IsValueType
-                ? Expression.Default(resultType)
-                : Expression.Constant(null))
-        );
-
-        return tryCatchExpr;
-    }
-
-    public static Expression<Func<object, object>> CastExpr(Type targetType)
-    {
-        // Create parameter expressions
-        var valueParam = Expression.Parameter(typeof(object), "x");
-
-        // Create convert expression
-        var convert = Expression.Convert(valueParam, targetType);
-
-        // Compile the expression
-        return Expression.Lambda<Func<object, object>>(convert, valueParam);
     }
 }

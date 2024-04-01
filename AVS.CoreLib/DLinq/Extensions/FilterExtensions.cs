@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using AVS.CoreLib.DLinq.LambdaSpec;
 
 namespace AVS.CoreLib.DLinq.Extensions;
 
@@ -12,7 +11,7 @@ public static class FilterExtensions
         return filter is "*" or ".*";
     }
 
-    public static IEnumerable Filter<T>(this IList<T> source, string? filter, SpecMode mode = SpecMode.ToList)
+    public static IEnumerable Filter<T>(this IList<T> source, string? filter, SelectMode mode = SelectMode.ToList)
     {
         if (source.Count == 0)
             return source;
@@ -25,7 +24,7 @@ public static class FilterExtensions
         return engine.Process(source, filter, type);
     }
 
-    public static IEnumerable Filter<T>(this IEnumerable<T> source, string? filter, Type? type = null, SpecMode mode = SpecMode.ToList)
+    public static IEnumerable Filter<T>(this IEnumerable<T> source, string? filter, Type? type = null, SelectMode mode = SelectMode.ToList)
     {
         if (filter == null || IsAny(filter))
             return source;

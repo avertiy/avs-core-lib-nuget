@@ -3,9 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using AVS.CoreLib.DLinq;
+using AVS.CoreLib.DLinq.Extensions;
+using AVS.CoreLib.DLinq0.Extensions;
 using AVS.CoreLib.Extensions.Reflection;
 
-namespace AVS.CoreLib.DLinq.Extensions;
+namespace AVS.CoreLib.DLinq0.Extensions;
 
 internal static class SelectLambdaExtensions
 {

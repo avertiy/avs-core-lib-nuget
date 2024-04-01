@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Xml.Linq;
 
 namespace AVS.CoreLib.DLinq.LambdaSpec;
 
@@ -57,13 +55,14 @@ public class ValueExprSpec : Spec, ISpecItem
         }
     }
 
-    protected override Expression BuildValueExpr(Expression argExpr)
+    protected override Expression BuildValueExpr(Expression argExpr, Func<Expression, Type?> resolveType)
     {
         var expr = argExpr;
 
-        foreach (var spec in Parts)
+        for (var i = 0; i < Parts.Count; i++)
         {
-            expr = spec.GetValueExpr(expr);
+            var spec = Parts[i];
+            expr = spec.GetValueExpr(expr, resolveType);
         }
 
         return expr;

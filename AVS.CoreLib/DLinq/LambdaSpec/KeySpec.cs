@@ -14,9 +14,9 @@ public class KeySpec : PropSpec
         Key = key;
     }
     
-    protected override Expression BuildValueExpr(Expression argExpr)
+    protected override Expression BuildValueExpr(Expression argExpr, Func<Expression, Type?> resolveType)
     {
-        var expr = base.BuildValueExpr(argExpr);
+        var expr = base.BuildValueExpr(argExpr, resolveType);
         var type = expr.Type;
         var methodInfo = type.GetKeyIndexer();
 

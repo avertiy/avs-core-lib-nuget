@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using AVS.CoreLib.DLinq.LambdaSpec;
-using AVS.CoreLib.DLinq0.LambdaSpec0;
 using AVS.CoreLib.Extensions;
 
 namespace AVS.CoreLib.DLinq;
@@ -28,7 +27,7 @@ public class DLinqEngine
     private const string TAKE = "TAKE";
     private static bool IsAny(string expr) => expr is "*" or ".*";
 
-    public SpecMode Mode { get; set; } = SpecMode.ToList;
+    public SelectMode Mode { get; set; } = SelectMode.ToList;
 
     public IEnumerable Process<T>(IEnumerable<T> source, string query, Type? targetType)
     {
@@ -134,7 +133,7 @@ public class DLinqEngine
     {
         var spec = ParseSelectExpr(selectExpr);
         spec.ArgType = argType;
-        var result = LambdaBag.Lambdas.Execute(spec, source);
+        var result = spec.Process(source);//LambdaBag.Lambdas.Execute(spec, source);
         return result;
     }
 

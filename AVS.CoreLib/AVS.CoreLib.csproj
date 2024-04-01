@@ -27,14 +27,17 @@
 
   <ItemGroup>
     <Compile Remove="Dates\Extensions\**" />
+    <Compile Remove="DLinq0\**" />
     <Compile Remove="Extensions\Common\**" />
     <Compile Remove="Extensions\Numbers\**" />
     <Compile Remove="Extensions\Strings\**" />
     <EmbeddedResource Remove="Dates\Extensions\**" />
+    <EmbeddedResource Remove="DLinq0\**" />
     <EmbeddedResource Remove="Extensions\Common\**" />
     <EmbeddedResource Remove="Extensions\Numbers\**" />
     <EmbeddedResource Remove="Extensions\Strings\**" />
     <None Remove="Dates\Extensions\**" />
+    <None Remove="DLinq0\**" />
     <None Remove="Extensions\Common\**" />
     <None Remove="Extensions\Numbers\**" />
     <None Remove="Extensions\Strings\**" />
@@ -61,10 +64,6 @@
   <ItemGroup>
     <ProjectReference Include="..\AVS.CoreLib.Abstractions\AVS.CoreLib.Abstractions.csproj" />
     <ProjectReference Include="..\AVS.CoreLib.Extensions\AVS.CoreLib.Extensions.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="DLinq0\_helpers\" />
   </ItemGroup>
 
 </Project>

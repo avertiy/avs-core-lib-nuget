@@ -1,18 +1,9 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq.Expressions;
 
-namespace AVS.CoreLib.DLinq.LambdaSpec;
-
-public interface ILambdaSpec
-{
-    string GetCacheKey<T>();
-    Expression<Func<IEnumerable<T>, IEnumerable>> Build<T>();
-}
+namespace AVS.CoreLib.DLinq;
 
 [Flags]
-public enum SpecMode
+public enum SelectMode
 {
     /// <summary>
     /// return as is i.e. IEnumerable

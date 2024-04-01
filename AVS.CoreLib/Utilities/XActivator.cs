@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using AVS.CoreLib.Guards;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 
 namespace AVS.CoreLib.Utilities;
@@ -43,32 +41,12 @@ public static class XActivator
         return dict;
     }
 
-    public static MethodCallExpression CreateDictionaryExpr(string[] keys, params Expression[] expressions)
-    {
-        Guard.Array.MustHaveAtLeast(expressions, 1);
-
-        var useTypedDict = expressions.All(x => x.Type == expressions[0].Type);
-
-        var method =  useTypedDict
-            ? CreateDictionaryMethodInfo(expressions[0].Type)
-            : CreateDictionaryMethodInfo();
-        
-        var keysExpr = Expression.Constant(keys);
-
-        var valuesExpr = useTypedDict 
-            ? Expression.NewArrayInit(expressions[0].Type, expressions)
-            : Expression.NewArrayInit(typeof(object), expressions.Select(x => Expression.Convert(x, typeof(object))));
-
-        var expr = Expression.Call(null, method, keysExpr, valuesExpr);
-        return expr;
-    }
-
-    private static MethodInfo CreateDictionaryMethodInfo()
+    internal static MethodInfo CreateDictionaryMethodInfo()
     {
         return typeof(XActivator).GetMethod(nameof(CreateDictionary), BindingFlags.Static | BindingFlags.Public)!;
     }
 
-    private static MethodInfo CreateDictionaryMethodInfo(Type typeArg)
+    internal static MethodInfo CreateDictionaryMethodInfo(Type typeArg)
     {
         var method = typeof(XActivator).GetMethod(nameof(CreateValueDictionary), BindingFlags.Static | BindingFlags.Public)!;
         return method.MakeGenericMethod(typeArg);

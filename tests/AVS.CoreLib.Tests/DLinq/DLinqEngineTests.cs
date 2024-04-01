@@ -56,7 +56,7 @@ public class DLinqEngineTests
     public void Select_By_Index_Should_Return_Typed_List()
     {
         // arrange
-        var source = new[] { new[]{1,2}, new[] { 3, 4 }, new[] { 5, 6 } };
+        var source = new[] { new[] {1,2}, new[] { 3, 4 }, new[] { 5, 6 } };
 
         // act
         var result = _engine.Process(source, "[1]", null);

@@ -17,7 +17,6 @@ internal static class LinqHelper
     internal static MethodInfo GetToListMethodInfo(Type type)
     {
         var generic = typeof(Enumerable).GetMethod("ToList", BindingFlags.Static | BindingFlags.Public)!;
-
         //var generic = typeof(LinqHelper).GetMethod(nameof(ToList), BindingFlags.Static | BindingFlags.NonPublic)!;
         var method = generic.MakeGenericMethod(type);
         return method;

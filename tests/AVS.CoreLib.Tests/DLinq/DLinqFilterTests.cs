@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using AVS.CoreLib.DLinq;
 using AVS.CoreLib.DLinq.Extensions;
-using AVS.CoreLib.DLinq.LambdaSpec;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -317,7 +317,7 @@ public class DLinqFilterTests
         //TODO ideally add nullable operator ? e.g. prop["key2"]?.day even prop["key2"]?.day ?? 0
 
         // act
-        var result = source.Filter("prop[\"key2\"].day,prop[\"key3\"].ticks,prop.keys.count", mode: SpecMode.ToListSafe);
+        var result = source.Filter("prop[\"key2\"].day,prop[\"key3\"].ticks,prop.keys.count", mode: SelectMode.ToListSafe);
 
         var list = result as List<IDictionary<string, object>>;
 
