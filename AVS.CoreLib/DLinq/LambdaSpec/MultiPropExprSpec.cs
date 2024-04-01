@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using AVS.CoreLib.Expressions;
+using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Reflection;
 using AVS.CoreLib.Utilities;
 
@@ -45,7 +46,7 @@ public class MultiPropExprSpec : Spec
         Items.Add(str, item);
     }
 
-    private string ShortenKey(string key)
+    private static string ShortenKey(string key)
     {
         if (key.Length < 6)
             return key;
@@ -59,6 +60,13 @@ public class MultiPropExprSpec : Spec
 
         if (ind == -1)
             return key;
+
+        if (ind > 0)
+        {
+            var str = parts[ind].ToLowerInvariant();
+            if (str.Either("value", "item","props"))
+                ind--;
+        }
 
         return string.Join('_', parts.Skip(ind));
     }
