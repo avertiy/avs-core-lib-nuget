@@ -3,10 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using AVS.CoreLib.Expressions;
+using AVS.CoreLib.DLinq;
 using AVS.CoreLib.Extensions.Reflection;
 
-namespace AVS.CoreLib.DLinq;
+namespace AVS.CoreLib.Expressions;
 
 internal static class LambdaBagGetSelectFnExtensions
 {

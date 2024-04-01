@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
 using AVS.CoreLib.DLinq;
+using AVS.CoreLib.Extensions.Reflection;
 
 namespace AVS.CoreLib.Expressions;
 
@@ -41,6 +42,16 @@ public static class Lmbd
         var propExpr = Expression.Property(paramExpr.Cast(typeArg), prop);
 
         var lambdaExpr = Expression.Lambda(propExpr, paramExpr);
+        return lambdaExpr;
+    }
+
+    public static Expression<Func<TSource, TResult>> SelectProp<TSource, TResult>(PropertyInfo prop, Type? typeArg)
+    {
+        var paramExpr = Expression.Parameter(typeof(TSource), "x");
+
+        var propExpr = Expression.Property(paramExpr.Cast(typeArg), prop);
+
+        var lambdaExpr = Expression.Lambda<Func<TSource, TResult>>(propExpr, paramExpr);
         return lambdaExpr;
     }
 

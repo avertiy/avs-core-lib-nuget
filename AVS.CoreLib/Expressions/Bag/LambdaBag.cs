@@ -4,9 +4,8 @@ using System.Collections.Generic;
 using AVS.CoreLib.Collections;
 using System.Reflection;
 using AVS.CoreLib.Extensions.Reflection;
-using AVS.CoreLib.Expressions;
 
-namespace AVS.CoreLib.DLinq;
+namespace AVS.CoreLib.Expressions;
 
 /// <summary>
 /// Represent a cache layer to store a compiled lambdas (delegates)
@@ -86,14 +85,14 @@ public static class LambdaBagExtensions
 
         return false;
     }
-    
+
     public static Func<T, TResult> GetSelector<T, TResult>(this LambdaBag bag, PropertyInfo prop, Type? paramType)
     {
         var key = $"Func<{typeof(T).Name},{typeof(TResult).Name}>(x => x.{prop.Name}, type: {paramType?.Name})";
         if (bag.TryGetFunc(key, out Func<T, TResult>? fn))
             return fn!;
 
-        var lambda = LambdaBuilder.SelectPropertyExpr<T, TResult>(prop, paramType);
+        var lambda = Lmbd.SelectProp<T, TResult>(prop, paramType);
         var func = lambda.Compile();
         bag[key] = func;
         return func;
@@ -116,7 +115,7 @@ internal static class LambdaBagDictSelectorExtensions
 {
     public static Func<T, Dictionary<string, TValue>> GetDictSelector<T, TValue>(this LambdaBag bag, PropertyInfo[] props, Type? paramType)
     {
-        var propsStr = string.Join(",", props.Select((x => x.Name)));
+        var propsStr = string.Join(",", props.Select(x => x.Name));
         var key = FuncHelper.GetKey<T, Dictionary<string, TValue>>(propsStr, paramType?.Name);
         if (bag.TryGetFunc(key, out Func<T, Dictionary<string, TValue>>? fn))
             return fn!;
@@ -137,7 +136,7 @@ internal static class LambdaBagDictSelectorExtensions
 
     public static Func<T, Dictionary<string, object>> GetDictSelector<T>(this LambdaBag bag, PropertyInfo[] props, Type? paramType)
     {
-        var propsStr = string.Join(",", props.Select((x => x.Name)));
+        var propsStr = string.Join(",", props.Select(x => x.Name));
         var key = FuncHelper.GetKey<T, Dictionary<string, object>>(propsStr, paramType?.Name);
         if (bag.TryGetFunc(key, out Func<T, Dictionary<string, object>>? fn))
             return fn!;
@@ -162,7 +161,7 @@ internal static class FuncHelper
 {
     public static string GetKey<T, TResult>(string arg1, string? arg2)
     {
-        if(arg2 == null)
+        if (arg2 == null)
             return $"Func<{typeof(T).GetReadableName()},{typeof(TResult).GetReadableName()}>({arg1})";
 
         return $"Func<{typeof(T).GetReadableName()},{typeof(TResult).GetReadableName()}>({arg1}, {arg2})";

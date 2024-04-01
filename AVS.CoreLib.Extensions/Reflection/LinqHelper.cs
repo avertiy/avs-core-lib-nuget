@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace AVS.CoreLib.DLinq;
+namespace AVS.CoreLib.Extensions.Reflection;
 
-internal static class LinqHelper
+public static class LinqHelper
 {
-    internal static MethodInfo GetSelectMethodInfo(Type type, Type resultType)
+    public static MethodInfo GetSelectMethodInfo(Type type, Type resultType)
     {
         var generic = typeof(LinqHelper).GetMethod(nameof(Select), BindingFlags.Static | BindingFlags.NonPublic)!;
         var method = generic.MakeGenericMethod(type, resultType);
         return method;
     }
 
-    internal static MethodInfo GetToListMethodInfo(Type type)
+    public static MethodInfo GetToListMethodInfo(Type type)
     {
         var generic = typeof(Enumerable).GetMethod("ToList", BindingFlags.Static | BindingFlags.Public)!;
         //var generic = typeof(LinqHelper).GetMethod(nameof(ToList), BindingFlags.Static | BindingFlags.NonPublic)!;
