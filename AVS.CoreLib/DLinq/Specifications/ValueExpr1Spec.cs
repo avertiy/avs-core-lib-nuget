@@ -1,77 +1,66 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using AVS.CoreLib.DLinq.LambdaSpec.BasicBlocks;
+using AVS.CoreLib.DLinq.LambdaSpec;
+using AVS.CoreLib.DLinq.Specifications.BasicBlocks;
+using AVS.CoreLib.Extensions.Reflection;
 
-namespace AVS.CoreLib.DLinq.LambdaSpec;
+namespace AVS.CoreLib.DLinq.Specifications;
 
 /// <summary>
 /// Represent lambda specification single value selector
 /// e.g. x => x.close or more complex: x => x.prop[0]['key1'].value 
-/// Contain one or more building blocks: <see cref="PropSpec"/>, <see cref="IndexSpec"/>, <see cref="KeySpec"/>
+/// Contain one or more building blocks: <see cref="Prop1Spec"/>, <see cref="Index1Spec"/>, <see cref="Key1Spec"/>
 /// </summary>
-public class ValueExprSpec : Spec, ISpecItem
+public class ValueExpr1Spec : SpecBase
 {
-    private List<ISpecItem> Parts { get; set; } = new();
+    public List<SpecBase> Parts { get; private set; } = new();
+    public required Type ArgType { get; set; }
 
     public bool IsEmpty => Parts.Count == 0;
 
     public void AddProp(string prop)
     {
-        Parts.Add(new PropSpec() {Name = prop, Raw = Raw });
-    }
-
-    public void AddIndex(int index)
-    {
-        Parts.Add(new IndexSpec(index));
-    }
-
-    public void AddKey(string key)
-    {
-        Parts.Add(new KeySpec(key){ Raw = Raw });
+        Parts.Add(new Prop1Spec() { Name = prop, Raw = Raw });
     }
 
     public void AddIndex(string input)
     {
         if (int.TryParse(input, out var index))
         {
-            Parts.Add(new IndexSpec(index) { Raw = Raw });
+            Parts.Add(new Index1Spec(index) { Raw = Raw });
         }
         else
         {
-            Parts.Add(new KeySpec(input.Trim('"', '\'')) { Raw = Raw });
+            Parts.Add(new Key1Spec(input.Trim('"', '\'')) { Raw = Raw });
         }
     }
 
-    public override string ToString(SpecView view)
+    public override Expression BuildExpr(Expression expression, LambdaContext ctx)
     {
-        switch (view)
-        {
-            case SpecView.Expr:
-                return string.Join(null, Parts.Select(x => x.ToString(view)));
-            case SpecView.Plain:
-                return string.Join('_', Parts.Select(x => x.ToString(view)));
-            default:
-                return ToString();
-                
-        }
-    }
-
-    protected override Expression BuildValueExpr(Expression argExpr, Func<Expression, Type?> resolveType)
-    {
-        var expr = argExpr;
+        var expr = expression.Type == ArgType ? expression : Expression.Convert(expression, ArgType);
 
         for (var i = 0; i < Parts.Count; i++)
         {
-            var spec = Parts[i];
-            expr = spec.GetValueExpr(expr, resolveType);
+            expr = Parts[i].BuildExpr(expr, ctx);
         }
 
         return expr;
     }
 
-    public static ValueExprSpec Parse(string selectExpr, SelectMode mode = SelectMode.Default)
+    public override string ToString(string arg, SpecView view)
+    {
+        var str = view == SpecView.Expr ? $"(({ArgType.GetReadableName()}){arg})" : arg;
+
+        for (var i = 0; i < Parts.Count; i++)
+        {
+            str = Parts[i].ToString(str, view);
+        }
+
+        return str;
+    }
+    
+    public static ValueExpr1Spec Parse(string selectExpr, Type argType)
     {
         var expr = selectExpr.TrimStart('.');
         var startInd = 0;
@@ -79,7 +68,7 @@ public class ValueExprSpec : Spec, ISpecItem
         if (selectExpr.StartsWith("x."))
             startInd = 2;
 
-        var spec = new ValueExprSpec() { Mode = mode, Raw = expr };
+        var spec = new ValueExpr1Spec() { Raw = expr, ArgType = argType };
         var ind = -1;
 
         for (var i = startInd; i < expr.Length; i++)

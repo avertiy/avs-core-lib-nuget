@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using AVS.CoreLib.DLinq.Conditions;
 using AVS.CoreLib.Expressions;
 using AVS.CoreLib.Extensions.Reflection;
 
@@ -12,11 +13,11 @@ public abstract class Spec : ISpecItem
 {
     public string? Raw { get; set; }
     /// <summary>
-    /// when x => x.Close  needs to be cast for example to object: x => (object)x.Close
+    /// Converts value to ResultType e.g. (object)x.Close
     /// </summary>
     public Type? CastTo { get; set; }
     /// <summary>
-    /// if T is an interface, ArgType could provide a concrete type
+    /// converts to ArgType e.g. (ArgType)x
     /// </summary>
     public Type? ArgType { get; set; }
 
@@ -62,7 +63,7 @@ public abstract class Spec : ISpecItem
             }
             catch (Exception ex)
             {
-                throw new DLinqException($"Can't build lambda  - {ex.Message}", ex) { Spec = this };
+                throw new DLinqException($"Can't build lambda  - {ex.Message}", ex);
             }
         }
 
@@ -72,7 +73,7 @@ public abstract class Spec : ISpecItem
         }
         catch (Exception ex)
         {
-            throw new DLinqException($"Invoke lambda failed - {ex.Message}", ex) { Spec = this };
+            throw new DLinqException($"Invoke lambda failed - {ex.Message}", ex);
         }
     }
 
@@ -108,7 +109,7 @@ public abstract class Spec : ISpecItem
     }
 
     #region GetCacheKey 
-    public virtual string GetCacheKey<T>()
+    protected string GetCacheKey<T>()
     {
         var body = GetBodyExpr();
         return FormatMode($"Select({typeof(T).GetReadableName()} {body}) [mode:{Mode}]");
@@ -138,5 +139,10 @@ public abstract class Spec : ISpecItem
     public override string ToString()
     {
         return $"{GetType().Name}: {Mode} {Raw ?? GetBodyExpr()}";
+    }
+
+    public static LogicalSpec Combine(Op op, params Spec[] specs)
+    {
+        return new LogicalSpec(op, specs);
     }
 }

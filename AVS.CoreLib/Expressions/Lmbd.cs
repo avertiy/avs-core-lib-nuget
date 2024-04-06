@@ -91,5 +91,10 @@ public static class Lmbd
         return lambda;
     }
 
-   
+    public static Func<T, TResult> Compile<T, TResult>(Expression expr, ParameterExpression paramExpr)
+    {
+        var lambdaExpr = Expression.Lambda<Func<T, TResult>>(expr, paramExpr);
+        var fn = lambdaExpr.Compile();
+        return fn;
+    }
 }

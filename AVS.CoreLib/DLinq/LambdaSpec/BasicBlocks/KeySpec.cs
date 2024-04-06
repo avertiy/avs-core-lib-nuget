@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Reflection;
 
-namespace AVS.CoreLib.DLinq.LambdaSpec;
+namespace AVS.CoreLib.DLinq.LambdaSpec.BasicBlocks;
 
 public class KeySpec : PropSpec
 {
@@ -13,7 +13,7 @@ public class KeySpec : PropSpec
     {
         Key = key;
     }
-    
+
     protected override Expression BuildValueExpr(Expression argExpr, Func<Expression, Type?> resolveType)
     {
         var expr = base.BuildValueExpr(argExpr, resolveType);
@@ -33,7 +33,7 @@ public class KeySpec : PropSpec
         {
             case SpecView.Expr:
                 return Name == null ? $"[\"{Key}\"]" : $".{Name.Capitalize()}[\"{Key}\"]";
-            case SpecView.Key:
+            case SpecView.Plain:
                 return Name == null ? Key : $"{Name.Capitalize()}_{Key}";
             default:
                 return ToString();

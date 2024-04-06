@@ -268,6 +268,51 @@ namespace AVS.CoreLib.Extensions
         }
         #endregion
 
+        public static string[] Split(this string str, string[] separators, StringSplitOptions options = StringSplitOptions.None)
+        {
+            var result = new List<string>();
+            var start = 0;
+
+            // A OR B AND C OR AND A  
+
+            for (var i = 0; i < str.Length; i++)
+            {
+                foreach (var separator in separators)
+                {
+                    if (str[i] != separator[0])
+                        continue;
+
+                    if (i + separator.Length >= str.Length)
+                        continue;
+                    
+                    var ind = str.IndexOf(separator, i, StringComparison.Ordinal);
+
+                    if(ind != i)
+                        continue;
+
+                    add(str.Substring(start, i - start));
+                    add(separator);
+
+                    start = i + separator.Length;
+                    i += separator.Length;
+                }
+            }
+
+            if (start < str.Length)
+                add(str.Substring(start));
+
+            void add(string part)
+            {
+                if (options == StringSplitOptions.RemoveEmptyEntries && string.IsNullOrEmpty(part))
+                    return;
+
+                var item = options == StringSplitOptions.TrimEntries ? part.Trim() : part;
+                result.Add(item);
+            }
+
+            return result.ToArray();
+        }
+
         public static string Truncate(this string str, int maxLength)
         {
             if (string.IsNullOrEmpty(str) || str.Length <= maxLength)

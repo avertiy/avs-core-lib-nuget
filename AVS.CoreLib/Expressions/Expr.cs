@@ -56,8 +56,10 @@ public static class Expr
 
     /// <summary>
     /// Creates dictionary expression (determines value type based on expressions i.e. typed or object dictionary):
+    /// <code>
     /// (i) object: x => XActivator.CreateDictionary(keys, new object[] {expr1, expr2, ...})
     /// (ii) typed: x => XActivator.CreateValueDictionary(keys, new [] {expr1, expr2, ...})
+    /// </code>
     /// </summary>
     public static MethodCallExpression CreateDictionaryExpr(string[] keys, params Expression[] expressions)
     {

@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Reflection;
 
-namespace AVS.CoreLib.DLinq.LambdaSpec;
+namespace AVS.CoreLib.DLinq.LambdaSpec.BasicBlocks;
 
 public class IndexSpec : PropSpec
 {
@@ -36,7 +36,7 @@ public class IndexSpec : PropSpec
         {
             case SpecView.Expr:
                 return Name == null ? $"[{Index}]" : $".{Name.Capitalize()}[{Index}]";
-            case SpecView.Key:
+            case SpecView.Plain:
                 return Name == null ? Index.ToString() : $"{Name.Capitalize()}_{Index}";
             default:
                 return ToString();

@@ -2,7 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using AVS.CoreLib.DLinq.Conditions;
 using AVS.CoreLib.DLinq.LambdaSpec;
+using AVS.CoreLib.DLinq.Specifications;
+using AVS.CoreLib.DLinq.Specifications.BasicBlocks;
 using AVS.CoreLib.Extensions;
 
 namespace AVS.CoreLib.DLinq;
@@ -126,79 +129,54 @@ public class DLinqEngine
 
     private IEnumerable<T> Where<T>(IEnumerable<T> source, string whereExpr, Type targetType)
     {
+        var condition = ConditionParser.Parse(whereExpr);
+        var spec = condition.GetSpec();
         return source;
     }
 
     private IEnumerable Select<T>(IEnumerable<T> source, string selectExpr, Type argType)
     {
-        var spec = ParseSelectExpr(selectExpr);
-        spec.ArgType = argType;
-        var result = spec.Process(source);//LambdaBag.Lambdas.Execute(spec, source);
+        var spec = ParseSelectExpr1(selectExpr, argType);
+        var result = source.Select(spec, Mode);
+        //var spec = ParseSelectExpr(selectExpr, argType);
+        //spec.ArgType = argType;
+        //var result = spec.Process(source);
         return result;
     }
 
-    private Spec ParseSelectExpr(string selectExpr)
+    private ISpec ParseSelectExpr1(string selectExpr, Type argType)
     {
         var parts = selectExpr.Split(',');
 
         if (parts.Length == 1)
-            ParseValueExpr(selectExpr);
+            return ValueExpr1Spec.Parse(selectExpr, argType);
 
-        var spec = new MultiPropExprSpec(parts.Length) { Mode = Mode, Raw = selectExpr };
+        var spec = new MultiPropExpr1Spec(parts.Length) { Raw = selectExpr };
 
         foreach (var part in parts)
         {
-            var specItem = ParseValueExpr(part);
-            var key = specItem.ToString(SpecView.Key);
-            spec.AddSmart(key, specItem);
+            var valueSpec = ValueExpr1Spec.Parse(part, argType);
+            spec.AddSmart(valueSpec);
         }
 
         return spec;
     }
 
-    private ValueExprSpec ParseValueExpr(string selectExpr)
+    private Spec ParseSelectExpr(string selectExpr, Type argType)
     {
-        var expr = selectExpr.TrimStart('.');
-        var startInd = 0;
+        var parts = selectExpr.Split(',');
 
-        if (selectExpr.StartsWith("x."))
-            startInd = 2;
+        if (parts.Length == 1)
+            return ValueExprSpec.Parse(selectExpr, Mode);
 
-        var spec = new ValueExprSpec() { Mode = Mode, Raw = expr };
-        var ind = -1;
+        var spec = new MultiPropExprSpec(parts.Length) { Mode = Mode, Raw = selectExpr };
 
-        for (var i = startInd; i < expr.Length; i++)
-            switch (expr[i])
-            {
-                case '.':
-                    {
-                        //prop.inner.value or prop[0].inner
-                        if (startInd < i && ind == -1)
-                            spec.AddProp(expr.Substring(startInd, i - startInd));
-                        startInd = i + 1;
-                        break;
-                    }
-
-                case '[' when ind < 0:
-                    {
-                        if (startInd < i)
-                            spec.AddProp(expr.Substring(startInd, i - startInd));
-                        startInd = i + 1;
-                        ind = i;
-                        break;
-                    }
-                case ']' when ind > -1:
-                    {
-                        var key = expr.Substring(ind + 1, i - ind - 1);
-                        spec.AddIndex(key);
-                        ind = -1;
-                        startInd = i + 1;
-                        break;
-                    }
-            }
-
-        if (startInd < expr.Length)
-            spec.AddProp(expr.Substring(startInd, expr.Length - startInd));
+        foreach (var part in parts)
+        {
+            var specItem = ValueExprSpec.Parse(part, Mode);
+            var key = specItem.ToString(SpecView.Plain);
+            spec.AddSmart(key, specItem);
+        }
 
         return spec;
     }

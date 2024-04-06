@@ -4,5 +4,5 @@ public enum SpecView
 {
     Default = 0,
     Expr,
-    Key
+    Plain
 }

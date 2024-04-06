@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using AVS.CoreLib.DLinq.LambdaSpec;
+using AVS.CoreLib.DLinq.LambdaSpec.BasicBlocks;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
