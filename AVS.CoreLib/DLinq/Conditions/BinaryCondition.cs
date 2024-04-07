@@ -1,4 +1,5 @@
-﻿using AVS.CoreLib.DLinq.LambdaSpec;
+﻿using System;
+using AVS.CoreLib.DLinq.Specifications;
 
 namespace AVS.CoreLib.DLinq.Conditions;
 
@@ -27,11 +28,11 @@ public record BinaryCondition : ICondition
         return $"({Left} {Op} {Right})";
     }
 
-    public Spec GetSpec()
+    public ISpec GetSpec(Type type)
     {
-        var leftSpec = Left.GetSpec();
-        var rightSpec = Right.GetSpec();
-        return Spec.Combine(Op, new Spec[]{leftSpec, rightSpec});
+        var leftSpec = Left.GetSpec(type);
+        var rightSpec = Right.GetSpec(type);
+        return SpecBase.Combine(Op, leftSpec, rightSpec);
     }
 
     public static ICondition OR(ICondition left, ICondition right)

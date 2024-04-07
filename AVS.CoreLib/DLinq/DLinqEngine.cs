@@ -3,9 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using AVS.CoreLib.DLinq.Conditions;
-using AVS.CoreLib.DLinq.LambdaSpec;
 using AVS.CoreLib.DLinq.Specifications;
-using AVS.CoreLib.DLinq.Specifications.BasicBlocks;
 using AVS.CoreLib.Extensions;
 
 namespace AVS.CoreLib.DLinq;
@@ -130,7 +128,7 @@ public class DLinqEngine
     private IEnumerable<T> Where<T>(IEnumerable<T> source, string whereExpr, Type targetType)
     {
         var condition = ConditionParser.Parse(whereExpr);
-        var spec = condition.GetSpec();
+        var spec = condition.GetSpec(targetType);
         return source;
     }
 
@@ -138,9 +136,6 @@ public class DLinqEngine
     {
         var spec = ParseSelectExpr1(selectExpr, argType);
         var result = source.Select(spec, Mode);
-        //var spec = ParseSelectExpr(selectExpr, argType);
-        //spec.ArgType = argType;
-        //var result = spec.Process(source);
         return result;
     }
 
@@ -157,25 +152,6 @@ public class DLinqEngine
         {
             var valueSpec = ValueExpr1Spec.Parse(part, argType);
             spec.AddSmart(valueSpec);
-        }
-
-        return spec;
-    }
-
-    private Spec ParseSelectExpr(string selectExpr, Type argType)
-    {
-        var parts = selectExpr.Split(',');
-
-        if (parts.Length == 1)
-            return ValueExprSpec.Parse(selectExpr, Mode);
-
-        var spec = new MultiPropExprSpec(parts.Length) { Mode = Mode, Raw = selectExpr };
-
-        foreach (var part in parts)
-        {
-            var specItem = ValueExprSpec.Parse(part, Mode);
-            var key = specItem.ToString(SpecView.Plain);
-            spec.AddSmart(key, specItem);
         }
 
         return spec;

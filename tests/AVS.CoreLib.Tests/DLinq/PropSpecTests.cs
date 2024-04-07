@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using AVS.CoreLib.DLinq.LambdaSpec.BasicBlocks;
+using AVS.CoreLib.DLinq;
+using AVS.CoreLib.DLinq.Specifications;
+using AVS.CoreLib.DLinq.Specifications.BasicBlocks;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -15,10 +17,10 @@ public class PropSpecTests
         //arrange
         var time = DateTime.Now;
         var source = new[] { time, time.AddDays(1), time.AddDays(2) };
-        var spec = new PropSpec() { Name = "Day"};
+        var spec = new Prop1Spec() { Name = "Day"};
 
         // act
-        var result = spec.Process(source);
+        var result = source.Select(spec, SelectMode.ToList);
 
         // assert
         var list = result as List<int>;

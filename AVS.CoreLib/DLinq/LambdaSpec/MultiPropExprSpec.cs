@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using AVS.CoreLib.DLinq.LambdaSpec.BasicBlocks;
+using AVS.CoreLib.DLinq.Specifications;
 using AVS.CoreLib.Expressions;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Reflection;

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using AVS.CoreLib.DLinq.LambdaSpec;
 using AVS.CoreLib.DLinq.Specifications.BasicBlocks;
+using AVS.CoreLib.Expressions;
 using AVS.CoreLib.Extensions.Reflection;
 
 namespace AVS.CoreLib.DLinq.Specifications;
@@ -14,7 +14,7 @@ namespace AVS.CoreLib.DLinq.Specifications;
 /// </summary>
 public class ValueExpr1Spec : SpecBase
 {
-    public List<SpecBase> Parts { get; private set; } = new();
+    public List<ISpec> Parts { get; private set; } = new();
     public required Type ArgType { get; set; }
 
     public bool IsEmpty => Parts.Count == 0;
@@ -44,6 +44,9 @@ public class ValueExpr1Spec : SpecBase
         {
             expr = Parts[i].BuildExpr(expr, ctx);
         }
+
+        if (ctx.Mode.HasFlag(SelectMode.Safe))
+            expr = Expr.WrapInTryCatch(expr);
 
         return expr;
     }

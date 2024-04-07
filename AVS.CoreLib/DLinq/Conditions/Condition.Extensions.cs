@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AVS.CoreLib.DLinq.LambdaSpec;
 using AVS.CoreLib.Guards;
 
 namespace AVS.CoreLib.DLinq.Conditions;

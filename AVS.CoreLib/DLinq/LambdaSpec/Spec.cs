@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using AVS.CoreLib.DLinq.Conditions;
+using AVS.CoreLib.DLinq.Specifications;
+using AVS.CoreLib.DLinq.Specifications.BasicBlocks;
 using AVS.CoreLib.Expressions;
 using AVS.CoreLib.Extensions.Reflection;
 
@@ -139,10 +141,5 @@ public abstract class Spec : ISpecItem
     public override string ToString()
     {
         return $"{GetType().Name}: {Mode} {Raw ?? GetBodyExpr()}";
-    }
-
-    public static LogicalSpec Combine(Op op, params Spec[] specs)
-    {
-        return new LogicalSpec(op, specs);
     }
 }

@@ -1,12 +1,13 @@
-﻿using AVS.CoreLib.DLinq.LambdaSpec;
-using AVS.CoreLib.DLinq.LambdaSpec.Conditioning;
+﻿using System;
+using AVS.CoreLib.DLinq.Specifications;
+using AVS.CoreLib.DLinq.Specifications.Conditioning;
 
 namespace AVS.CoreLib.DLinq.Conditions;
 
 
 public interface ICondition
 {
-    Spec GetSpec();
+    ISpec GetSpec(Type type);
 }
 
 public partial class Condition : ICondition
@@ -25,9 +26,9 @@ public partial class Condition : ICondition
         return Expr;
     }
 
-    public Spec GetSpec()
+    public ISpec GetSpec(Type type)
     {
-        return ConditionSpec.Parse(Expr);
+        return ConditionSpec.Parse(Expr, type);
     }
 }
 

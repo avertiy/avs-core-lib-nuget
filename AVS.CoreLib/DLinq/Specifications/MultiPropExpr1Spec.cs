@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
-using AVS.CoreLib.DLinq.LambdaSpec;
 using AVS.CoreLib.DLinq.Specifications.BasicBlocks;
 using AVS.CoreLib.Expressions;
 using AVS.CoreLib.Extensions;
@@ -33,7 +32,7 @@ public class MultiPropExpr1Spec : SpecBase
 
     public void AddSmart(ValueExpr1Spec item)
     {
-        var key = item.GetKey().Trim('_');
+        var key = item.ToString(string.Empty, SpecView.Plain).Trim('_');
         var str = ShortenKey(key);
 
         if (ContainsKey(str))

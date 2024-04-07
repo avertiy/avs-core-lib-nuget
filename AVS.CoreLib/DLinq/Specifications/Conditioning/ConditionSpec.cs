@@ -2,37 +2,36 @@
 using System.Linq;
 using System.Linq.Expressions;
 using AVS.CoreLib.DLinq.Conditions;
-using AVS.CoreLib.DLinq.Specifications;
 using AVS.CoreLib.Guards;
 
-namespace AVS.CoreLib.DLinq.LambdaSpec.Conditioning;
+namespace AVS.CoreLib.DLinq.Specifications.Conditioning;
 
 /// <summary>
 /// Represent a simple condition: A > 1
 /// </summary>
-public class ConditionSpec : Spec, ISpecItem
+public class ConditionSpec : SpecBase
 {
-    public ConditionSpec(ValueExprSpec value, Spec comparison)
+    public ConditionSpec(ValueExpr1Spec value, ComparisonSpec comparison)
     {
         Value = value;
         Comparison = comparison;
     }
 
-    public ValueExprSpec Value { get; set; }
+    public ValueExpr1Spec Value { get; set; }
 
-    public Spec Comparison { get; set; }
+    public ComparisonSpec Comparison { get; set; }
 
-    protected override Expression BuildValueExpr(Expression argExpr, Func<Expression, Type?> resolveType)
+    public override Expression BuildExpr(Expression expr, LambdaContext ctx)
     {
         throw new NotImplementedException();
     }
 
-    public override string ToString(SpecView view)
+    public override string ToString(string arg, SpecView view)
     {
-        return $"{Value.ToString(view)} {Comparison.ToString(view)}";
+        return $"{Value.ToString(arg, view)} {Comparison.ToString(arg, view)}";
     }
 
-    public static ConditionSpec Parse(string expr)
+    public static ConditionSpec Parse(string expr, Type argType)
     {
         Guard.Against.NullOrEmpty(expr);
 
@@ -42,36 +41,17 @@ public class ConditionSpec : Spec, ISpecItem
             throw new DLinqException($"Invalid syntax `{expr}` - condition expression might have at least 3 parts");
 
         var compSpec = ComparisonSpec.Parse(parts[1], parts[2]);
-        var valueSpec = ValueExprSpec.Parse(parts[0]);
+        var valueSpec = ValueExpr1Spec.Parse(parts[0], argType);
         var spec = new ConditionSpec(valueSpec, compSpec);
         return spec;
     }
 }
 
-
-public class ComparisonSpec : Spec
+public abstract class ComparisonSpec : SpecBase
 {
     public Operator Op { get; set; }
 
-    public string Arg { get; set; }
-
-    public ComparisonSpec(Operator op, string arg)
-    {
-        Arg = arg;
-        Op = op;
-    }
-
-    protected override Expression BuildValueExpr(Expression argExpr, Func<Expression, Type?> resolveType)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override string ToString(SpecView view)
-    {
-        return $"{Op.ToExprString()} {Arg}";
-    }
-
-    public static Spec Parse(string part1, string part2)
+    public static ComparisonSpec Parse(string part1, string part2)
     {
         // A) comparison: >,<,== etc. e.g. A > 1
         // B) NULL-checks: A IS NULL, A NOT NULL
@@ -89,12 +69,37 @@ public class ComparisonSpec : Spec
         if (op == Operator.In)
             return BetweenSpec.Parse(part2);
 
-        var spec = new ComparisonSpec(op, part2);
+        var spec = new SimpleComparisonSpec(op, part2);
         return spec;
     }
 }
 
-public class BetweenSpec : Spec
+
+public class SimpleComparisonSpec : ComparisonSpec
+{
+
+    public string Arg { get; set; }
+
+    public SimpleComparisonSpec(Operator op, string arg)
+    {
+        Arg = arg;
+        Op = op;
+    }
+    
+    public override Expression BuildExpr(Expression expr, LambdaContext ctx)
+    {
+        throw new NotImplementedException();
+    }
+
+    public override string ToString(string arg, SpecView view)
+    {
+        return $"{Op.ToExprString()} {Arg}";
+    }
+
+    
+}
+
+public class BetweenSpec : ComparisonSpec
 {
     public string Arg1 { get; set; }
     public string Arg2 { get; set; }
@@ -103,14 +108,15 @@ public class BetweenSpec : Spec
     {
         Arg1 = arg1;
         Arg2 = arg2;
+        Op = Operator.Between;
     }
 
-    protected override Expression BuildValueExpr(Expression argExpr, Func<Expression, Type?> resolveType)
+    public override Expression BuildExpr(Expression expr, LambdaContext ctx)
     {
         throw new NotImplementedException();
     }
 
-    public override string ToString(SpecView view)
+    public override string ToString(string arg, SpecView view)
     {
         return $"{Operator.Between.ToExprString()} {Arg1} AND {Arg2}";
     }
@@ -126,21 +132,23 @@ public class BetweenSpec : Spec
     }
 }
 
-public class OperatorInSpec : Spec
+public class OperatorInSpec : ComparisonSpec
 {
     public OperatorInSpec(params string[] args)
     {
         Args = args;
+        Op = Operator.In;
     }
 
     public string[] Args { get; set; }
 
-    protected override Expression BuildValueExpr(Expression argExpr, Func<Expression, Type?> resolveType)
+
+    public override Expression BuildExpr(Expression expr, LambdaContext ctx)
     {
         throw new NotImplementedException();
     }
 
-    public override string ToString(SpecView view)
+    public override string ToString(string arg, SpecView view)
     {
         return $"IN ({string.Join(',', Args)})";
     }

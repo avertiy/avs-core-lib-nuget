@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using AVS.CoreLib.DLinq.LambdaSpec.BasicBlocks;
+using AVS.CoreLib.DLinq.Specifications;
 
 namespace AVS.CoreLib.DLinq.LambdaSpec;
 

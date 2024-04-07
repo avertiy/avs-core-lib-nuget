@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
-using AVS.CoreLib.DLinq.LambdaSpec;
+using AVS.CoreLib.DLinq.Conditions;
+using AVS.CoreLib.DLinq.Specifications.BasicBlocks;
 
 namespace AVS.CoreLib.DLinq.Specifications;
 
@@ -7,7 +8,6 @@ public abstract class SpecBase : ISpec
 {
     public string? Raw { get; set; }
     public abstract Expression BuildExpr(Expression expr, LambdaContext ctx);
-    //public abstract string ToString(SpecView view);
     public override string ToString()
     {
         return $"{GetType().Name} {Raw}";
@@ -18,10 +18,10 @@ public abstract class SpecBase : ISpec
         return $"x => {ToString("x", SpecView.Expr)}";
     }
 
-    public string GetKey()
-    {
-        return ToString(string.Empty, SpecView.Plain);
-    }
-
     public abstract string ToString(string arg, SpecView view);
+
+    public static LogicalSpec Combine(Op op, params ISpec[] specs)
+    {
+        return new LogicalSpec(op, specs);
+    }
 }

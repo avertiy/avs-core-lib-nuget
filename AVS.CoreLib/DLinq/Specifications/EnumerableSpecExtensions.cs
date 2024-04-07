@@ -8,7 +8,7 @@ namespace AVS.CoreLib.DLinq.Specifications;
 
 public static class EnumerableSpecExtensions
 {
-    public static IEnumerable Select<T>(this IEnumerable<T> source, ISpec spec, SelectMode mode)
+    public static IEnumerable Select<T>(this IEnumerable<T> source, ISpec spec, SelectMode mode = SelectMode.Default)
     {
         var ctx = new LambdaContext() { Mode = mode, Source = source };
         var fn = GetSelectFn<T>(spec, ctx);

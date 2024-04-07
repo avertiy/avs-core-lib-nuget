@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using AVS.CoreLib.DLinq.Specifications;
 using AVS.CoreLib.Extensions;
 
 namespace AVS.CoreLib.DLinq.LambdaSpec.BasicBlocks;

@@ -1,4 +1,4 @@
-﻿namespace AVS.CoreLib.DLinq.LambdaSpec;
+﻿namespace AVS.CoreLib.DLinq.Specifications;
 
 public enum SpecView
 {

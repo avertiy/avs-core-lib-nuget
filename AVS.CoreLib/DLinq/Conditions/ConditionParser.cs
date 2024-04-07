@@ -26,7 +26,7 @@ public class ConditionParser
         var dict = new Dictionary<string, string>(6);
         var doubleQuote = false;
         var squareBracket = false;
-
+        var inOperator = false;
         for (var i = 0; i < sb.Length; i++)
         {
             switch (sb[i])
@@ -48,11 +48,24 @@ public class ConditionParser
                 }
                 case '(' when doubleQuote == false && squareBracket == false:
                 {
+                    //C IN (1,2,3)
+                    if (i > 5 && sb.ToString(i - 3, 2) == "IN")
+                    {
+                        inOperator = true;
+                        break;
+                    }
+
                     stack.Push(i);
                     break;
                 }
                 case ')' when doubleQuote == false && squareBracket == false:
                 {
+                    if (inOperator)
+                    {
+                        inOperator = false;
+                        break;
+                    }
+
                     if (stack.Count == 0)
                         throw new InvalidExpression($"Opening bracket `(` is missing [before {i} position]", expression);
 

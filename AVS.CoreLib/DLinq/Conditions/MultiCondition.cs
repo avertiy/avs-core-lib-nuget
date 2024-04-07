@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using AVS.CoreLib.DLinq.LambdaSpec;
+using AVS.CoreLib.DLinq.Specifications;
 using AVS.CoreLib.Guards;
 
 namespace AVS.CoreLib.DLinq.Conditions;
@@ -30,9 +31,9 @@ public record MultiCondition : ICondition
         return $"({string.Join($" {Op} ", Items)})";
     }
 
-    public Spec GetSpec()
+    public ISpec GetSpec(Type type)
     {
-        var specs = Items.Select(x => x.GetSpec()).ToArray();
-        return Spec.Combine(Op, specs);
+        var specs = Items.Select(x => x.GetSpec(type)).ToArray();
+        return SpecBase.Combine(Op, specs);
     }
 }
