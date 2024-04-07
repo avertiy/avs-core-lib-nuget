@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using AVS.CoreLib.DLinq.Specifications;
+using AVS.CoreLib.DLinq.Specs;
 using AVS.CoreLib.Guards;
 
 namespace AVS.CoreLib.DLinq.Conditions;

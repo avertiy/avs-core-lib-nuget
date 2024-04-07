@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using AVS.CoreLib.Expressions;
 using AVS.CoreLib.Extensions.Reflection;
 
-namespace AVS.CoreLib.DLinq.Specifications;
+namespace AVS.CoreLib.DLinq.Specs;
 
 public static class SpecCompiler
 {

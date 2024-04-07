@@ -3,26 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
-using AVS.CoreLib.DLinq.LambdaSpec.BasicBlocks;
-using AVS.CoreLib.DLinq.Specifications;
+using AVS.CoreLib.DLinq.Specs.BasicBlocks;
 using AVS.CoreLib.Expressions;
 using AVS.CoreLib.Extensions;
-using AVS.CoreLib.Extensions.Reflection;
-using AVS.CoreLib.Utilities;
 
-namespace AVS.CoreLib.DLinq.LambdaSpec;
+namespace AVS.CoreLib.DLinq.Specs.CompoundBlocks;
 
 /// <summary>
 /// Represent lambda specification for select multiple values into dictionary
 /// e.g. x => CreateDictionary(keys, expr1, expr2, ...)
-/// Contain one or more building blocks: <see cref="PropSpec"/>, <see cref="IndexSpec"/>, <see cref="KeySpec"/>, <see cref="ValueExprSpec"/>
+/// Contain one or more building blocks: <see cref="Prop1Spec"/>, <see cref="Index1Spec"/>, <see cref="Key1Spec"/>, <see cref="ValueExpr1Spec"/>
 /// </summary>
 
-public class MultiPropExprSpec : Spec
+public class MultiPropExpr1Spec : SpecBase
 {
-    private Dictionary<string, Spec> Items { get; set; }
+    private Dictionary<string, ValueExpr1Spec> Items { get; set; }
 
-    public MultiPropExprSpec(int capacity)
+    public MultiPropExpr1Spec(int capacity)
     {
         Items = new(capacity);
     }
@@ -33,13 +30,9 @@ public class MultiPropExprSpec : Spec
         return Items.ContainsKey(key);
     }
 
-    public void Add(string key, Spec item)
+    public void AddSmart(ValueExpr1Spec item)
     {
-        Items.Add(key, item);
-    }
-
-    public void AddSmart(string key, Spec item)
-    {
+        var key = item.ToString(string.Empty, SpecView.Plain).Trim('_');
         var str = ShortenKey(key);
 
         if (ContainsKey(str))
@@ -66,7 +59,7 @@ public class MultiPropExprSpec : Spec
         if (ind > 0)
         {
             var str = parts[ind].ToLowerInvariant();
-            if (str.Either("value", "item","props"))
+            if (str.Either("value", "item", "props"))
                 ind--;
         }
 
@@ -80,16 +73,16 @@ public class MultiPropExprSpec : Spec
             i++;
 
         return key + "_" + i;
-    } 
+    }
     #endregion
 
-    protected override Expression BuildValueExpr(Expression argExpr, Func<Expression, Type?> resolveType)
+    public override Expression BuildExpr(Expression expression, LambdaContext ctx)
     {
         if (Items.Count == 0)
-            return argExpr;
+            return expression;
 
         if (Items.Count == 1)
-            return Items.First().Value.GetValueExpr(argExpr, resolveType);
+            return Items.First().Value.BuildExpr(expression, ctx);
 
         var keys = new string[Items.Count];
         var expressions = new List<Expression>(Items.Count);
@@ -99,12 +92,12 @@ public class MultiPropExprSpec : Spec
         foreach (var kp in Items)
         {
             var key = kp.Key;//.SanitizePropertyName();
-            var valueExpr = kp.Value.GetValueExpr(argExpr, resolveType);
+            var valueExpr = kp.Value.BuildExpr(expression, ctx);
 
             keys[expressions.Count] = key;
             expressions.Add(valueExpr);
-            
-            if(sameType && expressions.Count > 1 && expressions[0].Type != valueExpr.Type)
+
+            if (sameType && expressions.Count > 1 && expressions[0].Type != valueExpr.Type)
                 sameType = false;
         }
 
@@ -112,31 +105,13 @@ public class MultiPropExprSpec : Spec
         return expr;
     }
 
-    public override string ToString(SpecView view)
-    {
-        switch (view)
-        {
-            case SpecView.Expr:
-                return GetExprString();
-            default:
-                return ToString();
-        }
-    }
-
-    protected override string GetBodyExpr()
-    {
-        return Items.Count <=1 ? base.GetBodyExpr() : $"x => {ToString(SpecView.Expr)}";
-    }
-
-    private string GetExprString()
+    public override string ToString(string arg, SpecView view)
     {
         if (Items.Count == 0)
-            return "x => x";
+            return arg;
 
         if (Items.Count == 1)
-            return Items.First().Value.ToString(SpecView.Expr);
-
-        var argStr = ArgType == null ? "x" : $"(({ArgType.GetReadableName()})x)";
+            return Items.First().Value.ToString(arg, view);
 
         var sb = new StringBuilder(Items.Count * 25);
         sb.Append("new {");
@@ -144,8 +119,7 @@ public class MultiPropExprSpec : Spec
         {
             sb.Append(kp.Key);
             sb.Append(" = ");
-            sb.Append(argStr);
-            sb.Append(kp.Value.ToString(SpecView.Expr));
+            sb.Append(kp.Value.ToString(arg, view));
             sb.Append(", ");
         }
 
@@ -153,11 +127,5 @@ public class MultiPropExprSpec : Spec
         sb.Append("}");
 
         return sb.ToString();
-    }
-
-    public override string ToString()
-    {
-        var items = string.Join(", ", Items.Select(x => x.ToString()));
-        return $"{GetType().Name}: {Mode} items: #{Items.Count} [{items}]";
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System;
-using AVS.CoreLib.DLinq.Specifications;
+using AVS.CoreLib.DLinq.Specs;
 
 namespace AVS.CoreLib.DLinq.Conditions;
 

@@ -2,7 +2,7 @@
 using System.Linq.Expressions;
 using AVS.CoreLib.Extensions.Reflection;
 
-namespace AVS.CoreLib.DLinq.Specifications.BasicBlocks;
+namespace AVS.CoreLib.DLinq.Specs.BasicBlocks;
 
 /// <summary>
 /// Cast (convert) to ArgType

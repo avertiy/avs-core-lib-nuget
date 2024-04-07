@@ -2,9 +2,11 @@
 using System.Linq;
 using System.Linq.Expressions;
 using AVS.CoreLib.DLinq.Conditions;
+using AVS.CoreLib.DLinq.Specs;
+using AVS.CoreLib.DLinq.Specs.CompoundBlocks;
 using AVS.CoreLib.Guards;
 
-namespace AVS.CoreLib.DLinq.Specifications.Conditioning;
+namespace AVS.CoreLib.DLinq.Specs.Conditioning;
 
 /// <summary>
 /// Represent a simple condition: A > 1

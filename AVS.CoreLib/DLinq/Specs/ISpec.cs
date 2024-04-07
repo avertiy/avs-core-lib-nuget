@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace AVS.CoreLib.DLinq.Specifications;
+namespace AVS.CoreLib.DLinq.Specs;
 
 public interface ISpec
 {
@@ -26,7 +26,7 @@ public class LambdaContext
 
     public T? GetItem<T>()
     {
-        if(Source == null)
+        if (Source == null)
             return default;
 
         var src = Source as IEnumerable<T>;

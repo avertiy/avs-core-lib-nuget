@@ -1,8 +1,8 @@
 ﻿using System.Linq.Expressions;
 using AVS.CoreLib.DLinq.Conditions;
-using AVS.CoreLib.DLinq.Specifications.BasicBlocks;
+using AVS.CoreLib.DLinq.Specs.BasicBlocks;
 
-namespace AVS.CoreLib.DLinq.Specifications;
+namespace AVS.CoreLib.DLinq.Specs;
 
 public abstract class SpecBase : ISpec
 {

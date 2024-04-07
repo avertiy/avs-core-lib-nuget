@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using AVS.CoreLib.DLinq.Conditions;
-using AVS.CoreLib.DLinq.Specifications;
+using AVS.CoreLib.DLinq.Specs;
+using AVS.CoreLib.DLinq.Specs.CompoundBlocks;
 using AVS.CoreLib.Extensions;
 
 namespace AVS.CoreLib.DLinq;

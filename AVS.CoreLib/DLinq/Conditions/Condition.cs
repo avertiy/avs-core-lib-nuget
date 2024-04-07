@@ -1,6 +1,6 @@
 ﻿using System;
-using AVS.CoreLib.DLinq.Specifications;
-using AVS.CoreLib.DLinq.Specifications.Conditioning;
+using AVS.CoreLib.DLinq.Specs;
+using AVS.CoreLib.DLinq.Specs.Conditioning;
 
 namespace AVS.CoreLib.DLinq.Conditions;
 
