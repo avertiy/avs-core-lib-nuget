@@ -237,14 +237,17 @@ public class DLinqFilterTests
         //arrange
         var source = new[] { new { Prop = new Dictionary<string, DateTime>() }, new { Prop = new Dictionary<string, DateTime>() }, new { Prop = new Dictionary<string, DateTime>() } };
         var time = DateTime.Now;
+        var time1 = time.AddDays(1);
+        var time2 = time.AddDays(2).AddHours(1);
+        var time3 = time.AddDays(10).AddHours(2);
         source[0].Prop.Add("key1", time);
-        source[0].Prop.Add("key2", time.AddDays(1));
+        source[0].Prop.Add("key2", time1);
         source[0].Prop.Add("key3", time.AddDays(10));
         source[1].Prop.Add("key1", time.AddHours(1));
-        source[1].Prop.Add("key2", time.AddDays(2).AddHours(1));
+        source[1].Prop.Add("key2", time2);
         source[1].Prop.Add("key3", time.AddDays(10).AddHours(1));
         source[2].Prop.Add("key1", time.AddHours(2));
-        source[2].Prop.Add("key2", time.AddDays(3).AddHours(2));
+        source[2].Prop.Add("key2", time3);
         source[2].Prop.Add("key3", time.AddDays(10).AddHours(2));
 
         // act
@@ -259,9 +262,9 @@ public class DLinqFilterTests
         list[0].ContainsKey("day").Should().BeTrue();
         list[0].ContainsKey("hour").Should().BeTrue();
 
-        list[0]["day"].Should().Be(time.AddDays(1).Day);
-        list[1]["day"].Should().Be(time.AddDays(2).Day);
-        list[2]["day"].Should().Be(time.AddDays(3).Day);
+        list[0]["day"].Should().Be(time1.Day);
+        list[1]["day"].Should().Be(time2.Day);
+        list[2]["day"].Should().Be(time3.Day);
     }
 
     [TestMethod]
@@ -270,15 +273,17 @@ public class DLinqFilterTests
         //arrange
         var source = new[] { new { Prop = new Dictionary<string, DateTime>() }, new { Prop = new Dictionary<string, DateTime>() }, new { Prop = new Dictionary<string, DateTime>() } };
         var time = DateTime.Now;
+        var time2 = time.AddDays(2).AddHours(1);
+        var time3 = time.AddDays(10).AddHours(2);
         source[0].Prop.Add("key1", time);
         source[0].Prop.Add("key2", time.AddDays(1));
         source[0].Prop.Add("key3", time.AddDays(10));
         source[1].Prop.Add("key1", time.AddHours(1));
-        source[1].Prop.Add("key2", time.AddDays(2).AddHours(1));
+        source[1].Prop.Add("key2", time2);
         source[1].Prop.Add("key3", time.AddDays(10).AddHours(1));
         source[2].Prop.Add("key1", time.AddHours(2));
-        source[2].Prop.Add("key2", time.AddDays(3).AddHours(2));
-        source[2].Prop.Add("key3", time.AddDays(10).AddHours(2));
+        source[2].Prop.Add("key2", time3);
+        source[2].Prop.Add("key3", time3);
 
         // act
         var result = source.Filter("prop[\"key2\"].day,prop[\"key3\"].ticks,prop.keys.count");
@@ -294,8 +299,8 @@ public class DLinqFilterTests
         list[0].ContainsKey("count").Should().BeTrue();
 
         list[0]["day"].Should().Be(time.AddDays(1).Day);
-        list[1]["day"].Should().Be(time.AddDays(2).Day);
-        list[2]["day"].Should().Be(time.AddDays(3).Day);
+        list[1]["day"].Should().Be(time2.Day);
+        list[2]["day"].Should().Be(time3.Day);
     }
 
     [TestMethod]

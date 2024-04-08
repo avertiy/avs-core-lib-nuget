@@ -12,14 +12,14 @@ namespace AVS.CoreLib.DLinq.Specs.CompoundBlocks;
 /// <summary>
 /// Represent lambda specification for select multiple values into dictionary
 /// e.g. x => CreateDictionary(keys, expr1, expr2, ...)
-/// Contain one or more building blocks: <see cref="Prop1Spec"/>, <see cref="Index1Spec"/>, <see cref="Key1Spec"/>, <see cref="ValueExpr1Spec"/>
+/// Contain one or more building blocks: <see cref="PropSpec"/>, <see cref="IndexSpec"/>, <see cref="KeySpec"/>, <see cref="ValueExprSpec"/>
 /// </summary>
 
-public class MultiPropExpr1Spec : SpecBase
+public class MultiPropExprSpec : SpecBase
 {
-    private Dictionary<string, ValueExpr1Spec> Items { get; set; }
+    private Dictionary<string, ValueExprSpec> Items { get; set; }
 
-    public MultiPropExpr1Spec(int capacity)
+    public MultiPropExprSpec(int capacity)
     {
         Items = new(capacity);
     }
@@ -30,7 +30,7 @@ public class MultiPropExpr1Spec : SpecBase
         return Items.ContainsKey(key);
     }
 
-    public void AddSmart(ValueExpr1Spec item)
+    public void AddSmart(ValueExprSpec item)
     {
         var key = item.ToString(string.Empty, SpecView.Plain).Trim('_');
         var str = ShortenKey(key);
@@ -105,7 +105,7 @@ public class MultiPropExpr1Spec : SpecBase
         return expr;
     }
 
-    public override string ToString(string arg, SpecView view)
+    public override string ToString(string arg, SpecView view = SpecView.Default)
     {
         if (Items.Count == 0)
             return arg;

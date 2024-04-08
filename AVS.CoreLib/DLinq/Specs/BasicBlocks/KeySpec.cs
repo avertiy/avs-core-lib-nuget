@@ -1,5 +1,4 @@
 ﻿using System.Linq.Expressions;
-using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Reflection;
 
 namespace AVS.CoreLib.DLinq.Specs.BasicBlocks;
@@ -27,23 +26,29 @@ public class KeySpec : PropSpec
 
         if (methodInfo == null && ctx.TryResolveType(expr, out type))
         {
+            expr = Expression.Convert(expr, type);
             methodInfo = type.GetKeyIndexer();
         }
 
         if (methodInfo == null)
-            throw new LambdaSpecException($"Indexer this[string key] not found in {type.Name} type definition.", this);
+            throw new SpecException($"Indexer this[string key] not found in {type.Name} type definition.", this);
 
         expr = Expression.Call(expr, methodInfo, Expression.Constant(Key));
         return expr;
     }
 
-    public override string ToString(string arg, SpecView view)
+    public override string ToString(string arg, SpecView view = SpecView.Default)
     {
         return view switch
         {
-            SpecView.Expr => Name == null ? $"{arg}[\"{Key}\"]" : $"{arg}.{Name.Capitalize()}[\"{Key}\"]",
-            SpecView.Plain => Name == null ? string.Join('_', arg, Key) : string.Join('_', arg, Name, Key),
-            _ => ToString()
+            SpecView.Expr => $"{base.ToString(arg, view)}[\"{Key}\"]",
+            SpecView.Plain => $"{base.ToString(arg, view)}_{Key}",
+            _ => $"{base.ToString(arg, view)}[{Key}]"
         };
+    }
+
+    public override string ToString()
+    {
+        return $"{nameof(KeySpec)} [{Key}]";
     }
 }

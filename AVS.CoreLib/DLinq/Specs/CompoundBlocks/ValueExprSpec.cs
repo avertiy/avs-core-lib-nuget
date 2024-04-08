@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using AVS.CoreLib.DLinq.Specs.BasicBlocks;
 using AVS.CoreLib.Expressions;
@@ -8,11 +9,11 @@ using AVS.CoreLib.Extensions.Reflection;
 namespace AVS.CoreLib.DLinq.Specs.CompoundBlocks;
 
 /// <summary>
-/// Represent lambda specification single value selector
+/// Represent a lambda specification single field (value) selector
 /// e.g. x => x.close or more complex: x => x.prop[0]['key1'].value 
 /// Contain one or more building blocks: <see cref="PropSpec"/>, <see cref="IndexSpec"/>, <see cref="KeySpec"/>
 /// </summary>
-public class ValueExpr1Spec : SpecBase
+public class ValueExprSpec : SpecBase
 {
     public List<ISpec> Parts { get; private set; } = new();
     public required Type ArgType { get; set; }
@@ -45,9 +46,9 @@ public class ValueExpr1Spec : SpecBase
         return expr;
     }
 
-    public override string ToString(string arg, SpecView view)
+    public override string ToString(string arg, SpecView view = SpecView.Default)
     {
-        var str = view == SpecView.Expr ? $"(({ArgType.GetReadableName()}){arg})" : arg;
+        var str = view == SpecView.Plain ? arg : $"(({ArgType.GetReadableName()}){arg})";
 
         for (var i = 0; i < Parts.Count; i++)
             str = Parts[i].ToString(str, view);
@@ -55,7 +56,7 @@ public class ValueExpr1Spec : SpecBase
         return str;
     }
 
-    public static ValueExpr1Spec Parse(string selectExpr, Type argType)
+    public static ValueExprSpec Parse(string selectExpr, Type argType)
     {
         var expr = selectExpr.TrimStart('.');
         var startInd = 0;
@@ -63,7 +64,7 @@ public class ValueExpr1Spec : SpecBase
         if (selectExpr.StartsWith("x."))
             startInd = 2;
 
-        var spec = new ValueExpr1Spec() { Raw = expr, ArgType = argType };
+        var spec = new ValueExprSpec() { Raw = expr, ArgType = argType };
         var ind = -1;
 
         for (var i = startInd; i < expr.Length; i++)

@@ -35,6 +35,7 @@ public class DLinqEngineTests
         catch (Exception ex)
         {
             var str = ex.ToString();
+            throw;
         }
     }
 
@@ -93,65 +94,126 @@ public class DLinqEngineTests
     }
 
     [TestMethod]
-    public void Engine_Should_Support_Where_Expressions()
+    public void Select_Multiple_Values_Should_Return_Object_Dictionary()
     {
-        try
+
+        // arrange
+        var dictItem = new Dictionary<string, long> { { "KeY#1", 10L }, { "kEy.123", 20L }, { "key@1", 30L } };
+        var listOfDict = new List<Dictionary<string, long>> { dictItem, dictItem };
+        var source = new[]
         {
-            // arrange
-            var dictItem1 = new Dictionary<string, long> { { "key1", 10L }, { "key2", 20L }, { "key3", 30L } };
-            var dictItem2 = new Dictionary<string, long> { { "key1", 15L }, { "key2", 20L }, { "key3", 30L } };
-            var listOfDict = new List<Dictionary<string, long>> { dictItem1, dictItem2 };
-            var source = new[] { new { Prop = listOfDict, Close =1 }, new { Prop = listOfDict, Close = 2 }, new { Prop = listOfDict, Close = 3 } };
+            new { Prop = listOfDict, Close = 1 }, new { Prop = listOfDict, Close = 2 },
+            new { Prop = listOfDict, Close = 3 }
+        };
 
-            //source.Select(x => XActivator.CreateValueDictionary(new []{"key1","key2"}, ((List<Dictionary<string, long>>)x.Prop)[0]["key1"]) );
+        // act
+        var result = _engine.Process(source, "prop[0][\"kEy.123\"],prop[1][KeY#1],close", null);
+        var list = result as List<IDictionary<string, object>>;
 
-            // act
-            var result = _engine.Process(source, "prop[0][key1],prop[1][key2],close WHERE prop[0][key1] > 10", null);
-            var list = result as List<IDictionary<string, object>>;
-
-            // assert
-            Assert.IsNotNull(list);
-            list.Count.Should().Be(3);
-            list[0].Keys.Count.Should().Be(3);
-            list[0].ContainsKey("kEy.123").Should().BeTrue();
-            list[0].ContainsKey("KeY#1").Should().BeTrue();
-            list[0].ContainsKey("Close").Should().BeTrue();
-            list[0]["KeY#1"].Should().Be(10L);
-            list[1]["close"].Should().Be(2);
-        }
-        catch (Exception ex)
-        {
-            var str = ex.ToString();
-        }
+        // assert
+        Assert.IsNotNull(list);
+        list.Count.Should().Be(3);
+        list[0].Keys.Count.Should().Be(3);
+        list[0].ContainsKey("kEy.123").Should().BeTrue();
+        list[0].ContainsKey("KeY#1").Should().BeTrue();
+        list[0].ContainsKey("close").Should().BeTrue();
+        list[0]["KeY#1"].Should().Be(10L);
+        list[1]["close"].Should().Be(2);
     }
 
     [TestMethod]
-    public void Select_Multiple_Values_Should_Return_Object_Dictionary()
+    public void Select_With_Where_Simple_Condition_Should_Work()
     {
-        try
-        {
-            // arrange
-            var dictItem = new Dictionary<string, long> { { "KeY#1", 10L }, { "kEy.123", 20L }, { "key@1", 30L } };
-            var listOfDict = new List<Dictionary<string, long>> { dictItem, dictItem };
-            var source = new[] { new { Prop = listOfDict, Close = 1 }, new { Prop = listOfDict, Close = 2 }, new { Prop = listOfDict, Close = 3 } };
 
-            // act
-            var result = _engine.Process(source, "prop[0][\"kEy.123\"],prop[1][KeY#1],close", null);
-            var list = result as List<IDictionary<string, object>>;
+        // arrange
+        var dict1 = new Dictionary<string, long> { { "key1", 10L }, { "key2", 20L }, { "key3", 30L } };
+        var dict2 = new Dictionary<string, long> { { "key1", 15L }, { "key2", 20L }, { "key3", 30L } };
 
-            // assert
-            Assert.IsNotNull(list);
-            list.Count.Should().Be(3);
-            list[0].Keys.Count.Should().Be(3);
-            list[0].ContainsKey("kEy.123").Should().BeTrue();
-            list[0].ContainsKey("KeY#1").Should().BeTrue();
-            list[0].ContainsKey("Close").Should().BeTrue();
-            list[0]["KeY#1"].Should().Be(10L);
-            list[1]["close"].Should().Be(2);
-        }
-        catch (Exception ex)
+        var source = new[]
         {
-            var str = ex.ToString();
-        }
+            new { Prop = dict1, Close = 1 }, new { Prop = dict2, Close = 2 }, new { Prop = dict2, Close = 3 }
+        };
+
+        // act
+        var result = _engine.Process(source, "prop[key1],close WHERE prop[key1] > 10", null);
+        var list = result as List<IDictionary<string, object>>;
+
+        // assert
+        Assert.IsNotNull(list);
+        list.Count.Should().Be(2);
+        list[0].Keys.Count.Should().Be(2);
+        list[0].ContainsKey("key1").Should().BeTrue();
+        list[0].ContainsKey("close").Should().BeTrue();
+        list[0]["key1"].Should().Be(15L);
+        list[0]["close"].Should().Be(2);
+        list[1]["key1"].Should().Be(15L);
+        list[1]["close"].Should().Be(3);
+
+    }
+
+    [TestMethod]
+    public void Select_With_Where_Value_Expression_Condition_Should_Work()
+    {
+
+        // arrange
+        var dict1 = new Dictionary<string, long> { { "key1", 10L }, { "key2", 20L }, { "key3", 30L } };
+        var dict2 = new Dictionary<string, long> { { "key1", 15L }, { "key2", 20L }, { "key3", 30L } };
+        var dict3 = new Dictionary<string, long> { { "key1", 25L }, { "key2", 20L }, { "key3", 30L } };
+        var listOfDict1 = new List<Dictionary<string, long>> { dict1, dict1 };
+        var listOfDict2 = new List<Dictionary<string, long>> { dict2, dict2 };
+        var listOfDict3 = new List<Dictionary<string, long>> { dict3, dict3 };
+        var source = new[]
+        {
+            new { Prop = listOfDict1, Close = 1 }, new { Prop = listOfDict2, Close = 2 },
+            new { Prop = listOfDict3, Close = 3 }
+        };
+
+
+        // act
+        var result = _engine.Process(source, "prop[0][key1],close WHERE prop[0][key1] > 10", null);
+        var list = result as List<IDictionary<string, object>>;
+
+        // assert
+        Assert.IsNotNull(list);
+        list.Count.Should().Be(2);
+        list[0].Keys.Count.Should().Be(2);
+        list[0].ContainsKey("key1").Should().BeTrue();
+        list[0].ContainsKey("close").Should().BeTrue();
+        list[0]["key1"].Should().Be(15L);
+        list[0]["close"].Should().Be(2);
+        list[1]["key1"].Should().Be(25L);
+        list[1]["close"].Should().Be(3);
+    }
+
+    [TestMethod]
+    public void Select_With_Where_Expression_Should_Work()
+    {
+
+        // arrange
+        var dict1 = new Dictionary<string, long> { { "key1", 10L }, { "key2", 2L }, { "key3", 30L } };
+        var dict2 = new Dictionary<string, long> { { "key1", 15L }, { "key2", 20L }, { "key3", 30L } };
+        var dict3 = new Dictionary<string, long> { { "key1", 25L }, { "key2", 200L }, { "key3", 30L } };
+        var listOfDict1 = new List<Dictionary<string, long>> { dict1, dict1 };
+        var listOfDict2 = new List<Dictionary<string, long>> { dict2, dict2 };
+        var listOfDict3 = new List<Dictionary<string, long>> { dict3, dict3 };
+        var source = new[]
+        {
+            new { Prop = listOfDict1, Close = 1 }, new { Prop = listOfDict2, Close = 2 },
+            new { Prop = listOfDict3, Close = 3 }
+        };
+
+
+        // act
+        var result = _engine.Process(source, "prop[0][key1],close WHERE prop[0][key1] > 10 AND prop[0][key2] >= 200", null);
+        var list = result as List<IDictionary<string, object>>;
+
+        // assert
+        Assert.IsNotNull(list);
+        list.Count.Should().Be(1);
+        list[0].Keys.Count.Should().Be(2);
+        list[0].ContainsKey("key1").Should().BeTrue();
+        list[0].ContainsKey("close").Should().BeTrue();
+        list[0]["key1"].Should().Be(25L);
+        list[0]["close"].Should().Be(3);
     }
 }

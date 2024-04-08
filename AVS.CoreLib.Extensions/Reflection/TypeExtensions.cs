@@ -295,7 +295,7 @@ namespace AVS.CoreLib.Extensions.Reflection
 
         public static bool IsNullable(this Type type)
         {
-            return type is { IsValueType: true, IsGenericType: true } && type.GetGenericTypeDefinition() == typeof(Nullable<>);
+            return type is { IsGenericType: true } && type.GetGenericTypeDefinition() == typeof(Nullable<>);
         }
 
         /// <summary>

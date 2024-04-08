@@ -25,7 +25,7 @@ public class CastSpec : SpecBase
         return Expression.Convert(expr, ArgType);
     }
 
-    public override string ToString(string arg, SpecView view)
+    public override string ToString(string arg, SpecView view = SpecView.Default)
     {
         return $"(({ArgType.GetReadableName()}){arg})";
     }

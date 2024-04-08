@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 using AVS.CoreLib.DLinq.Conditions;
-using AVS.CoreLib.DLinq.Specs.BasicBlocks;
+using AVS.CoreLib.DLinq.Specs.CompoundBlocks;
 
 namespace AVS.CoreLib.DLinq.Specs;
 
@@ -18,7 +18,7 @@ public abstract class SpecBase : ISpec
         return $"x => {ToString("x", SpecView.Expr)}";
     }
 
-    public abstract string ToString(string arg, SpecView view);
+    public abstract string ToString(string arg, SpecView view = SpecView.Default);
 
     public static LogicalSpec Combine(Op op, params ISpec[] specs)
     {

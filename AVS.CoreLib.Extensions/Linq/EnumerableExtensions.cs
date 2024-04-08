@@ -35,6 +35,7 @@ namespace AVS.CoreLib.Extensions.Linq
             return orderBy == Enums.Sort.Asc ? source.OrderBy(selector) : source.OrderByDescending(selector);
         }
 
+        //sometimes VS can't resolve a namespace, try to typing OrderBy2(..) it will help to resolve the namespace
         public static IEnumerable<T> OrderBy2<T, Key>(this IEnumerable<T> source, Func<T, Key> selector, Sort orderBy)
         {
             if (orderBy == Enums.Sort.None)

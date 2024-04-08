@@ -13,8 +13,7 @@ public interface ISpec
     string? Raw { get; set; }
     Expression BuildExpr(Expression expr, LambdaContext ctx);
     string GetBody();
-
-    string ToString(string arg, SpecView view);
+    string ToString(string arg, SpecView view = SpecView.Default);
 }
 
 public class LambdaContext

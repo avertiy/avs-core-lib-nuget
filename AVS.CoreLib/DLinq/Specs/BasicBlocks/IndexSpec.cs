@@ -31,23 +31,28 @@ public class IndexSpec : PropSpec
 
         if (methodInfo == null && ctx.TryResolveType(expr, out type))
         {
+            expr = Expression.Convert(expr, type);
             methodInfo = type.GetKeyIndexer();
         }
 
         if (methodInfo == null)
-            throw new LambdaSpecException($"Indexer this[int index] not found in {type.Name} type definition.", this);
+            throw new SpecException($"Indexer this[int index] not found in {type.Name} type definition.", this);
 
         expr = Expression.Call(expr, methodInfo, Expression.Constant(Index));
         return expr;
     }
 
-    public override string ToString(string arg, SpecView view)
+    public override string ToString(string arg, SpecView view = SpecView.Default)
     {
         return view switch
         {
-            SpecView.Expr => Name == null ? $"{arg}[{Index}]" : $"{arg}.{Name.Capitalize()}[{Index}]",
-            SpecView.Plain => Name == null ? string.Join('_', arg, Index.ToString()) : string.Join('_', arg, Name, Index.ToString()),
-            _ => ToString()
+            SpecView.Plain => $"{base.ToString(arg, view)}_{Index}",
+            _ =>  $"{base.ToString(arg, view)}[{Index}]"
         };
+    }
+
+    public override string ToString()
+    {
+        return $"{nameof(IndexSpec)} [{Index}]";
     }
 }

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
+using AVS.CoreLib.DLinq.Specs.CompoundBlocks;
 using AVS.CoreLib.Expressions;
 using AVS.CoreLib.Extensions.Reflection;
 
@@ -10,7 +10,18 @@ namespace AVS.CoreLib.DLinq.Specs;
 
 public static class SpecCompiler
 {
-    public static Func<IEnumerable<T>, IEnumerable> BuildFn<T>(ISpec spec, LambdaContext ctx)
+    public static Func<T, bool> BuildPredicate<T>(ISpec spec, LambdaContext ctx)
+    {
+        var paramExpr = Expression.Parameter(typeof(T), "x");
+        //bars.Select(x => ((IXBar)x).Prop, ((IBar1)x).ATR)
+        ctx.ParamExpr = paramExpr;
+        //ctx.ResolveTypeFn = resolveType;
+
+        var body = spec.BuildExpr(paramExpr, ctx);
+        return Lmbd.Compile<T, bool>(body, paramExpr);
+    }
+
+    public static Func<IEnumerable<T>, IEnumerable> BuildSelectFn<T>(ISpec spec, LambdaContext ctx)
     {
         try
         {
@@ -39,7 +50,7 @@ public static class SpecCompiler
         }
         catch (Exception ex)
         {
-            throw new DLinqException($"Can't build lambda  - {ex.Message}", ex);
+            throw new DLinqException($"Can't build lambda  - {ex.Message}", ex, spec);
         }
     }
 
@@ -64,5 +75,22 @@ public static class SpecCompiler
         }
 
         return Lmbd.Compile<IEnumerable<T>, IEnumerable>(body, sourceParam);
+    }
+
+    public static Func<T, TResult> BuildSelector<T, TResult>(ValueExprSpec spec, LambdaContext ctx)
+    {
+        try
+        {
+            var paramExpr = Expression.Parameter(typeof(T), "x");
+            ctx.ParamExpr = paramExpr;
+            var expr = spec.BuildExpr(paramExpr, ctx);
+            var lambdaExpr = Expression.Lambda(expr, paramExpr);
+
+            return Lmbd.Compile<T, TResult>(lambdaExpr, paramExpr);
+        }
+        catch (Exception ex)
+        {
+            throw new DLinqException($"Can't build selector - {ex.Message}", ex, spec);
+        }
     }
 }
