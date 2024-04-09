@@ -29,7 +29,7 @@ public class DLinqEngine
     private const string WHERE = "WHERE";
     private const string SKIP = "SKIP";
     private const string TAKE = "TAKE";
-    private const string SORT = "SORT";
+    private const string SORT = "ORDER BY";
     private static bool IsAny(string expr) => expr is "*" or ".*";
 
     public SelectMode Mode { get; set; } = SelectMode.ToList;
@@ -60,7 +60,7 @@ public class DLinqEngine
 
         // SORT
         if (parts[2].Length > 0)
-            src = SortBy(src, parts[2], type);
+            src = OrderBy(src, parts[2], type);
 
         // SKIP
         if (parts[3].Length > 0)
@@ -135,23 +135,23 @@ public class DLinqEngine
         return filtered;
     }
 
-    private IEnumerable<T> SortBy<T>(IEnumerable<T> source, string sortBy, Type targetType)
+    private IEnumerable<T> OrderBy<T>(IEnumerable<T> source, string orderByExpr, Type targetType)
     {
         // sortBy "close ASC"
-        var length = sortBy.Length;
+        var length = orderByExpr.Length;
         var sortDirection = Sort.None;
-        if (sortBy.EndsWith(" ASC", StringComparison.OrdinalIgnoreCase))
+        if (orderByExpr.EndsWith(" ASC", StringComparison.OrdinalIgnoreCase))
         {
             sortDirection = Sort.Asc;
             length -= 4;
         }
-        else if (sortBy.EndsWith(" DESC", StringComparison.OrdinalIgnoreCase))
+        else if (orderByExpr.EndsWith(" DESC", StringComparison.OrdinalIgnoreCase))
         {
             sortDirection = Sort.Desc;
             length -= 5;
         }
 
-        var orderByStr = sortBy.Substring(0, length);
+        var orderByStr = orderByExpr.Substring(0, length);
 
         var parts = orderByStr.Split(',', StringSplitOptions.RemoveEmptyEntries);
 

@@ -86,6 +86,23 @@ public static class LambdaBagExtensions
         return false;
     }
 
+    public static bool TryGetFunc<T1,T2, TResult>(this LambdaBag bag, string key, out Func<T1,T2, TResult>? func)
+    {
+        func = null;
+
+        if (!bag.ContainsKey(key))
+            return false;
+
+        if (bag[key] is Func<T1,T2, TResult> fn)
+        {
+            func = fn;
+            return true;
+        }
+
+        return false;
+    }
+
+
     public static Func<T, TResult> GetSelector<T, TResult>(this LambdaBag bag, PropertyInfo prop, Type? paramType)
     {
         var key = $"Func<{typeof(T).Name},{typeof(TResult).Name}>(x => x.{prop.Name}, type: {paramType?.Name})";

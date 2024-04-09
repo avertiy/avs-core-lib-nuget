@@ -27,29 +27,29 @@ namespace AVS.CoreLib.Extensions.Linq
             return res;
         }
 
-        public static IEnumerable<T> OrderBy<T, Key>(this IEnumerable<T> source, Func<T, Key> selector, Sort orderBy)
+        public static IEnumerable<T> OrderBy<T, Key>(this IEnumerable<T> source, Func<T, Key> selector, Sort direction)
         {
-            if (orderBy == Enums.Sort.None)
+            if (direction == Enums.Sort.None)
                 return source;
 
-            return orderBy == Enums.Sort.Asc ? source.OrderBy(selector) : source.OrderByDescending(selector);
+            return direction == Enums.Sort.Asc ? source.OrderBy(selector) : source.OrderByDescending(selector);
         }
 
         //sometimes VS can't resolve a namespace, try to typing OrderBy2(..) it will help to resolve the namespace
-        public static IEnumerable<T> OrderBy2<T, Key>(this IEnumerable<T> source, Func<T, Key> selector, Sort orderBy)
+        public static IEnumerable<T> OrderBy2<T, Key>(this IEnumerable<T> source, Func<T, Key> selector, Sort direction)
         {
-            if (orderBy == Enums.Sort.None)
+            if (direction == Enums.Sort.None)
                 return source;
 
-            return orderBy == Enums.Sort.Asc ? source.OrderBy(selector) : source.OrderByDescending(selector);
+            return direction == Enums.Sort.Asc ? source.OrderBy(selector) : source.OrderByDescending(selector);
         }
 
-        public static IEnumerable<T> ThenBy<T, Key>(this IOrderedEnumerable<T> source, Func<T, Key> selector, Sort orderBy)
+        public static IEnumerable<T> ThenBy<T, Key>(this IOrderedEnumerable<T> source, Func<T, Key> selector, Sort direction)
         {
-            if (orderBy == Enums.Sort.None)
+            if (direction == Enums.Sort.None)
                 return source;
 
-            return orderBy == Enums.Sort.Asc ? source.ThenBy(selector) : source.ThenByDescending(selector);
+            return direction == Enums.Sort.Asc ? source.ThenBy(selector) : source.ThenByDescending(selector);
         }
 
         public static IEnumerable<T> Limit<T>(this IEnumerable<T> source, int limit)

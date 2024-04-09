@@ -29,7 +29,7 @@ public class PropSpec : SpecBase
         }
 
         if (prop == null)
-            throw new SpecException($"Public {Name} property not found in {type.Name} type definition.", this);
+            throw new SpecException($"Property `{Name}` not found in {type.Name} type definition (property must be public).", this);
 
         var outputExpr = Expression.Property(expr, prop);
         return outputExpr;

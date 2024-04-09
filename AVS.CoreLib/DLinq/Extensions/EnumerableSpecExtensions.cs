@@ -71,41 +71,67 @@ internal static class EnumerableSpecExtensions
     public static IEnumerable<T> OrderBy<T>(this IEnumerable<T> source, ValueExprSpec spec, Sort direction, SelectMode mode = SelectMode.Default)
     {
         var ctx = new LambdaContext() { Mode = mode, Source = source };
-        var predicate = GetSelectorFn<T, dynamic>(spec, ctx);
+        var orderByFn = GetOrderByFn<T>(spec, ctx);
         try
         {
-            return source.OrderBy(predicate, direction);
+            return orderByFn.Invoke(source, direction);
         }
         catch (Exception ex)
         {
-            throw new DLinqException($"source.OrderBy({spec}) [mode: {mode}] failed - {ex.Message}", ex, spec);
+            throw new DLinqException($"source.OrderBy({spec}, {direction}) failed - {ex.Message}", ex, spec);
         }
+    }
+
+    private static Func<IEnumerable<T>, Sort, IEnumerable<T>> GetOrderByFn<T>(ValueExprSpec spec, LambdaContext ctx)
+    {
+        var key = $"OrderBy({spec.GetBody()}, direction) [mode: {ctx.Mode}]";
+        var bag = LambdaBag.Lambdas;
+
+        if (bag.TryGetFunc(key, out Func<IEnumerable<T>, Sort, IEnumerable<T>>? fn))
+            return fn!;
+
+        fn = SpecCompiler.BuildOrderByFn<T>(spec, ctx);
+        bag[key] = fn;
+        return fn;
     }
 
     public static IEnumerable<T> ThenBy<T>(this IOrderedEnumerable<T> source, ValueExprSpec spec, Sort direction, SelectMode mode = SelectMode.Default)
     {
         var ctx = new LambdaContext() { Mode = mode, Source = source };
-        var predicate = GetSelectorFn<T, dynamic>(spec, ctx);
+        var fn = GetThenByFn<T>(spec, ctx);
         try
         {
-            return source.ThenBy(predicate, direction);
+            return fn.Invoke(source, direction);
         }
         catch (Exception ex)
         {
-            throw new DLinqException($"source.OrderBy({spec}) [mode: {mode}] failed - {ex.Message}", ex, spec);
+            throw new DLinqException($"source.ThenBy({spec}, {direction}) failed - {ex.Message}", ex, spec);
         }
     }
 
-    private static Func<T, TKey> GetSelectorFn<T,TKey>(ValueExprSpec spec, LambdaContext ctx)
+    private static Func<IEnumerable<T>, Sort, IEnumerable<T>> GetThenByFn<T>(ValueExprSpec spec, LambdaContext ctx)
     {
-        var key = $"selector: {spec.GetBody()} [mode: {ctx.Mode}]";
+        var key = $"ThenBy({spec.GetBody()}, direction) [mode: {ctx.Mode}]";
         var bag = LambdaBag.Lambdas;
 
-        if (bag.TryGetFunc(key, out Func<T, TKey>? fn))
+        if (bag.TryGetFunc(key, out Func<IEnumerable<T>, Sort, IEnumerable<T>>? fn))
             return fn!;
 
-        fn = SpecCompiler.BuildSelector<T,TKey>(spec, ctx);
+        fn = SpecCompiler.BuildThenByFn<T>(spec, ctx);
         bag[key] = fn;
         return fn;
     }
+
+    //private static Func<T, TKey> GetSelectorFn<T,TKey>(ValueExprSpec spec, LambdaContext ctx)
+    //{
+    //    var key = $"selector: {spec.GetBody()} [mode: {ctx.Mode}]";
+    //    var bag = LambdaBag.Lambdas;
+
+    //    if (bag.TryGetFunc(key, out Func<T, TKey>? fn))
+    //        return fn!;
+
+    //    fn = SpecCompiler.BuildSelector<T,TKey>(spec, ctx);
+    //    bag[key] = fn;
+    //    return fn;
+    //}
 }

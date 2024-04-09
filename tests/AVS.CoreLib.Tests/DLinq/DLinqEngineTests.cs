@@ -216,4 +216,102 @@ public class DLinqEngineTests
         list[0]["key1"].Should().Be(25L);
         list[0]["close"].Should().Be(3);
     }
+
+    [TestMethod]
+    public void Select_With_OrderBy_Expression_Should_Work()
+    {
+
+        // arrange
+        var dict1 = new Dictionary<string, long> { { "key1", 10L }, { "key2", 2L }, { "key3", 30L } };
+        var dict2 = new Dictionary<string, long> { { "key1", 15L }, { "key2", 20L }, { "key3", 30L } };
+        var dict3 = new Dictionary<string, long> { { "key1", 25L }, { "key2", 200L }, { "key3", 30L } };
+        var listOfDict1 = new List<Dictionary<string, long>> { dict1, dict1 };
+        var listOfDict2 = new List<Dictionary<string, long>> { dict2, dict2 };
+        var listOfDict3 = new List<Dictionary<string, long>> { dict3, dict3 };
+        var source = new[]
+        {
+            new { Prop = listOfDict1, Close = 1 },
+            new { Prop = listOfDict2, Close = 2 },
+            new { Prop = listOfDict3, Close = 3 }
+        };
+
+        // act
+        var result = _engine.Process(source, "prop[0][key1] ORDER BY prop[0][key1] DESC", null);
+        var list = result as List<long>;
+
+        // assert
+        Assert.IsNotNull(list);
+        list.Count.Should().Be(3);
+        list[0].Should().Be(25L);
+        list[1].Should().Be(15L);
+        list[2].Should().Be(10L);
+    }
+
+    [TestMethod]
+    public void Select_With_OrderBy_And_ThenBy_Expression_Should_Work()
+    {
+
+        // arrange
+        var dict1 = new Dictionary<string, long> { { "key1", 10L }, { "key2", 2L }, { "key3", 5L } };
+        var dict2 = new Dictionary<string, long> { { "key1", 25L }, { "key2", 20L }, { "key3", 50L } };
+        var dict3 = new Dictionary<string, long> { { "key1", 25L }, { "key2", 200L }, { "key3", 15L } };
+        var dict4 = new Dictionary<string, long> { { "key1", 25L }, { "key2", 2000L }, { "key3", 500L } };
+        var list1 = new List<Dictionary<string, long>> { dict1, dict1 };
+        var list2 = new List<Dictionary<string, long>> { dict2, dict2 };
+        var list3 = new List<Dictionary<string, long>> { dict3, dict3 };
+        var list4 = new List<Dictionary<string, long>> { dict4, dict4 };
+        var source = new[]
+        {
+            new { Prop = list1, Close = 1 },
+            new { Prop = list2, Close = 2 },
+            new { Prop = list3, Close = 3 },
+            new { Prop = list4, Close = 4 }
+        };
+
+        // act
+        var result = _engine.Process(source, "prop[0][key2] ORDER BY prop[0][key1],prop[0][key3] DESC", null);
+        var list = result as List<long>;
+
+        // assert
+        Assert.IsNotNull(list);
+        list.Count.Should().Be(4);
+        list[0].Should().Be(2000L);
+        list[1].Should().Be(20L);
+        list[2].Should().Be(200L);
+        list[3].Should().Be(2L);
+    }
+
+    [TestMethod]
+    public void Select_With_Where_And_OrderBy_Expressions_Should_Work()
+    {
+
+        // arrange
+        var dict1 = new Dictionary<string, long> { { "key1", 10L }, { "key2", 2L }, { "key3", 100L } };
+        var dict2 = new Dictionary<string, long> { { "key1", 15L }, { "key2", 20L }, { "key3", 30L } };
+        var dict3 = new Dictionary<string, long> { { "key1", 25L }, { "key2", 200L }, { "key3", 3L } };
+        var listOfDict1 = new List<Dictionary<string, long>> { dict1, dict1 };
+        var listOfDict2 = new List<Dictionary<string, long>> { dict2, dict2 };
+        var listOfDict3 = new List<Dictionary<string, long>> { dict3, dict3 };
+        var source = new[]
+        {
+            new { Prop = listOfDict1, Close = 1 },
+            new { Prop = listOfDict2, Close = 2 },
+            new { Prop = listOfDict3, Close = 3 }
+        };
+
+        // act
+        var result = _engine.Process(source, "prop[0][key1],close WHERE prop[0][key2] > 2 ORDER BY  prop[0][key3] ASC", null);
+        var list = result as List<IDictionary<string, object>>;
+
+        // assert
+        Assert.IsNotNull(list);
+        list.Count.Should().Be(2);
+        list[0].Keys.Count.Should().Be(2);
+        list[0].ContainsKey("key1").Should().BeTrue();
+        list[0].ContainsKey("close").Should().BeTrue();
+        list[0]["key1"].Should().Be(25L);
+        list[0]["close"].Should().Be(3);
+        list[1]["key1"].Should().Be(15L);
+        list[1]["close"].Should().Be(2);
+    }
 }

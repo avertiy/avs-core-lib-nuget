@@ -1,26 +1,18 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using AVS.CoreLib.DLinq.Specs.CompoundBlocks;
 using AVS.CoreLib.Expressions;
+using AVS.CoreLib.Extensions.Enums;
 using AVS.CoreLib.Extensions.Reflection;
 
 namespace AVS.CoreLib.DLinq.Specs;
 
 public static class SpecCompiler
 {
-    public static Func<T, bool> BuildPredicate<T>(ISpec spec, LambdaContext ctx)
-    {
-        var paramExpr = Expression.Parameter(typeof(T), "x");
-        //bars.Select(x => ((IXBar)x).Prop, ((IBar1)x).ATR)
-        ctx.ParamExpr = paramExpr;
-        //ctx.ResolveTypeFn = resolveType;
-
-        var body = spec.BuildExpr(paramExpr, ctx);
-        return Lmbd.Compile<T, bool>(body, paramExpr);
-    }
-
+    #region BuildSelectFn
     public static Func<IEnumerable<T>, IEnumerable> BuildSelectFn<T>(ISpec spec, LambdaContext ctx)
     {
         try
@@ -28,31 +20,21 @@ public static class SpecCompiler
             var paramExpr = Expression.Parameter(typeof(T), "x");
             //bars.Select(x => ((IXBar)x).Prop, ((IBar1)x).ATR)
             ctx.ParamExpr = paramExpr;
-            ctx.ResolveTypeFn = resolveType;
+            ctx.ResolveTypeFn = e => ResolveType<T>(e, ctx);
 
             var expr = spec.BuildExpr(paramExpr, ctx);
             var lambdaExpr = Expression.Lambda(expr, paramExpr);
 
             var fn = CompileLambda<T>(lambdaExpr, ctx.Mode);
             return fn;
-
-            // when result type is object we can't look up nested props, this trick to resolve runtime type
-            Type? resolveType(Expression e)
-            {
-                var item = ctx.GetItem<T>();
-                if (item == null)
-                    return null;
-
-                var getValFn = Lmbd.Compile<T, object>(e, ctx.ParamExpr!);
-                var val = getValFn(item);
-                return val.GetType();
-            }
         }
         catch (Exception ex)
         {
             throw new DLinqException($"Can't build lambda  - {ex.Message}", ex, spec);
         }
     }
+
+    
 
     /// <summary>
     /// build lambda expr of the form:
@@ -75,6 +57,64 @@ public static class SpecCompiler
         }
 
         return Lmbd.Compile<IEnumerable<T>, IEnumerable>(body, sourceParam);
+    } 
+    #endregion
+
+    public static Func<IEnumerable<T>, Sort, IEnumerable<T>> BuildOrderByFn<T>(ValueExprSpec spec, LambdaContext ctx)
+    {
+        var type = typeof(T);
+        var paramExpr = Expression.Parameter(type, "x");
+
+        ctx.ParamExpr = paramExpr;
+        ctx.ResolveTypeFn = e => ResolveType<T>(e, ctx);
+
+        var expr = spec.BuildExpr(paramExpr, ctx);
+        var lambdaExpr = Expression.Lambda(expr, paramExpr);
+
+        var sourceParam = Expression.Parameter(typeof(IEnumerable<T>), "source");
+        var method = LinqHelper.GetOrderByMethodInfo(type, lambdaExpr.ReturnType);
+
+        var directionParam = Expression.Parameter(typeof(Sort), "direction");
+
+        var body = Expression.Call(null, method, sourceParam, lambdaExpr, directionParam);
+
+        return Lmbd.Compile<IEnumerable<T>, Sort, IEnumerable<T>>(body, sourceParam, directionParam);
+    }
+
+    public static Func<IEnumerable<T>, Sort, IEnumerable<T>> BuildThenByFn<T>(ValueExprSpec spec, LambdaContext ctx)
+    {
+        var type = typeof(T);
+        var paramExpr = Expression.Parameter(type, "x");
+
+        ctx.ParamExpr = paramExpr;
+        ctx.ResolveTypeFn = e => ResolveType<T>(e, ctx);
+
+        var expr = spec.BuildExpr(paramExpr, ctx);
+        var lambdaExpr = Expression.Lambda(expr, paramExpr);
+
+        var sourceParam = Expression.Parameter(typeof(IEnumerable<T>), "source");
+        var orderedSourceParam = Expression.Convert(sourceParam, typeof(IOrderedEnumerable<T>));
+
+        var method = LinqHelper.GetThenByMethodInfo(type, lambdaExpr.ReturnType);
+
+        var directionParam = Expression.Parameter(typeof(Sort), "direction");
+
+        var body = Expression.Call(null, method, orderedSourceParam, lambdaExpr, directionParam);
+
+        return Lmbd.Compile<IEnumerable<T>, Sort, IEnumerable<T>>(body, sourceParam, directionParam);
+    }
+    
+    public static Func<T, bool> BuildPredicate<T>(ISpec spec, LambdaContext ctx)
+    {
+        var paramExpr = Expression.Parameter(typeof(T), "x");
+        //bars.Select(x => ((IXBar)x).Prop, ((IBar1)x).ATR)
+        ctx.ParamExpr = paramExpr;
+        ctx.ResolveTypeFn = e => ResolveType<T>(e, ctx);
+
+        //ctx.ResolveTypeFn = resolveType;
+
+        var body = spec.BuildExpr(paramExpr, ctx);
+        return Lmbd.Compile<T, bool>(body, paramExpr);
     }
 
     public static Func<T, TResult> BuildSelector<T, TResult>(ValueExprSpec spec, LambdaContext ctx)
@@ -83,6 +123,7 @@ public static class SpecCompiler
         {
             var paramExpr = Expression.Parameter(typeof(T), "x");
             ctx.ParamExpr = paramExpr;
+            ctx.ResolveTypeFn = e => ResolveType<T>(e, ctx);
             var expr = spec.BuildExpr(paramExpr, ctx);
             var lambdaExpr = Expression.Lambda(expr, paramExpr);
 
@@ -92,5 +133,20 @@ public static class SpecCompiler
         {
             throw new DLinqException($"Can't build selector - {ex.Message}", ex, spec);
         }
+    }
+
+    /// <summary>
+    /// when ResultType of part of the expression is object, we can't pick nested props
+    /// pick first item of the source sequence and determine type from it
+    /// </summary>
+    private static Type? ResolveType<T>(Expression expr, LambdaContext ctx)
+    {
+        var item = ctx.GetItem<T>();
+        if (item == null)
+            return null;
+
+        var getValFn = Lmbd.Compile<T, object>(expr, ctx.ParamExpr!);
+        var val = getValFn(item);
+        return val.GetType();
     }
 }

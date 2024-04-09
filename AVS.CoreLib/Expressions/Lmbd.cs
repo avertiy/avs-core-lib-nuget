@@ -93,8 +93,29 @@ public static class Lmbd
 
     public static Func<T, TResult> Compile<T, TResult>(Expression expr, ParameterExpression paramExpr)
     {
-        var lambdaExpr = Expression.Lambda<Func<T, TResult>>(expr, paramExpr);
-        var fn = lambdaExpr.Compile();
-        return fn;
+        try
+        {
+            var lambdaExpr = Expression.Lambda<Func<T, TResult>>(expr, paramExpr);
+            var fn = lambdaExpr.Compile();
+            return fn;
+        }
+        catch (Exception ex)
+        {
+            throw;
+        }
+    }
+
+    public static Func<T1, T2, TResult> Compile<T1, T2, TResult>(Expression expr, ParameterExpression param1Expr, ParameterExpression param2Expr)
+    {
+        try
+        {
+            var lambdaExpr = Expression.Lambda<Func<T1, T2, TResult>>(expr, param1Expr, param2Expr);
+            var fn = lambdaExpr.Compile();
+            return fn;
+        }
+        catch (Exception ex)
+        {
+            throw;
+        }
     }
 }
