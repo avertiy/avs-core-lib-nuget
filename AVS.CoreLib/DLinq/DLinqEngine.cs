@@ -190,13 +190,13 @@ public class DLinqEngine
         var parts = selectExpr.Split(',');
 
         if (parts.Length == 1)
-            return ValueExprSpec.Parse(selectExpr, argType);
+            return ValueExprSpec.Parse(selectExpr.Trim(), argType);
 
         var spec = new MultiPropExprSpec(parts.Length) { Raw = selectExpr };
 
         foreach (var part in parts)
         {
-            var valueSpec = ValueExprSpec.Parse(part, argType);
+            var valueSpec = ValueExprSpec.Parse(part.Trim(), argType);
             spec.AddSmart(valueSpec);
         }
 
