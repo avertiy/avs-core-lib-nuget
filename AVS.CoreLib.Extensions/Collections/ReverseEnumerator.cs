@@ -5,10 +5,10 @@ namespace AVS.CoreLib.Collections;
 
 public class ReverseEnumerator<TItem> : IEnumerator<TItem>
 {
-    private readonly List<TItem> _items;
+    private readonly IList<TItem> _items;
     private int _currentIndex;
 
-    public ReverseEnumerator(List<TItem> items)
+    public ReverseEnumerator(IList<TItem> items)
     {
         _items = items;
         Reset();
@@ -20,16 +20,15 @@ public class ReverseEnumerator<TItem> : IEnumerator<TItem>
 
     public void Dispose()
     {
-        _items.Clear();
     }
 
     public bool MoveNext()
     {
-        return --_currentIndex >= 0;
+        return _currentIndex-- > 0;
     }
 
     public void Reset()
     {
-        _currentIndex = _items.Count;
+        _currentIndex = _items.Count-1;
     }
 }
