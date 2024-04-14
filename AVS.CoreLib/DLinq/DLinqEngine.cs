@@ -29,6 +29,7 @@ public class DLinqEngine
     private const string SKIP = "SKIP ";
     private const string TAKE = "TAKE ";
     private const string SORT = "ORDER BY ";
+    private const string AS = " AS ";
     private static bool IsAny(string expr) => expr is "*" or ".*";
 
     public SelectMode Mode { get; set; } = SelectMode.ToList;
@@ -167,19 +168,24 @@ public class DLinqEngine
         var valueExpr = parts[0].Trim();
         var spec = specs.ContainsKey(valueExpr) ? specs[valueExpr] :  ValueExprSpec.Parse(valueExpr, targetType);
 
-        var ordered = source.OrderBy(spec, sortDirection, Mode);
+        var enumerable = source.OrderBy(spec, sortDirection, Mode);
 
-        if (parts.Length > 1 && ordered is IOrderedEnumerable<T> orderedEnumerable)
+        if (parts.Length == 1) 
+            return enumerable;
+        
+        if (enumerable is IOrderedEnumerable<T> orderedEnumerable)
         {
-            for (var i = 1; i < parts.Length; i++)
+            for (var i =1; i < parts.Length; i++)
             {
                 valueExpr = parts[i].Trim();
                 spec = specs.ContainsKey(valueExpr) ? specs[valueExpr] : ValueExprSpec.Parse(valueExpr, targetType);
-                ordered = orderedEnumerable.ThenBy(spec, sortDirection, Mode);
+                orderedEnumerable = orderedEnumerable.ThenBy(spec, sortDirection, Mode);
             }
+
+            enumerable = orderedEnumerable;
         }
 
-        return ordered;
+        return enumerable;
     }
 
     private IEnumerable<T> Take<T>(IEnumerable<T> source, string takeExpr)
@@ -204,37 +210,7 @@ public class DLinqEngine
         var result = source.Select(spec, Mode);
         return result;
     }
-
-    private IEnumerable Select<T>(IEnumerable<T> source, string selectExpr, Type type)
-    {
-        if (selectExpr.IndexOf(',') == -1 && selectExpr.IndexOf(" as ", StringComparison.OrdinalIgnoreCase) == -1)
-        {
-            var spec = ValueExprSpec.Parse(selectExpr, type);
-            return source.Select(spec, Mode);
-        }
-
-        var specs = ParseSelectExpr(selectExpr, type);
-        return Select(source, specs);
-    }
-
-    //private ISpec ParseSelectExpr1(string selectExpr, Type argType)
-    //{
-    //    var parts = selectExpr.Split(',');
-
-    //    if (parts.Length == 1)
-    //        return ValueExprSpec.Parse(selectExpr.Trim(), argType);
-
-    //    var spec = new MultiPropExprSpec(parts.Length) { Raw = selectExpr };
-
-    //    foreach (var part in parts)
-    //    {
-    //        var valueSpec = ValueExprSpec.Parse(part.Trim(), argType);
-    //        spec.AddSmart(valueSpec);
-    //    }
-
-    //    return spec;
-    //}
-
+    
     private Dictionary<string, ValueExprSpec> ParseSelectExpr(string selectExpr, Type argType)
     {
         var parts = selectExpr.Split(',');
@@ -244,7 +220,7 @@ public class DLinqEngine
         for (var i = 0; i < parts.Length; i++)
         {
             var part = parts[i];
-            var ind = part.IndexOf(" as ", StringComparison.OrdinalIgnoreCase);
+            var ind = part.IndexOf(AS, StringComparison.InvariantCultureIgnoreCase);
             var exprStr = part;
             var alias = part;
 

@@ -81,7 +81,7 @@ public static class SpecCompiler
         return Lmbd.Compile<IEnumerable<T>, Sort, IEnumerable<T>>(body, sourceParam, directionParam);
     }
 
-    public static Func<IEnumerable<T>, Sort, IEnumerable<T>> BuildThenByFn<T>(ValueExprSpec spec, LambdaContext ctx)
+    public static Func<IOrderedEnumerable<T>, Sort, IOrderedEnumerable<T>> BuildThenByFn<T>(ValueExprSpec spec, LambdaContext ctx)
     {
         var type = typeof(T);
         var paramExpr = Expression.Parameter(type, "x");
@@ -92,16 +92,16 @@ public static class SpecCompiler
         var expr = spec.BuildExpr(paramExpr, ctx);
         var lambdaExpr = Expression.Lambda(expr, paramExpr);
 
-        var sourceParam = Expression.Parameter(typeof(IEnumerable<T>), "source");
-        var orderedSourceParam = Expression.Convert(sourceParam, typeof(IOrderedEnumerable<T>));
+        var sourceParam = Expression.Parameter(typeof(IOrderedEnumerable<T>), "source");
+        //var orderedSourceParam = Expression.Convert(sourceParam, typeof(IOrderedEnumerable<T>));
 
         var method = LinqHelper.GetThenByMethodInfo(type, lambdaExpr.ReturnType);
 
         var directionParam = Expression.Parameter(typeof(Sort), "direction");
 
-        var body = Expression.Call(null, method, orderedSourceParam, lambdaExpr, directionParam);
+        var body = Expression.Call(null, method, sourceParam, lambdaExpr, directionParam);
 
-        return Lmbd.Compile<IEnumerable<T>, Sort, IEnumerable<T>>(body, sourceParam, directionParam);
+        return Lmbd.Compile<IOrderedEnumerable<T>, Sort, IOrderedEnumerable<T>>(body, sourceParam, directionParam);
     }
     
     public static Func<T, bool> BuildPredicate<T>(ISpec spec, LambdaContext ctx)

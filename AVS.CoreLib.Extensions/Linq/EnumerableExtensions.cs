@@ -44,7 +44,7 @@ namespace AVS.CoreLib.Extensions.Linq
             return direction == Enums.Sort.Asc ? source.OrderBy(selector) : source.OrderByDescending(selector);
         }
 
-        public static IEnumerable<T> ThenBy<T, Key>(this IOrderedEnumerable<T> source, Func<T, Key> selector, Sort direction)
+        public static IOrderedEnumerable<T> ThenBy<T, Key>(this IOrderedEnumerable<T> source, Func<T, Key> selector, Sort direction)
         {
             if (direction == Enums.Sort.None)
                 return source;

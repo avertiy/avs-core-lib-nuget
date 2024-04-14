@@ -95,7 +95,7 @@ internal static class EnumerableSpecExtensions
         return fn;
     }
 
-    public static IEnumerable<T> ThenBy<T>(this IOrderedEnumerable<T> source, ValueExprSpec spec, Sort direction, SelectMode mode = SelectMode.Default)
+    public static IOrderedEnumerable<T> ThenBy<T>(this IOrderedEnumerable<T> source, ValueExprSpec spec, Sort direction, SelectMode mode = SelectMode.Default)
     {
         var ctx = new LambdaContext() { Mode = mode, Source = source };
         var fn = GetThenByFn<T>(spec, ctx);
@@ -109,12 +109,12 @@ internal static class EnumerableSpecExtensions
         }
     }
 
-    private static Func<IEnumerable<T>, Sort, IEnumerable<T>> GetThenByFn<T>(ValueExprSpec spec, LambdaContext ctx)
+    private static Func<IOrderedEnumerable<T>, Sort, IOrderedEnumerable<T>> GetThenByFn<T>(ValueExprSpec spec, LambdaContext ctx)
     {
         var key = $"ThenBy({spec.GetBody()}, direction) [mode: {ctx.Mode}]";
         var bag = LambdaBag.Lambdas;
 
-        if (bag.TryGetFunc(key, out Func<IEnumerable<T>, Sort, IEnumerable<T>>? fn))
+        if (bag.TryGetFunc(key, out Func<IOrderedEnumerable<T>, Sort, IOrderedEnumerable<T>>? fn))
             return fn!;
 
         fn = SpecCompiler.BuildThenByFn<T>(spec, ctx);

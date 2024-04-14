@@ -60,7 +60,7 @@ public static class LinqHelper
         return method;
     }
 
-    private static IEnumerable<T> ThenBy<T, TKey>(IOrderedEnumerable<T> source, Func<T, TKey> selector, Sort direction)
+    private static IOrderedEnumerable<T> ThenBy<T, TKey>(IOrderedEnumerable<T> source, Func<T, TKey> selector, Sort direction)
     {
         return source.ThenBy(selector, direction);
     }
