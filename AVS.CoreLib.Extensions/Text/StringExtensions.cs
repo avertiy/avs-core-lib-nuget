@@ -213,7 +213,7 @@ namespace AVS.CoreLib.Extensions
             return str.IndexOfAny(anyOf);
         }
 
-        public static int IndexOfAny(this string? str, int startIndex, IEnumerable<string> values)
+        public static int IndexOfAny(this string? str, int startIndex, IEnumerable<string> values, StringComparison comparison = StringComparison.InvariantCulture)
         {
             if (str == null)
             {
@@ -223,7 +223,7 @@ namespace AVS.CoreLib.Extensions
             var minIndex = str.Length;
             foreach (var value in values)
             {
-                var index = str.IndexOf(value, startIndex, StringComparison.Ordinal);
+                var index = str.IndexOf(value, startIndex, comparison);
                 if (index >= 0 && index < minIndex)
                 {
                     minIndex = index;

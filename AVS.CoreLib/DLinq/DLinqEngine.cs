@@ -25,10 +25,10 @@ namespace AVS.CoreLib.DLinq;
 /// </summary>
 public class DLinqEngine
 {
-    private const string WHERE = "WHERE";
-    private const string SKIP = "SKIP";
-    private const string TAKE = "TAKE";
-    private const string SORT = "ORDER BY";
+    private const string WHERE = "WHERE ";
+    private const string SKIP = "SKIP ";
+    private const string TAKE = "TAKE ";
+    private const string SORT = "ORDER BY ";
     private static bool IsAny(string expr) => expr is "*" or ".*";
 
     public SelectMode Mode { get; set; } = SelectMode.ToList;
@@ -91,7 +91,7 @@ public class DLinqEngine
     private string[] SplitQuery(string query)
     {
         var keywords = new[] { WHERE, SORT, SKIP, TAKE };
-        var startIndex = query.IndexOfAny(0, keywords);
+        var startIndex = query.IndexOfAny(0, keywords, StringComparison.InvariantCultureIgnoreCase);
 
         // just a select statement
         if (startIndex == -1)
@@ -109,7 +109,7 @@ public class DLinqEngine
         for (var i = 0; i < keywords.Length; i++)
         {
             var keyword = keywords[i];
-            var index = query.IndexOf(keyword, startIndex, StringComparison.Ordinal);
+            var index = query.IndexOf(keyword, startIndex, StringComparison.InvariantCultureIgnoreCase);
 
             if (index == -1)
             {
@@ -119,7 +119,7 @@ public class DLinqEngine
 
             if (index == startIndex)
             {
-                index += keyword.Length+1;
+                index += keyword.Length;
                 var nextInd = i + 1 < keywords.Length ? query.IndexOfAny(index, keywords.Skip(1)) : -1;
 
 
