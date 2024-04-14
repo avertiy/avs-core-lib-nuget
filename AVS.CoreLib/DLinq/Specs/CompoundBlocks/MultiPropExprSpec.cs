@@ -24,6 +24,22 @@ public class MultiPropExprSpec : SpecBase
         Items = new(capacity);
     }
 
+    public MultiPropExprSpec(IDictionary<string, ValueExprSpec> dict)
+    {
+        Items = new(dict.Count);
+
+        foreach (var kp in dict)
+        {
+            var key = ShortenKey(kp.Key);
+
+            if (ContainsKey(key))
+                key = ResolveKeyCollision(key);
+
+            Items.Add(key, kp.Value);
+        }
+        
+    }
+
     #region Add Key & spec
     public bool ContainsKey(string key)
     {
@@ -46,19 +62,43 @@ public class MultiPropExprSpec : SpecBase
         if (key.Length < 6)
             return key;
 
-        var parts = key.Split('_');
+        var str = key;
+        string[]? parts = null;
 
+        var ind = str.LastIndexOf(']');
+        
+        if (ind > -1)
+        {
+            if (ind < str.Length - 2)
+            {
+                //prop[0].prop1.prop2
+                str = str.Substring(ind+1);
+                parts = str.Split('.', StringSplitOptions.RemoveEmptyEntries);
+            }
+            else
+            {
+                parts = str.Split('[', ']').Select(x => x.Trim('"')).Where(x => x.Length > 0).ToArray();
+            }
+        }else if (str.Contains('.'))
+        {
+            parts = str.Split('.', StringSplitOptions.RemoveEmptyEntries);
+        }
+        else
+        {
+            parts = str.Split('_', StringSplitOptions.RemoveEmptyEntries);
+        }
+        
         if (parts.Length == 1)
-            return key;
+            return parts[0];
 
-        var ind = Array.FindLastIndex(parts, x => char.IsLetter(x[0]));
+        ind = Array.FindLastIndex(parts, x => char.IsLetter(x[0]));
 
         if (ind == -1)
-            return key;
+            return str;
 
         if (ind > 0)
         {
-            var str = parts[ind].ToLowerInvariant();
+            str = parts[ind].ToLowerInvariant();
             if (str.Either("value", "item", "props"))
                 ind--;
         }

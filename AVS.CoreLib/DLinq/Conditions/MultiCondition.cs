@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AVS.CoreLib.DLinq.Specs;
+using AVS.CoreLib.DLinq.Specs.CompoundBlocks;
 using AVS.CoreLib.Guards;
 
 namespace AVS.CoreLib.DLinq.Conditions;
@@ -31,9 +32,9 @@ public record MultiCondition : ICondition
         return $"({string.Join($" {Op} ", Items)})";
     }
 
-    public ISpec GetSpec(Type type)
+    public ISpec GetSpec(Type type, Dictionary<string, ValueExprSpec> specs)
     {
-        var specs = Items.Select(x => x.GetSpec(type)).ToArray();
-        return SpecBase.Combine(Op, specs);
+        var items = Items.Select(x => x.GetSpec(type, specs)).ToArray();
+        return SpecBase.Combine(Op, items);
     }
 }

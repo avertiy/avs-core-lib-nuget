@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using AVS.CoreLib.DLinq.Conditions;
 using AVS.CoreLib.DLinq.Extensions;
-using AVS.CoreLib.DLinq.Specs;
 using AVS.CoreLib.DLinq.Specs.CompoundBlocks;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Enums;
@@ -45,22 +44,32 @@ public class DLinqEngine
         var q = query.Trim();
 
         if (ind == -1)
+        {
             //select statement only
-            return Select(source, q, type);
+            if (q.IndexOf(',') == -1)
+            {
+                var spec = ValueExprSpec.Parse(q, type);
+                return source.Select(spec, Mode);
+            }
 
+            var specs = ParseSelectExpr(q, type);
+            return Select(source, specs);
+        }
 
         //close WHERE close > 10000 SKIP 10 TAKE 2
-
         var parts = SplitQuery(q);
 
         var src = source;
+        // Parse SELECT expr
+        var specsDict = ParseSelectExpr(parts[0], type);
+
         // WHERE
         if (parts[1].Length > 0)
-            src = Where(src, parts[1], type);
+            src = Where(src, parts[1], type, specsDict);
 
-        // SORT
+        // ORDER BY
         if (parts[2].Length > 0)
-            src = OrderBy(src, parts[2], type);
+            src = OrderBy(src, parts[2], type, specsDict);
 
         // SKIP
         if (parts[3].Length > 0)
@@ -70,7 +79,7 @@ public class DLinqEngine
         if (parts[4].Length > 0)
             src = Take(src, parts[4]);
 
-        return Select(src, parts[0], type);
+        return Select(src, specsDict);
     }
 
     /// <summary>
@@ -88,12 +97,12 @@ public class DLinqEngine
         if (startIndex == -1)
         {
             var res = new string [keywords.Length];
-            res[0] = query;
+            res[0] = query.Trim();
             return res;
         }
 
         var selectExpr = startIndex > 0 ? query.Substring(0, startIndex) : string.Empty;
-        var list = new List<string>(keywords.Length + 1) { selectExpr.TrimEnd() };
+        var list = new List<string>(keywords.Length + 1) { selectExpr.Trim() };
 
         //query: close SKIP 10 TAKE 5 => [] { "close", "", "10", "5"}
 
@@ -127,15 +136,15 @@ public class DLinqEngine
         return list.ToArray();
     }
     
-    private IEnumerable<T> Where<T>(IEnumerable<T> source, string whereExpr, Type targetType)
+    private IEnumerable<T> Where<T>(IEnumerable<T> source, string whereExpr, Type targetType, Dictionary<string, ValueExprSpec> specs)
     {
         var condition = ConditionParser.Parse(whereExpr);
-        var spec = condition.GetSpec(targetType);
+        var spec = condition.GetSpec(targetType, specs);
         var filtered = source.Where(spec, Mode);
         return filtered;
     }
 
-    private IEnumerable<T> OrderBy<T>(IEnumerable<T> source, string orderByExpr, Type targetType)
+    private IEnumerable<T> OrderBy<T>(IEnumerable<T> source, string orderByExpr, Type targetType, Dictionary<string, ValueExprSpec> specs)
     {
         // sortBy "close ASC"
         var length = orderByExpr.Length;
@@ -155,14 +164,19 @@ public class DLinqEngine
 
         var parts = orderByStr.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
-        var spec = ValueExprSpec.Parse(parts[0], targetType);
+        var valueExpr = parts[0].Trim();
+        var spec = specs.ContainsKey(valueExpr) ? specs[valueExpr] :  ValueExprSpec.Parse(valueExpr, targetType);
 
         var ordered = source.OrderBy(spec, sortDirection, Mode);
 
         if (parts.Length > 1 && ordered is IOrderedEnumerable<T> orderedEnumerable)
         {
-            spec = ValueExprSpec.Parse(parts[1], targetType);
-            ordered = orderedEnumerable.ThenBy(spec, sortDirection, Mode);
+            for (var i = 1; i < parts.Length; i++)
+            {
+                valueExpr = parts[i].Trim();
+                spec = specs.ContainsKey(valueExpr) ? specs[valueExpr] : ValueExprSpec.Parse(valueExpr, targetType);
+                ordered = orderedEnumerable.ThenBy(spec, sortDirection, Mode);
+            }
         }
 
         return ordered;
@@ -178,28 +192,77 @@ public class DLinqEngine
         return int.TryParse(skipExpr, out var skip) ? source.Skip(skip) : source;
     }
 
-    private IEnumerable Select<T>(IEnumerable<T> source, string selectExpr, Type argType)
+    private IEnumerable Select<T>(IEnumerable<T> source, Dictionary<string, ValueExprSpec> specs)
     {
-        var spec = ParseSelectExpr1(selectExpr, argType);
+        if (specs.Count == 0)
+            return source;
+
+        if (specs.Count == 1)
+            return source.Select(specs.First().Value, Mode);
+
+        var spec = new MultiPropExprSpec(specs);
         var result = source.Select(spec, Mode);
         return result;
     }
 
-    private ISpec ParseSelectExpr1(string selectExpr, Type argType)
+    private IEnumerable Select<T>(IEnumerable<T> source, string selectExpr, Type type)
+    {
+        if (selectExpr.IndexOf(',') == -1 && selectExpr.IndexOf(" as ", StringComparison.OrdinalIgnoreCase) == -1)
+        {
+            var spec = ValueExprSpec.Parse(selectExpr, type);
+            return source.Select(spec, Mode);
+        }
+
+        var specs = ParseSelectExpr(selectExpr, type);
+        return Select(source, specs);
+    }
+
+    //private ISpec ParseSelectExpr1(string selectExpr, Type argType)
+    //{
+    //    var parts = selectExpr.Split(',');
+
+    //    if (parts.Length == 1)
+    //        return ValueExprSpec.Parse(selectExpr.Trim(), argType);
+
+    //    var spec = new MultiPropExprSpec(parts.Length) { Raw = selectExpr };
+
+    //    foreach (var part in parts)
+    //    {
+    //        var valueSpec = ValueExprSpec.Parse(part.Trim(), argType);
+    //        spec.AddSmart(valueSpec);
+    //    }
+
+    //    return spec;
+    //}
+
+    private Dictionary<string, ValueExprSpec> ParseSelectExpr(string selectExpr, Type argType)
     {
         var parts = selectExpr.Split(',');
 
-        if (parts.Length == 1)
-            return ValueExprSpec.Parse(selectExpr.Trim(), argType);
+        var specs = new Dictionary<string, ValueExprSpec>(parts.Length);
 
-        var spec = new MultiPropExprSpec(parts.Length) { Raw = selectExpr };
-
-        foreach (var part in parts)
+        for (var i = 0; i < parts.Length; i++)
         {
-            var valueSpec = ValueExprSpec.Parse(part.Trim(), argType);
-            spec.AddSmart(valueSpec);
+            var part = parts[i];
+            var ind = part.IndexOf(" as ", StringComparison.OrdinalIgnoreCase);
+            var exprStr = part;
+            var alias = part;
+
+            if (ind > -1)
+            {
+                exprStr = part.Substring(0, ind).Trim();
+                alias = part.Substring(ind + 1).Trim();
+            }
+
+            if (specs.ContainsKey(alias))
+            {
+                alias = alias + "_" + i; //avoid collision
+            }
+
+            var spec = ValueExprSpec.Parse(exprStr, argType);
+            specs.Add(alias, spec);
         }
 
-        return spec;
+        return specs;
     }
 }

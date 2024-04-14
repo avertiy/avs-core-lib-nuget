@@ -63,6 +63,9 @@ public class DefaultParser : IParser
         
         if (type.IsValueType)
         {
+            if (type == typeof(decimal))
+                return decimal.TryParse(input, out var dec) ? (object?) dec : null;
+
             if (type == typeof(DateTime))
                 return DateTime.TryParse(input, out var dateTime) ? dateTime : null;
 
@@ -106,10 +109,7 @@ public class DefaultParser : IParser
     {
         if (type == typeof(int))
             return int.TryParse(input, out var i) ? i : null;
-
-        if (type == typeof(decimal))
-            return decimal.TryParse(input, out var dec) ? dec : null;
-
+        
         if (type == typeof(double))
             return double.TryParse(input, out var d) ? d : null;
 

@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using AVS.CoreLib.DLinq.Specs;
+using AVS.CoreLib.DLinq.Specs.CompoundBlocks;
 using AVS.CoreLib.DLinq.Specs.Conditioning;
 
 namespace AVS.CoreLib.DLinq.Conditions;
@@ -7,7 +9,7 @@ namespace AVS.CoreLib.DLinq.Conditions;
 
 public interface ICondition
 {
-    ISpec GetSpec(Type type);
+    ISpec GetSpec(Type type, Dictionary<string, ValueExprSpec> specs);
 }
 
 public partial class Condition : ICondition
@@ -26,9 +28,9 @@ public partial class Condition : ICondition
         return Expr;
     }
 
-    public ISpec GetSpec(Type type)
+    public ISpec GetSpec(Type type, Dictionary<string, ValueExprSpec> specs)
     {
-        return ConditionSpec.Parse(Expr, type);
+        return ConditionSpec.Parse(Expr, type, specs);
     }
 }
 

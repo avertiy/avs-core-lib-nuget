@@ -35,6 +35,9 @@ public static class Expr
 
     public static TryExpression WrapInTryCatch(Expression expr)
     {
+        if (expr.NodeType == ExpressionType.Try)
+            return (TryExpression)expr;
+
         TryExpression tryExpr;
         if (expr.Type == typeof(void))
             tryExpr = Expression.TryCatch(

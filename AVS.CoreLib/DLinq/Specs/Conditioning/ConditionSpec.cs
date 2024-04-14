@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using AVS.CoreLib.DLinq.Specs.CompoundBlocks;
 using AVS.CoreLib.Expressions;
@@ -39,7 +40,7 @@ public class ConditionSpec : SpecBase
         return $"{Value.ToString(arg, view)} {Comparison.ToString(arg, view)}";
     }
 
-    public static ConditionSpec Parse(string expr, Type argType)
+    public static ConditionSpec Parse(string expr, Type argType, Dictionary<string, ValueExprSpec> specs)
     {
         Guard.Against.NullOrEmpty(expr);
 
@@ -49,7 +50,9 @@ public class ConditionSpec : SpecBase
             throw new DLinqException($"Invalid syntax `{expr}` - condition expression might have at least 3 parts");
 
         var compSpec = ComparisonSpec.Parse(parts[1], parts[2]);
-        var valueSpec = ValueExprSpec.Parse(parts[0], argType);
+
+        var valueExpr = parts[0].Trim();
+        var valueSpec = specs.ContainsKey(valueExpr) ? specs[valueExpr] : ValueExprSpec.Parse(valueExpr, argType);
         var spec = new ConditionSpec(valueSpec, compSpec);
         return spec;
     }
