@@ -15,8 +15,10 @@ namespace AVS.CoreLib.DLinq.Specs.CompoundBlocks;
 /// </summary>
 public class ValueExprSpec : SpecBase
 {
-    public List<ISpec> Parts { get; private set; } = new();
+    public List<PropSpec> Parts { get; private set; } = new();
     public required Type ArgType { get; set; }
+
+    public Type? ReturnType { get; set; }
 
     public bool IsEmpty => Parts.Count == 0;
 
@@ -40,6 +42,9 @@ public class ValueExprSpec : SpecBase
         for (var i = 0; i < Parts.Count; i++)
             expr = Parts[i].BuildExpr(expr, ctx);
 
+        if(ReturnType != null)
+            expr = Expression.Convert(expr, ReturnType);
+
         if (ctx.Mode.HasFlag(SelectMode.Safe))
             expr = Expr.WrapInTryCatch(expr);
 
@@ -48,7 +53,8 @@ public class ValueExprSpec : SpecBase
 
     public override string ToString(string arg, SpecView view = SpecView.Default)
     {
-        var str = view == SpecView.Plain ? arg : $"(({ArgType.GetReadableName()}){arg})";
+        //var str = view == SpecView.Plain ? arg : $"(({ArgType.GetReadableName()}){arg})";
+        var str = $"(({ArgType.GetReadableName()}){arg})";
 
         for (var i = 0; i < Parts.Count; i++)
             str = Parts[i].ToString(str, view);

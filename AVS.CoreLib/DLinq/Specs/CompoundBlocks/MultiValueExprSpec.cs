@@ -15,16 +15,16 @@ namespace AVS.CoreLib.DLinq.Specs.CompoundBlocks;
 /// Contain one or more building blocks: <see cref="PropSpec"/>, <see cref="IndexSpec"/>, <see cref="KeySpec"/>, <see cref="ValueExprSpec"/>
 /// </summary>
 
-public class MultiPropExprSpec : SpecBase
+public class MultiValueExprSpec : SpecBase
 {
     private Dictionary<string, ValueExprSpec> Items { get; set; }
 
-    public MultiPropExprSpec(int capacity)
+    public MultiValueExprSpec(int capacity)
     {
         Items = new(capacity);
     }
 
-    public MultiPropExprSpec(IDictionary<string, ValueExprSpec> dict)
+    public MultiValueExprSpec(IDictionary<string, ValueExprSpec> dict)
     {
         Items = new(dict.Count);
 
@@ -48,13 +48,22 @@ public class MultiPropExprSpec : SpecBase
 
     public void AddSmart(ValueExprSpec item)
     {
-        var key = item.ToString(string.Empty, SpecView.Plain).Trim('_');
-        var str = ShortenKey(key);
+        var parts = item.Parts.Select(x => x.GetKey()).ToArray();
 
-        if (ContainsKey(str))
-            str = ResolveKeyCollision(str);
+        var key = parts[0];
 
-        Items.Add(str, item);
+        if (parts.Length > 1)
+        {
+            var ind = Array.FindLastIndex(parts, x => char.IsLetter(x[0]));
+            if (ind > 0 && parts[ind].ToLowerInvariant().Either("value", "item", "props"))
+                ind--;
+            key = string.Join('_', parts.Skip(ind));
+        }
+
+        if (ContainsKey(key))
+            key = ResolveKeyCollision(key);
+
+        Items.Add(key, item);
     }
 
     private static string ShortenKey(string key)
@@ -79,14 +88,14 @@ public class MultiPropExprSpec : SpecBase
             {
                 parts = str.Split('[', ']').Select(x => x.Trim('"')).Where(x => x.Length > 0).ToArray();
             }
-        }else if (str.Contains('.'))
+        }else// if (str.Contains('.'))
         {
             parts = str.Split('.', StringSplitOptions.RemoveEmptyEntries);
         }
-        else
-        {
-            parts = str.Split('_', StringSplitOptions.RemoveEmptyEntries);
-        }
+        //else
+        //{
+        //    parts = str.Split('_', StringSplitOptions.RemoveEmptyEntries);
+        //}
         
         if (parts.Length == 1)
             return parts[0];

@@ -68,6 +68,7 @@ internal static class EnumerableSpecExtensions
         return fn;
     }
 
+    #region OrderBy & ThenBy
     public static IEnumerable<T> OrderBy<T>(this IEnumerable<T> source, ValueExprSpec spec, Sort direction, SelectMode mode = SelectMode.Default)
     {
         var ctx = new LambdaContext() { Mode = mode, Source = source };
@@ -121,17 +122,32 @@ internal static class EnumerableSpecExtensions
         bag[key] = fn;
         return fn;
     }
+    #endregion
 
-    //private static Func<T, TKey> GetSelectorFn<T,TKey>(ValueExprSpec spec, LambdaContext ctx)
-    //{
-    //    var key = $"selector: {spec.GetBody()} [mode: {ctx.Mode}]";
-    //    var bag = LambdaBag.Lambdas;
+    public static decimal Aggregate<T>(this IEnumerable<T> source, ValueExprSpec spec, AggregateFn fn, SelectMode mode = SelectMode.Default)
+    {
+        var ctx = new LambdaContext() { Mode = mode, Source = source };
+        var selector = GetSelectorFn<T, decimal>(spec, ctx);
+        try
+        {
+            return source.Aggregate(selector, fn);
+        }
+        catch (Exception ex)
+        {
+            throw new DLinqException($"source.Aggregate({spec}, {fn}) failed - {ex.Message}", ex, spec);
+        }
+    }
 
-    //    if (bag.TryGetFunc(key, out Func<T, TKey>? fn))
-    //        return fn!;
+    private static Func<T, TKey> GetSelectorFn<T, TKey>(ValueExprSpec spec, LambdaContext ctx)
+    {
+        var key = $"selector: {spec.GetBody()} [mode: {ctx.Mode}]";
+        var bag = LambdaBag.Lambdas;
 
-    //    fn = SpecCompiler.BuildSelector<T,TKey>(spec, ctx);
-    //    bag[key] = fn;
-    //    return fn;
-    //}
+        if (bag.TryGetFunc(key, out Func<T, TKey>? fn))
+            return fn!;
+
+        fn = SpecCompiler.BuildSelector<T, TKey>(spec, ctx);
+        bag[key] = fn;
+        return fn;
+    }
 }

@@ -30,6 +30,12 @@ public class DLinqEngine
     private const string TAKE = "TAKE ";
     private const string SORT = "ORDER BY ";
     private const string AS = " AS ";
+
+    private const string MAX = "MAX(";
+    private const string MIN = "MIN(";
+    private const string AVG = "AVG(";
+    private const string SUM = "SUM(";
+
     private static bool IsAny(string expr) => expr is "*" or ".*";
 
     public SelectMode Mode { get; set; } = SelectMode.ToList;
@@ -40,47 +46,98 @@ public class DLinqEngine
             return source;
 
         var type = targetType ?? typeof(T);
-        var ind = query.IndexOf(' ');
-
         var q = query.Trim();
 
-        if (ind == -1)
+        var queryType = GetQueryType(q);
+
+        switch (queryType)
         {
-            //select statement only
-            if (q.IndexOf(',') == -1)
+            case DLinqType.ValueExpr:
+                return ProcessSingleValueExpr(source, type, q);
+            case DLinqType.MultiValueExpr:
+                return ProcessMultiValueExpr(source, type, q);
+            case DLinqType.Default:
+            default:
             {
-                var spec = ValueExprSpec.Parse(q, type);
-                return source.Select(spec, Mode);
+                //close WHERE close > 10000 SKIP 10 TAKE 2
+                var parts = SplitQuery(q);
+
+                var src = source;
+                // Parse SELECT expr
+                var specsDict = ParseSelectExpr(parts[0], type);
+
+                // WHERE
+                if (parts[1].Length > 0)
+                    src = Where(src, parts[1], type, specsDict);
+
+                // ORDER BY
+                if (parts[2].Length > 0)
+                    src = OrderBy(src, parts[2], type, specsDict);
+
+                // SKIP
+                if (parts[3].Length > 0)
+                    src = Skip(src, parts[3]);
+
+                // TAKE
+                if (parts[4].Length > 0)
+                    src = Take(src, parts[4]);
+
+                return Select(src, specsDict);
+            }
+        }
+    }
+
+    private IEnumerable ProcessSingleValueExpr<T>(IEnumerable<T> source, Type type, string input)
+    {
+        var fn = GetAggregateFn(input);
+
+        if (fn > 0)
+        {
+            var valueExpr = input.Substring(4, input.Length - 5);
+            var spec = ValueExprSpec.Parse(valueExpr, type);
+            return new[] { source.Aggregate(spec, fn, Mode) };
+        }
+        else
+        {
+            var spec = ValueExprSpec.Parse(input, type);
+            return source.Select(spec, Mode);
+        }
+    }
+
+    private IEnumerable ProcessMultiValueExpr<T>(IEnumerable<T> source, Type type, string input)
+    {
+        var parts = input.Split(',', StringSplitOptions.RemoveEmptyEntries);
+
+        var aggregateFns = parts.Select(GetAggregateFn).ToArray();
+
+        // multi aggregation query e.g. AVG(close),MAX(high),MIN(low),SUM(distance)
+        if (aggregateFns.All(x => x > 0))
+        {
+            var sourceArr = source.ToArray();
+            var result = new decimal[parts.Length];
+            for (var i = 0; i < parts.Length; i++)
+            {
+                var fn = aggregateFns[i];
+                var valueExpr = input.Substring(MAX.Length, input.Length - (MAX.Length+1));
+                var spec = ValueExprSpec.Parse(valueExpr, type);
+                result[i] = sourceArr.Aggregate(spec, fn, Mode);
             }
 
-            var specs = ParseSelectExpr(q, type);
-            return Select(source, specs);
+            return result;
         }
+        else
+        {
+            var spec = new MultiValueExprSpec(parts.Length);
 
-        //close WHERE close > 10000 SKIP 10 TAKE 2
-        var parts = SplitQuery(q);
+            for (var i = 0; i < parts.Length; i++)
+            {
+                var valueSpec = ValueExprSpec.Parse(parts[i].Trim(), type);
+                spec.AddSmart(valueSpec);
+            }
 
-        var src = source;
-        // Parse SELECT expr
-        var specsDict = ParseSelectExpr(parts[0], type);
-
-        // WHERE
-        if (parts[1].Length > 0)
-            src = Where(src, parts[1], type, specsDict);
-
-        // ORDER BY
-        if (parts[2].Length > 0)
-            src = OrderBy(src, parts[2], type, specsDict);
-
-        // SKIP
-        if (parts[3].Length > 0)
-            src = Skip(src, parts[3]);
-
-        // TAKE
-        if (parts[4].Length > 0)
-            src = Take(src, parts[4]);
-
-        return Select(src, specsDict);
+            var result = source.Select(spec, Mode);
+            return result;
+        }
     }
 
     /// <summary>
@@ -206,7 +263,7 @@ public class DLinqEngine
         if (specs.Count == 1)
             return source.Select(specs.First().Value, Mode);
 
-        var spec = new MultiPropExprSpec(specs);
+        var spec = new MultiValueExprSpec(specs);
         var result = source.Select(spec, Mode);
         return result;
     }
@@ -241,4 +298,38 @@ public class DLinqEngine
 
         return specs;
     }
+
+    private AggregateFn GetAggregateFn(string str)
+    {
+        if (str.StartsWith(MAX))
+            return AggregateFn.Max;
+
+        if (str.StartsWith(MIN))
+            return AggregateFn.Min;
+
+        if (str.StartsWith(AVG))
+            return AggregateFn.Avg;
+
+        return str.StartsWith(SUM) ? AggregateFn.Sum : AggregateFn.None;
+    }
+
+    private DLinqType GetQueryType(string query)
+    {
+        //prop[0].bag["sma"],time
+        var  spaceInd = query.IndexOf(' ');
+
+        if (spaceInd > -1)
+            return DLinqType.Default;
+
+        var commaInd = query.IndexOf(',');
+
+        return commaInd > -1 ? DLinqType.MultiValueExpr : DLinqType.ValueExpr;
+    }
+}
+
+internal enum DLinqType
+{
+    Default = 0,
+    ValueExpr,
+    MultiValueExpr
 }

@@ -46,9 +46,13 @@ public class IndexSpec : PropSpec
     {
         return view switch
         {
-            SpecView.Plain => $"{base.ToString(arg, view)}_{Index}",
             _ =>  $"{base.ToString(arg, view)}[{Index}]"
         };
+    }
+
+    public override string GetKey()
+    {
+        return Index.ToString();
     }
 
     public override string ToString()

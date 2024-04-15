@@ -45,9 +45,13 @@ public class PropSpec : SpecBase
         return view switch
         {
             SpecView.Expr => Name == null ? arg : $"{arg}.{Name.Capitalize()}",
-            SpecView.Plain => Name == null ? arg : arg.Length > 0 ? $"{arg}_{Name}" : Name,
             _ => Name == null ? arg : $"{arg}.{Name}"
         };
+    }
+
+    public virtual string GetKey()
+    {
+        return Name!;
     }
 
     public override string ToString()

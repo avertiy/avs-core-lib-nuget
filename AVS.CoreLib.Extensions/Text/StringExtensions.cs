@@ -251,14 +251,14 @@ namespace AVS.CoreLib.Extensions
             return end;
         }
 
-        public static Dictionary<string, int> IndexesOfKeywords(this string str, params string[] keywords)
+        public static Dictionary<string, int> IndexesOfKeywords(this string str, string[] keywords, StringComparison comparison = StringComparison.InvariantCulture)
         {
             var dict = new Dictionary<string, int>(keywords.Length);
 
             var startIndex = 0;
             foreach (var keyword in keywords)
             {
-                var index = str.IndexOf(keyword, startIndex, StringComparison.Ordinal);
+                var index = str.IndexOf(keyword, startIndex, comparison);
                 dict[keyword] = index;
                 if (index >= 0)
                     startIndex = index + keyword.Length;

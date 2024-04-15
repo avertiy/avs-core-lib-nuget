@@ -125,6 +125,11 @@ public static class SpecCompiler
             ctx.ParamExpr = paramExpr;
             ctx.ResolveTypeFn = e => ResolveType<T>(e, ctx);
             var expr = spec.BuildExpr(paramExpr, ctx);
+
+            var targetType = typeof(TResult);
+            if(expr.Type != targetType && !expr.Type.IsAssignableTo(targetType))
+                expr = Expression.Convert(expr, targetType);
+
             var lambdaExpr = Expression.Lambda(expr, paramExpr);
 
             return Lmbd.Compile<T, TResult>(lambdaExpr, paramExpr);

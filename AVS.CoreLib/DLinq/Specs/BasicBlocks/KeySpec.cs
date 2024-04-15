@@ -42,9 +42,13 @@ public class KeySpec : PropSpec
         return view switch
         {
             SpecView.Expr => $"{base.ToString(arg, view)}[\"{Key}\"]",
-            SpecView.Plain => $"{base.ToString(arg, view)}_{Key}",
             _ => $"{base.ToString(arg, view)}[{Key}]"
         };
+    }
+
+    public override string GetKey()
+    {
+        return Key;
     }
 
     public override string ToString()
