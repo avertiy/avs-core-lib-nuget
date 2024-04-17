@@ -17,7 +17,9 @@ namespace AVS.CoreLib.DLinq.Specs.CompoundBlocks;
 
 public class MultiValueExprSpec : SpecBase
 {
-    private Dictionary<string, ValueExprSpec> Items { get; set; }
+    public Dictionary<string, ValueExprSpec> Items { get; private set; }
+
+    public int Count => Items.Count;
 
     public MultiValueExprSpec(int capacity)
     {

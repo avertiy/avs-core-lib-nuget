@@ -27,29 +27,7 @@ namespace AVS.CoreLib.Extensions.Linq
             return res;
         }
 
-        public static decimal Aggregate<T>(this IEnumerable<T> source, Func<T, decimal> selector, AggregateFn fn)
-        {
-            return fn switch
-            {
-                AggregateFn.Max => source.Max(selector),
-                AggregateFn.Min => source.Min(selector),
-                AggregateFn.Sum => source.Sum(selector),
-                AggregateFn.Avg => source.Average(selector),
-                _ => throw new ArgumentException("Aggregate function expected")
-            };
-        }
-
-        public static double Aggregate<T>(this IEnumerable<T> source, Func<T, double> selector, AggregateFn fn)
-        {
-            return fn switch
-            {
-                AggregateFn.Max => source.Max(selector),
-                AggregateFn.Min => source.Min(selector),
-                AggregateFn.Sum => source.Sum(selector),
-                AggregateFn.Avg => source.Average(selector),
-                _ => throw new ArgumentException("Aggregate function expected")
-            };
-        }
+        
 
 
         public static IEnumerable<T> OrderBy<T, Key>(this IEnumerable<T> source, Func<T, Key> selector, Sort direction)

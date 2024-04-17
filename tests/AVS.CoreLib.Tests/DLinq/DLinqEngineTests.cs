@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using AVS.CoreLib.DLinq;
-using AVS.CoreLib.Utilities;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -122,6 +121,42 @@ public class DLinqEngineTests
     }
 
     [TestMethod]
+    public void Select_MAX_Should_Return_Max_Value()
+    {
+        // arrange
+        var source = new[] { new[] { 1, 2 }, new[] { 3, 4 }, new[] { 5, 6 } };
+        
+        // act
+        var result = _engine.Process(source, "MAX([1])", null);
+        var list = result as IList<object>;
+
+        // assert
+        Assert.IsNotNull(list);
+        list.Count.Should().Be(1);
+        list[0].Should().Be(6);
+    }
+
+    [TestMethod]
+    public void Select_As_Alias_Should_Return_Alias_Key()
+    {
+        // arrange
+        var source = new[] { new[] { 1, 2 }, new[] { 3, 4 }, new[] { 5, 6 } };
+
+        // act
+        var result = _engine.Process(source, "AVG([0]),MAX([1]) as max", null);
+        var dict = result as IDictionary<string, object>;
+
+        // assert
+        Assert.IsNotNull(dict);
+        dict.Count.Should().Be(2);
+        dict.ContainsKey("AVG").Should().BeTrue();
+        dict.ContainsKey("max").Should().BeTrue();
+        dict["AVG"].Should().Be(3);
+        dict["max"].Should().Be(6);
+    }
+
+    #region Where tests
+    [TestMethod]
     public void Select_With_Where_Simple_Condition_Should_Work()
     {
 
@@ -215,8 +250,10 @@ public class DLinqEngineTests
         list[0].ContainsKey("close").Should().BeTrue();
         list[0]["key1"].Should().Be(25L);
         list[0]["close"].Should().Be(3);
-    }
+    } 
+    #endregion
 
+    #region OrderBy & ThenBy tests
     [TestMethod]
     public void Select_With_OrderBy_Expression_Should_Work()
     {
@@ -313,5 +350,6 @@ public class DLinqEngineTests
         list[0]["close"].Should().Be(3);
         list[1]["key1"].Should().Be(15L);
         list[1]["close"].Should().Be(2);
-    }
+    } 
+    #endregion
 }

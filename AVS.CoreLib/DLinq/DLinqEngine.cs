@@ -29,12 +29,6 @@ public class DLinqEngine
     private const string SKIP = "SKIP ";
     private const string TAKE = "TAKE ";
     private const string SORT = "ORDER BY ";
-    private const string AS = " AS ";
-
-    private const string MAX = "MAX(";
-    private const string MIN = "MIN(";
-    private const string AVG = "AVG(";
-    private const string SUM = "SUM(";
 
     private static bool IsAny(string expr) => expr is "*" or ".*";
 
@@ -67,19 +61,19 @@ public class DLinqEngine
                 var specsDict = ParseSelectExpr(parts[0], type);
 
                 // WHERE
-                if (parts[1].Length > 0)
+                if (!string.IsNullOrEmpty(parts[1]))
                     src = Where(src, parts[1], type, specsDict);
 
                 // ORDER BY
-                if (parts[2].Length > 0)
+                if (!string.IsNullOrEmpty(parts[2]))
                     src = OrderBy(src, parts[2], type, specsDict);
 
                 // SKIP
-                if (parts[3].Length > 0)
+                if (!string.IsNullOrEmpty(parts[3]))
                     src = Skip(src, parts[3]);
 
                 // TAKE
-                if (parts[4].Length > 0)
+                if (!string.IsNullOrEmpty(parts[4]))
                     src = Take(src, parts[4]);
 
                 return Select(src, specsDict);
@@ -89,62 +83,31 @@ public class DLinqEngine
 
     private IEnumerable ProcessSingleValueExpr<T>(IEnumerable<T> source, Type type, string input)
     {
-        var fn = GetAggregateFn(input);
-
-        if (fn > 0)
-        {
-            var valueExpr = input.Substring(4, input.Length - 5);
-            var spec = ValueExprSpec.Parse(valueExpr, type);
-            return new[] { source.Aggregate(spec, fn, Mode) };
-        }
-        else
-        {
-            var spec = ValueExprSpec.Parse(input, type);
-            return source.Select(spec, Mode);
-        }
+        var spec = ValueExprSpec.Parse(input, type);
+        return spec.Execute(source, Mode);
     }
 
     private IEnumerable ProcessMultiValueExpr<T>(IEnumerable<T> source, Type type, string input)
     {
         var parts = input.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
-        var aggregateFns = parts.Select(GetAggregateFn).ToArray();
+        var multiSpec = new MultiValueExprSpec(parts.Length);
 
-        // multi aggregation query e.g. AVG(close),MAX(high),MIN(low),SUM(distance)
-        if (aggregateFns.All(x => x > 0))
+        for (var i = 0; i < parts.Length; i++)
         {
-            var sourceArr = source.ToArray();
-            var result = new decimal[parts.Length];
-            for (var i = 0; i < parts.Length; i++)
-            {
-                var fn = aggregateFns[i];
-                var valueExpr = input.Substring(MAX.Length, input.Length - (MAX.Length+1));
-                var spec = ValueExprSpec.Parse(valueExpr, type);
-                result[i] = sourceArr.Aggregate(spec, fn, Mode);
-            }
-
-            return result;
+            var spec = ValueExprSpec.Parse(parts[i], type);
+            multiSpec.AddSmart(spec);
         }
-        else
-        {
-            var spec = new MultiValueExprSpec(parts.Length);
 
-            for (var i = 0; i < parts.Length; i++)
-            {
-                var valueSpec = ValueExprSpec.Parse(parts[i].Trim(), type);
-                spec.AddSmart(valueSpec);
-            }
-
-            var result = source.Select(spec, Mode);
-            return result;
-        }
+        return multiSpec.Execute(source, Mode);
     }
 
     /// <summary>
     /// [0] - select expression
     /// [1] - where expression
-    /// [2] - skip expression
-    /// [3] - take expression
+    /// [2] - order by expression
+    /// [3] - skip expression
+    /// [4] - take expression
     /// </summary>
     private string[] SplitQuery(string query)
     {
@@ -154,7 +117,7 @@ public class DLinqEngine
         // just a select statement
         if (startIndex == -1)
         {
-            var res = new string [keywords.Length];
+            var res = new string [keywords.Length+1];
             res[0] = query.Trim();
             return res;
         }
@@ -257,15 +220,18 @@ public class DLinqEngine
 
     private IEnumerable Select<T>(IEnumerable<T> source, Dictionary<string, ValueExprSpec> specs)
     {
-        if (specs.Count == 0)
-            return source;
-
-        if (specs.Count == 1)
-            return source.Select(specs.First().Value, Mode);
-
-        var spec = new MultiValueExprSpec(specs);
-        var result = source.Select(spec, Mode);
-        return result;
+        switch (specs.Count)
+        {
+            case 0:
+                return source;
+            case 1:
+                return specs.First().Value.Execute(source, Mode);
+            default:
+            {
+                var spec = new MultiValueExprSpec(specs);
+                return spec.Execute(source, Mode);
+            }
+        }
     }
     
     private Dictionary<string, ValueExprSpec> ParseSelectExpr(string selectExpr, Type argType)
@@ -277,40 +243,25 @@ public class DLinqEngine
         for (var i = 0; i < parts.Length; i++)
         {
             var part = parts[i];
-            var ind = part.IndexOf(AS, StringComparison.InvariantCultureIgnoreCase);
-            var exprStr = part;
-            var alias = part;
+            var spec = ValueExprSpec.Parse(part, argType);
 
-            if (ind > -1)
-            {
-                exprStr = part.Substring(0, ind).Trim();
-                alias = part.Substring(ind + 1).Trim();
-            }
+            var key = getKey(spec, part);
 
-            if (specs.ContainsKey(alias))
-            {
-                alias = alias + "_" + i; //avoid collision
-            }
+            if (specs.ContainsKey(key))
+                key = key + "_" + i; //avoid collision
 
-            var spec = ValueExprSpec.Parse(exprStr, argType);
-            specs.Add(alias, spec);
+            specs.Add(key, spec);
+        }
+
+        string getKey(ValueExprSpec spec, string @default)
+        {
+            if (spec.Alias != null)
+                return spec.Alias;
+
+            return spec.Fn > 0 ? spec.Fn.ToString().ToUpper() : @default;
         }
 
         return specs;
-    }
-
-    private AggregateFn GetAggregateFn(string str)
-    {
-        if (str.StartsWith(MAX))
-            return AggregateFn.Max;
-
-        if (str.StartsWith(MIN))
-            return AggregateFn.Min;
-
-        if (str.StartsWith(AVG))
-            return AggregateFn.Avg;
-
-        return str.StartsWith(SUM) ? AggregateFn.Sum : AggregateFn.None;
     }
 
     private DLinqType GetQueryType(string query)

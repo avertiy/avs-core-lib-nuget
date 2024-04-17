@@ -130,9 +130,45 @@ public static class SpecCompiler
             if(expr.Type != targetType && !expr.Type.IsAssignableTo(targetType))
                 expr = Expression.Convert(expr, targetType);
 
-            var lambdaExpr = Expression.Lambda(expr, paramExpr);
+            return Lmbd.Compile<T, TResult>(expr, paramExpr);
+        }
+        catch (Exception ex)
+        {
+            throw new DLinqException($"Can't build selector - {ex.Message}", ex, spec);
+        }
+    }
 
-            return Lmbd.Compile<T, TResult>(lambdaExpr, paramExpr);
+    /// <summary>
+    /// build either Func{T,decimal/double/int} selector, that supposed to be used with aggregate linq extensions (Sum,Max,Min,Avg)
+    /// </summary>
+    public static Delegate BuildAggregateFnSelector<T>(ValueExprSpec spec, LambdaContext ctx)
+    {
+        try
+        {
+            var paramExpr = Expression.Parameter(typeof(T), "x");
+            ctx.ParamExpr = paramExpr;
+            ctx.ResolveTypeFn = e => ResolveType<T>(e, ctx);
+            var expr = spec.BuildExpr(paramExpr, ctx);
+            
+            var decType = typeof(decimal);
+
+            if (expr.Type == decType)
+            {
+                return Lmbd.Compile<T, decimal>(expr, paramExpr);
+            }
+
+            if (expr.Type == typeof(int))
+            {
+                return Lmbd.Compile<T, int>(expr, paramExpr);
+            }
+
+            if (expr.Type == typeof(double))
+            {
+                return Lmbd.Compile<T, double>(expr, paramExpr);
+            }
+
+            expr = Expression.Convert(expr, decType);
+            return Lmbd.Compile<T, decimal>(expr, paramExpr);
         }
         catch (Exception ex)
         {

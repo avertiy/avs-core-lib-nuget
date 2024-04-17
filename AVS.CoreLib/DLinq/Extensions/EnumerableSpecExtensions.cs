@@ -13,6 +13,41 @@ using AVS.CoreLib.Extensions.Linq;
 namespace AVS.CoreLib.DLinq.Extensions;
 internal static class EnumerableSpecExtensions
 {
+    public static IEnumerable Execute<T>(this ValueExprSpec spec, IEnumerable<T> source, SelectMode mode = SelectMode.Default)
+    {
+        if (spec.Fn > 0)
+            return new[] { source.Aggregate(spec, mode) };
+
+        return source.Select(spec, mode);
+    }
+
+    public static IEnumerable Execute<T>(this MultiValueExprSpec spec, IEnumerable<T> source, SelectMode mode = SelectMode.Default)
+    {
+        var count = spec.Count;
+        if (count == 0)
+            return source;
+
+        if (count == 1)
+            return spec.Items.First().Value.Execute(source, mode);
+
+        if (spec.Items.All(x => x.Value.Fn > 0))
+        {
+            // multi aggregate functions case e.g MAX(Prop1),SUM(Prop2)
+            var arr = source.ToArray();
+
+            IEnumerable result;
+
+            if (spec.Items.Any(x => x.Value.Alias != null))
+                result = spec.Items.ToDictionary(x => x.Key, x => arr.Aggregate(x.Value, mode));
+            else
+                result = spec.Items.Values.Select(x => arr.Aggregate(x, mode)).ToList();
+
+            return result;
+        }
+
+        return source.Select(spec, mode);
+    }
+
     public static IEnumerable Select<T>(this IEnumerable<T> source, ISpec spec, SelectMode mode = SelectMode.Default)
     {
         var ctx = new LambdaContext() { Mode = mode, Source = source };
@@ -124,19 +159,82 @@ internal static class EnumerableSpecExtensions
     }
     #endregion
 
-    public static decimal Aggregate<T>(this IEnumerable<T> source, ValueExprSpec spec, AggregateFn fn, SelectMode mode = SelectMode.Default)
+    internal static object Aggregate<T>(this IEnumerable<T> source, ValueExprSpec spec, SelectMode mode = SelectMode.Default)
     {
         var ctx = new LambdaContext() { Mode = mode, Source = source };
-        var selector = GetSelectorFn<T, decimal>(spec, ctx);
+
+        var fn = spec.Fn;
+        var @delegate = GetSelectorFn<T>(spec, ctx);
         try
         {
-            return source.Aggregate(selector, fn);
+            if (@delegate is Func<T, decimal> decSelector)
+            {
+                return fn switch
+                {
+                    AggregateFn.Max => source.Max(decSelector),
+                    AggregateFn.Min => source.Min(decSelector),
+                    AggregateFn.Sum => source.Sum(decSelector),
+                    AggregateFn.Avg => source.Average(decSelector),
+                    _ => throw new ArgumentOutOfRangeException(nameof(fn), fn, $"Not {fn} supported")
+                };
+            }
+
+            if (@delegate is Func<T, double> doubleSelector)
+            {
+                return fn switch
+                {
+                    AggregateFn.Max => source.Max(doubleSelector),
+                    AggregateFn.Min => source.Min(doubleSelector),
+                    AggregateFn.Sum => source.Sum(doubleSelector),
+                    AggregateFn.Avg => source.Average(doubleSelector),
+                    _ => throw new ArgumentOutOfRangeException(nameof(fn), fn, $"Not {fn} supported")
+                };
+            }
+
+            var selector = (Func<T, int>)@delegate;
+
+            return fn switch
+            {
+                AggregateFn.Max => source.Max(selector),
+                AggregateFn.Min => source.Min(selector),
+                AggregateFn.Sum => source.Sum(selector),
+                AggregateFn.Avg => source.Average(selector),
+                _ => throw new ArgumentOutOfRangeException(nameof(fn), fn, $"Not {fn} supported")
+            };
         }
         catch (Exception ex)
         {
             throw new DLinqException($"source.Aggregate({spec}, {fn}) failed - {ex.Message}", ex, spec);
         }
     }
+
+    private static Delegate GetSelectorFn<T>(ValueExprSpec spec, LambdaContext ctx)
+    {
+        var key = $"selector: {spec.GetBody()} [mode: {ctx.Mode}]";
+        var bag = LambdaBag.Lambdas;
+
+        if (bag.ContainsKey(key))
+            return bag[key];
+
+        var fn = SpecCompiler.BuildAggregateFnSelector<T>(spec, ctx);
+        bag[key] = fn;
+        return fn;
+    }
+
+    //private static decimal AggregateDecimal<T>(this IEnumerable<T> source, ValueExprSpec spec, AggregateFn fn, SelectMode mode = SelectMode.Default)
+    //{
+    //    var ctx = new LambdaContext() { Mode = mode, Source = source };
+
+    //    var selector = GetSelectorFn<T, decimal>(spec, ctx);
+    //    try
+    //    {
+    //        return source.Aggregate(selector, fn);
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        throw new DLinqException($"source.Aggregate({spec}, {fn}) failed - {ex.Message}", ex, spec);
+    //    }
+    //}
 
     private static Func<T, TKey> GetSelectorFn<T, TKey>(ValueExprSpec spec, LambdaContext ctx)
     {
