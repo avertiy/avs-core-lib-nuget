@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Linq.Expressions;
 using AVS.CoreLib.DLinq.Enums;
 using AVS.CoreLib.DLinq.Specs.LambdaSpecs;
@@ -42,7 +43,7 @@ public class ConditionSpec : SpecBase, ILambdaSpec
         return $"{Value.GetCacheKey()} {Comparison}";
     }
 
-    public static ConditionSpec Parse(string expr, Type argType, Dictionary<string, ValueExprSpec> specs)
+    public static ConditionSpec Parse(string expr, DLinqContext context)
     {
         Guard.Against.NullOrEmpty(expr);
 
@@ -54,7 +55,9 @@ public class ConditionSpec : SpecBase, ILambdaSpec
         var compSpec = ComparisonSpec.Parse(parts[1], parts[2]);
 
         var valueExpr = parts[0].Trim();
-        var valueSpec = specs.ContainsKey(valueExpr) ? specs[valueExpr] : ValueExprSpec.Parse(valueExpr, argType);
+
+        var valueSpec = context.Items.FirstOrDefault(x => x.Name == valueExpr) ??
+                        ValueExprSpec.Parse(valueExpr, context.Type);
         var spec = new ConditionSpec(valueSpec, compSpec);
         return spec;
     }

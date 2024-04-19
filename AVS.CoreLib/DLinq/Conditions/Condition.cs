@@ -16,7 +16,7 @@ namespace AVS.CoreLib.DLinq.Conditions;
 /// </summary>
 public interface ICondition
 {
-    ILambdaSpec GetSpec(Type type, Dictionary<string, ValueExprSpec> specs);
+    ILambdaSpec GetSpec(DLinqContext context);
 }
 
 public partial class Condition : ICondition
@@ -35,9 +35,9 @@ public partial class Condition : ICondition
         return Expr;
     }
 
-    public ILambdaSpec GetSpec(Type type, Dictionary<string, ValueExprSpec> specs)
+    public ILambdaSpec GetSpec(DLinqContext context)
     {
-        return ConditionSpec.Parse(Expr, type, specs);
+        return ConditionSpec.Parse(Expr, context);
     }
 }
 

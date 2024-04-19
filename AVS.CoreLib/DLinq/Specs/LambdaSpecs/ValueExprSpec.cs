@@ -2,12 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using AVS.CoreLib.DLinq.Enums;
 using AVS.CoreLib.DLinq.Extensions;
 using AVS.CoreLib.DLinq.Specs.BasicBlocks;
 using AVS.CoreLib.Expressions;
+using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Reflection;
 
 namespace AVS.CoreLib.DLinq.Specs.LambdaSpecs;
@@ -21,6 +23,7 @@ namespace AVS.CoreLib.DLinq.Specs.LambdaSpecs;
 public class ValueExprSpec : SpecBase, ILambdaSpec
 {
     public AggregateFn Fn { get; set; }
+    public string Name { get; set; } = null!;
     public string? Alias { get; set; }
     /// <summary>
     /// if alias ends with `!` the value expression itself will not be included in select
@@ -98,11 +101,6 @@ public class ValueExprSpec : SpecBase, ILambdaSpec
         return key;
     }
 
-    public static ValueExprSpec Parse(string expr, Type type)
-    {
-        return ValueExprSpecHelper.Parse(expr, type);
-    }
-
     public void ApplyShortcut(ValueExprSpec spec)
     {
         var parts = new List<PropSpec>(spec.Parts);
@@ -111,6 +109,11 @@ public class ValueExprSpec : SpecBase, ILambdaSpec
             parts.Add(spec.Parts[i]);
 
         spec.Parts = parts;
+    }
+
+    public static ValueExprSpec Parse(string expr, Type type)
+    {
+        return ValueExprSpecHelper.Parse(expr, type);
     }
 }
 
@@ -190,9 +193,38 @@ internal static class ValueExprSpecHelper
             }
 
         if (startInd < endInd)
-            spec.AddProp(expr.Substring(startInd, endInd - startInd));
+        {
+            var propExpr = expr.Substring(startInd, endInd - startInd);
+            spec.AddProp(propExpr);
+        }
+
+        spec.Name = GetName(spec);
 
         return spec;
+    }
+
+    private static string GetName(ValueExprSpec spec)
+    {
+        if (spec.Alias != null)
+            return spec.Alias;
+
+        var parts = spec.Parts.Select(x => x.GetKey()).ToArray();
+
+        var name = parts[0];
+
+        if (parts.Length > 1)
+        {
+            var ind = Array.FindLastIndex(parts, x => char.IsLetter(x[0]));
+            if (ind > 0 && parts[ind].ToLowerInvariant().Either("value", "item", "props"))
+                ind--;
+            name = string.Join('_', parts.Skip(ind));
+        }
+
+        if (spec.Fn > 0 && !char.IsLetter(name[0]))
+            return spec.Fn.ToString("G").ToUpperInvariant();
+
+        //return name;
+        return spec.Fn.Format(name);
     }
 
     private static AggregateFn GetAggregateFn(string str)

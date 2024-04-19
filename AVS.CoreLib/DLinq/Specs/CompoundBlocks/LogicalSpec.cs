@@ -14,15 +14,15 @@ namespace AVS.CoreLib.DLinq.Specs.CompoundBlocks;
 /// allows to combine specs with logical operators && (and), || (or)
 /// </summary>
 [DebuggerDisplay("LogicalSpec: {ToString()} (raw: {Raw})")]
-public class LogicalSpec : SpecBase, ILambdaSpec
+public class LogicalSpec : CompoundSpec<ILambdaSpec>, ILambdaSpec
 {
     public Op Op { get; set; }
-    /// <summary>
-    /// contains either <see cref="ConditionSpec"/> or another <see cref="LogicalSpec"/>
-    /// </summary>
-    public List<ILambdaSpec> Items { get; set; }
+    ///// <summary>
+    ///// contains either <see cref="ConditionSpec"/> or another <see cref="LogicalSpec"/>
+    ///// </summary>
+    //public List<ILambdaSpec> Items { get; set; }
 
-    public LogicalSpec(Op op, params ILambdaSpec[] items)
+    public LogicalSpec(Op op, params ILambdaSpec[] items) : base(items)
     {
         Items = new List<ILambdaSpec>(items);
         Op = op;
@@ -52,18 +52,10 @@ public class LogicalSpec : SpecBase, ILambdaSpec
 
         return expr;
     }
-
-    //public override string ToString0(string arg, SpecView view = SpecView.Default)
-    //{
-    //    if (string.IsNullOrEmpty(arg))
-    //        return string.Join($" {Op} ", Items.Select(x => x.ToString0(arg, view)));
-
-    //    return arg + string.Join($" {Op} ", Items.Select(x => x.ToString0(arg, view)));
-    //}
-
+    
     public string GetCacheKey()
     {
-        if (HasSameArgType(out var type))
+        if (SameArgType(out var type))
         {
             var argType = type!.GetReadableName();
             return argType + " x => " + string.Join($" {Op} ", Items.Select(x => x.ToString()));
@@ -72,22 +64,9 @@ public class LogicalSpec : SpecBase, ILambdaSpec
         return string.Join($" {Op} ", Items.Select(x => x.GetCacheKey()));
     }
 
-    public bool HasSameArgType(out Type? type)
+    protected override IEnumerable<Type> IterateArgTypes()
     {
-        type = null;
-        foreach (var spec in IterateConditionSpecs())
-        {
-            if (type == null)
-            {
-                type = spec.Value.ArgType;
-                continue;
-            }
-
-            if(spec.Value.ArgType != type)
-                return false;
-        }
-
-        return true;
+        return IterateConditionSpecs().Select(x => x.Value.ArgType);
     }
 
     private IEnumerable<ConditionSpec> IterateConditionSpecs()
@@ -128,4 +107,6 @@ public class LogicalSpec : SpecBase, ILambdaSpec
     {
         return new LogicalSpec(op, specs);
     }
+
+    
 }

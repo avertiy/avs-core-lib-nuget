@@ -31,10 +31,10 @@ public record BinaryCondition : ICondition
         return $"({Left} {Op} {Right})";
     }
 
-    public ILambdaSpec GetSpec(Type type, Dictionary<string, ValueExprSpec> specs)
+    public ILambdaSpec GetSpec(DLinqContext context)
     {
-        var leftSpec = Left.GetSpec(type, specs);
-        var rightSpec = Right.GetSpec(type, specs);
+        var leftSpec = Left.GetSpec(context);
+        var rightSpec = Right.GetSpec(context);
         return LogicalSpec.Combine(Op, leftSpec, rightSpec);
     }
 

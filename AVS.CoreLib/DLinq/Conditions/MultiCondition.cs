@@ -33,9 +33,9 @@ public record MultiCondition : ICondition
         return $"({string.Join($" {Op} ", Items)})";
     }
 
-    public ILambdaSpec GetSpec(Type type, Dictionary<string, ValueExprSpec> specs)
+    public ILambdaSpec GetSpec(DLinqContext context)
     {
-        var items = Items.Select(x => x.GetSpec(type, specs)).ToArray();
+        var items = Items.Select(x => x.GetSpec(context)).ToArray();
         return LogicalSpec.Combine(Op, items);
     }
 }

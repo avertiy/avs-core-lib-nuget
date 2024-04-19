@@ -48,10 +48,9 @@ public class DLinqEngine
         switch (queryType)
         {
             case DLinqType.ValueExpr:
-                return ProcessSingleValueExpr(source, type, q);
+                return ProcessSingleValueExpr(source, q, type);
             case DLinqType.MultiValueExpr:
-                return ProcessMultiValueExpr(source, type, q);
-            case DLinqType.Default:
+                return ProcessMultiValueExpr(source, q, type);
             default:
             {
                 //close WHERE close > 10000 SKIP 10 TAKE 2
@@ -59,15 +58,17 @@ public class DLinqEngine
 
                 var src = source;
                 // Parse SELECT expr
-                var specsDict = ParseSelectExpr(parts[0], type);
+                var items = ParseSelectExpr(parts[0], type);
+
+                var ctx = new DLinqContext() { Items = items, Type = type, Mode = Mode };
 
                 // WHERE
                 if (!string.IsNullOrEmpty(parts[1]))
-                    src = Where(src, parts[1], type, specsDict);
+                    src = Where(src, parts[1], ctx);
 
                 // ORDER BY
                 if (!string.IsNullOrEmpty(parts[2]))
-                    src = OrderBy(src, parts[2], type, specsDict);
+                    src = OrderBy(src, parts[2], ctx);
 
                 // SKIP
                 if (!string.IsNullOrEmpty(parts[3]))
@@ -77,18 +78,18 @@ public class DLinqEngine
                 if (!string.IsNullOrEmpty(parts[4]))
                     src = Take(src, parts[4]);
 
-                return Select(src, specsDict);
+                return Select(src, ctx);
             }
         }
     }
 
-    private IEnumerable ProcessSingleValueExpr<T>(IEnumerable<T> source, Type type, string input)
+    private IEnumerable ProcessSingleValueExpr<T>(IEnumerable<T> source, string input, Type type)
     {
         var spec = ValueExprSpec.Parse(input, type);
         return spec.Execute(source, Mode);
     }
 
-    private IEnumerable ProcessMultiValueExpr<T>(IEnumerable<T> source, Type type, string input)
+    private IEnumerable ProcessMultiValueExpr<T>(IEnumerable<T> source, string input, Type type)
     {
         var parts = input.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
@@ -97,7 +98,7 @@ public class DLinqEngine
         for (var i = 0; i < parts.Length; i++)
         {
             var spec = ValueExprSpec.Parse(parts[i], type);
-            multiSpec.AddSmart(spec);
+            multiSpec.Add(spec);
         }
 
         return multiSpec.Execute(source, Mode);
@@ -158,15 +159,15 @@ public class DLinqEngine
         return list.ToArray();
     }
     
-    private IEnumerable<T> Where<T>(IEnumerable<T> source, string whereExpr, Type targetType, Dictionary<string, ValueExprSpec> specs)
+    private IEnumerable<T> Where<T>(IEnumerable<T> source, string whereExpr, DLinqContext ctx)
     {
         var condition = ConditionParser.Parse(whereExpr);
-        var spec = condition.GetSpec(targetType, specs);
+        var spec = condition.GetSpec(ctx);
         var filtered = source.Where(spec, Mode);
         return filtered;
     }
 
-    private IEnumerable<T> OrderBy<T>(IEnumerable<T> source, string orderByExpr, Type targetType, Dictionary<string, ValueExprSpec> specs)
+    private IEnumerable<T> OrderBy<T>(IEnumerable<T> source, string orderByExpr, DLinqContext ctx)
     {
         // sortBy "close ASC"
         var length = orderByExpr.Length;
@@ -187,8 +188,7 @@ public class DLinqEngine
         var parts = orderByStr.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
         var valueExpr = parts[0].Trim();
-        var spec = specs.ContainsKey(valueExpr) ? specs[valueExpr] :  ValueExprSpec.Parse(valueExpr, targetType);
-
+        var spec = ctx.Items.FirstOrDefault(x => x.Alias == valueExpr) ?? ValueExprSpec.Parse(valueExpr, ctx.Type);
         var enumerable = source.OrderBy(spec, sortDirection, Mode);
 
         if (parts.Length == 1) 
@@ -199,7 +199,7 @@ public class DLinqEngine
             for (var i =1; i < parts.Length; i++)
             {
                 valueExpr = parts[i].Trim();
-                spec = specs.ContainsKey(valueExpr) ? specs[valueExpr] : ValueExprSpec.Parse(valueExpr, targetType);
+                spec = ctx.Items.FirstOrDefault(x => x.Alias == valueExpr) ?? ValueExprSpec.Parse(valueExpr, ctx.Type);
                 orderedEnumerable = orderedEnumerable.ThenBy(spec, sortDirection, Mode);
             }
 
@@ -219,64 +219,43 @@ public class DLinqEngine
         return int.TryParse(skipExpr, out var skip) ? source.Skip(skip) : source;
     }
 
-    private IEnumerable Select<T>(IEnumerable<T> source, Dictionary<string, ValueExprSpec> specs)
+    private IEnumerable Select<T>(IEnumerable<T> source, DLinqContext ctx)
     {
-        switch (specs.Count)
-        {
-            case 0:
-                return source;
-            case 1:
-                return specs.First().Value.Execute(source, Mode);
-            default:
-            {
-                var spec = new MultiValueExprSpec(specs);
-                return spec.Execute(source, Mode);
-            }
-        }
+        return source.Select(ctx);
     }
     
-    private Dictionary<string, ValueExprSpec> ParseSelectExpr(string selectExpr, Type argType)
+    private ValueExprSpec[] ParseSelectExpr(string selectExpr, Type argType)
     {
         var parts = selectExpr.Split(',');
-
-        var specs = new Dictionary<string, ValueExprSpec>(parts.Length);
-
-        for (var i = 0; i < parts.Length; i++)
-        {
-            var part = parts[i];
-            var spec = ValueExprSpec.Parse(part, argType);
-
-            var key = getKey(spec, part);
-
-            if (specs.ContainsKey(key))
-                key = key + "_" + i; //avoid collision
-
-            specs.Add(key, spec);
-        }
-
-        string getKey(ValueExprSpec spec, string @default)
-        {
-            if (spec.Alias != null)
-                return spec.Alias;
-
-            return spec.Fn > 0 ? spec.Fn.ToString().ToUpper() : @default;
-        }
-
-        return specs;
+        return parts.Select(x => ValueExprSpec.Parse(x.Trim(), argType)).ToArray();
+        //string getKey(ValueExprSpec spec, string @default)
+        //{
+        //    if (spec.Alias != null)
+        //        return spec.Alias;
+        //    return spec.Fn > 0 ? spec.Fn.ToString().ToUpper() : @default;
+        //}
     }
 
     private DLinqType GetQueryType(string query)
     {
-        //prop[0].bag["sma"],time
-        var  spaceInd = query.IndexOf(' ');
+        //close,bag["sma"] as sma
+        var spaceInd = query.IndexOf(' ');
 
         if (spaceInd > -1)
             return DLinqType.Default;
 
+        //bag["sma"],time
         var commaInd = query.IndexOf(',');
 
         return commaInd > -1 ? DLinqType.MultiValueExpr : DLinqType.ValueExpr;
     }
+}
+
+public class DLinqContext
+{
+    public required SelectMode Mode { get; set; }
+    public required Type Type { get; set; }
+    public required IList<ValueExprSpec> Items { get; set; }
 }
 
 internal enum DLinqType
@@ -284,4 +263,24 @@ internal enum DLinqType
     Default = 0,
     ValueExpr,
     MultiValueExpr
+}
+
+public static class DLinqExtensions
+{
+    public static IEnumerable Select<T>(this IEnumerable<T> source, DLinqContext ctx)
+    {
+        var items = ctx.Items;
+        switch (items.Count)
+        {
+            case 0:
+                return source;
+            case 1:
+                return items.First().Execute(source, ctx.Mode);
+            default:
+            {
+                var spec = new MultiValueExprSpec(items);
+                return spec.Execute(source, ctx.Mode);
+            }
+        }
+    }
 }
