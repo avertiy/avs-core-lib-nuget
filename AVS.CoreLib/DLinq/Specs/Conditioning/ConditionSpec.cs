@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq.Expressions;
-using AVS.CoreLib.DLinq.Specs.CompoundBlocks;
+using AVS.CoreLib.DLinq.Enums;
+using AVS.CoreLib.DLinq.Specs.LambdaSpecs;
 using AVS.CoreLib.Expressions;
 using AVS.CoreLib.Guards;
 
@@ -10,17 +12,17 @@ namespace AVS.CoreLib.DLinq.Specs.Conditioning;
 /// <summary>
 /// Represent a simple condition: A > 1
 /// </summary>
-public class ConditionSpec : SpecBase
+[DebuggerDisplay("ConditionSpec: {Value} {Comparison}")]
+public class ConditionSpec : SpecBase, ILambdaSpec
 {
+    public ValueExprSpec Value { get; set; }
+    public ComparisonSpec Comparison { get; set; }
+
     public ConditionSpec(ValueExprSpec value, ComparisonSpec comparison)
     {
         Value = value;
         Comparison = comparison;
     }
-
-    public ValueExprSpec Value { get; set; }
-
-    public ComparisonSpec Comparison { get; set; }
 
     public override Expression BuildExpr(Expression expression, LambdaContext ctx)
     {
@@ -34,10 +36,10 @@ public class ConditionSpec : SpecBase
         expr = Comparison.BuildExpr(expr, ctx);
         return expr;
     }
-
-    public override string ToString(string arg, SpecView view = SpecView.Default)
+    
+    public string GetCacheKey()
     {
-        return $"{Value.ToString(arg, view)} {Comparison.ToString(arg, view)}";
+        return $"{Value.GetCacheKey()} {Comparison}";
     }
 
     public static ConditionSpec Parse(string expr, Type argType, Dictionary<string, ValueExprSpec> specs)
@@ -59,6 +61,6 @@ public class ConditionSpec : SpecBase
 
     public override string ToString()
     {
-        return $"{nameof(ConditionSpec)} {Value.ToString("x", SpecView.Default)} {Comparison.ToString("x", SpecView.Default)}";
+        return $"{Value} {Comparison}";
     }
 }

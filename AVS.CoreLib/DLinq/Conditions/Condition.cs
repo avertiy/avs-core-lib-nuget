@@ -3,13 +3,20 @@ using System.Collections.Generic;
 using AVS.CoreLib.DLinq.Specs;
 using AVS.CoreLib.DLinq.Specs.CompoundBlocks;
 using AVS.CoreLib.DLinq.Specs.Conditioning;
+using AVS.CoreLib.DLinq.Specs.LambdaSpecs;
 
 namespace AVS.CoreLib.DLinq.Conditions;
 
-
+/// <summary>
+/// Represent a logical condition e.g. A >= 1
+/// Conditions could be:
+///  (i) unary <see cref="Condition"/> => <seealso cref="ConditionSpec"/>
+///  (ii) binary <see cref="BinaryCondition"/> => <seealso cref="LogicalSpec"/>
+///  (iii) multi <see cref="MultiCondition"/> => <seealso cref="LogicalSpec"/>
+/// </summary>
 public interface ICondition
 {
-    ISpec GetSpec(Type type, Dictionary<string, ValueExprSpec> specs);
+    ILambdaSpec GetSpec(Type type, Dictionary<string, ValueExprSpec> specs);
 }
 
 public partial class Condition : ICondition
@@ -28,7 +35,7 @@ public partial class Condition : ICondition
         return Expr;
     }
 
-    public ISpec GetSpec(Type type, Dictionary<string, ValueExprSpec> specs)
+    public ILambdaSpec GetSpec(Type type, Dictionary<string, ValueExprSpec> specs)
     {
         return ConditionSpec.Parse(Expr, type, specs);
     }

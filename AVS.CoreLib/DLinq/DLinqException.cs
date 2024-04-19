@@ -6,7 +6,7 @@ namespace AVS.CoreLib.DLinq;
 public class DLinqException : Exception
 {
     public string? Raw { get; }
-    public ISpec? Spec { get; }
+    public ILambdaSpec? Spec { get; }
     public DLinqException(string? message) : base(message)
     {
     }
@@ -20,7 +20,7 @@ public class DLinqException : Exception
     {
     }
 
-    public DLinqException(string? message, Exception? innerException, ISpec spec) : base(message, innerException)
+    public DLinqException(string? message, Exception? innerException, ILambdaSpec spec) : base(message, innerException)
     {
         Spec = spec;
         Raw = spec?.Raw;

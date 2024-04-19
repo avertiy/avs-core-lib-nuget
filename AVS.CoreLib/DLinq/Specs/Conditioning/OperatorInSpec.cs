@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
-using AVS.CoreLib.DLinq.Conditions;
+using AVS.CoreLib.DLinq.Enums;
 using AVS.CoreLib.Extensions.Reflection;
 using AVS.CoreLib.Utilities;
 
 namespace AVS.CoreLib.DLinq.Specs.Conditioning;
 
+[DebuggerDisplay("OperatorInSpec: IN({Args})")]
 public class OperatorInSpec : ComparisonSpec
 {
     public string[] Args { get; set; }
@@ -45,7 +47,7 @@ public class OperatorInSpec : ComparisonSpec
         return leftExpr;
     }
 
-    public override string ToString(string arg, SpecView view = SpecView.Default)
+    public override string ToString()
     {
         return $"IN ({string.Join(',', Args)})";
     }

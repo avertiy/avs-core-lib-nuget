@@ -1,10 +1,12 @@
 ﻿using System.Linq.Expressions;
 using System;
-using AVS.CoreLib.DLinq.Conditions;
+using System.Diagnostics;
 using AVS.CoreLib.Utilities;
+using AVS.CoreLib.DLinq.Enums;
 
 namespace AVS.CoreLib.DLinq.Specs.Conditioning;
 
+[DebuggerDisplay("ComparisonSpec: {Op} {Arg} (raw: {Raw})")]
 public class ComparisonSpec : SpecBase
 {
     public string Arg { get; set; }
@@ -49,15 +51,10 @@ public class ComparisonSpec : SpecBase
             _ => throw new NotImplementedException($"Operator {op.ToExprString()} not supported by {GetType().Name}")
         };
     }
-
-    public override string ToString(string arg, SpecView view = SpecView.Default)
-    {
-        return $"{Op.ToExprString()} {Arg}";
-    }
-
+    
     public override string ToString()
     {
-        return $"{nameof(ComparisonSpec)} {Op.ToExprString()} {Arg}";
+        return $"{Op.ToExprString()} {Arg}";
     }
 
     public static ComparisonSpec Parse(string part1, string part2)

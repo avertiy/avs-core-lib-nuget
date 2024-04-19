@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using AVS.CoreLib.DLinq.Enums;
 using AVS.CoreLib.Expressions;
 using AVS.CoreLib.Extensions.Linq;
 using AVS.CoreLib.Extensions.Reflection;

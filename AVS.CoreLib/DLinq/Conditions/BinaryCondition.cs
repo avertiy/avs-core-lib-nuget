@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using AVS.CoreLib.DLinq.Specs;
 using AVS.CoreLib.DLinq.Specs.CompoundBlocks;
+using AVS.CoreLib.DLinq.Specs.LambdaSpecs;
 
 namespace AVS.CoreLib.DLinq.Conditions;
 
@@ -30,11 +31,11 @@ public record BinaryCondition : ICondition
         return $"({Left} {Op} {Right})";
     }
 
-    public ISpec GetSpec(Type type, Dictionary<string, ValueExprSpec> specs)
+    public ILambdaSpec GetSpec(Type type, Dictionary<string, ValueExprSpec> specs)
     {
         var leftSpec = Left.GetSpec(type, specs);
         var rightSpec = Right.GetSpec(type, specs);
-        return SpecBase.Combine(Op, leftSpec, rightSpec);
+        return LogicalSpec.Combine(Op, leftSpec, rightSpec);
     }
 
     public static ICondition OR(ICondition left, ICondition right)

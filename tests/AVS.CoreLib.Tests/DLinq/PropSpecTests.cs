@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using AVS.CoreLib.DLinq;
+using AVS.CoreLib.DLinq.Enums;
 using AVS.CoreLib.DLinq.Extensions;
 using AVS.CoreLib.DLinq.Specs.BasicBlocks;
 using FluentAssertions;

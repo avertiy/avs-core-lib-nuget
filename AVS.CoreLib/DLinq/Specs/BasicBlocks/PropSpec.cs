@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
 using AVS.CoreLib.Extensions;
@@ -6,10 +7,11 @@ using AVS.CoreLib.Extensions;
 namespace AVS.CoreLib.DLinq.Specs.BasicBlocks;
 
 /// <summary>
-/// Builds property expression
-/// <code>x.Name</code>
+/// Represent a property expression specification
+/// <code>Prop</code>
 /// </summary>
-public class PropSpec : SpecBase
+[DebuggerDisplay("PropSpec: {Name}")]
+public class PropSpec : SpecBase, ILambdaSpec
 {
     public string? Name { get; set; }
 
@@ -39,14 +41,10 @@ public class PropSpec : SpecBase
     {
         return type.GetProperty(name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
     }
-
-    public override string ToString(string arg, SpecView view = SpecView.Default)
+    
+    public virtual string GetCacheKey()
     {
-        return view switch
-        {
-            SpecView.Expr => Name == null ? arg : $"{arg}.{Name.Capitalize()}",
-            _ => Name == null ? arg : $"{arg}.{Name}"
-        };
+        return Name!;
     }
 
     public virtual string GetKey()
@@ -56,6 +54,11 @@ public class PropSpec : SpecBase
 
     public override string ToString()
     {
-        return $"{nameof(PropSpec)} {Name}";
+        return Name ?? string.Empty;
+    }
+
+    public virtual string Format(string expr)
+    {
+        return Name == null ? expr : $"{expr}.{Name}";
     }
 }

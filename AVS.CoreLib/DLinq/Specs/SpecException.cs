@@ -5,14 +5,14 @@ namespace AVS.CoreLib.DLinq.Specs;
 public class SpecException : Exception
 {
     public string? Raw => Spec.Raw;
-    public ISpec Spec { get; set; }
+    public SpecBase Spec { get; set; }
 
-    public SpecException(string? message, ISpec spec) : base(message)
+    public SpecException(string? message, SpecBase spec) : base(message)
     {
         Spec = spec;
     }
 
-    public SpecException(string? message, Exception? innerException, ISpec spec) : base(message, innerException)
+    public SpecException(string? message, Exception? innerException, SpecBase spec) : base(message, innerException)
     {
         Spec = spec;
     }

@@ -6,13 +6,4 @@
         Asc,
         Desc
     }
-
-    public enum AggregateFn
-    {
-        None = 0,
-        Avg,
-        Max,
-        Min,
-        Sum
-    }
 }

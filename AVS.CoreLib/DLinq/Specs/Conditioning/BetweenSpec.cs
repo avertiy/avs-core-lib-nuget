@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq.Expressions;
-using AVS.CoreLib.DLinq.Conditions;
+using AVS.CoreLib.DLinq.Enums;
 using AVS.CoreLib.Utilities;
 
 namespace AVS.CoreLib.DLinq.Specs.Conditioning;
 
+[DebuggerDisplay("BetweenSpec: {Arg} AND {Arg2}")]
 public class BetweenSpec : ComparisonSpec
 {
     public string Arg2 { get; set; }
@@ -40,13 +42,8 @@ public class BetweenSpec : ComparisonSpec
         return new BetweenSpec(args[0], args[1]);
     }
 
-    public override string ToString(string arg, SpecView view = SpecView.Default)
-    {
-        return $"{Operator.Between.ToExprString()} {Arg} AND {Arg2}";
-    }
-
     public override string ToString()
     {
-        return $"{nameof(BetweenSpec)} {Op.ToExprString()} {Arg}";
+        return $"{Op.ToExprString()} {Arg} AND {Arg2}";
     }
 }

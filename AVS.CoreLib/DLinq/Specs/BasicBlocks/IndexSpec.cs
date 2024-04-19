@@ -1,16 +1,19 @@
-﻿using System.Linq.Expressions;
+﻿using System;
+using System.Diagnostics;
+using System.Linq.Expressions;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Reflection;
 
 namespace AVS.CoreLib.DLinq.Specs.BasicBlocks;
 
 /// <summary>
-/// Builds indexer expressions 
+/// Represent an int indexer expression specification
 /// <code>
-/// 1. x[Index]
-/// 2. x.Prop[Index]
+/// 1. [index]
+/// 2. prop[index]
 /// </code>
 /// </summary>
+[DebuggerDisplay("IndexSpec: {ToString()}")]
 public class IndexSpec : PropSpec
 {
     public int Index { get; set; }
@@ -41,22 +44,43 @@ public class IndexSpec : PropSpec
         expr = Expression.Call(expr, methodInfo, Expression.Constant(Index));
         return expr;
     }
-
-    public override string ToString(string arg, SpecView view = SpecView.Default)
-    {
-        return view switch
-        {
-            _ =>  $"{base.ToString(arg, view)}[{Index}]"
-        };
-    }
-
+    
     public override string GetKey()
     {
-        return Index.ToString();
+        return Name == null ? Index.ToString(): $"{Name}_{Index}";
+    }
+
+    public override string GetCacheKey()
+    {
+        return ToString();
     }
 
     public override string ToString()
     {
-        return $"{nameof(IndexSpec)} [{Index}]";
+        return $"{Name}[{Index}]";
+    }
+
+    /// <summary>
+    /// Converts spec to its string representation
+    /// <code>
+    /// p/plain -> prop_0 or 0 
+    /// _ -> ToString() -> prop[0]
+    /// </code> 
+    /// </summary>
+    public string ToString(string format)
+    {
+        switch (format)
+        {
+            case "p":
+            case "plain":
+                return Name == null ? Index.ToString() : $"{Name}_{Index}";
+            default:
+                return ToString();
+        }
+    }
+
+    public override string Format(string expr)
+    {
+        return $"{base.Format(expr)}[{Index}]";
     }
 }

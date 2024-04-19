@@ -2,19 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using AVS.CoreLib.DLinq.Enums;
 
 namespace AVS.CoreLib.DLinq.Specs;
-
-public interface ISpec
-{
-    /// <summary>
-    /// holds a raw expression string 
-    /// </summary>
-    string? Raw { get; set; }
-    Expression BuildExpr(Expression expr, LambdaContext ctx);
-    string GetBody();
-    string ToString(string arg, SpecView view = SpecView.Default);
-}
 
 public class LambdaContext
 {
@@ -22,6 +12,7 @@ public class LambdaContext
     public object? Source { get; set; }
     public ParameterExpression? ParamExpr { get; set; }
     public Func<Expression, Type?>? ResolveTypeFn { get; set; }
+    public Dictionary<string, Expression>? Expressions { get; set; }
 
     public T? GetItem<T>()
     {

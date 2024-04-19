@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using AVS.CoreLib.DLinq.Specs.CompoundBlocks;
+using AVS.CoreLib.DLinq.Enums;
+using AVS.CoreLib.DLinq.Specs.LambdaSpecs;
 using AVS.CoreLib.Expressions;
 using AVS.CoreLib.Extensions.Enums;
 using AVS.CoreLib.Extensions.Reflection;
@@ -13,7 +14,7 @@ namespace AVS.CoreLib.DLinq.Specs;
 public static class SpecCompiler
 {
     #region BuildSelectFn
-    public static Func<IEnumerable<T>, IEnumerable> BuildSelectFn<T>(ISpec spec, LambdaContext ctx)
+    public static Func<IEnumerable<T>, IEnumerable> BuildSelectFn<T>(ILambdaSpec spec, LambdaContext ctx)
     {
         try
         {
@@ -104,7 +105,7 @@ public static class SpecCompiler
         return Lmbd.Compile<IOrderedEnumerable<T>, Sort, IOrderedEnumerable<T>>(body, sourceParam, directionParam);
     }
     
-    public static Func<T, bool> BuildPredicate<T>(ISpec spec, LambdaContext ctx)
+    public static Func<T, bool> BuildPredicate<T>(ILambdaSpec spec, LambdaContext ctx)
     {
         var paramExpr = Expression.Parameter(typeof(T), "x");
         //bars.Select(x => ((IXBar)x).Prop, ((IBar1)x).ATR)

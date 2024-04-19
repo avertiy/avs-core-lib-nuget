@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using AVS.CoreLib.Extensions.Reflection;
 
@@ -8,6 +9,7 @@ namespace AVS.CoreLib.DLinq.Specs.BasicBlocks;
 /// Cast (convert) to ArgType
 /// <code>(ArgType)x</code> 
 /// </summary>
+[DebuggerDisplay("CastSpec {ArgType}")]
 public class CastSpec : SpecBase
 {
     public CastSpec(Type argType)
@@ -25,7 +27,7 @@ public class CastSpec : SpecBase
         return Expression.Convert(expr, ArgType);
     }
 
-    public override string ToString(string arg, SpecView view = SpecView.Default)
+    public string Format(string arg)
     {
         return $"(({ArgType.GetReadableName()}){arg})";
     }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AVS.CoreLib.DLinq;
+namespace AVS.CoreLib.DLinq.Enums;
 
 [Flags]
 public enum SelectMode

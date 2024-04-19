@@ -1,15 +1,19 @@
-﻿using System.Linq.Expressions;
+﻿using System;
+using System.Diagnostics;
+using System.Linq.Expressions;
+using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Reflection;
 
 namespace AVS.CoreLib.DLinq.Specs.BasicBlocks;
 
 /// <summary>
-/// Builds indexer expressions 
+/// Represent indexer by string key expression specification: 
 /// <code>
-/// 1. x[Key]
-/// 2. x.Prop[Key]
+/// 1. ["key"]
+/// 2. prop["key"]
 /// </code>
 /// </summary>
+[DebuggerDisplay("KeySpec: {ToString()}")]
 public class KeySpec : PropSpec
 {
     public string Key { get; set; }
@@ -37,22 +41,36 @@ public class KeySpec : PropSpec
         return expr;
     }
 
-    public override string ToString(string arg, SpecView view = SpecView.Default)
-    {
-        return view switch
-        {
-            SpecView.Expr => $"{base.ToString(arg, view)}[\"{Key}\"]",
-            _ => $"{base.ToString(arg, view)}[{Key}]"
-        };
-    }
-
     public override string GetKey()
     {
-        return Key;
+        return Name == null ? Key : $"{Name}_{Key}";
     }
 
     public override string ToString()
     {
-        return $"{nameof(KeySpec)} [{Key}]";
+        return $"{Name}[\"{Key}\"]";
+    }
+
+    ///// <summary>
+    ///// Converts spec to its string representation
+    ///// <code>
+    ///// p/plain -> prop_key or key 
+    ///// </code> 
+    ///// </summary>
+    //public string ToString(string format)
+    //{
+    //    switch (format)
+    //    {
+    //        case "p":
+    //        case "plain":
+    //            return Name == null ? Key : $"{Name}_{Key}";
+    //        default:
+    //            return ToString();
+    //    }
+    //}
+
+    public override string Format(string expr)
+    {
+        return Name == null ? $"{expr}[\"{Key}\"]" : $"{expr}.{Name}[\"{Key}\"]";
     }
 }

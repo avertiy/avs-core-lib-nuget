@@ -136,6 +136,7 @@ public class DLinqEngineTests
         list[0].Should().Be(6);
     }
 
+    #region Aliases & ShortCuts tests
     [TestMethod]
     public void Select_As_Alias_Should_Return_Alias_Key()
     {
@@ -154,6 +155,30 @@ public class DLinqEngineTests
         dict["AVG"].Should().Be(3);
         dict["max"].Should().Be(6);
     }
+
+    [TestMethod]
+    public void Shortcut_Should_Be_Omit_From_Select()
+    {
+        // arrange
+        var obj1 = new { Prop1 = new[] { 1, 2 }, Prop2 = new[] { 3, 4 } };
+        var obj2 = new { Prop1 = new[] { 5, 6 }, Prop2 = new[] { 7, 8 } };
+        var source = new[] { obj1, obj2 };
+
+        // act
+        var result = _engine.Process(source, "Prop1 as A!, A[1] as val", null);
+        var list = result as IList<IDictionary<string, int>>;
+
+        // assert
+        Assert.IsNotNull(list);
+        list.Count.Should().Be(2);
+        list[0].ContainsKey("val").Should().BeTrue();
+        list[0]["val"].Should().Be(2);
+        list[1].ContainsKey("val").Should().BeTrue();
+        list[1]["val"].Should().Be(6);
+        
+    }
+
+    #endregion
 
     #region Where tests
     [TestMethod]

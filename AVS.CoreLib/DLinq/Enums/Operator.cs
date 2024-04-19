@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace AVS.CoreLib.DLinq.Conditions;
+﻿namespace AVS.CoreLib.DLinq.Enums;
 
 public enum Operator
 {
@@ -56,24 +53,4 @@ public static class OperatorExtensions
             _ => Operator.Undefined
         };
     }
-
-    //public static Dictionary<string, Operator> Operators = new()
-    //{
-    //    {">", Operator.Gt},
-    //    {"<", Operator.Lt},
-    //    {"=", Operator.Eq},
-    //    {"==", Operator.EqEq},
-    //    {">=", Operator.GtOrEq},
-    //    {"<=", Operator.LtOrEq},
-    //    {"gt", Operator.Gt},
-    //    {"lt", Operator.Lt},
-    //    {"IS", Operator.Is},
-    //    {"NOT", Operator.Not},
-    //    {"BETWEEN", Operator.Between}
-    //};
-
-    //public static bool RequireSingleArg(this Operator op)
-    //{
-    //    return op < Operator.In;
-    //}
 }
