@@ -32,7 +32,7 @@ public class MultiValueExprSpec : CompoundSpec<ValueExprSpec>, ILambdaSpec
 
     public bool Contains(string name)
     {
-        return Items.Any(x => x.Name == name);
+        return Items.Any(x => x.Shortcut == false && x.Name == name);
     }
 
     public void Add(ValueExprSpec item)
@@ -55,9 +55,6 @@ public class MultiValueExprSpec : CompoundSpec<ValueExprSpec>, ILambdaSpec
             {
                 var keys = new List<string>(Items.Count);
                 var expressions = new List<Expression>(Items.Count);
-
-                ctx.Expressions = new Dictionary<string, Expression>(Items.Count);
-
                 var sameType = true;
 
                 foreach (var item in Items)
@@ -65,7 +62,8 @@ public class MultiValueExprSpec : CompoundSpec<ValueExprSpec>, ILambdaSpec
                     var key = item.Name;
                     var valueExpr = item.BuildExpr(expression, ctx);
 
-                    ctx.Expressions.Add(key, valueExpr);
+                    if(item.Alias != null || !ctx.Expressions.ContainsKey(key))
+                        ctx.Expressions[key] = valueExpr;
 
                     if (item.Shortcut)
                         continue;
@@ -140,6 +138,9 @@ internal static class MultiValueExprSpecExtensions
         // Filter out shortcuts and items with no aggregation function
         var items = spec.Items.Where(item => item is { Shortcut: false, Fn: > 0 }).ToList();
 
+        if (items.Count == 0)
+            return source;
+
         // Apply shortcuts
         foreach (var item in items)
         {
@@ -148,24 +149,9 @@ internal static class MultiValueExprSpecExtensions
                 item.ApplyShortcut(shortcut);
         }
 
-        switch (items.Count)
-        {
-            case 0:
-                return source;
-            case 1:
-                return items.Select(x => source.Aggregate(x, mode)).ToArray();
-
-            default:
-            {
-                // multi aggregates case
-                var arr = source.ToArray();
-
-                IEnumerable result = items.Any(x => x.Alias != null)
-                    ? items.ToDictionary(x => x.Name, x => arr.Aggregate(x, mode))
-                    : items.Select(x => arr.Aggregate(x, mode)).ToList();
-
-                return result;
-            }
-        }
+        // multi aggregates case
+        var arr = source.ToArray();
+        var result = items.ToDictionary(x => x.Name, x => arr.Aggregate(x, mode));
+        return result;
     }
 }

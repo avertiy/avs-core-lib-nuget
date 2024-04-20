@@ -12,7 +12,7 @@ public class LambdaContext
     public object? Source { get; set; }
     public ParameterExpression? ParamExpr { get; set; }
     public Func<Expression, Type?>? ResolveTypeFn { get; set; }
-    public Dictionary<string, Expression>? Expressions { get; set; }
+    public Dictionary<string, Expression> Expressions { get; set; } = new();
 
     public T? GetItem<T>()
     {

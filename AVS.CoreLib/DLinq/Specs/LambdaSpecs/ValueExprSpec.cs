@@ -54,11 +54,13 @@ public class ValueExprSpec : SpecBase, ILambdaSpec
 
     public override Expression BuildExpr(Expression expression, LambdaContext ctx)
     {
-        var shortcut = Parts[0].Name;
+        var shortcutName = Parts[0].Name;
         Expression expr;
 
-        if (shortcut != null && ctx.Expressions != null && ctx.Expressions.ContainsKey(shortcut))
-            expr = ctx.Expressions[shortcut];
+        if (shortcutName != null && ctx.Expressions.ContainsKey(shortcutName))
+        {
+            expr = ctx.Expressions[shortcutName];
+        }
         else
         {
             expr = expression.Type == ArgType ? expression : Expression.Convert(expression, ArgType);
@@ -71,6 +73,9 @@ public class ValueExprSpec : SpecBase, ILambdaSpec
 
         if (ReturnType != null)
             expr = Expression.Convert(expr, ReturnType);
+
+        if (Alias != null)
+            ctx.Expressions[Alias] = expr;
 
         if (ctx.Mode.HasFlag(SelectMode.Safe))
             expr = Expr.WrapInTryCatch(expr);
@@ -101,14 +106,18 @@ public class ValueExprSpec : SpecBase, ILambdaSpec
         return key;
     }
 
-    public void ApplyShortcut(ValueExprSpec spec)
+    public void ApplyShortcut(ValueExprSpec shortcut)
     {
-        var parts = new List<PropSpec>(spec.Parts);
+        if (Parts[0].Name != shortcut.Alias)
+            throw new InvalidOperationException($"{Parts[0].Name} != {shortcut.Alias}");
+
+        // apply shortcut i.e. replace Parts[0] with shortcut.Parts
+        var parts = new List<PropSpec>(shortcut.Parts);
 
         for (var i = 1; i < Parts.Count; i++)
-            parts.Add(spec.Parts[i]);
+            parts.Add(Parts[i]);
 
-        spec.Parts = parts;
+        Parts = parts;
     }
 
     public static ValueExprSpec Parse(string expr, Type type)
