@@ -5,7 +5,7 @@ using System.Reflection;
 using AVS.CoreLib.Guards;
 using AVS.CoreLib.Utilities;
 
-namespace AVS.CoreLib.Expressions;
+namespace AVS.CoreLib.Lambdas;
 
 /// <summary>
 /// Expression helper class helps to build some of the expressions
@@ -39,6 +39,7 @@ public static class Expr
             return (TryExpression)expr;
 
         TryExpression tryExpr;
+
         if (expr.Type == typeof(void))
             tryExpr = Expression.TryCatch(
                 // Try block: return x[key]
@@ -97,7 +98,7 @@ public static class Expr
         var keys = props.Select(x => x.Name).ToArray();
         var keysExpr = Expression.Constant(keys);
         var uniqueTypes = props.Select(x => x.PropertyType).Distinct().ToArray();
-        
+
         Expression valuesArrExpr;
         MethodInfo method;
         if (uniqueTypes.Length == 1)

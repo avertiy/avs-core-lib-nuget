@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using AVS.CoreLib.DLinq.Enums;
-using AVS.CoreLib.DLinq.Specs.LambdaSpecs;
-using AVS.CoreLib.Expressions;
+using AVS.CoreLib.DLinq.Specs.CompoundBlocks;
 using AVS.CoreLib.Extensions.Enums;
 using AVS.CoreLib.Extensions.Reflection;
+using AVS.CoreLib.Lambdas;
 
 namespace AVS.CoreLib.DLinq.Specs;
 

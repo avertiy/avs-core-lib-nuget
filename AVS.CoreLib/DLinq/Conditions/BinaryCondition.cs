@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using AVS.CoreLib.DLinq.Enums;
 using AVS.CoreLib.DLinq.Specs;
-using AVS.CoreLib.DLinq.Specs.CompoundBlocks;
-using AVS.CoreLib.DLinq.Specs.LambdaSpecs;
+using AVS.CoreLib.DLinq.Specs.Predicates;
 
 namespace AVS.CoreLib.DLinq.Conditions;
 
@@ -35,7 +33,7 @@ public record BinaryCondition : ICondition
     {
         var leftSpec = Left.GetSpec(context);
         var rightSpec = Right.GetSpec(context);
-        return LogicalSpec.Combine(Op, leftSpec, rightSpec);
+        return CompoundPredicateSpec.Combine(Op, leftSpec, rightSpec);
     }
 
     public static ICondition OR(ICondition left, ICondition right)

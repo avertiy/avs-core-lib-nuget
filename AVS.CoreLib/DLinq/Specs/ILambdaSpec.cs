@@ -1,5 +1,5 @@
 ﻿using System.Linq.Expressions;
-using AVS.CoreLib.Expressions;
+using AVS.CoreLib.Lambdas;
 
 namespace AVS.CoreLib.DLinq.Specs;
 

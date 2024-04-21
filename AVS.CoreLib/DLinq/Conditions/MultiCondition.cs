@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AVS.CoreLib.DLinq.Enums;
 using AVS.CoreLib.DLinq.Specs;
-using AVS.CoreLib.DLinq.Specs.CompoundBlocks;
-using AVS.CoreLib.DLinq.Specs.LambdaSpecs;
+using AVS.CoreLib.DLinq.Specs.Predicates;
 using AVS.CoreLib.Guards;
 
 namespace AVS.CoreLib.DLinq.Conditions;
@@ -36,6 +36,6 @@ public record MultiCondition : ICondition
     public ILambdaSpec GetSpec(DLinqContext context)
     {
         var items = Items.Select(x => x.GetSpec(context)).ToArray();
-        return LogicalSpec.Combine(Op, items);
+        return CompoundPredicateSpec.Combine(Op, items);
     }
 }

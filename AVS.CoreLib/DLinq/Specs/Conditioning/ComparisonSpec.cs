@@ -25,7 +25,7 @@ public class ComparisonSpec : SpecBase
         Arg = string.Empty;
     }
 
-    public override Expression BuildExpr(Expression expression, LambdaContext ctx)
+    public virtual Expression BuildExpr(Expression expression, LambdaContext ctx)
     {
         var type = expression.Type;
 

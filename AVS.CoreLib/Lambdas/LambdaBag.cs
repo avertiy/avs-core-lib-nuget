@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using AVS.CoreLib.Collections;
 using System.Reflection;
 using AVS.CoreLib.Extensions.Reflection;
 
-namespace AVS.CoreLib.Expressions;
+namespace AVS.CoreLib.Lambdas;
 
 /// <summary>
 /// Represent a cache layer to store a compiled lambdas (delegates)
@@ -86,14 +85,14 @@ public static class LambdaBagExtensions
         return false;
     }
 
-    public static bool TryGetFunc<T1,T2, TResult>(this LambdaBag bag, string key, out Func<T1,T2, TResult>? func)
+    public static bool TryGetFunc<T1, T2, TResult>(this LambdaBag bag, string key, out Func<T1, T2, TResult>? func)
     {
         func = null;
 
         if (!bag.ContainsKey(key))
             return false;
 
-        if (bag[key] is Func<T1,T2, TResult> fn)
+        if (bag[key] is Func<T1, T2, TResult> fn)
         {
             func = fn;
             return true;
@@ -101,7 +100,6 @@ public static class LambdaBagExtensions
 
         return false;
     }
-
 
     public static Func<T, TResult> GetSelector<T, TResult>(this LambdaBag bag, PropertyInfo prop, Type? paramType)
     {
@@ -125,62 +123,5 @@ public static class LambdaBagExtensions
         var func = lambda.Compile();
         bag[key] = func;
         return func;
-    }
-}
-
-internal static class LambdaBagDictSelectorExtensions
-{
-    public static Func<T, Dictionary<string, TValue>> GetDictSelector<T, TValue>(this LambdaBag bag, PropertyInfo[] props, Type? paramType)
-    {
-        var propsStr = string.Join(",", props.Select(x => x.Name));
-        var key = FuncHelper.GetKey<T, Dictionary<string, TValue>>(propsStr, paramType?.Name);
-        if (bag.TryGetFunc(key, out Func<T, Dictionary<string, TValue>>? fn))
-            return fn!;
-
-        // build lambda expression as the following:
-        //  x => {
-        //      var dict = new Dictionary{string,TValue}(props.Length);
-        //      dict.Add(prop1.Name.ToCamelCase(), (ParamType)x).Prop1);
-        //      dict.Add(prop2.Name.ToCamelCase(), (ParamType)x).Prop2);
-        //      ....
-        //      return dict;
-        // }
-        var lambda = LambdaBuilder.SelectDictionaryExpr<T, TValue>(props, paramType);
-        var func = lambda.Compile();
-        bag[key] = func;
-        return func;
-    }
-
-    public static Func<T, Dictionary<string, object>> GetDictSelector<T>(this LambdaBag bag, PropertyInfo[] props, Type? paramType)
-    {
-        var propsStr = string.Join(",", props.Select(x => x.Name));
-        var key = FuncHelper.GetKey<T, Dictionary<string, object>>(propsStr, paramType?.Name);
-        if (bag.TryGetFunc(key, out Func<T, Dictionary<string, object>>? fn))
-            return fn!;
-
-        // build lambda expression as the following:
-        //  x => {
-        //      var dict = new Dictionary{string,object}(props.Length);
-        //      dict.Add(prop1.Name.ToCamelCase(), (ParamType)x).Prop1);
-        //      dict.Add(prop2.Name.ToCamelCase(), (ParamType)x).Prop2);
-        //      ....
-        //      return dict;
-        // }
-
-        var lambda = LambdaBuilder.SelectDictionaryExpr<T>(props, paramType);
-        var func = lambda.Compile();
-        bag[key] = func;
-        return func;
-    }
-}
-
-internal static class FuncHelper
-{
-    public static string GetKey<T, TResult>(string arg1, string? arg2)
-    {
-        if (arg2 == null)
-            return $"Func<{typeof(T).GetReadableName()},{typeof(TResult).GetReadableName()}>({arg1})";
-
-        return $"Func<{typeof(T).GetReadableName()},{typeof(TResult).GetReadableName()}>({arg1}, {arg2})";
     }
 }

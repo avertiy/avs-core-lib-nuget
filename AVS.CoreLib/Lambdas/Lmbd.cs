@@ -7,8 +7,11 @@ using System.Reflection;
 using AVS.CoreLib.DLinq.Enums;
 using AVS.CoreLib.Extensions.Reflection;
 
-namespace AVS.CoreLib.Expressions;
+namespace AVS.CoreLib.Lambdas;
 
+/// <summary>
+/// Lambda expression helper 
+/// </summary>
 public static class Lmbd
 {
     [DebuggerStepThrough]
@@ -33,16 +36,26 @@ public static class Lmbd
     }
 
     /// <summary>
-    /// Creates lambda: x => ((TypeArg)x).Prop;
+    /// Creates lambda: source.Select(selector);
     /// </summary>
-    public static LambdaExpression SelectProp<TSource>(PropertyInfo prop, Type? typeArg)
+    public static Expression<Func<IEnumerable<T>, IEnumerable>> Select<T>(LambdaExpression selectorExpr, SelectMode mode)
     {
-        var paramExpr = Expression.Parameter(typeof(TSource), "x");
+        var sourceParam = Expression.Parameter(typeof(IEnumerable<T>), "source");
+        var selectMethod = LinqHelper.GetSelectMethodInfo(typeof(T), selectorExpr.ReturnType);
+        Expression body = Expression.Call(null, selectMethod, sourceParam, selectorExpr);
 
-        var propExpr = Expression.Property(paramExpr.Cast(typeArg), prop);
+        if (mode.HasFlag(SelectMode.ToList))
+        {
+            var toListMethod = LinqHelper.GetToListMethodInfo(selectorExpr.ReturnType);
+            // add ToList() call: source.Select(selector).ToList();
+            body = Expression.Call(toListMethod, body);
+        }
 
-        var lambdaExpr = Expression.Lambda(propExpr, paramExpr);
-        return lambdaExpr;
+        if (mode.HasFlag(SelectMode.Safe))
+            body = Expr.WrapInTryCatch(body);
+
+        var lambda = Create<T>(body, sourceParam);
+        return lambda;
     }
 
     public static Expression<Func<TSource, TResult>> SelectProp<TSource, TResult>(PropertyInfo prop, Type? typeArg)
@@ -56,6 +69,19 @@ public static class Lmbd
     }
 
     /// <summary>
+    /// Creates lambda: x => ((TypeArg)x).Prop;
+    /// </summary>
+    public static LambdaExpression SelectProp<TSource>(PropertyInfo prop, Type? typeArg)
+    {
+        var paramExpr = Expression.Parameter(typeof(TSource), "x");
+
+        var propExpr = Expression.Property(paramExpr.Cast(typeArg), prop);
+
+        var lambdaExpr = Expression.Lambda(propExpr, paramExpr);
+        return lambdaExpr;
+    }
+
+    /// <summary>
     /// Creates lambda: x => XActivator.CreateDictionary(keys, new object[] {expr1, expr2, ...});
     /// </summary>
     public static LambdaExpression SelectDict<TSource>(PropertyInfo[] props, Type? typeArg)
@@ -64,31 +90,6 @@ public static class Lmbd
         var selectorExpr = Expr.CreateDictionaryExpr<TSource>(paramExpr.Cast(typeArg), props);
         var lambdaExpr = Expression.Lambda(selectorExpr, paramExpr);
         return lambdaExpr;
-    }
-
-    /// <summary>
-    /// Creates lambda: source.Select(selector);
-    /// </summary>
-    public static Expression<Func<IEnumerable<T>, IEnumerable>> Select<T>(LambdaExpression selectorExpr, SelectMode mode)
-    {
-        var sourceParam = Expression.Parameter(typeof(IEnumerable<T>), "source");
-        var selectMethod = LinqHelper.GetSelectMethodInfo(typeof(T), selectorExpr.ReturnType);
-        Expression body = Expression.Call(null, selectMethod, sourceParam, selectorExpr);
-        
-        if (mode.HasFlag(SelectMode.ToList))
-        {
-            var toListMethod = LinqHelper.GetToListMethodInfo(selectorExpr.ReturnType);
-            // add ToList() call: source.Select(selector).ToList();
-            body = Expression.Call(toListMethod, body);
-        }
-
-        if (mode.HasFlag(SelectMode.Safe))
-        {
-            body = Expr.WrapInTryCatch(body);
-        }
-
-        var lambda = Lmbd.Create<T>(body, sourceParam);
-        return lambda;
     }
 
     public static Func<T, TResult> Compile<T, TResult>(Expression expr, ParameterExpression paramExpr)

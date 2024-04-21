@@ -1,7 +1,7 @@
 ﻿using System;
-using AVS.CoreLib.Expressions;
+using AVS.CoreLib.Lambdas;
 
-namespace AVS.CoreLib.DLinq.Extensions;
+namespace AVS.CoreLib.Extensions.Dynamic;
 
 public static class DynamicExtensions
 {

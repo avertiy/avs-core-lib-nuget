@@ -6,7 +6,7 @@ using System.Text;
 using AVS.CoreLib.DLinq.Specs.LambdaSpecs;
 using AVS.CoreLib.Extensions.Enums;
 
-namespace AVS.CoreLib.DLinq.Specs.CompoundBlocks;
+namespace AVS.CoreLib._archive;
 /*
 /// <summary>
 /// Represent a lambda specification single field (value) selector to be used with OrderBy extensions

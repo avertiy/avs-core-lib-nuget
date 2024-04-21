@@ -5,14 +5,15 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using AVS.CoreLib.DLinq;
 using AVS.CoreLib.DLinq.Enums;
 using AVS.CoreLib.DLinq.Extensions;
 using AVS.CoreLib.DLinq.Specs.BasicBlocks;
-using AVS.CoreLib.Expressions;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Reflection;
+using AVS.CoreLib.Lambdas;
 
-namespace AVS.CoreLib.DLinq.Specs.LambdaSpecs;
+namespace AVS.CoreLib.DLinq.Specs.CompoundBlocks;
 
 /// <summary>
 /// Represent a lambda specification single field (value) selector
@@ -52,15 +53,13 @@ public class ValueExprSpec : SpecBase, ILambdaSpec
             Parts.Add(new KeySpec(input.Trim('"', '\'')) { Raw = Raw });
     }
 
-    public override Expression BuildExpr(Expression expression, LambdaContext ctx)
+    public virtual Expression BuildExpr(Expression expression, LambdaContext ctx)
     {
         var shortcutName = Parts[0].Name;
         Expression expr;
 
         if (shortcutName != null && ctx.Expressions.ContainsKey(shortcutName))
-        {
             expr = ctx.Expressions[shortcutName];
-        }
         else
         {
             expr = expression.Type == ArgType ? expression : Expression.Convert(expression, ArgType);

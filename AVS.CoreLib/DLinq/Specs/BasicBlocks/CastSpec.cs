@@ -19,7 +19,7 @@ public class CastSpec : SpecBase
 
     public Type ArgType { get; set; }
 
-    public override Expression BuildExpr(Expression expr, LambdaContext ctx)
+    public virtual Expression BuildExpr(Expression expr, LambdaContext ctx)
     {
         if (expr.Type == ArgType)
             return expr;

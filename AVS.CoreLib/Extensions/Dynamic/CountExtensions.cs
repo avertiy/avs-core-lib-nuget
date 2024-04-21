@@ -1,7 +1,8 @@
 ﻿using System.Collections;
+using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Linq;
 
-namespace AVS.CoreLib.Extensions;
+namespace AVS.CoreLib.Extensions.Dynamic;
 
 public static class CountExtensions
 {
@@ -67,8 +68,6 @@ public static class CountExtensions
             return false;
         }
     }
-
-
 
     private static dynamic? TryGetData(dynamic obj)
     {

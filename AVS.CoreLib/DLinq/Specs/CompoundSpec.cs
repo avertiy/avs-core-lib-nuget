@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace AVS.CoreLib.DLinq.Specs.CompoundBlocks;
+namespace AVS.CoreLib.DLinq.Specs;
 
 public abstract class CompoundSpec<T> : SpecBase where T : ILambdaSpec
 {

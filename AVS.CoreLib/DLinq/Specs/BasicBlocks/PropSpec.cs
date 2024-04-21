@@ -15,7 +15,7 @@ public class PropSpec : SpecBase, ILambdaSpec
 {
     public string? Name { get; set; }
 
-    public override Expression BuildExpr(Expression expression, LambdaContext ctx)
+    public virtual Expression BuildExpr(Expression expression, LambdaContext ctx)
     {
         if (string.IsNullOrEmpty(Name))
             return expression;

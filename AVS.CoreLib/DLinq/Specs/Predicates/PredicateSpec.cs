@@ -1,49 +1,52 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using AVS.CoreLib.DLinq.Enums;
-using AVS.CoreLib.DLinq.Specs.LambdaSpecs;
-using AVS.CoreLib.Expressions;
+using AVS.CoreLib.DLinq.Specs.CompoundBlocks;
+using AVS.CoreLib.DLinq.Specs.Conditioning;
 using AVS.CoreLib.Guards;
+using AVS.CoreLib.Lambdas;
 
-namespace AVS.CoreLib.DLinq.Specs.Conditioning;
+namespace AVS.CoreLib.DLinq.Specs.Predicates;
 
 /// <summary>
-/// Represent a simple condition: A > 1
+/// Represent a simple predicate expression specification e.g. x => x > 1
 /// </summary>
-[DebuggerDisplay("ConditionSpec: {Value} {Comparison}")]
-public class ConditionSpec : SpecBase, ILambdaSpec
+[DebuggerDisplay("PredicateSpec: {Value} {Comparison}")]
+public class PredicateSpec : SpecBase, ILambdaSpec
 {
     public ValueExprSpec Value { get; set; }
     public ComparisonSpec Comparison { get; set; }
 
-    public ConditionSpec(ValueExprSpec value, ComparisonSpec comparison)
+    public PredicateSpec(ValueExprSpec value, ComparisonSpec comparison)
     {
         Value = value;
         Comparison = comparison;
     }
 
-    public override Expression BuildExpr(Expression expression, LambdaContext ctx)
+    public virtual Expression BuildExpr(Expression expression, LambdaContext ctx)
     {
         var expr = Value.BuildExpr(expression, ctx);
 
         if (ctx.Mode.HasFlag(SelectMode.Safe))
-        {
             expr = Expr.WrapInTryCatch(expr);
-        }
 
         expr = Comparison.BuildExpr(expr, ctx);
         return expr;
     }
-    
+
     public string GetCacheKey()
     {
         return $"{Value.GetCacheKey()} {Comparison}";
     }
 
-    public static ConditionSpec Parse(string expr, DLinqContext context)
+    public override string ToString()
+    {
+        return $"{Value} {Comparison}";
+    }
+
+    public static PredicateSpec Parse(string expr, DLinqContext context)
     {
         Guard.Against.NullOrEmpty(expr);
 
@@ -58,12 +61,9 @@ public class ConditionSpec : SpecBase, ILambdaSpec
 
         var valueSpec = context.Items.FirstOrDefault(x => x.Name == valueExpr) ??
                         ValueExprSpec.Parse(valueExpr, context.Type);
-        var spec = new ConditionSpec(valueSpec, compSpec);
+        var spec = new PredicateSpec(valueSpec, compSpec);
         return spec;
     }
 
-    public override string ToString()
-    {
-        return $"{Value} {Comparison}";
-    }
+
 }

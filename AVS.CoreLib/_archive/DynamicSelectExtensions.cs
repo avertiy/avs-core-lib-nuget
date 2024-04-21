@@ -3,12 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using AVS.CoreLib.DLinq;
 using AVS.CoreLib.DLinq.Enums;
+using AVS.CoreLib.DLinq.Extensions;
 using AVS.CoreLib.Expressions;
 using AVS.CoreLib.Extensions.Linq;
 using AVS.CoreLib.Extensions.Reflection;
 
-namespace AVS.CoreLib.DLinq.Extensions;
+namespace AVS.CoreLib._archive;
 
 public static class DynamicSelectExtensions
 {
@@ -25,7 +27,7 @@ public static class DynamicSelectExtensions
     {
         var typeArg = type ?? typeof(T);
         var props = typeArg.LookupProperties(selector ?? "*");
-        
+
         if (props.Length == 0)
             return source;
 
@@ -55,7 +57,7 @@ public static class DynamicSelectExtensions
             return source.Cast<T, TResult>();
         return source.DynamicSelect<T, TResult>(prop, typeArg);
     }
-    
+
 
     #region DynamicSelect by PropertyInfo(s)
     public static IEnumerable<TResult> DynamicSelect<T, TResult>(this IEnumerable<T> source, PropertyInfo prop, Type? paramType)

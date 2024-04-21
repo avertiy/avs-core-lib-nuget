@@ -51,6 +51,13 @@
     <Compile Remove="Enums\OrderBy.cs" />
     <Compile Remove="Extensions\QueryStringExtensions.cs" />
     <Compile Remove="Utilities\Guard.cs" />
+    <Compile Remove="_archive\DynamicSelectExtensions.cs" />
+    <Compile Remove="_archive\EnumerableBox.cs" />
+    <Compile Remove="_archive\LambdaBagDictSelectorExtensions.cs" />
+    <Compile Remove="_archive\LambdaBagGetSelectFnExtensions.cs" />
+    <Compile Remove="_archive\LambdaBuilder.cs" />
+    <Compile Remove="_archive\OrderByExprSpec.cs" />
+    <Compile Remove="_archive\SelectDictExtensions.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -67,6 +74,10 @@
   <ItemGroup>
     <ProjectReference Include="..\AVS.CoreLib.Abstractions\AVS.CoreLib.Abstractions.csproj" />
     <ProjectReference Include="..\AVS.CoreLib.Extensions\AVS.CoreLib.Extensions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="_archive\" />
   </ItemGroup>
 
 </Project>

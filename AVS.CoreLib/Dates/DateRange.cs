@@ -51,6 +51,12 @@ namespace AVS.CoreLib.Dates
             To = other.To;
         }
 
+        public DateRange((DateTime from, DateTime to) range)
+        {
+            From = range.from;
+            To = range.to;
+        }
+
         public bool Contains(DateTime date)
         {
             return From <= date && To >= date;

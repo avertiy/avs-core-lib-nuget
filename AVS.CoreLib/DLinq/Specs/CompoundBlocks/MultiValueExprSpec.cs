@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using AVS.CoreLib.DLinq;
 using AVS.CoreLib.DLinq.Enums;
-using AVS.CoreLib.Expressions;
 using AVS.CoreLib.DLinq.Extensions;
-using AVS.CoreLib.DLinq.Specs.CompoundBlocks;
+using AVS.CoreLib.Lambdas;
 
-namespace AVS.CoreLib.DLinq.Specs.LambdaSpecs;
+namespace AVS.CoreLib.DLinq.Specs.CompoundBlocks;
 
 /// <summary>
 /// Represent lambda specification with multiple value expressions <see cref="ValueExprSpec"/>
@@ -25,9 +25,7 @@ public class MultiValueExprSpec : CompoundSpec<ValueExprSpec>, ILambdaSpec
     public MultiValueExprSpec(IList<ValueExprSpec> items) : base(items.Count)
     {
         foreach (var item in items)
-        {
             Add(item);
-        }
     }
 
     public bool Contains(string name)
@@ -43,7 +41,7 @@ public class MultiValueExprSpec : CompoundSpec<ValueExprSpec>, ILambdaSpec
         Items.Add(item);
     }
 
-    public override Expression BuildExpr(Expression expression, LambdaContext ctx)
+    public virtual Expression BuildExpr(Expression expression, LambdaContext ctx)
     {
         switch (Items.Count)
         {
@@ -52,31 +50,31 @@ public class MultiValueExprSpec : CompoundSpec<ValueExprSpec>, ILambdaSpec
             case 1:
                 return Items.First().BuildExpr(expression, ctx);
             default:
-            {
-                var keys = new List<string>(Items.Count);
-                var expressions = new List<Expression>(Items.Count);
-                var sameType = true;
-
-                foreach (var item in Items)
                 {
-                    var key = item.Name;
-                    var valueExpr = item.BuildExpr(expression, ctx);
+                    var keys = new List<string>(Items.Count);
+                    var expressions = new List<Expression>(Items.Count);
+                    var sameType = true;
 
-                    if(item.Alias != null || !ctx.Expressions.ContainsKey(key))
-                        ctx.Expressions[key] = valueExpr;
+                    foreach (var item in Items)
+                    {
+                        var key = item.Name;
+                        var valueExpr = item.BuildExpr(expression, ctx);
 
-                    if (item.Shortcut)
-                        continue;
+                        if (item.Alias != null || !ctx.Expressions.ContainsKey(key))
+                            ctx.Expressions[key] = valueExpr;
 
-                    keys.Add(key);
-                    expressions.Add(valueExpr);
+                        if (item.Shortcut)
+                            continue;
 
-                    if (sameType && expressions.Count > 1 && expressions[0].Type != valueExpr.Type)
-                        sameType = false;
-                }
+                        keys.Add(key);
+                        expressions.Add(valueExpr);
 
-                var expr = Expr.CreateDictionaryExpr(keys.ToArray(), expressions.ToArray());
-                return expr;
+                        if (sameType && expressions.Count > 1 && expressions[0].Type != valueExpr.Type)
+                            sameType = false;
+                    }
+
+                    var expr = Expr.CreateDictionaryExpr(keys.ToArray(), expressions.ToArray());
+                    return expr;
                 }
         }
     }
@@ -105,7 +103,7 @@ public class MultiValueExprSpec : CompoundSpec<ValueExprSpec>, ILambdaSpec
     {
         return Items.Select(x => x.ArgType);
     }
-    
+
 
     private string ResolveCollision(string key)
     {

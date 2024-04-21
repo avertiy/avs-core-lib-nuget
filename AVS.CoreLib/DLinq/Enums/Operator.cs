@@ -1,5 +1,10 @@
-﻿namespace AVS.CoreLib.DLinq.Enums;
+﻿using AVS.CoreLib.DLinq.Specs.Conditioning;
 
+namespace AVS.CoreLib.DLinq.Enums;
+
+/// <summary>
+/// Comparison operators for <see cref="ComparisonSpec"/>
+/// </summary>
 public enum Operator
 {
     Undefined = 0,

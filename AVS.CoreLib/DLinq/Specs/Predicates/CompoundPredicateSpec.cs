@@ -4,34 +4,31 @@ using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
-using AVS.CoreLib.DLinq.Conditions;
-using AVS.CoreLib.DLinq.Specs.Conditioning;
+using AVS.CoreLib.DLinq;
+using AVS.CoreLib.DLinq.Enums;
 using AVS.CoreLib.Extensions.Reflection;
 
-namespace AVS.CoreLib.DLinq.Specs.CompoundBlocks;
+namespace AVS.CoreLib.DLinq.Specs.Predicates;
 
 /// <summary>
 /// allows to combine specs with logical operators && (and), || (or)
+/// contains either <see cref="PredicateSpec"/> or another <see cref="CompoundPredicateSpec"/>
 /// </summary>
 [DebuggerDisplay("LogicalSpec: {ToString()} (raw: {Raw})")]
-public class LogicalSpec : CompoundSpec<ILambdaSpec>, ILambdaSpec
+public class CompoundPredicateSpec : CompoundSpec<ILambdaSpec>, ILambdaSpec
 {
     public Op Op { get; set; }
-    ///// <summary>
-    ///// contains either <see cref="ConditionSpec"/> or another <see cref="LogicalSpec"/>
-    ///// </summary>
-    //public List<ILambdaSpec> Items { get; set; }
 
-    public LogicalSpec(Op op, params ILambdaSpec[] items) : base(items)
+    public CompoundPredicateSpec(Op op, params ILambdaSpec[] items) : base(items)
     {
         Items = new List<ILambdaSpec>(items);
         Op = op;
 
-        if(op != Op.AND && op != Op.OR)
-            throw new ArgumentException($"{nameof(LogicalSpec)} does not support {Op}");
+        if (op != Op.AND && op != Op.OR)
+            throw new ArgumentException($"{nameof(CompoundPredicateSpec)} does not support {Op}");
     }
 
-    public override Expression BuildExpr(Expression expression, LambdaContext ctx)
+    public virtual Expression BuildExpr(Expression expression, LambdaContext ctx)
     {
         var expr = Items[0].BuildExpr(expression, ctx);
 
@@ -52,7 +49,7 @@ public class LogicalSpec : CompoundSpec<ILambdaSpec>, ILambdaSpec
 
         return expr;
     }
-    
+
     public string GetCacheKey()
     {
         if (SameArgType(out var type))
@@ -69,22 +66,20 @@ public class LogicalSpec : CompoundSpec<ILambdaSpec>, ILambdaSpec
         return IterateConditionSpecs().Select(x => x.Value.ArgType);
     }
 
-    private IEnumerable<ConditionSpec> IterateConditionSpecs()
+    private IEnumerable<PredicateSpec> IterateConditionSpecs()
     {
         foreach (var item in Items)
         {
-            if (item is ConditionSpec cond)
+            if (item is PredicateSpec cond)
             {
                 yield return cond;
                 continue;
             }
 
-            var logical = (LogicalSpec)item;
+            var logical = (CompoundPredicateSpec)item;
 
             foreach (var spec in logical.IterateConditionSpecs())
-            {
                 yield return spec;
-            }
         }
     }
 
@@ -93,20 +88,16 @@ public class LogicalSpec : CompoundSpec<ILambdaSpec>, ILambdaSpec
         var sb = new StringBuilder(Items.Count * 20);
 
         foreach (var spec in Items)
-        {
-            sb.Append(spec.ToString()+ " " + Op + " ");
-        }
+            sb.Append(spec.ToString() + " " + Op + " ");
 
-        if(Items.Count > 0)
+        if (Items.Count > 0)
             sb.Length--;
-        
+
         return sb.ToString();
     }
 
-    public static LogicalSpec Combine(Op op, params ILambdaSpec[] specs)
+    public static CompoundPredicateSpec Combine(Op op, params ILambdaSpec[] specs)
     {
-        return new LogicalSpec(op, specs);
+        return new CompoundPredicateSpec(op, specs);
     }
-
-    
 }

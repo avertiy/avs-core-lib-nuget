@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using AVS.CoreLib.Extensions;
 
-namespace AVS.CoreLib.Expressions;
+namespace AVS.CoreLib._archive;
 
 internal static class LambdaBuilder
 {

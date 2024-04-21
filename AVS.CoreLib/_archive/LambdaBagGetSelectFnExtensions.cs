@@ -5,8 +5,9 @@ using System.Linq;
 using System.Reflection;
 using AVS.CoreLib.DLinq.Enums;
 using AVS.CoreLib.Extensions.Reflection;
+using AVS.CoreLib.Lambdas;
 
-namespace AVS.CoreLib.Expressions;
+namespace AVS.CoreLib._archive;
 
 internal static class LambdaBagGetSelectFnExtensions
 {

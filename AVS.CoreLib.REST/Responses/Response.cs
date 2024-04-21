@@ -2,7 +2,7 @@
 using System;
 using System.Diagnostics;
 using AVS.CoreLib.Abstractions.Responses;
-using AVS.CoreLib.Extensions;
+using AVS.CoreLib.Extensions.Dynamic;
 
 namespace AVS.CoreLib.REST.Responses
 {

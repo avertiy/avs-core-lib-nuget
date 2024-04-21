@@ -5,7 +5,7 @@ using System.Linq;
 using AVS.CoreLib.DLinq.Conditions;
 using AVS.CoreLib.DLinq.Enums;
 using AVS.CoreLib.DLinq.Extensions;
-using AVS.CoreLib.DLinq.Specs.LambdaSpecs;
+using AVS.CoreLib.DLinq.Specs.CompoundBlocks;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Enums;
 
