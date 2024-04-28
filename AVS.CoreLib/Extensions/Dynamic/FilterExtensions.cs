@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using AVS.CoreLib.DLinq;
 using AVS.CoreLib.DLinq.Enums;
 
-namespace AVS.CoreLib.DLinq.Extensions;
+namespace AVS.CoreLib.Extensions.Dynamic;
 
 public static class FilterExtensions
 {

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using AVS.CoreLib.DLinq.Enums;
 using AVS.CoreLib.DLinq.Specs.CompoundBlocks;
-using AVS.CoreLib.DLinq.Specs.Conditioning;
 using AVS.CoreLib.Guards;
 using AVS.CoreLib.Lambdas;
+using AVS.CoreLib.DLinq.Specs.Predicates.Comparison;
 
 namespace AVS.CoreLib.DLinq.Specs.Predicates;
 
@@ -25,7 +25,7 @@ public class PredicateSpec : SpecBase, ILambdaSpec
         Comparison = comparison;
     }
 
-    public virtual Expression BuildExpr(Expression expression, LambdaContext ctx)
+    public override Expression BuildExpr(Expression expression, LambdaContext ctx)
     {
         var expr = Value.BuildExpr(expression, ctx);
 
@@ -36,7 +36,7 @@ public class PredicateSpec : SpecBase, ILambdaSpec
         return expr;
     }
 
-    public string GetCacheKey()
+    public override string GetCacheKey()
     {
         return $"{Value.GetCacheKey()} {Comparison}";
     }

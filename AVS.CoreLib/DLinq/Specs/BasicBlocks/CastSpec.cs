@@ -19,12 +19,17 @@ public class CastSpec : SpecBase
 
     public Type ArgType { get; set; }
 
-    public virtual Expression BuildExpr(Expression expr, LambdaContext ctx)
+    public override Expression BuildExpr(Expression expr, LambdaContext ctx)
     {
         if (expr.Type == ArgType)
             return expr;
 
         return Expression.Convert(expr, ArgType);
+    }
+
+    public override string GetCacheKey()
+    {
+        return $"x => (({ArgType.GetReadableName()})x)";
     }
 
     public string Format(string arg)

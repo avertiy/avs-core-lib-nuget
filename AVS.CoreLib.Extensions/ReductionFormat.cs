@@ -17,3 +17,17 @@ public enum ReductionFormat
     /// </summary>
     Shortcut = 2,
 }
+
+//[Flags]
+//public enum ExceptionView
+//{
+//    Default = 0,
+//    /// <summary>
+//    /// truncate text 
+//    /// </summary>
+//     = 1,
+//    /// <summary>
+//    /// a bit less truncated than <see cref="Truncated"/> option
+//    /// </summary>
+//    Shortcut = 2,
+//}

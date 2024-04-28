@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using AVS.CoreLib.DLinq.Enums;
-using AVS.CoreLib.DLinq.Extensions;
+using AVS.CoreLib.DLinq.Specs;
 using AVS.CoreLib.DLinq.Specs.BasicBlocks;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

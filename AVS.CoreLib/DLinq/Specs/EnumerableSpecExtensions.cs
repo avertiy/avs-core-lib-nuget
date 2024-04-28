@@ -11,7 +11,7 @@ using AVS.CoreLib.Extensions.Reflection;
 using AVS.CoreLib.Lambdas;
 
 [assembly: InternalsVisibleTo("AVS.CoreLib.Tests")]
-namespace AVS.CoreLib.DLinq.Extensions;
+namespace AVS.CoreLib.DLinq.Specs;
 internal static class EnumerableSpecExtensions
 {
     public static IEnumerable Select<T>(this IEnumerable<T> source, ILambdaSpec spec, SelectMode mode = SelectMode.Default)
@@ -54,7 +54,7 @@ internal static class EnumerableSpecExtensions
             throw new DLinqException($"source.Where<{typeof(T).GetReadableName()}>({spec}) [mode: {mode}] failed - {ex.Message}", ex, spec);
         }
     }
-    
+
     private static Func<T, bool> GetPredicateFn<T>(ILambdaSpec spec, LambdaContext ctx)
     {
         var key = $"predicate: {spec.GetCacheKey()} [mode: {ctx.Mode}]";
@@ -123,7 +123,7 @@ internal static class EnumerableSpecExtensions
         return fn;
     }
     #endregion
-    
+
     //private static Func<T, TKey> GetSelectorFn<T, TKey>(ValueExprSpec spec, LambdaContext ctx)
     //{
     //    var key = $"selector: {spec.GetBody()} [mode: {ctx.Mode}]";

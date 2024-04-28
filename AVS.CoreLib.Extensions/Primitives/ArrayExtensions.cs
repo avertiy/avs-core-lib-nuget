@@ -5,6 +5,14 @@ namespace AVS.CoreLib.Extensions;
 
 public static class ArrayExtensions
 {
+    public static T[] Combine<T>(this T[] arr1, T[] arr2)
+    {
+        var result = new T[arr1.Length + arr2.Length];
+        Array.Copy(arr1, result, arr1.Length);
+        Array.Copy(arr2,0, result, arr1.Length, arr2.Length);
+        return result;
+    }
+
     public static bool AreSame(this decimal[] arr, decimal[] arrToCompare, decimal tolerance)
     {
         if (arr.Length != arrToCompare.Length)

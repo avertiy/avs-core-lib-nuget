@@ -1,4 +1,4 @@
-﻿using AVS.CoreLib.DLinq.Specs.Conditioning;
+﻿using AVS.CoreLib.DLinq.Specs.Predicates.Comparison;
 
 namespace AVS.CoreLib.DLinq.Enums;
 

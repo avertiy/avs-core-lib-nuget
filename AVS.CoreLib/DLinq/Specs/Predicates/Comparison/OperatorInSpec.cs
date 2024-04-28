@@ -2,17 +2,18 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
+using AVS.CoreLib.DLinq;
 using AVS.CoreLib.DLinq.Enums;
 using AVS.CoreLib.Extensions.Reflection;
 using AVS.CoreLib.Utilities;
 
-namespace AVS.CoreLib.DLinq.Specs.Conditioning;
+namespace AVS.CoreLib.DLinq.Specs.Predicates.Comparison;
 
 [DebuggerDisplay("OperatorInSpec: IN({Args})")]
 public class OperatorInSpec : ComparisonSpec
 {
     public string[] Args { get; set; }
-    public OperatorInSpec(params string[] args) : base(Operator.In) 
+    public OperatorInSpec(params string[] args) : base(Operator.In)
     {
         Args = args;
     }

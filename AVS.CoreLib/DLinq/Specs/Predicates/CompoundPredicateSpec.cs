@@ -28,7 +28,7 @@ public class CompoundPredicateSpec : CompoundSpec<ILambdaSpec>, ILambdaSpec
             throw new ArgumentException($"{nameof(CompoundPredicateSpec)} does not support {Op}");
     }
 
-    public virtual Expression BuildExpr(Expression expression, LambdaContext ctx)
+    public override Expression BuildExpr(Expression expression, LambdaContext ctx)
     {
         var expr = Items[0].BuildExpr(expression, ctx);
 
@@ -50,7 +50,7 @@ public class CompoundPredicateSpec : CompoundSpec<ILambdaSpec>, ILambdaSpec
         return expr;
     }
 
-    public string GetCacheKey()
+    public override string GetCacheKey()
     {
         if (SameArgType(out var type))
         {

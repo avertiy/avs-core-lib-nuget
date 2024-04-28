@@ -4,8 +4,14 @@ using System.Linq.Expressions;
 using AVS.CoreLib.DLinq.Enums;
 using AVS.CoreLib.Utilities;
 
-namespace AVS.CoreLib.DLinq.Specs.Conditioning;
+namespace AVS.CoreLib.DLinq.Specs.Predicates.Comparison;
 
+/// <summary>
+/// represent specification to for between comparison operator
+/// <code>
+/// expr BETWEEN 10 AND 50 is translated into an expression: x => x &gt;=10 and &lt;=50
+/// </code>
+/// </summary>
 [DebuggerDisplay("BetweenSpec: {Arg} AND {Arg2}")]
 public class BetweenSpec : ComparisonSpec
 {

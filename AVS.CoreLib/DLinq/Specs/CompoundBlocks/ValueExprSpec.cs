@@ -7,7 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using AVS.CoreLib.DLinq;
 using AVS.CoreLib.DLinq.Enums;
-using AVS.CoreLib.DLinq.Extensions;
+using AVS.CoreLib.DLinq.Specs;
 using AVS.CoreLib.DLinq.Specs.BasicBlocks;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Reflection;
@@ -53,7 +53,7 @@ public class ValueExprSpec : SpecBase, ILambdaSpec
             Parts.Add(new KeySpec(input.Trim('"', '\'')) { Raw = Raw });
     }
 
-    public virtual Expression BuildExpr(Expression expression, LambdaContext ctx)
+    public override Expression BuildExpr(Expression expression, LambdaContext ctx)
     {
         var shortcutName = Parts[0].Name;
         Expression expr;
@@ -97,7 +97,7 @@ public class ValueExprSpec : SpecBase, ILambdaSpec
         return str;
     }
 
-    public string GetCacheKey()
+    public override string GetCacheKey()
     {
         var expr = ToString();
         var typeName = ArgType.GetReadableName();

@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 using System.Text;
 using AVS.CoreLib.DLinq;
 using AVS.CoreLib.DLinq.Enums;
-using AVS.CoreLib.DLinq.Extensions;
+using AVS.CoreLib.DLinq.Specs;
 using AVS.CoreLib.Lambdas;
 
 namespace AVS.CoreLib.DLinq.Specs.CompoundBlocks;
@@ -41,7 +41,7 @@ public class MultiValueExprSpec : CompoundSpec<ValueExprSpec>, ILambdaSpec
         Items.Add(item);
     }
 
-    public virtual Expression BuildExpr(Expression expression, LambdaContext ctx)
+    public override Expression BuildExpr(Expression expression, LambdaContext ctx)
     {
         switch (Items.Count)
         {
@@ -79,7 +79,7 @@ public class MultiValueExprSpec : CompoundSpec<ValueExprSpec>, ILambdaSpec
         }
     }
 
-    public string GetCacheKey()
+    public override string GetCacheKey()
     {
         var sb = new StringBuilder(Items.Count * 25);
         sb.Append('{');

@@ -4,8 +4,12 @@ using System.Diagnostics;
 using AVS.CoreLib.Utilities;
 using AVS.CoreLib.DLinq.Enums;
 
-namespace AVS.CoreLib.DLinq.Specs.Conditioning;
+namespace AVS.CoreLib.DLinq.Specs.Predicates.Comparison;
 
+/// <summary>
+/// Represent a right part of comparison statement
+/// e.g. x >= 1 the right part is >= 1
+/// </summary>
 [DebuggerDisplay("ComparisonSpec: {Op} {Arg} (raw: {Raw})")]
 public class ComparisonSpec : SpecBase
 {
@@ -25,13 +29,23 @@ public class ComparisonSpec : SpecBase
         Arg = string.Empty;
     }
 
-    public virtual Expression BuildExpr(Expression expression, LambdaContext ctx)
+    public override Expression BuildExpr(Expression expression, LambdaContext ctx)
     {
         var type = expression.Type;
 
         var obj = Parser.TryParse(Arg, type);
         var expr = ComparisonExpr(expression, obj, Op);
         return expr;
+    }
+
+    public override string GetCacheKey()
+    {
+        return ToString();
+    }
+
+    public override string ToString()
+    {
+        return $"{Op.ToExprString()} {Arg}";
     }
 
     private Expression ComparisonExpr(Expression expr, object? arg, Operator op)
@@ -50,11 +64,6 @@ public class ComparisonSpec : SpecBase
             Operator.Eq => Expression.Equal(expr, argExpr),
             _ => throw new NotImplementedException($"Operator {op.ToExprString()} not supported by {GetType().Name}")
         };
-    }
-    
-    public override string ToString()
-    {
-        return $"{Op.ToExprString()} {Arg}";
     }
 
     public static ComparisonSpec Parse(string part1, string part2)

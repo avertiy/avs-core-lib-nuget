@@ -15,7 +15,7 @@ public class PropSpec : SpecBase, ILambdaSpec
 {
     public string? Name { get; set; }
 
-    public virtual Expression BuildExpr(Expression expression, LambdaContext ctx)
+    public override Expression BuildExpr(Expression expression, LambdaContext ctx)
     {
         if (string.IsNullOrEmpty(Name))
             return expression;
@@ -42,7 +42,7 @@ public class PropSpec : SpecBase, ILambdaSpec
         return type.GetProperty(name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
     }
     
-    public virtual string GetCacheKey()
+    public override string GetCacheKey()
     {
         return Name!;
     }
