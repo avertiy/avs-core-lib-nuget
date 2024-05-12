@@ -35,7 +35,7 @@ namespace AVS.CoreLib.Extensions
         /// </summary>
         public static int GetRoundDecimals(this double value)
         {
-            return value switch
+            return value.Abs() switch
             {
                // > 10000 => 0,
                // > 1000 => 1,
@@ -115,7 +115,7 @@ namespace AVS.CoreLib.Extensions
         /// </summary>
         public static int GetRoundDecimals(this decimal value)
         {
-            return value switch
+            return value.Abs() switch
             {
                 > 100 => 2,
                 > 10 => 3,

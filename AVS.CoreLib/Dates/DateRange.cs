@@ -474,8 +474,6 @@ namespace AVS.CoreLib.Dates
             reader.Read();
             var prop2Value = reader.GetString();
 
-           
-
             if (prop1Name?.ToLower() != "from")
                 throw new JsonException($"Unable to parse {nameof(DateRange)} - expected prop name `from`");
 
@@ -522,12 +520,14 @@ namespace AVS.CoreLib.Dates
             //var json = $"{{ \"from\": \"{value.From:G}\", \"to\": \"{value.To:G}\" }}";
             //writer.WriteStringValue(json);
 
-            writer.WriteStartObject();
-            writer.WritePropertyName("from");
-            writer.WriteStringValue(value.From.ToString("G", CultureInfo.InvariantCulture));
-            writer.WritePropertyName("to");
-            writer.WriteStringValue(value.To.ToString("G", CultureInfo.InvariantCulture));
-            writer.WriteEndObject();
+            //writer.WriteStartObject();
+            //writer.WritePropertyName("from");
+            //writer.WriteStringValue(value.From.ToString("G", CultureInfo.InvariantCulture));
+            //writer.WritePropertyName("to");
+            //writer.WriteStringValue(value.To.ToString("G", CultureInfo.InvariantCulture));
+            //writer.WriteEndObject();
+            var text = $"{value.From:dd/MM/yyyy HH:mm:ss}-{value.To:dd/MM/yyyy HH:mm:ss}";
+            writer.WriteStringValue(text);
         }
     }
 }

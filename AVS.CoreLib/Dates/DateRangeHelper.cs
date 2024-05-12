@@ -22,11 +22,9 @@ namespace AVS.CoreLib.Dates
             if (parts == null)
                 return false;
 
-            var parse1 = DateTime.TryParse(parts[0], CultureInfo.CurrentCulture, DateTimeStyles.None,
-                out var from);
+            var parse1 = DateTime.TryParse(parts[0].Trim(), CultureInfo.CurrentCulture, DateTimeStyles.None, out var from);
 
-            var parse2 = DateTime.TryParse(parts[1], CultureInfo.CurrentCulture, DateTimeStyles.None,
-                out var to);
+            var parse2 = DateTime.TryParse(parts[1].Trim(), CultureInfo.CurrentCulture, DateTimeStyles.None, out var to);
 
             if (parse1 && parse2)
             {

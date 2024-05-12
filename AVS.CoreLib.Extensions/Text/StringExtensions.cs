@@ -350,11 +350,22 @@ namespace AVS.CoreLib.Extensions
             return sb.ToString();
         }
 
-        public static string ToCamelCase(this string str)
+        /// <summary>
+        /// Camel Case - the first letter of the first word is lowercased, and subsequent words are capitalized
+        /// this implementation implies that input string is in PascalCase or abbreviation
+        /// thus it simply lower case the first letter or if abbreviation is met it tries to lower case it whole
+        /// e.g. MyProperty => myProperty, SMA(21) => sma(21), PNL => pnl
+        /// </summary>
+        public static string ToCamelCase(this string input)
         {
-            if (str.Length > 1)
-                return str.Length < 4 ? str.ToLower() : char.ToLowerInvariant(str[0]) + str.Substring(1);
-            return str;
+            if (string.IsNullOrEmpty(input))
+                return input;
+
+            if (char.IsLower(input[0]))
+                return input;
+
+            var count = input.TakeWhile(char.IsUpper).Count();
+            return input.Substring(0, count).ToLowerInvariant() + input.Substring(count);
         }
 
         public static string Capitalize(this string str)

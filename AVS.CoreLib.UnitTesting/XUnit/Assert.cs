@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using AVS.CoreLib.Abstractions.Responses;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.UnitTesting.XUnit.Exceptions;
@@ -115,7 +116,6 @@ namespace AVS.CoreLib.UnitTesting.xUnit
                 throw new StringEqualException(expected, actual, userMessage, index1, index2);
         }
 
-
         public static void Equal(decimal expected, decimal actual, string? userMessage = null)
         {
             if (expected != actual)
@@ -129,13 +129,13 @@ namespace AVS.CoreLib.UnitTesting.xUnit
                 throw new EqualException(expected, actual, userMessage);
         }
 
-        public static void Equal(double expected, double actual, string? userMessage = null)
+        public static void Equal(double expected, double actual, double tolerance, string? userMessage = null)
         {
-            if (expected != actual)
+            if (Math.Abs(expected - actual) > tolerance)
                 throw new EqualException(expected, actual, userMessage);
         }
 
-        public static void Equal(int expected, int actual, string userMessage)
+        public static void Equal(int expected, int actual, string? userMessage = null)
         {
             if (expected != actual)
                 throw new EqualException(expected, actual, userMessage);

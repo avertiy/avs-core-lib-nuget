@@ -29,6 +29,6 @@ public class ReverseEnumerator<TItem> : IEnumerator<TItem>
 
     public void Reset()
     {
-        _currentIndex = _items.Count-1;
+        _currentIndex = _items.Count;
     }
 }
