@@ -19,7 +19,7 @@ namespace AVS.CoreLib.Mapper.Extensions
             return func;
         }
 
-        public static TDestination Update<TDestination, TSource>(this IMapper mapper, TDestination destination, TSource source,
+        public static TDestination Update<TDestination, TSource>(this IMapper mapper, TDestination destination, TSource source, string? delegateRef,
             Action<TDestination> modify)
         {
             mapper.Update(destination, source);
@@ -36,7 +36,7 @@ namespace AVS.CoreLib.Mapper.Extensions
         /// <typeparam name="TSource">source type</typeparam>
         /// <typeparam name="TDestination">destination type</typeparam>
         public static void UpdateAll<TDestination, TSource>(this IMapper mapper, IEnumerable<TDestination> destination,
-            IEnumerable<TSource> source, Action<TDestination>? postUpdate = null)
+            IEnumerable<TSource> source, string? delegateRef, Action<TDestination>? postUpdate = null)
         {
             var func = mapper.GetUpdateMapper<TDestination, TSource>();
 

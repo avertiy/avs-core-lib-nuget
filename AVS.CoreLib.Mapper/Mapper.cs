@@ -5,25 +5,33 @@ using System.Linq;
 namespace AVS.CoreLib.Mapper
 {
     /// <summary>
-    /// simple & easy to use mapper  
-    /// </summary> 
+    /// simple and easy to use mapper     
     /// <code>
-    /// // configure mappings:
-    /// mapper.Register&lt;Model,Source&gt;(x =&gt; new Model { ... });
-    ///
-    /// // do mapping:
-    ///	var model = mapper.Map&lt;Model,Source&gt;(Source source)
-    /// var items = mapper.MapAll&lt;Model,Source&gt;(IEnumerable&lt;Source&gt; source)
+    /// //register CREATE mappers:    
+    /// mapper.Register&lt;Source,Model&gt;(MapSourceToModel);
+    /// //where MapSourceToModel(Source x) => x => new Model { ... };
+    /// 
+    /// //map one
+    ///	var model = mapper.Map&lt;Source,Model&gt;(source, delegateRef: nameof(MapperProfile.MapSourceToModel));
+    /// //map many
+    /// var items = mapper.MapAll&lt;Source,Model&gt;(IEnumerable&lt;Source&gt; source, delegateRef: nameof(MapperProfile.MapSourceToModel))
+    /// 
+    /// //register UPDATE mappers:
+    /// mapper.RegisterUpdate&lt;Entity,Model&gt;(UpdateEntityFromModel);
+    /// where UpdateEntityFromModel(Entity x, Model src) => { x.Prop = src.Prop; ...});
+    /// //update one
+    ///	var updatedEntity = mapper.Update&lt;Entity,Model&gt;(existingEntity, model, delegateRef: nameof(MapperProfile.UpdateEntityFromModel))    
     /// </code>
+    /// </summary>
     public class Mapper : IMapper
     {
         protected Dictionary<string, Delegate> Delegates { get; set; } = new();
 
         public string[] Keys => Delegates.Keys.ToArray();
 
-        public void RegisterDelegate(string mappingKey, Delegate del)
+        public void RegisterDelegate(string mappingKey, Delegate @delegate)
         {
-            Delegates.Add(mappingKey, del);
+            Delegates.Add(mappingKey, @delegate);
         }
 
         public Delegate this[string mappingKey]
@@ -40,60 +48,68 @@ namespace AVS.CoreLib.Mapper
         #region Map
         /// <summary>
         /// Register type mapping delegate to PRODUCE NEW <see cref="TDestination"/>
-        /// <seealso cref="Map{TSource, TDestination}(TSource)"/>
+        /// <seealso cref="Map{TSource, TDestination}(TSource, string)"/>
         /// </summary>
         /// <typeparam name="TSource">source type</typeparam>
         /// <typeparam name="TDestination">destination type</typeparam>
-        /// <param name="func">delegate to do the mapping</param>
-        public void Register<TSource, TDestination>(Func<TSource, TDestination> func)
+        /// <param name="delegate">delegate to do the mapping</param>
+        public void Register<TSource, TDestination>(Func<TSource, TDestination> @delegate)
         {
             var mappingKey = $"{typeof(TSource).Name}->{typeof(TDestination).Name}";
-            RegisterDelegate(mappingKey, func);
+            RegisterDelegate(mappingKey, @delegate);
         }
-
+        
         /// <summary>        
         /// Execute one-to-one mapping to PRODUCE NEW <see cref="TDestination"/> object
         /// <code>
-        ///	var model = mapper.Map&lt;Source,Model&gt;(source)
+        ///	var model = mapper.Map&lt;Source,Model&gt;(source, delegateRef:nameof(MapperProfile.MapSourceToModel))
         /// </code>
         /// </summary>        
         /// <typeparam name="TSource">source type</typeparam>
         /// <typeparam name="TDestination">model (destination) type</typeparam>
-        public TDestination Map<TSource, TDestination>(TSource source)
+        /// <param name="source">mapping source</param>
+        /// <param name="delegateRef">helps to track mapping delegate(s) usages</param>
+        public TDestination Map<TSource, TDestination>(TSource source, string? delegateRef = null)
         {
             var mappingKey = $"{typeof(TSource).Name}->{typeof(TDestination).Name}";
             var del = this[mappingKey];
             var func = (Func<TSource, TDestination>)del;
             return func(source);
-        } 
+        }
         #endregion
 
         #region Update
         /// <summary>
-        /// Register type mapping delegate to update existing <see cref="TDestination"/> object
-        /// <seealso cref="Update{TDestination, TSource}(TDestination, TSource)"/>
+        /// Register type mapping delegate to update existing <see cref="TTarget"/> object
+        /// <seealso cref="Update{TTarget, TSource}(TTarget, TSource, string)"/>
+        /// <code>
+        ///  mapper.RegisterUpdate&lt;Entity,Model&gt;(entity, model, key: UpdateEntityFromModel);
+        /// </code>
         /// </summary>
-        public void RegisterUpdate<TDestination, TSource>(Action<TDestination, TSource> func)
+        public void RegisterUpdate<TTarget, TSource>(Action<TTarget, TSource> @delegate)
         {
-            var mappingKey = $"({typeof(TDestination).Name},{typeof(TSource).Name})";
-            Delegates.Add(mappingKey, func);
+            var mappingKey = $"({typeof(TTarget).Name},{typeof(TSource).Name})";
+            Delegates.Add(mappingKey, @delegate);
         }
 
         /// <summary>        
-        /// Execute one-to-one mapping to UPDATE EXISTING <see cref="TDestination"/> object
+        /// Execute one-to-one mapping to UPDATE EXISTING <see cref="TTarget"/> object
         /// <code>
-        ///	var updatedEntity = mapper.Update(existingEntity, source);
+        ///	var updatedEntity = mapper.Update&lt;Entity,Model&gt;(existingEntity, model, delegateRef: nameof(MapperProfile.UpdateEntityFromModel));
         /// </code>
         /// </summary>        
         /// <typeparam name="TSource">source type</typeparam>
-        /// <typeparam name="TDestination">destination type</typeparam>
-        public TDestination Update<TDestination, TSource>(TDestination destination, TSource source)
+        /// <typeparam name="TTarget">destination type</typeparam>
+        /// <param name="target">mapping target object</param>
+        /// <param name="source">mapping source object</param>
+        /// <param name="delegateRef">dummy parameter helps to track mapping delegate(s) usages</param>
+        public TTarget Update<TTarget, TSource>(TTarget target, TSource source, string? delegateRef = null)
         {
-            var mappingKey = $"({typeof(TDestination).Name},{typeof(TSource).Name})";
+            var mappingKey = $"({typeof(TTarget).Name},{typeof(TSource).Name})";
             var del = this[mappingKey];
-            var func = (Action<TDestination, TSource>)del;
-            func(destination,source);
-            return destination;
+            var func = (Action<TTarget, TSource>)del;
+            func(target,source);
+            return target;
         }
         
         #endregion

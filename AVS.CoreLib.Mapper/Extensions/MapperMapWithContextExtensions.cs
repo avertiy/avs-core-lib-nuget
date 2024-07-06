@@ -40,7 +40,7 @@ namespace AVS.CoreLib.Mapper.Extensions
         /// <typeparam name="TSource">source type</typeparam>
         /// <typeparam name="TDestination">destination type</typeparam>
         /// <typeparam name="TContext">additional argument to create the destination object</typeparam>
-        public static TDestination Map<TSource, TContext, TDestination>(this IMapper mapper, TSource source, TContext context, Action<TDestination>? modify = null)
+        public static TDestination Map<TSource, TContext, TDestination>(this IMapper mapper, TSource source, TContext context, string? delegateRef, Action<TDestination>? modify = null)
         {
             var func = mapper.GetMapper<TSource, TContext, TDestination>();
             var result = func(source, context);
@@ -58,7 +58,7 @@ namespace AVS.CoreLib.Mapper.Extensions
         /// <typeparam name="TDestination">destination type</typeparam>
         /// <typeparam name="TContext">additional argument to create the destination object</typeparam>
         public static IEnumerable<TDestination> MapAll<TSource, TContext, TDestination>(this IMapper mapper, IEnumerable<TSource> source,
-            TContext context, Action<TDestination>? action = null)
+            TContext context, string? delegateRef, Action<TDestination>? action = null)
         {
             var func = mapper.GetMapper<TSource, TContext, TDestination>();
 

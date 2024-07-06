@@ -25,22 +25,22 @@ namespace AVS.CoreLib.Mapper.Extensions
         }
 
         /// <summary>        
-        /// Execute one-to-one mapping to UPDATE EXISTING <see cref="TDestination"/> object
+        /// Execute one-to-one mapping to UPDATE EXISTING <see cref="TTarget"/> object
         /// <code>
         ///	var updatedEntity = mapper.Update(existingEntity, source, ctx, postUpdate: x=> ...);
         /// </code>
         /// </summary>        
         /// <typeparam name="TSource">source type</typeparam>
-        /// <typeparam name="TDestination">destination type</typeparam>
+        /// <typeparam name="TTarget">destination type</typeparam>
         /// <typeparam name="TContext">additional argument to update the destination object</typeparam>
-        public static TDestination Update<TDestination, TSource, TContext>(this IMapper mapper, TDestination destination, TSource source,
-            TContext context, Action<TDestination>? postUpdate = null)
+        public static TTarget Update<TTarget, TSource, TContext>(this IMapper mapper, TTarget target, TSource source,
+            TContext context, string? delegateRef, Action<TTarget>? postUpdate = null)
         {
-            var mappingKey = $"({typeof(TDestination).Name},{typeof(TSource).Name},{typeof(TContext).Name})";
-            var func = mapper.GetUpdateMapper<TDestination, TSource, TContext>();
-            mapper.Update(destination, source, context);
-            postUpdate?.Invoke(destination);
-            return destination;
+            var mappingKey = $"({typeof(TTarget).Name},{typeof(TSource).Name},{typeof(TContext).Name})";
+            var func = mapper.GetUpdateMapper<TTarget, TSource, TContext>();
+            func(target, source, context);
+            postUpdate?.Invoke(target);
+            return target;
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace AVS.CoreLib.Mapper.Extensions
         /// <typeparam name="TSource">source type</typeparam>
         /// <typeparam name="TDestination">destination type</typeparam>
         public static void UpdateAll<TDestination, TSource, TContext>(this IMapper mapper, IEnumerable<TDestination> destination,
-            IEnumerable<TSource> source, TContext context, Action<TDestination>? postUpdate = null)
+            IEnumerable<TSource> source, TContext context, string? delegateRef, Action<TDestination>? postUpdate = null)
         {
             var func = mapper.GetUpdateMapper<TDestination, TSource, TContext>();
             foreach (var zip in destination.Zip(source))

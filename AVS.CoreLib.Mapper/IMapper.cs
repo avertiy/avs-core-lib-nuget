@@ -5,45 +5,54 @@ namespace AVS.CoreLib.Mapper
     /// <summary>
     /// simple and easy to use mapper     
     /// <code>
-    /// //register CREATE NEW mappings:    
-    /// mapper.Register&lt;Model,Source&gt;(x =&gt; new Model { ... });
-    /// //map one
-    ///	var model = mapper.Map&lt;Model,Source&gt;(Source source)
-    /// //map many
-    /// var items = mapper.MapAll&lt;Model,Source&gt;(IEnumerable&lt;Source&gt; source)
+    /// //register CREATE mappers:    
+    /// mapper.Register&lt;Source,Model&gt;(MapSourceToModel);
+    /// //where MapSourceToModel(Source x) => x => new Model { ... };
     /// 
-    /// //register UPDATE EXISTING mappings:
-    /// mapper.RegisterUpdate&lt;Entity,Source&gt;((x, src) =&gt; { x.Prop = src.Prop; ...});
+    /// //map one
+    ///	var model = mapper.Map&lt;Source,Model&gt;(source, delegateRef: nameof(MapperProfile.MapSourceToModel));
+    /// //map many
+    /// var items = mapper.MapAll&lt;Source,Model&gt;(IEnumerable&lt;Source&gt; source, delegateRef: nameof(MapperProfile.MapSourceToModel))
+    /// 
+    /// //register UPDATE mappers:
+    /// mapper.RegisterUpdate&lt;Entity,Model&gt;(UpdateEntityFromModel);
+    /// where UpdateEntityFromModel(Entity x, Model src) => { x.Prop = src.Prop; ...});
     /// //update one
-    ///	var updatedEntity = mapper.Update&lt;Entity,Source&gt;(existingEntity, src)    
+    ///	var updatedEntity = mapper.Update&lt;Entity,Model&gt;(existingEntity, model, delegateRef: nameof(MapperProfile.UpdateEntityFromModel))    
     /// </code>
     /// </summary>
-    public interface IMapper //: ICreateMapper, IUpdateMapper
+    public interface IMapper
     {
         string[] Keys { get; }
-        void RegisterDelegate(string mappingKey, Delegate del);
+        void RegisterDelegate(string mappingKey, Delegate @delegate);
         Delegate this[string mappingKey] { get; }
 
         /// <summary>
-        /// Execute one-to-one mapping to PRODUCE NEW <see cref="TDestination"/> object
-        /// <seealso cref="Map{TSource, TDestination}(TSource)"/>
+        /// Registers one-to-one mapping to PRODUCE NEW <see cref="TDestination"/> object <seealso cref="Map{TSource, TDestination}(TSource, string)"/>
         /// </summary>
-        void Register<TSource, TDestination>(Func<TSource, TDestination> func);
-
-        /// <summary>        
-        /// Execute one-to-one mapping to PRODUCE NEW <see cref="TDestination"/> object
-        /// </summary>
-        TDestination Map<TSource, TDestination>(TSource source);
+        void Register<TSource, TDestination>(Func<TSource, TDestination> @delegate);
 
         /// <summary>
-        /// Register type mapping delegate to update existing <see cref="TDestination"/> object
-        /// <seealso cref="Update{TDestination, TSource}(TDestination, TSource)"/>
+        /// Executes one-to-one mapping to PRODUCE NEW <see cref="TDestination"/> object
         /// </summary>
-        void RegisterUpdate<TDestination, TSource>(Action<TDestination, TSource> action);
+        /// <typeparam name="TSource">source type</typeparam>
+        /// <typeparam name="TDestination">destination type</typeparam>
+        /// <param name="source">source object</param>
+        /// <param name="delegateRef">dummy parameter helps to track delegate(s) usages</param>
+        TDestination Map<TSource, TDestination>(TSource source, string? delegateRef = null);
 
         /// <summary>
-        /// Execute one-to-one mapping to UPDATE EXISTING <see cref="TTarget"/> object        
+        /// Registers type mapping delegate to update existing <see cref="TTarget"/> object
+        /// <seealso cref="Update{TTarget, TSource}(TTarget, TSource, string)"/>
         /// </summary>
-        TTarget Update<TTarget, TSource>(TTarget target, TSource source);
+        void RegisterUpdate<TTarget, TSource>(Action<TTarget, TSource> @delegate);
+
+        /// <summary>
+        /// Executes one-to-one mapping to UPDATE EXISTING <see cref="TTarget"/> object
+        /// </summary>
+        /// <param name="target">target object</param>
+        /// <param name="source">source object</param>
+        /// <param name="delegateRef">dummy parameter helps to track delegate(s) usages</param>
+        TTarget Update<TTarget, TSource>(TTarget target, TSource source, string? delegateRef = null);
     }
 }

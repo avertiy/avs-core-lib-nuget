@@ -25,7 +25,7 @@ namespace AVS.CoreLib.Mapper.Extensions
             mapper.RegisterDelegate(mappingKey, func);
         }
 
-        public static TDestination Map<TSource, TDestination>(this IMapper mapper, TSource source, params object[] args)
+        public static TDestination Map<TSource, TDestination>(this IMapper mapper, TSource source, string? delegateRef, params object[] args)
         {
             var mappingKey = args.Length > 1
                 ? $"({typeof(TSource).Name}, args)->{typeof(TDestination).Name}"
@@ -45,7 +45,7 @@ namespace AVS.CoreLib.Mapper.Extensions
             }
         }
 
-        public static IEnumerable<TDestination> MapAll<TSource, TDestination>(this IMapper mapper, IEnumerable<TSource> source, params object[] args)
+        public static IEnumerable<TDestination> MapAll<TSource, TDestination>(this IMapper mapper, IEnumerable<TSource> source, string? delegateRef, params object[] args)
         {
             var mappingKey = args.Length > 1
                 ? $"({typeof(TSource).Name}, args)->{typeof(TDestination).Name}"
