@@ -27,9 +27,6 @@ namespace AVS.CoreLib.Extensions.Linq
             return res;
         }
 
-        
-
-
         public static IEnumerable<T> OrderBy<T, Key>(this IEnumerable<T> source, Func<T, Key> selector, Sort direction)
         {
             if (direction == Enums.Sort.None)
@@ -68,6 +65,36 @@ namespace AVS.CoreLib.Extensions.Linq
                 counter++;
 
             return counter;
+        }
+
+        public static (TResult? min, TResult? max) MinMax<T, TResult>(this IEnumerable<T> source, Func<T, TResult?> selector)
+        {
+            var initialized = false;
+            TResult? minValue = default;
+            TResult? maxValue = default;
+            var comparer = Comparer<TResult>.Default;
+            foreach (var item in source)
+            {
+                var currentValue = selector(item);
+
+                if (currentValue == null)
+                    continue;
+
+                if (!initialized)
+                {
+                    initialized = true;
+                    minValue = currentValue;
+                    maxValue = currentValue;
+                }
+
+                if (comparer.Compare(currentValue, minValue) <= 0)
+                    minValue = currentValue;
+
+                if (comparer.Compare(currentValue, maxValue) >= 0)
+                    maxValue = currentValue;
+            }
+
+            return (min: minValue, max: maxValue);
         }
     }
 }

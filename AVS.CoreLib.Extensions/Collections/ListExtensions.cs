@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AVS.CoreLib.Guards;
 
 namespace AVS.CoreLib.Extensions.Collections
 {
@@ -176,6 +177,43 @@ namespace AVS.CoreLib.Extensions.Collections
             if (threshold <= 0)
                 threshold = avg;
             return items.Where(i => selector(i) >= threshold).ToList();
+        }
+
+        public static int FindIndex2<T>(this IList<T> source, int startIndex, int count, Predicate<(int index, T item)> match)
+        {
+            Guard.MustBe.GreaterThanOrEqual(startIndex, 0);
+            Guard.MustBe.LessThan(startIndex, source.Count, $"{nameof(startIndex)} exceeds number of elements");
+
+            var endIndex = startIndex + count;
+            endIndex = source.Count < endIndex ? source.Count : endIndex;
+            for (var i = startIndex; i < endIndex; i++)
+            {
+                if (match((i, source[i])))
+                    return i;
+            }
+            return -1;
+        }
+
+        /// <summary>
+        /// Select element(s) by their respective indices
+        /// </summary>
+        public static T[] ElementsAt<T>(this IList<T> source, params int[] indices)
+        {
+            return indices.Select(i => source[i]).ToArray();
+        }
+
+        /// <summary>
+        /// Removes elements from the list. 
+        /// </summary>
+        public static int RemoveMany<T>(this IList<T> source, params T[] elements)
+        {
+            var counter = 0;
+            foreach (var element in elements)
+            {
+                if (source.Remove(element))
+                    counter++;
+            }
+            return counter;
         }
     }
 }

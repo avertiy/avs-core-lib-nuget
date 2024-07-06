@@ -26,22 +26,34 @@ public class PlainJsonConverter : JsonConverter<object?>
         if (value == null)
             return;
 
+        if (value is string str)
+        {
+            writer.WriteStringValue(str);
+            return;
+        }
+
         if (value is IDictionary<string, object> dict)
         {
-            WriteDict(writer, dict, options);
+            WriteDict(writer, dict);
             return;
         }
 
-        if (value is IList<object> list)
+        if (value is IDictionary<string, decimal> decDict)
         {
-            WriteList(writer, list, options);
+            WriteDict(writer, decDict);
             return;
         }
 
-        WriteObj(writer, value, options);
+        if (value is ICollection<object> list)
+        {
+            WriteList(writer, list);
+            return;
+        }
+
+        WriteObj(writer, value);
     }
 
-    private void WriteObj(Utf8JsonWriter writer, object value, JsonSerializerOptions options)
+    private void WriteObj(Utf8JsonWriter writer, object value)
     {
         var type = value.GetType();
         var props = type.GetProperties(BindingFlags.Instance | BindingFlags.Public);
@@ -81,7 +93,7 @@ public class PlainJsonConverter : JsonConverter<object?>
 
     }
 
-    private void WriteDict(Utf8JsonWriter writer, IDictionary<string, object> dict, JsonSerializerOptions options)
+    private void WriteDict(Utf8JsonWriter writer, IDictionary<string, object> dict)
     {
         var sb = new StringBuilder(dict.Count * 20);
         foreach (var kp in dict)
@@ -96,7 +108,22 @@ public class PlainJsonConverter : JsonConverter<object?>
         writer.WriteStringValue(plainText);
     }
 
-    private void WriteList(Utf8JsonWriter writer, IList<object> list, JsonSerializerOptions options)
+    private void WriteDict(Utf8JsonWriter writer, IDictionary<string, decimal> dict)
+    {
+        var sb = new StringBuilder(dict.Count * 20);
+        foreach (var kp in dict)
+        {
+            sb.Append($"{kp.Key.ToCamelCase()}:{kp.Value.Round()}; ");
+        }
+
+        if (sb.Length > 0)
+            sb.Length -= 2;
+
+        var plainText = sb.ToString();
+        writer.WriteStringValue(plainText);
+    }
+
+    private void WriteList(Utf8JsonWriter writer, ICollection<object> list)
     {
         var sb = new StringBuilder(list.Count * 10);
         foreach (var item in list)

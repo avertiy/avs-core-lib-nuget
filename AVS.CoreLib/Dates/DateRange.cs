@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Enums;
+using AVS.CoreLib.Extensions.Linq;
 
 namespace AVS.CoreLib.Dates
 {
@@ -84,6 +85,16 @@ namespace AVS.CoreLib.Dates
             var from = From.AddMilliseconds(millisecondsFrom);
             var to = From.AddMilliseconds(millisecondsTo);
             return new DateRange(from, to);
+        }
+
+        public DateRange Shift(int days)
+        {
+            return new DateRange(From.AddDays(days), To.AddDays(days));
+        }
+
+        public DateRange Shift(double milliseconds)
+        {
+            return new DateRange(From.AddMilliseconds(milliseconds), To.AddMilliseconds(milliseconds));
         }
 
         #region implicit conversions
@@ -266,8 +277,7 @@ namespace AVS.CoreLib.Dates
 
         public static DateRange FromSource<T>(IList<T> source, Func<T,DateTime> selector)
         {
-            var from = source.Min(selector);
-            var to = source.Max(selector);
+            var (from, to) = source.MinMax(selector);
             return new DateRange(from, to);
         }
 

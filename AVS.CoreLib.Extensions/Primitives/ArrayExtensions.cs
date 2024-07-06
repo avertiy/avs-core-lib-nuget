@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace AVS.CoreLib.Extensions;
@@ -68,5 +69,26 @@ public static class ArrayExtensions
     public static int GetShortestLength(this Array arr, Array other)
     {
         return arr.Length <= other.Length ? arr.Length : other.Length;
+    }
+
+    /// <summary> 
+    /// Creates copy of the source array size+1 and inserts an element into a new array at a given index.
+    /// </summary>
+    public static T[] Insert<T>(this T[] source, T item, int index = 0)
+    {
+        var list = new List<T>(source.Length + 1);
+
+        if (index == 0)
+        {
+            list.Add(item);
+            list.AddRange(source);
+        }
+        else
+        {
+            list.AddRange(source);
+            list.Insert(index, item);
+        }
+        
+        return list.ToArray();
     }
 }
