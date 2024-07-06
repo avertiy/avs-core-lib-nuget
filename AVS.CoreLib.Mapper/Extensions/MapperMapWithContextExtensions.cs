@@ -9,7 +9,7 @@ namespace AVS.CoreLib.Mapper.Extensions
     {
         /// <summary>
         /// Register type mapping delegate to PRODUCE NEW <see cref="TDestination"/>
-        /// <seealso cref="Map{TSource, TDestination}(TSource)"/>
+        /// <seealso cref="Map{TSource, TDestination, TContext}"/>
         /// </summary>
         /// <typeparam name="TSource">source type</typeparam>
         /// <typeparam name="TDestination">destination type</typeparam>
@@ -40,7 +40,7 @@ namespace AVS.CoreLib.Mapper.Extensions
         /// <typeparam name="TSource">source type</typeparam>
         /// <typeparam name="TDestination">destination type</typeparam>
         /// <typeparam name="TContext">additional argument to create the destination object</typeparam>
-        public static TDestination Map<TSource, TContext, TDestination>(this IMapper mapper, TSource source, TContext context, string? delegateRef, Action<TDestination>? modify = null)
+        public static TDestination Map<TSource, TContext, TDestination>(this IMapper mapper, TSource source, TContext context, Action<TDestination>? modify = null, string? delegateRef = null)
         {
             var func = mapper.GetMapper<TSource, TContext, TDestination>();
             var result = func(source, context);
@@ -58,7 +58,7 @@ namespace AVS.CoreLib.Mapper.Extensions
         /// <typeparam name="TDestination">destination type</typeparam>
         /// <typeparam name="TContext">additional argument to create the destination object</typeparam>
         public static IEnumerable<TDestination> MapAll<TSource, TContext, TDestination>(this IMapper mapper, IEnumerable<TSource> source,
-            TContext context, string? delegateRef, Action<TDestination>? action = null)
+            TContext context, Action<TDestination>? action = null, string? delegateRef = null)
         {
             var func = mapper.GetMapper<TSource, TContext, TDestination>();
 

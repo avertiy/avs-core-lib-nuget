@@ -22,10 +22,10 @@ namespace AVS.CoreLib.Mapper.Extensions
         /// </summary>
         /// <param name="mapper">mapper instance</param>
         /// <param name="source">source object</param>
-        /// <param name="delegateRef">dummy parameter to track delegate(s) usages</param>
         /// <param name="modify">optional parameter in case you need to modify the copy</param>
+        /// <param name="delegateRef">dummy parameter to track delegate(s) usages</param>
         /// <returns>copy of the source object</returns>
-        public static TSource Copy<TSource>(this IMapper mapper, TSource source, string? delegateRef = null,  Action<TSource>? modify = null)
+        public static TSource Copy<TSource>(this IMapper mapper, TSource source, Action<TSource>? modify = null, string? delegateRef = null)
         {
             var copy = mapper.Map<TSource, TSource>(source, delegateRef);
             modify?.Invoke(copy);
@@ -38,7 +38,7 @@ namespace AVS.CoreLib.Mapper.Extensions
         /// var copies = mapper.CopyAll(items, modify: x => ... );
         /// </code>
         /// </summary>
-        public static IEnumerable<TSource> CopyAll<TSource>(this IMapper mapper, IEnumerable<TSource> source, string? delegateRef, Action<TSource>? modify = null)
+        public static IEnumerable<TSource> CopyAll<TSource>(this IMapper mapper, IEnumerable<TSource> source, Action<TSource>? modify = null, string? delegateRef = null)
         {
             return mapper.MapAll(source, delegateRef, modify);
         }

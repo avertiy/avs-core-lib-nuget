@@ -34,7 +34,7 @@ namespace AVS.CoreLib.Mapper.Extensions
         /// <typeparam name="TTarget">destination type</typeparam>
         /// <typeparam name="TContext">additional argument to update the destination object</typeparam>
         public static TTarget Update<TTarget, TSource, TContext>(this IMapper mapper, TTarget target, TSource source,
-            TContext context, string? delegateRef, Action<TTarget>? postUpdate = null)
+            TContext context, Action<TTarget>? postUpdate = null, string? delegateRef = null)
         {
             var mappingKey = $"({typeof(TTarget).Name},{typeof(TSource).Name},{typeof(TContext).Name})";
             var func = mapper.GetUpdateMapper<TTarget, TSource, TContext>();
@@ -52,7 +52,7 @@ namespace AVS.CoreLib.Mapper.Extensions
         /// <typeparam name="TSource">source type</typeparam>
         /// <typeparam name="TDestination">destination type</typeparam>
         public static void UpdateAll<TDestination, TSource, TContext>(this IMapper mapper, IEnumerable<TDestination> destination,
-            IEnumerable<TSource> source, TContext context, string? delegateRef, Action<TDestination>? postUpdate = null)
+            IEnumerable<TSource> source, TContext context, Action<TDestination>? postUpdate = null, string? delegateRef = null)
         {
             var func = mapper.GetUpdateMapper<TDestination, TSource, TContext>();
             foreach (var zip in destination.Zip(source))

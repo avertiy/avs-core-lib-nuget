@@ -8,7 +8,6 @@ namespace AVS.CoreLib.Mapper.Extensions
     {
         /// <summary>
         /// Register one-to-one type mapping delegate to PRODUCE NEW <see cref="TDestination"/> object
-        /// <seealso cref="Map{TSource, TDestination}(TSource, params object[])"/>
         /// </summary>
         /// <typeparam name="TSource">source type</typeparam>
         /// <typeparam name="TDestination">destination type</typeparam>
