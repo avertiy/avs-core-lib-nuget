@@ -10,6 +10,10 @@ using AVS.CoreLib.Extensions;
 
 namespace AVS.CoreLib.Logging.ColorFormatter.OutputBuilders;
 
+/// <summary>
+/// Coloring is based on .NET ANSI-Coloring Console Output
+/// Log message is formatted with color tags e.g. &lt;Red&gt;colored text&lt;/Red&gt; than tags are replaced with a corresponding ANSI-codes
+/// </summary>
 public class ColorOutputBuilder : OutputBuilder
 {
     public IColorProvider ColorProvider { get; set; }

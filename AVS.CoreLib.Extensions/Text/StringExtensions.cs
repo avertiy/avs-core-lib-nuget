@@ -329,6 +329,26 @@ namespace AVS.CoreLib.Extensions
             return str.Substring(0, maxLength)+append;
         }
 
+        /// <summary>
+        /// Truncate json string cutting the middle
+        /// </summary>
+        public static string TruncateJson(this string str, int maxLength = 1000)
+        {
+            if (string.IsNullOrEmpty(str) || str.Length <= maxLength)
+                return str;
+
+            var startIndex = maxLength / 2;
+            var ind = str.IndexOf(',', startIndex, startIndex / 2);
+
+            if (ind == -1)
+                return str.Substring(0, maxLength);
+
+            var startStr = str.Substring(0, ind);
+            var rest = maxLength - startStr.Length - 6;
+            var endStr = str.Substring(str.Length - rest);
+            return $"{startStr}, ... {endStr}";
+        }
+
         public static string ReplaceAll(this string input, char[] oldChars, char newChar)
         {
             var sb = new StringBuilder(input);

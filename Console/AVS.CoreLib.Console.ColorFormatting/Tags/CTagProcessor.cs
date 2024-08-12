@@ -5,7 +5,7 @@ using AVS.CoreLib.Console.ColorFormatting.Extensions;
 namespace AVS.CoreLib.Console.ColorFormatting.Tags
 {
     /// <summary>
-    /// replace color tags <see cref="CTag"/> with ansi codes
+    /// replace color tags <see cref="CTag"/> with ansi-codes
     /// </summary>
     public class CTagProcessor : TagProcessor
     {

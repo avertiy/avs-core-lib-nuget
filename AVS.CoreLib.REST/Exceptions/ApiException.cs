@@ -1,19 +1,28 @@
 ﻿#nullable enable
 using System;
+using System.Diagnostics;
 using System.Net;
 using AVS.CoreLib.Abstractions.Responses;
+using AVS.CoreLib.REST.Extensions;
 
 namespace AVS.CoreLib.REST
 {
     /// <summary>
     /// an exception that represents api request error 
     /// </summary>
-    public class ApiException : Exception
+    [DebuggerDisplay("ApiException [{Message}; Source={Source}; Request:{RequestInfo}")]
+    public sealed class ApiException : Exception
     {   
         public HttpStatusCode? StatusCode { get; set; }
         public string? RequestInfo { get; set; }
         public ApiException(string message) : base(message)
         {
+        }
+
+        public ApiException(string message, string source, object? requestData = null) : base(message)
+        {
+            Source = source;
+            RequestInfo = requestData?.ToJson();
         }
 
         public ApiException(IResponse response) : base(response.Error)
@@ -63,7 +72,9 @@ namespace AVS.CoreLib.REST
 
         public override string ToString()
         {
-            return $"{nameof(ApiException)} {Source} {RequestInfo}".TrimEnd();
+            return RequestInfo == null
+                ? $"{nameof(ApiException)}:{Message} [source:{Source}]".TrimEnd()
+                : $"{nameof(ApiException)}:{Message} [source:{Source}; request: {RequestInfo}]".TrimEnd();
         }
     }
 }

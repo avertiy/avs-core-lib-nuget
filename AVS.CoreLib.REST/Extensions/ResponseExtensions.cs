@@ -24,12 +24,13 @@ namespace AVS.CoreLib.REST.Extensions
             return newResponse;
         }
 
-        public static void ThrowOnError(this IResponse response)
+        public static void ThrowOnError(this IResponse response, string source = null)
         {
             if (string.IsNullOrEmpty(response.Error))
                 return;
 
-            throw new ApiException(response);
+            var message = source == null ? response.Error : $"{source} => {response.Error}";
+            throw new ApiException(message, response.Source, response.Request);
         }
 
         [Obsolete("looks obsolete")]

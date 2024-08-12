@@ -47,15 +47,29 @@ namespace AVS.CoreLib.Mapper
 
         #region Map
         /// <summary>
-        /// Register type mapping delegate to PRODUCE NEW <see cref="TDestination"/>
+        /// Register type mapping delegate to PRODUCE NEW <see cref="TResult"/>
         /// <seealso cref="Map{TSource, TDestination}(TSource, string)"/>
         /// </summary>
         /// <typeparam name="TSource">source type</typeparam>
-        /// <typeparam name="TDestination">destination type</typeparam>
+        /// <typeparam name="TResult">result type</typeparam>
         /// <param name="delegate">delegate to do the mapping</param>
-        public void Register<TSource, TDestination>(Func<TSource, TDestination> @delegate)
+        public void Register<TSource, TResult>(Func<TSource, TResult> @delegate)
         {
-            var mappingKey = $"{typeof(TSource).Name}->{typeof(TDestination).Name}";
+            var mappingKey = $"{typeof(TSource).Name}->{typeof(TResult).Name}";
+
+            //var wrapper = new Func<TSource, TResult>(x =>
+            //{
+            //    try
+            //    {
+            //        return @delegate(x);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        throw new MapException($"Map {mappingKey} failed", ex);
+            //    }
+            //});
+
+            //RegisterDelegate(mappingKey, wrapper);
             RegisterDelegate(mappingKey, @delegate);
         }
         
@@ -74,7 +88,14 @@ namespace AVS.CoreLib.Mapper
             var mappingKey = $"{typeof(TSource).Name}->{typeof(TDestination).Name}";
             var del = this[mappingKey];
             var func = (Func<TSource, TDestination>)del;
-            return func(source);
+            try
+            {
+                return func(source);
+            }
+            catch (Exception ex)
+            {
+                throw new MapException($"Map {typeof(TSource).Name}->{typeof(TDestination).Name} Failed", ex, delegateRef);
+            }
         }
         #endregion
 
@@ -89,7 +110,20 @@ namespace AVS.CoreLib.Mapper
         public void RegisterUpdate<TTarget, TSource>(Action<TTarget, TSource> @delegate)
         {
             var mappingKey = $"({typeof(TTarget).Name},{typeof(TSource).Name})";
-            Delegates.Add(mappingKey, @delegate);
+
+            //var wrapper = new Action<TTarget, TSource>((x,y) =>
+            //{
+            //    try
+            //    {
+            //        @delegate(x,y);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        throw new MapException($"Update {mappingKey} failed", ex);
+            //    }
+            //});
+
+            RegisterDelegate(mappingKey, @delegate);
         }
 
         /// <summary>        
@@ -108,8 +142,16 @@ namespace AVS.CoreLib.Mapper
             var mappingKey = $"({typeof(TTarget).Name},{typeof(TSource).Name})";
             var del = this[mappingKey];
             var func = (Action<TTarget, TSource>)del;
-            func(target,source);
-            return target;
+
+            try
+            {
+                func(target, source);
+                return target;
+            }
+            catch (Exception ex)
+            {
+                throw new MapException($"Update{mappingKey} Failed", ex, delegateRef);
+            }
         }
         
         #endregion

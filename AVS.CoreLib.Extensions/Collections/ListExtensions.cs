@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using AVS.CoreLib.Guards;
 
@@ -214,6 +215,90 @@ namespace AVS.CoreLib.Extensions.Collections
                     counter++;
             }
             return counter;
+        }
+
+        public static T[] RemoveMany<T>(this IList<T> source, int count, int fromIndex = 0)
+        {
+            if (fromIndex + count > source.Count)
+                throw new ArgumentOutOfRangeException();
+
+            if (fromIndex == 0 && count == source.Count)
+            {
+                var removedItems = source.ToArray();
+                source.Clear();
+                return removedItems;
+            }
+            else
+            {
+                var removedItems = new T[count];
+
+                for (var i = count - 1; i >= 0; i--)
+                {
+                    var ind = fromIndex + i;
+                    removedItems[i] = source[ind];
+                    source.RemoveAt(ind);
+                }
+
+                return removedItems;
+            }
+        }
+
+        public static void RemoveByIndexes<T>(this IList<T> source, int[] indexes)
+        {
+            foreach (var ind in indexes.OrderByDescending(x => x))
+            {
+                source.RemoveAt(ind);
+            }
+        }
+
+        [Obsolete("Use Array.FindIndex(arr, startIndex, predicate)")]
+        public static int FindIndex<T>(this IList<T> source, int startIndex, Predicate<T> match)
+        {
+            return FindIndex<T>(source, startIndex, source.Count - startIndex, match);
+        }
+
+        [Obsolete("Use Array.FindIndex(arr, startIndex, count, predicate)")]
+        public static int FindIndex<T>(this IList<T> source, int startIndex, int count, Predicate<T> match)
+        {
+            if ((uint)startIndex > (uint) source.Count)
+                throw new ArgumentOutOfRangeException($"{nameof(startIndex)} must be less than {source.Count}");
+
+            if (count < 0 || startIndex > source.Count - count)
+                throw new ArgumentOutOfRangeException(nameof(count));
+
+            var endIndex = startIndex + count;
+
+            for (var i = startIndex; i < endIndex; i++)
+            {
+                if (match(source[i]))
+                    return i;
+            }
+
+            return -1;
+        }
+        
+        public static int[] FindIndexes1(this IList<decimal> source, decimal qty, int startIndex = 0, int limitRecursion = 0)
+        {
+            for (var i = startIndex; i < source.Count; i++)
+            {
+                if (source[i] > qty)
+                    continue;
+
+                if (source[i] == qty)
+                    return new[] { i };
+
+                if (limitRecursion > 0 && limitRecursion <= 1)
+                    continue;
+
+                var rest = qty - source[i];
+
+                var arr = FindIndexes1(source, rest, i + 1, limitRecursion-1);
+
+                if (arr.Any())
+                    return arr.Insert(i);
+            }
+
+            return Array.Empty<int>();
         }
     }
 }

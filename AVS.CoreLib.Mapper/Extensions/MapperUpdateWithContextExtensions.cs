@@ -10,10 +10,23 @@ namespace AVS.CoreLib.Mapper.Extensions
         /// Register type mapping delegate to update existing <see cref="TDestination"/> object
         /// <seealso cref="Update{TDestination, TSource,TContext}(TDestination, TSource, TContext)"/>
         /// </summary>
-        public static void RegisterUpdate<TDestination, TSource, TContext>(this IMapper mapper, Action<TDestination, TSource, TContext> func)
+        public static void RegisterUpdate<TDestination, TSource, TContext>(this IMapper mapper, Action<TDestination, TSource, TContext> @delegate)
         {
             var mappingKey = $"({typeof(TDestination).Name},{typeof(TSource).Name},{typeof(TContext).Name})";
-            mapper.RegisterDelegate(mappingKey, func);
+            mapper.RegisterDelegate(mappingKey, @delegate);
+            //var wrapper = new Action<TDestination, TSource, TContext>((x, y, arg) =>
+            //{
+            //    try
+            //    {
+            //        @delegate(x, y, arg);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        throw new MapException($"Update {mappingKey} failed", ex);
+            //    }
+            //});
+
+            //mapper.RegisterDelegate(mappingKey, wrapper);
         }
 
         public static Action<TDestination, TSource, TContext> GetUpdateMapper<TDestination, TSource, TContext>(this IMapper mapper)
@@ -37,28 +50,47 @@ namespace AVS.CoreLib.Mapper.Extensions
             TContext context, Action<TTarget>? postUpdate = null, string? delegateRef = null)
         {
             var mappingKey = $"({typeof(TTarget).Name},{typeof(TSource).Name},{typeof(TContext).Name})";
-            var func = mapper.GetUpdateMapper<TTarget, TSource, TContext>();
-            func(target, source, context);
-            postUpdate?.Invoke(target);
-            return target;
+            var del = mapper[mappingKey];
+            var func = (Action<TTarget, TSource, TContext>)del;
+
+            try
+            {
+                func(target, source, context);
+                postUpdate?.Invoke(target);
+                return target;
+            }
+            catch (Exception ex)
+            {
+                throw new MapException($"Update {mappingKey} Failed", ex, delegateRef);
+            }
         }
 
         /// <summary>
-        /// Execute many-to-many mapping to UPDATE EXISTING <see cref="TDestination"/> objects collection       
+        /// Execute many-to-many mapping to UPDATE EXISTING <see cref="TTarget"/> objects collection       
         /// <code>
         /// mapper.UpdateAll(entities, models, ctx);
         /// </code>
         /// </summary>
         /// <typeparam name="TSource">source type</typeparam>
-        /// <typeparam name="TDestination">destination type</typeparam>
-        public static void UpdateAll<TDestination, TSource, TContext>(this IMapper mapper, IEnumerable<TDestination> destination,
-            IEnumerable<TSource> source, TContext context, Action<TDestination>? postUpdate = null, string? delegateRef = null)
+        /// <typeparam name="TTarget">destination type</typeparam>
+        /// <typeparam name="TContext"></typeparam>
+        public static void UpdateAll<TTarget, TSource, TContext>(this IMapper mapper, IEnumerable<TTarget> destination,
+            IEnumerable<TSource> source, TContext context, Action<TTarget>? postUpdate = null, string? delegateRef = null)
         {
-            var func = mapper.GetUpdateMapper<TDestination, TSource, TContext>();
+            var mappingKey = $"({typeof(TTarget).Name},{typeof(TSource).Name},{typeof(TContext).Name})";
+            var del = mapper[mappingKey];
+            var func = (Action<TTarget, TSource, TContext>)del;
             foreach (var zip in destination.Zip(source))
             {
-                func(zip.First, zip.Second, context);
-                postUpdate?.Invoke(zip.First);
+                try
+                {
+                    func(zip.First, zip.Second, context);
+                    postUpdate?.Invoke(zip.First);
+                }
+                catch (Exception ex)
+                {
+                    throw new MapException($"Update {mappingKey} Failed", ex, delegateRef);
+                }
             }
         }
     }

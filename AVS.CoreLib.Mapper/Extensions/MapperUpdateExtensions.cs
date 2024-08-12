@@ -6,18 +6,10 @@ namespace AVS.CoreLib.Mapper.Extensions
 {
     public static class MapperUpdateExtensions
     {
-        public static void RegisterUpdate<TSource>(this IMapper mapper, Action<TSource, TSource> update)
-        {
-            mapper.RegisterUpdate(update);
-        }
-
-        public static Action<TDestination, TSource> GetUpdateMapper<TDestination, TSource>(this IMapper mapper)
-        {
-            var mappingKey = $"({typeof(TDestination).Name},{typeof(TSource).Name})";
-            var del = mapper[mappingKey];
-            var func = (Action<TDestination, TSource>)del;
-            return func;
-        }
+        //public static void RegisterUpdate<TSource>(this IMapper mapper, Action<TSource, TSource> update)
+        //{
+        //    mapper.RegisterUpdate(update);
+        //}
 
         public static TDestination Update<TDestination, TSource>(this IMapper mapper, TDestination destination, TSource source,
             Action<TDestination> modify, string? delegateRef = null)
@@ -38,12 +30,21 @@ namespace AVS.CoreLib.Mapper.Extensions
         public static void UpdateAll<TDestination, TSource>(this IMapper mapper, IEnumerable<TDestination> destination,
             IEnumerable<TSource> source, Action<TDestination>? postUpdate = null, string? delegateRef = null)
         {
-            var func = mapper.GetUpdateMapper<TDestination, TSource>();
+            var mappingKey = $"({typeof(TDestination).Name},{typeof(TSource).Name})";
+            var del = mapper[mappingKey];
+            var func = (Action<TDestination, TSource>)del;
 
             foreach (var zip in destination.Zip(source))
             {
-                func(zip.First, zip.Second);
-                postUpdate?.Invoke(zip.First);
+                try
+                {
+                    func(zip.First, zip.Second);
+                    postUpdate?.Invoke(zip.First);
+                }
+                catch (Exception ex)
+                {
+                    throw new MapException($"UpdateAll {mappingKey} Failed", ex, delegateRef);
+                }
             }
         }
     }

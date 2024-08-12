@@ -42,6 +42,14 @@ public class OutputBuilder : IOutputBuilder
         return Output.ToString();
     }
 
+    /// <summary>
+    /// Builds an output message, message might include color ansi-codes
+    /// <remarks>
+    /// coloring is based on ansi-code and works as the following:
+    ///  1. log message is formatted with color tags
+    ///  2. tags are processed (replaced) with ansi-codes
+    /// </remarks>
+    /// </summary>
     public string Build()
     {
         if (string.IsNullOrWhiteSpace(Message))
@@ -49,12 +57,15 @@ public class OutputBuilder : IOutputBuilder
         else
         {
             PadLength = 0;
+            // build output message
             AddTimestamp();
             AddLogLevel();
             AddPrefix();
             AddCategory();
             AddMessageText();
             AddError();
+            // output might contain tags like color tags process them
+            // process means replace them with ansi-codes or strip tags when TagsBehavior is Disabled
             ProcessTags();
         }
 

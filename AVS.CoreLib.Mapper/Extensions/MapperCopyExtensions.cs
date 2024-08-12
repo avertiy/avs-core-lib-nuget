@@ -10,11 +10,25 @@ namespace AVS.CoreLib.Mapper.Extensions
         /// <seealso cref="Copy{TSource}"/>
         /// </summary>
         /// <typeparam name="TSource">source type</typeparam>
+        /// <param name="mapper">mapper</param>
         /// <param name="func">delegate to do the mapping</param>
-        public static void Register<TSource>(this IMapper mapper, Func<TSource, TSource> func)
+        public static void Register<TSource>(this IMapper mapper, Func<TSource, TSource> @delegate)
         {
             var mappingKey = $"{typeof(TSource).Name}->{typeof(TSource).Name}";
-            mapper.RegisterDelegate(mappingKey, func);
+
+            var wrapper = new Func<TSource, TSource>(x =>
+            {
+                try
+                {
+                    return @delegate(x);
+                }
+                catch (Exception ex)
+                {
+                    throw new MapException($"Copy (Map:{mappingKey}) failed", ex);
+                }
+            });
+
+            mapper.RegisterDelegate(mappingKey, wrapper);
         }
 
         /// <summary>

@@ -6,6 +6,7 @@ namespace AVS.CoreLib.Mapper.Extensions
 {
     public static class MapperMapExtensions
     {
+        /*
         /// <summary>
         /// returns a type mapping delegate that PRODUCE NEW <see cref="TDestination"/> object
         /// </summary>
@@ -16,6 +17,7 @@ namespace AVS.CoreLib.Mapper.Extensions
             var func = (Func<TSource, TDestination>)del;
             return func;
         }
+        */
 
         /// <summary>
         /// Execute many-to-many mapping to PRODUCE NEW <see cref="TDestination"/> objects        
@@ -27,17 +29,27 @@ namespace AVS.CoreLib.Mapper.Extensions
         /// <typeparam name="TDestination">destination type</typeparam>
         public static IEnumerable<TDestination> MapAll<TSource, TDestination>(this IMapper mapper, IEnumerable<TSource> source, Action<TDestination>? action = null, string? delegateRef = null)
         {
-            var func = mapper.GetMapper<TSource, TDestination>();
+            var mappingKey = $"{typeof(TSource).Name}->{typeof(TDestination).Name}";
+            var del = mapper[mappingKey];
+            var func = (Func<TSource, TDestination>)del;
 
-            if (action == null)
-                return source.Select(x => func(x));
-
-            return source.Select(x =>
+            try
             {
-                var model = func(x);
-                action.Invoke(model);
-                return model;
-            });
+
+                if (action == null)
+                    return source.Select(x => func(x));
+
+                return source.Select(x =>
+                {
+                    var model = func(x);
+                    action.Invoke(model);
+                    return model;
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new MapException($"MapAll {mappingKey} failed", ex, delegateRef);
+            }
         }
 
         /// <summary>

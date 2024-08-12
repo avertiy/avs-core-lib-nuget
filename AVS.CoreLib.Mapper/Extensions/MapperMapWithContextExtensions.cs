@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace AVS.CoreLib.Mapper.Extensions
 {
@@ -13,22 +12,27 @@ namespace AVS.CoreLib.Mapper.Extensions
         /// </summary>
         /// <typeparam name="TSource">source type</typeparam>
         /// <typeparam name="TDestination">destination type</typeparam>
-        /// <param name="func">delegate to do the mapping</param>
-        public static void Register<TSource, TContext, TDestination>(this IMapper mapper, Func<TSource, TContext, TDestination> func)
+        /// <typeparam name="TContext"></typeparam>
+        /// <param name="mapper">mapper</param>
+        /// <param name="delegate">delegate to do the mapping</param>
+        public static void Register<TSource, TContext, TDestination>(this IMapper mapper, Func<TSource, TContext, TDestination> @delegate)
         {
             var mappingKey = $"({typeof(TSource).Name},{typeof(TContext).Name})->{typeof(TDestination).Name}";
-            mapper.RegisterDelegate(mappingKey, func);
-        }
+            mapper.RegisterDelegate(mappingKey, @delegate);
 
-        /// <summary>
-        /// returns a type mapping delegate that PRODUCE NEW <see cref="TDestination"/> object
-        /// </summary>
-        public static Func<TSource, TContext, TDestination> GetMapper<TSource, TContext, TDestination>(this IMapper mapper)
-        {
-            var mappingKey = $"({typeof(TSource).Name},{typeof(TContext).Name})->{typeof(TDestination).Name}";
-            var del = mapper[mappingKey];
-            var func = (Func<TSource, TContext, TDestination>)del;
-            return func;
+            //var wrapper = new Func<TSource, TContext, TDestination>((x, arg) =>
+            //{
+            //    try
+            //    {
+            //        return @delegate(x, arg);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        throw new MapException($"Map with {typeof(TContext).Name} arg {mappingKey} failed", ex);
+            //    }
+            //});
+
+            //mapper.RegisterDelegate(mappingKey, wrapper);
         }
 
         /// <summary>        
@@ -42,10 +46,20 @@ namespace AVS.CoreLib.Mapper.Extensions
         /// <typeparam name="TContext">additional argument to create the destination object</typeparam>
         public static TDestination Map<TSource, TContext, TDestination>(this IMapper mapper, TSource source, TContext context, Action<TDestination>? modify = null, string? delegateRef = null)
         {
-            var func = mapper.GetMapper<TSource, TContext, TDestination>();
-            var result = func(source, context);
-            modify?.Invoke(result);
-            return result;
+            var mappingKey = $"({typeof(TSource).Name},{typeof(TContext).Name})->{typeof(TDestination).Name}";
+            var del = mapper[mappingKey];
+            var func = (Func<TSource, TContext, TDestination>)del;
+
+            try
+            {
+                var result = func(source, context);
+                modify?.Invoke(result);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new MapException($"Map {mappingKey} Failed", ex, delegateRef);
+            }
         }
 
         /// <summary>
@@ -60,17 +74,26 @@ namespace AVS.CoreLib.Mapper.Extensions
         public static IEnumerable<TDestination> MapAll<TSource, TContext, TDestination>(this IMapper mapper, IEnumerable<TSource> source,
             TContext context, Action<TDestination>? action = null, string? delegateRef = null)
         {
-            var func = mapper.GetMapper<TSource, TContext, TDestination>();
+            var mappingKey = $"({typeof(TSource).Name},{typeof(TContext).Name})->{typeof(TDestination).Name}";
+            var del = mapper[mappingKey];
+            var func = (Func<TSource, TContext, TDestination>)del;
 
-            if (action == null)
-                return source.Select(x => func(x, context));
-
-            return source.Select(x =>
+            try
             {
-                var model = func(x, context);
-                action.Invoke(model);
-                return model;
-            });
+                if (action == null)
+                    return source.Select(x => func(x, context));
+
+                return source.Select(x =>
+                {
+                    var model = func(x, context);
+                    action.Invoke(model);
+                    return model;
+                });
+            }
+            catch (Exception ex)
+            {
+                throw new MapException($"MapAll {mappingKey} Failed", ex, delegateRef);
+            }
         }
 
     }
