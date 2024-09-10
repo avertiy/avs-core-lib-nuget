@@ -28,7 +28,7 @@ namespace AVS.CoreLib.Console.ColorFormatting.Tags
         /// <summary>
         /// Reversed
         /// </summary>
-        R = 7, 
+        R = 7,
         #endregion
 
         #region colors
@@ -47,7 +47,7 @@ namespace AVS.CoreLib.Console.ColorFormatting.Tags
         Blue = 94,
         Magenta = 95,
         Cyan = 96,
-        White = 97, 
+        White = 97,
         #endregion
 
         #region bright colors

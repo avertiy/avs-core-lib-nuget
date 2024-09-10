@@ -46,7 +46,7 @@ public partial class Condition : ICondition
         };
     }
 
-   
+
 }
 
 public static class ConditionExtensions

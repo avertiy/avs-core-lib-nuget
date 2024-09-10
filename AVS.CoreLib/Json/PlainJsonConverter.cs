@@ -62,7 +62,7 @@ public class PlainJsonConverter : JsonConverter<object?>
 
         foreach (var prop in props)
         {
-            if(!prop.CanRead)
+            if (!prop.CanRead)
                 continue;
 
             var val = prop.GetValue(value);
@@ -82,11 +82,11 @@ public class PlainJsonConverter : JsonConverter<object?>
             else
             {
                 sb.Append($"{prop.Name.ToCamelCase()}:{val}; ");
-            }   
+            }
         }
 
         if (sb.Length > 0)
-            sb.Length-=2;
+            sb.Length -= 2;
 
         var plainText = sb.ToString();
         writer.WriteStringValue(plainText);
@@ -102,7 +102,7 @@ public class PlainJsonConverter : JsonConverter<object?>
         }
 
         if (sb.Length > 0)
-            sb.Length-=2;
+            sb.Length -= 2;
 
         var plainText = sb.ToString();
         writer.WriteStringValue(plainText);

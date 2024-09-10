@@ -15,7 +15,7 @@ namespace AVS.CoreLib.REST
         public static void AddREST(this IServiceCollection services)
         {
             services.AddHttpClient();
-            services.AddTransient<IPublicRequestMessageBuilder, PublicRequestMessageBuilder>();            
+            services.AddTransient<IPublicRequestMessageBuilder, PublicRequestMessageBuilder>();
             services.AddTransient<IRateLimiter, RateLimiter>();
             services.AddTransient<IPublicRestClient, PublicRestClient>();
             services.AddSingleton<IJsonService, JsonService>();

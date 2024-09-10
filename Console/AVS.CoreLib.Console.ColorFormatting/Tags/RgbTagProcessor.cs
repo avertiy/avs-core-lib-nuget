@@ -42,7 +42,7 @@ namespace AVS.CoreLib.Console.ColorFormatting.Tags
             if (parts.Length > 2 && byte.TryParse(parts[0], out var r) && byte.TryParse(parts[1], out var g) && byte.TryParse(parts[2], out var b))
             {
                 rgb = (r, g, b);
-                var l = "<RGB color=\"".Length + 2 + parts[0].Length + parts[1].Length + parts[2].Length+2;
+                var l = "<RGB color=\"".Length + 2 + parts[0].Length + parts[1].Length + parts[2].Length + 2;
                 rgbText = sb.ToString(ind, l);
                 return true;
             }

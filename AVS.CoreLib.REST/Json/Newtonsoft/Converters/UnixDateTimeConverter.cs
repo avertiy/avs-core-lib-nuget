@@ -18,7 +18,7 @@ namespace AVS.CoreLib.REST.Json.Newtonsoft.Converters
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
             JsonSerializer serializer)
         {
-           
+
             if (reader.TokenType == JsonToken.Null)
             {
                 var nullable = objectType.IsNullable();
@@ -36,11 +36,11 @@ namespace AVS.CoreLib.REST.Json.Newtonsoft.Converters
                     seconds = (long)reader.Value!;
                     break;
                 case JsonToken.String:
-                {
-                    if (!long.TryParse((string)reader.Value!, out seconds))
-                        throw new JsonSerializationException($"Unable to parse string token {reader.Value} into long.");
-                    break;
-                }
+                    {
+                        if (!long.TryParse((string)reader.Value!, out seconds))
+                            throw new JsonSerializationException($"Unable to parse string token {reader.Value} into long.");
+                        break;
+                    }
                 default:
                     throw new JsonSerializationException(
                         $"Parse {objectType.Name} failed. Unexpected token type {reader.TokenType}.");

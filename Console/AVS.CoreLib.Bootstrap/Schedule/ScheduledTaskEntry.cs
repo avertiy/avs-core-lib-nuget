@@ -18,7 +18,7 @@ internal class ScheduledTaskEntry
         if (Interval <= 0)
             return false;
 
-        if(Task.Paused)
+        if (Task.Paused)
             return false;
 
         if (StartTime.HasValue && StartTime > utcTime || EndTime.HasValue && EndTime <= utcTime)

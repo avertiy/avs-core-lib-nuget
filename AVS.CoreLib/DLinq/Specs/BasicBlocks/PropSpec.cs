@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
-using AVS.CoreLib.Extensions;
 
 namespace AVS.CoreLib.DLinq.Specs.BasicBlocks;
 
@@ -36,12 +35,12 @@ public class PropSpec : SpecBase, ILambdaSpec
         var outputExpr = Expression.Property(expr, prop);
         return outputExpr;
     }
-    
+
     protected static PropertyInfo? LookupProperty(Type type, string name)
     {
         return type.GetProperty(name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
     }
-    
+
     public override string GetCacheKey()
     {
         return Name!;

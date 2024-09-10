@@ -15,7 +15,7 @@ namespace AVS.CoreLib.WebSockets.MessageProcessing
 
         public void Handle(T message, TContext context = default)
         {
-            if(Filter(message))
+            if (Filter(message))
                 return;
 
             if (ProcessAsync)
@@ -32,7 +32,7 @@ namespace AVS.CoreLib.WebSockets.MessageProcessing
         }
 
         protected virtual void HandleMessage(T message, TContext context = default)
-        {   
+        {
         }
 
         protected virtual Task HandleMessageAsync(T message, TContext context)

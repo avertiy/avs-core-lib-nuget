@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\AVS.CoreLib\AVS.CoreLib.csproj" />
     <ProjectReference Include="..\..\Console\AVS.CoreLib.PowerConsole\AVS.CoreLib.PowerConsole.csproj" />
     <ProjectReference Include="..\AVS.CoreLib.AbstractLogger\AVS.CoreLib.AbstractLogger.csproj" />
   </ItemGroup>

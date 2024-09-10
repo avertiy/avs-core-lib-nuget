@@ -13,7 +13,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
     {
         public static Table WithTitle(this Table table, string title)
         {
-            if(!string.IsNullOrEmpty(title))
+            if (!string.IsNullOrEmpty(title))
                 table.Title = title;
             return table;
         }
@@ -114,7 +114,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
             return scheme.HasValue ? new ColorString(text, scheme.Value) : new ColorString(text);
         }
 
-        
+
 
         public static void CalculateWidth(this Table table, bool force = false)
         {
@@ -123,9 +123,9 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
             {
                 totalWidth = table.Title.Length + 2;
             }
-            
+
             var rows = table.Rows;
-            
+
             if (table.Columns.Any())
             {
                 var columns = table.Columns;
@@ -163,9 +163,9 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
 
                         if (cell.Colspan == 1)
                         {
-                            if(cell.Text.Length <= column.Width)
+                            if (cell.Text.Length <= column.Width)
                                 continue;
-                        
+
                             column.Width = cell.Text.Length + 2;
                             continue;
                         }

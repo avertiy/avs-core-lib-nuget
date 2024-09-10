@@ -13,8 +13,6 @@ namespace AVS.CoreLib.Configuration
     /// </summary>
     public static class ConfigurationHelper
     {
-        
-
         public static IConfigurationRoot LoadConfiguration(string? appName = null, string? environment = null, bool reloadOnChange = false)
         {
             var builder = new ConfigurationBuilder();
@@ -38,6 +36,7 @@ namespace AVS.CoreLib.Configuration
         public static ConfigurationBuilder AddCustomUserSecrets(this ConfigurationBuilder builder, string? appName = null, bool reloadOnChange = false)
         {
             var path = CustomUserSecrets.GetUserSecretsPath(appName);
+            Console.WriteLine($"ConfigurationManager: add {path} (reloadOnChange: {reloadOnChange})");
             builder.AddJsonFile(path, optional: true, reloadOnChange);
             return builder;
         }
@@ -50,6 +49,7 @@ namespace AVS.CoreLib.Configuration
             string? appName = null, bool reloadOnChange = false)
         {
             var path = CustomUserSecrets.GetUserSecretsPath(appName);
+            Console.WriteLine($"ConfigurationManager: add {path} (reloadOnChange: {reloadOnChange})");
             configuration.AddJsonFile(path, optional: true, reloadOnChange);
             return configuration;
         }
@@ -59,7 +59,11 @@ namespace AVS.CoreLib.Configuration
         {
             builder.AddJsonFile("appsettings.json", optional: true, reloadOnChange);
             if (environment != null)
+            {
+                Console.WriteLine($"ConfigurationManager: add appsettings.{environment}.json (reloadOnChange: {reloadOnChange})");
                 builder.AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange);
+            }
+
             return builder;
         }
     }

@@ -12,7 +12,7 @@ using AVS.CoreLib.Extensions.Linq;
 
 namespace AVS.CoreLib.Extensions.Tasks;
 
-public sealed class TaskResults<T, TResult> : IEnumerable<KeyValuePair<T,TResult>> where T : notnull
+public sealed class TaskResults<T, TResult> : IEnumerable<KeyValuePair<T, TResult>> where T : notnull
 {
     internal Dictionary<T, TResult> Items { get; private set; }
     public int Count => Items.Count;
@@ -30,12 +30,12 @@ public sealed class TaskResults<T, TResult> : IEnumerable<KeyValuePair<T,TResult
 
     public TaskResults(int capacity = 0)
     {
-        Items = new Dictionary<T, TResult>(capacity);        
+        Items = new Dictionary<T, TResult>(capacity);
     }
 
     public void Add(T key, TResult value)
     {
-        Items.Add(key,value);
+        Items.Add(key, value);
     }
 
     public TOutput? Peek<TOutput>(Func<TResult, TOutput> selector)
@@ -53,7 +53,7 @@ public sealed class TaskResults<T, TResult> : IEnumerable<KeyValuePair<T,TResult
         return Items.Values.Where(predicate);
     }
 
-    public IEnumerable<TResult> GetValues(Func<KeyValuePair<T,TResult>, bool> predicate)
+    public IEnumerable<TResult> GetValues(Func<KeyValuePair<T, TResult>, bool> predicate)
     {
         return Items.Where(predicate).Select(x => x.Value);
     }
@@ -62,7 +62,7 @@ public sealed class TaskResults<T, TResult> : IEnumerable<KeyValuePair<T,TResult
 
     public IEnumerator<KeyValuePair<T, TResult>> GetEnumerator()
     {
-        return Items.GetEnumerator();        
+        return Items.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
@@ -76,14 +76,14 @@ public sealed class TaskResults<T, TResult> : IEnumerable<KeyValuePair<T,TResult
 
         sb.Append($"(#{Count}");
 
-        if(Count > 0)
+        if (Count > 0)
         {
             if (Items.Any(kp => kp.Value is IResponse))
             {
                 var success = Items.Values.Count(x => ((IResponse)x!).Success);
                 var failed = Items.Values.Count(x => ((IResponse)x!).Success == false);
 
-                if(success > 0)
+                if (success > 0)
                     sb.Append($" {success} - OK;");
 
                 if (failed > 0)
@@ -91,7 +91,7 @@ public sealed class TaskResults<T, TResult> : IEnumerable<KeyValuePair<T,TResult
             }
             var totalCount = TotalCount;
 
-            if(totalCount > 0)
+            if (totalCount > 0)
                 sb.Append($" items #{totalCount};");
         }
 
@@ -102,7 +102,7 @@ public sealed class TaskResults<T, TResult> : IEnumerable<KeyValuePair<T,TResult
 
 public static class TaskResultsExtensions
 {
-    public static string? GetErrors<T,TResult>(this TaskResults<T, TResult> results, Func<TResult, string?> selector, Func<T, string>? keySelector = null) where T : notnull
+    public static string? GetErrors<T, TResult>(this TaskResults<T, TResult> results, Func<TResult, string?> selector, Func<T, string>? keySelector = null) where T : notnull
     {
         if (results.Count == 0)
             return null;
@@ -115,9 +115,9 @@ public static class TaskResultsExtensions
             if (error == null)
                 continue;
 
-            if(keySelector == null)
+            if (keySelector == null)
                 sb.Append($"{error}; ");
-            else 
+            else
                 sb.Append($"{keySelector(kp.Key)}: {error}; ");
         }
 
@@ -129,23 +129,23 @@ public static class TaskResultsExtensions
     }
 
     public static List<TResult> ToList<T, TResult>(this TaskResults<T, TResult> results) where T : notnull
-    {   
+    {
         return results.Items.Values.ToList();
     }
 
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static List<TItem> PickUniqueItems<T,TResult, TItem, TKey>(this TaskResults<T,TResult> tasks,
+    public static List<TItem> PickUniqueItems<T, TResult, TItem, TKey>(this TaskResults<T, TResult> tasks,
         Func<TResult, IEnumerable<TItem>> selector, Func<TItem, TKey> keySelector, Func<TResult, bool>? isValid = null) where T : notnull
     {
-        return 
-            isValid == null 
-            ? tasks.Items.Values.PickUniqueItems(selector, keySelector).Values.ToList()            
+        return
+            isValid == null
+            ? tasks.Items.Values.PickUniqueItems(selector, keySelector).Values.ToList()
             : tasks.Items.Values.Where(isValid).PickUniqueItems(selector, keySelector).Values.ToList();
     }
 
     [DebuggerStepThrough]
-    public static List<TItem> PickUniqueItems<T,TResult, TItem, TKey>(this TaskResults<T,TResult> tasks,  
+    public static List<TItem> PickUniqueItems<T, TResult, TItem, TKey>(this TaskResults<T, TResult> tasks,
         Func<TResult, IEnumerable<TItem>> selector,
         Func<TItem, TKey> keySelector, Enums.Sort orderDirection, Func<TResult, bool>? isValid = null) where T : notnull
     {
@@ -160,7 +160,7 @@ public static class TaskResultsExtensions
 
     [DebuggerStepThrough]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static HashSet<TItem> PickUniqueItems<T,TResult, TItem>(this TaskResults<T,TResult> tasks, Func<TResult, IEnumerable<TItem>> selector, Func<TResult, bool>? isValid = null) where T : notnull
+    public static HashSet<TItem> PickUniqueItems<T, TResult, TItem>(this TaskResults<T, TResult> tasks, Func<TResult, IEnumerable<TItem>> selector, Func<TResult, bool>? isValid = null) where T : notnull
     {
         return isValid == null ? tasks.Items.PickUniqueItems(selector) : tasks.Items.Values.Where(isValid).PickUniqueItems(selector);
     }

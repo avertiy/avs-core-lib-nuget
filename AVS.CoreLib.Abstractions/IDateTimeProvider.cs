@@ -39,7 +39,7 @@ namespace AVS.CoreLib.Abstractions
         public static DateTime GetTime()
         {
             return Instance.GetSystemTime();
-        } 
+        }
         #endregion
     }
 }

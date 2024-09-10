@@ -83,10 +83,10 @@ namespace AVS.CoreLib.Extensions.DependencyInjection
         public static IServiceCollection AsSelf(this IServiceCollection services)
         {
             var lastRegistration = services.LastOrDefault();
-            if (lastRegistration == null) 
+            if (lastRegistration == null)
                 return services;
 
-            var implementationType = GetImplementationType(lastRegistration) 
+            var implementationType = GetImplementationType(lastRegistration)
                                      ?? throw new InvalidOperationException($"implementation type is null");
 
             // When the last registration service type was already registered

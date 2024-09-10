@@ -94,7 +94,7 @@ namespace AVS.CoreLib.PowerConsole.Printers2.Extensions
         //    }
         //}
 
-        public static void PrintJson(this IPowerConsolePrinter2 printer, object obj, bool indented, 
+        public static void PrintJson(this IPowerConsolePrinter2 printer, object obj, bool indented,
             PrintOptions2 options = PrintOptions2.Default, Colors? colors = null)
         {
             var str = obj.ToJsonString(indented);
@@ -211,7 +211,7 @@ namespace AVS.CoreLib.PowerConsole.Printers2.Extensions
             {
                 printer.Print(message, options, colors);
                 printer.Print("null", options, colors);
-                return;    
+                return;
             }
 
             switch (format)

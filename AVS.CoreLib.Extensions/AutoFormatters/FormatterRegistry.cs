@@ -83,7 +83,7 @@ public class XFormatterRegistry : FormatterRegistry
         if (Formatters.ContainsKey(key))
             return Formatters[key];
 
-        if(value == null)
+        if (value == null)
             return Formatters[AutoFormatter.DEFAULT_FORMATTER];
 
         var type = value.GetType();

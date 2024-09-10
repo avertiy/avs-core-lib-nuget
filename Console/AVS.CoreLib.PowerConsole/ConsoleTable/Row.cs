@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using AVS.CoreLib.PowerConsole.Utilities;
 
@@ -23,7 +22,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
             cell.ColorScheme ??= ColorScheme;
             //cell.Column = GetColumn(colspan > 0 ? colspan : 0);
             cell.Row = this;
-            
+
             if (Height < cell.Height)
                 Height = cell.Height;
 

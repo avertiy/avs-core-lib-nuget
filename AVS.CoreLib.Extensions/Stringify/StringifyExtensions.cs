@@ -133,13 +133,13 @@ namespace AVS.CoreLib.Extensions.Stringify
 
         public static string Stringify(this IEnumerable enumerable, StringifyOptions? options = null, Func<object, string>? formatter = null)
         {
-            var formattedItems =  AutoFormatter.Instance.FormatAll(enumerable);
+            var formattedItems = AutoFormatter.Instance.FormatAll(enumerable);
             return Stringificator.Instance.Stringify<string>(formattedItems, options, formatter);
         }
 
         #endregion
 
-        public static string Stringify<TKey,TValue>(this IDictionary<TKey,TValue> dictionary, StringifyOptions? options = null,
+        public static string Stringify<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, StringifyOptions? options = null,
             Func<TKey, TValue, string>? formatter = null)
         {
             return Stringificator.Instance.Stringify(dictionary, options, formatter);

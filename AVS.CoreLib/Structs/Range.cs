@@ -31,7 +31,7 @@ namespace AVS.CoreLib.Structs
 
         public bool Contains(T value, bool inclusiveRange = true)
         {
-            if(inclusiveRange)
+            if (inclusiveRange)
                 return Min.CompareTo(value) <= 0 && Max.CompareTo(value) >= 0;
             else
                 return Min.CompareTo(value) < 0 && Max.CompareTo(value) > 0;

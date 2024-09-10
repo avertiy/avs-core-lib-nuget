@@ -12,7 +12,7 @@ namespace AVS.CoreLib.Extensions
             for (; i < list1.Count && i < list2.Count; i++)
                 yield return selector(list1[i], list2[i]);
 
-            if (!iterateAll) 
+            if (!iterateAll)
                 yield break;
 
             var n = list1.Count >= list2.Count ? list1.Count : list2.Count;

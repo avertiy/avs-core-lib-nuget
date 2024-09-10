@@ -37,8 +37,8 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
 
             Columns.Add(new Column()
             {
-                Title = title, 
-                Width = colWidth, 
+                Title = title,
+                Width = colWidth,
                 ColorScheme = scheme
             });
             return colWidth;
@@ -89,8 +89,8 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
 
     public enum TableOrientation
     {
-        Auto=0,
-        Vertical =1,
-        Horizontal =2,
+        Auto = 0,
+        Vertical = 1,
+        Horizontal = 2,
     }
 }

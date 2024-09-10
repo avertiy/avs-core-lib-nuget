@@ -28,8 +28,8 @@ namespace AVS.CoreLib.Console.ColorFormatting.Tags
                 var length = tagName.Length;
                 var ansiCode = tag.ToAnsiCode();
 
-                sb.Replace($"</{tagName}>", AnsiCodes.RESET, endIndex - length-3, length + 3);
-                sb.Replace($"<{tagName}>", ansiCode, startIndex, length+2);
+                sb.Replace($"</{tagName}>", AnsiCodes.RESET, endIndex - length - 3, length + 3);
+                sb.Replace($"<{tagName}>", ansiCode, startIndex, length + 2);
 
                 return ansiCode.Length;
             });

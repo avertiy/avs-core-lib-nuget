@@ -43,7 +43,7 @@ namespace AVS.CoreLib.Dates
 
             From = from;
             To = to;
-            
+
         }
 
         public DateRange(DateRange other)
@@ -109,7 +109,7 @@ namespace AVS.CoreLib.Dates
                 return range;
 
             throw new Exception($"String '{value}' is not valid DateRange value");
-        } 
+        }
         #endregion
 
         #region Compare operators overloading
@@ -177,7 +177,7 @@ namespace AVS.CoreLib.Dates
         //    return dateRange.TotalSeconds <= periodInSeconds;
         //}
 
-       
+
         #endregion
 
         public override string ToString()
@@ -275,7 +275,7 @@ namespace AVS.CoreLib.Dates
             return new DateRange(from, now);
         }
 
-        public static DateRange FromSource<T>(IList<T> source, Func<T,DateTime> selector)
+        public static DateRange FromSource<T>(IList<T> source, Func<T, DateTime> selector)
         {
             var (from, to) = source.MinMax(selector);
             return new DateRange(from, to);
@@ -378,7 +378,7 @@ namespace AVS.CoreLib.Dates
             else
             {
                 var i = range.To;
-                var startOfMonth = i.StartOfMonth();                
+                var startOfMonth = i.StartOfMonth();
                 if (i > startOfMonth)
                 {
                     yield return new DateRange(startOfMonth, i);
@@ -407,7 +407,7 @@ namespace AVS.CoreLib.Dates
             {
                 var i = range.From;
                 while (true)
-                {                    
+                {
                     var next = i.AddDays(days).Date;
 
                     if (next > range.To)

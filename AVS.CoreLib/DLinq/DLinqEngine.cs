@@ -52,34 +52,34 @@ public class DLinqEngine
             case DLinqType.MultiValueExpr:
                 return ProcessMultiValueExpr(source, q, type);
             default:
-            {
-                //close WHERE close > 10000 SKIP 10 TAKE 2
-                var parts = SplitQuery(q);
+                {
+                    //close WHERE close > 10000 SKIP 10 TAKE 2
+                    var parts = SplitQuery(q);
 
-                var src = source;
-                // Parse SELECT expr
-                var items = ParseSelectExpr(parts[0], type);
+                    var src = source;
+                    // Parse SELECT expr
+                    var items = ParseSelectExpr(parts[0], type);
 
-                var ctx = new DLinqContext() { Items = items, Type = type, Mode = Mode };
+                    var ctx = new DLinqContext() { Items = items, Type = type, Mode = Mode };
 
-                // WHERE
-                if (!string.IsNullOrEmpty(parts[1]))
-                    src = Where(src, parts[1], ctx);
+                    // WHERE
+                    if (!string.IsNullOrEmpty(parts[1]))
+                        src = Where(src, parts[1], ctx);
 
-                // ORDER BY
-                if (!string.IsNullOrEmpty(parts[2]))
-                    src = OrderBy(src, parts[2], ctx);
+                    // ORDER BY
+                    if (!string.IsNullOrEmpty(parts[2]))
+                        src = OrderBy(src, parts[2], ctx);
 
-                // SKIP
-                if (!string.IsNullOrEmpty(parts[3]))
-                    src = Skip(src, parts[3]);
+                    // SKIP
+                    if (!string.IsNullOrEmpty(parts[3]))
+                        src = Skip(src, parts[3]);
 
-                // TAKE
-                if (!string.IsNullOrEmpty(parts[4]))
-                    src = Take(src, parts[4]);
+                    // TAKE
+                    if (!string.IsNullOrEmpty(parts[4]))
+                        src = Take(src, parts[4]);
 
-                return Select(src, ctx);
-            }
+                    return Select(src, ctx);
+                }
         }
     }
 
@@ -119,7 +119,7 @@ public class DLinqEngine
         // just a select statement
         if (startIndex == -1)
         {
-            var res = new string [keywords.Length+1];
+            var res = new string[keywords.Length + 1];
             res[0] = query.Trim();
             return res;
         }
@@ -146,7 +146,7 @@ public class DLinqEngine
                 var nextInd = i + 1 < keywords.Length ? query.IndexOfAny(index, keywords.Skip(1)) : -1;
 
 
-                var str = nextInd == -1 ? query.Substring(index) : query.Substring(index, nextInd-index);
+                var str = nextInd == -1 ? query.Substring(index) : query.Substring(index, nextInd - index);
                 list.Add(str.Trim());
 
                 startIndex = nextInd > -1 ? nextInd : index;
@@ -158,7 +158,7 @@ public class DLinqEngine
 
         return list.ToArray();
     }
-    
+
     private IEnumerable<T> Where<T>(IEnumerable<T> source, string whereExpr, DLinqContext ctx)
     {
         var condition = ConditionParser.Parse(whereExpr);
@@ -191,12 +191,12 @@ public class DLinqEngine
         var spec = ctx.Items.FirstOrDefault(x => x.Alias == valueExpr) ?? ValueExprSpec.Parse(valueExpr, ctx.Type);
         var enumerable = source.OrderBy(spec, sortDirection, Mode);
 
-        if (parts.Length == 1) 
+        if (parts.Length == 1)
             return enumerable;
-        
+
         if (enumerable is IOrderedEnumerable<T> orderedEnumerable)
         {
-            for (var i =1; i < parts.Length; i++)
+            for (var i = 1; i < parts.Length; i++)
             {
                 valueExpr = parts[i].Trim();
                 spec = ctx.Items.FirstOrDefault(x => x.Alias == valueExpr) ?? ValueExprSpec.Parse(valueExpr, ctx.Type);
@@ -223,7 +223,7 @@ public class DLinqEngine
     {
         return source.Select(ctx);
     }
-    
+
     private ValueExprSpec[] ParseSelectExpr(string selectExpr, Type argType)
     {
         var parts = selectExpr.Split(',');
@@ -277,10 +277,10 @@ public static class DLinqExtensions
             case 1:
                 return items.First().Execute(source, ctx.Mode);
             default:
-            {
-                var spec = new MultiValueExprSpec(items);
-                return spec.Execute(source, ctx.Mode);
-            }
+                {
+                    var spec = new MultiValueExprSpec(items);
+                    return spec.Execute(source, ctx.Mode);
+                }
         }
     }
 }

@@ -70,7 +70,7 @@ namespace AVS.CoreLib.WebSockets
 
             _ = RunReceiveMessages(ct);
 
-            
+
             return State == WebSocketState.Open;
         }
 
@@ -160,7 +160,7 @@ namespace AVS.CoreLib.WebSockets
             // Check WebSocket state.
             while (true)
             {
-                
+
                 if (_disposing)
                 {
                     reason = "Disposing";

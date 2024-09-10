@@ -24,7 +24,7 @@ namespace AVS.CoreLib.REST.Responses
         public bool Success => string.IsNullOrEmpty(Error);
 
         public string Source { get; set; } = null!;
-        
+
         public virtual bool ShouldSerializeSource()
         {
             return Source != null;

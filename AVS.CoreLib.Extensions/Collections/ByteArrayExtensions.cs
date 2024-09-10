@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Globalization;
 using System.Text;
 
 namespace AVS.CoreLib.Extensions.Collections
@@ -12,8 +11,8 @@ namespace AVS.CoreLib.Extensions.Collections
         /// <remarks>the same as BitConverter.ToString(signatureHash).Replace("-", "").ToLowerInvariant()</remarks>
         public static string ToHexString(this byte[] bytes)
         {
-	        //BitConverter.ToString(bytes).Replace("-", "");
-            var sb = new StringBuilder(bytes.Length*2);
+            //BitConverter.ToString(bytes).Replace("-", "");
+            var sb = new StringBuilder(bytes.Length * 2);
             for (var i = 0; i < bytes.Length; i++)
             {
                 sb.Append(bytes[i].ToString("x2"));

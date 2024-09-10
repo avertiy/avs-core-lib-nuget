@@ -57,7 +57,7 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
             Printer2.WriteLine(MessageLevel.Info, "write info message");
             Printer2.WriteLine(MessageLevel.Success, "write success message");
             Printer2.WriteLine(MessageLevel.Important, "write important message");
-            Printer2.WriteLine(MessageLevel.Warning, "write warning message");  
+            Printer2.WriteLine(MessageLevel.Warning, "write warning message");
             Printer2.WriteLine(MessageLevel.Error, "write error message");
             Printer2.WriteLine(MessageLevel.Critical, "write critical error");
         }

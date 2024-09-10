@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Text;
-using AVS.CoreLib.Extensions.Reflection;
 
 namespace AVS.CoreLib.Debugging
 {
@@ -9,7 +8,7 @@ namespace AVS.CoreLib.Debugging
     {
         public static string Dump<T>(this T? obj, bool printToConsole = false)
         {
-            if(obj == null)
+            if (obj == null)
                 return string.Empty;
 
             var sb = new StringBuilder();

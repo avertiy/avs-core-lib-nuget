@@ -35,7 +35,7 @@ public static class SpecCompiler
         }
     }
 
-    
+
 
     /// <summary>
     /// build lambda expr of the form:
@@ -58,7 +58,7 @@ public static class SpecCompiler
         }
 
         return Lmbd.Compile<IEnumerable<T>, IEnumerable>(body, sourceParam);
-    } 
+    }
     #endregion
 
     public static Func<IEnumerable<T>, Sort, IEnumerable<T>> BuildOrderByFn<T>(ValueExprSpec spec, LambdaContext ctx)
@@ -104,7 +104,7 @@ public static class SpecCompiler
 
         return Lmbd.Compile<IOrderedEnumerable<T>, Sort, IOrderedEnumerable<T>>(body, sourceParam, directionParam);
     }
-    
+
     public static Func<T, bool> BuildPredicate<T>(ILambdaSpec spec, LambdaContext ctx)
     {
         var paramExpr = Expression.Parameter(typeof(T), "x");
@@ -128,7 +128,7 @@ public static class SpecCompiler
             var expr = spec.BuildExpr(paramExpr, ctx);
 
             var targetType = typeof(TResult);
-            if(expr.Type != targetType && !expr.Type.IsAssignableTo(targetType))
+            if (expr.Type != targetType && !expr.Type.IsAssignableTo(targetType))
                 expr = Expression.Convert(expr, targetType);
 
             return Lmbd.Compile<T, TResult>(expr, paramExpr);
@@ -150,7 +150,7 @@ public static class SpecCompiler
             ctx.ParamExpr = paramExpr;
             ctx.ResolveTypeFn = e => ResolveType<T>(e, ctx);
             var expr = spec.BuildExpr(paramExpr, ctx);
-            
+
             var decType = typeof(decimal);
 
             if (expr.Type == decType)

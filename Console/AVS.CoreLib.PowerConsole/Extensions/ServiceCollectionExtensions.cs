@@ -13,7 +13,7 @@ namespace AVS.CoreLib.PowerConsole.Extensions
         [Obsolete]
         public static IServiceProvider UsePowerConsoleCustomFormat(this IServiceProvider sp, Func<FormattableString, string> format, Encoding encoding)
         {
-           // PowerConsole.Printer.SetCustomFormatter(format, true);
+            // PowerConsole.Printer.SetCustomFormatter(format, true);
             PowerConsole.InputEncoding = encoding;
             PowerConsole.OutputEncoding = encoding;
             PowerConsole.ApplyColorScheme(ColorScheme.Default);

@@ -1,8 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-
-namespace AVS.CoreLib.Logging.ColorFormatter.Extensions;
+﻿namespace AVS.CoreLib.Logging.ColorFormatter.Extensions;
 
 //public static class DIExtensions
 //{
@@ -11,7 +7,7 @@ namespace AVS.CoreLib.Logging.ColorFormatter.Extensions;
 //        services.AddLogging(x =>
 //        {
 //            x.AddConfiguration(configuration.GetSection("Logging"));
-            
+
 //            x.AddConsoleWithColorFormatter(`options =>
 //            {
 //                options.IncludeScopes = true;

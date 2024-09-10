@@ -57,5 +57,5 @@ namespace AVS.CoreLib.Extensions.DependencyInjection
         }
     }
 
-    
+
 }

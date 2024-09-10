@@ -20,4 +20,15 @@ public static class StampHelper
                 return false;
         }
     }
+
+    public static bool MatchBreakLine(string message)
+    {
+        switch (message)
+        {
+            case "[br]":
+                return true;
+            default:
+                return false;
+        }
+    }
 }

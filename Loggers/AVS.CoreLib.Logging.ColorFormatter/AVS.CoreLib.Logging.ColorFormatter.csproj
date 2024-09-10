@@ -13,7 +13,7 @@
     <Company>AV Stuido</Company>
     <Product>Console Logger</Product>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <LangVersion>preview</LangVersion>
+    <LangVersion>latest</LangVersion>
     <AssemblyVersion>7.0.1</AssemblyVersion>
     <FileVersion>1.0.0</FileVersion>
     <Version>7.0.1</Version>
@@ -29,7 +29,6 @@
     <Compile Remove="ConsoleColors.cs" />
     <Compile Remove="Enums\AnsiCode.cs" />
     <Compile Remove="Enums\Tag.cs" />
-    <Compile Remove="Extensions\LoggerExtensions.cs" />
     <Compile Remove="Extensions\StringColorExtensions.cs" />
     <Compile Remove="Extensions\StringExtensions.cs" />
     <Compile Remove="Utils\AnsiCodes.cs" />

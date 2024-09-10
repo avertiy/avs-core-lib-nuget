@@ -33,57 +33,57 @@ public class ConditionParser
             switch (sb[i])
             {
                 case '[':
-                {
-                    squareBracket = true;
-                    break;
-                }
+                    {
+                        squareBracket = true;
+                        break;
+                    }
                 case ']':
-                {
-                    squareBracket = false;
-                    break;
-                }
+                    {
+                        squareBracket = false;
+                        break;
+                    }
                 case '"':
-                {
-                    doubleQuote = !doubleQuote;
-                    break;
-                }
+                    {
+                        doubleQuote = !doubleQuote;
+                        break;
+                    }
                 case '(' when doubleQuote == false && squareBracket == false:
-                {
-                    //C IN (1,2,3)
-                    if (i > 5 && sb.ToString(i - 3, 2) == "IN")
                     {
-                        inOperator = true;
+                        //C IN (1,2,3)
+                        if (i > 5 && sb.ToString(i - 3, 2) == "IN")
+                        {
+                            inOperator = true;
+                            break;
+                        }
+
+                        stack.Push(i);
                         break;
                     }
-
-                    stack.Push(i);
-                    break;
-                }
                 case ')' when doubleQuote == false && squareBracket == false:
-                {
-                    if (inOperator)
                     {
-                        inOperator = false;
+                        if (inOperator)
+                        {
+                            inOperator = false;
+                            break;
+                        }
+
+                        if (stack.Count == 0)
+                            throw new InvalidExpression($"Opening bracket `(` is missing [before {i} position]", expression);
+
+                        var left = stack.Pop();
+                        var length = i - left + 1;
+                        var str = sb.ToString(left, length);
+                        var key = "@C" + counter++;
+                        dict.Add(key, str.TrimStart('(').TrimEnd(')'));
+                        sb.Replace(str, key, left, str.Length);
+                        i = left + key.Length - 1;
                         break;
                     }
-
-                    if (stack.Count == 0)
-                        throw new InvalidExpression($"Opening bracket `(` is missing [before {i} position]", expression);
-
-                    var left = stack.Pop();
-                    var length = i - left + 1;
-                    var str = sb.ToString(left, length);
-                    var key = "@C" + counter++;
-                    dict.Add(key, str.TrimStart('(').TrimEnd(')'));
-                    sb.Replace(str, key, left, str.Length);
-                    i = left + key.Length - 1;
-                    break;
-                }
             }
         }
 
         if (stack.Count > 0)
-            throw new InvalidExpression($"Closing bracket `)` is missing [after {stack.Peek()} position]",expression);
+            throw new InvalidExpression($"Closing bracket `)` is missing [after {stack.Peek()} position]", expression);
 
         var cond = Process(sb.ToString(), dict);
 
@@ -100,15 +100,15 @@ public class ConditionParser
         switch (parts.Length)
         {
             case 1:
-            {
-                var tokens = parts[0].SplitByAND();
-                return Condition.AND(tokens);
-            }
+                {
+                    var tokens = parts[0].SplitByAND();
+                    return Condition.AND(tokens);
+                }
             default:
-            {
-                var conditions = parts.Select(x => Condition.AND(x.SplitByAND()));
-                return Condition.Join(Op.OR, conditions);
-            }
+                {
+                    var conditions = parts.Select(x => Condition.AND(x.SplitByAND()));
+                    return Condition.Join(Op.OR, conditions);
+                }
         }
     }
 
@@ -127,15 +127,15 @@ public class ConditionParser
         switch (tokens.Length)
         {
             case 1:
-            {
-                var cond = GetCondition(tokens[0], dict);
-                return cond;
-            }
+                {
+                    var cond = GetCondition(tokens[0], dict);
+                    return cond;
+                }
             default:
-            {
-                var conditions = tokens.Select(x => GetCondition(x, dict));
-                return Condition.Join(Op.OR, conditions);
-            }
+                {
+                    var conditions = tokens.Select(x => GetCondition(x, dict));
+                    return Condition.Join(Op.OR, conditions);
+                }
         }
     }
 
@@ -145,14 +145,14 @@ public class ConditionParser
         switch (parts.Length)
         {
             case 1:
-            {
-                return getCondition(parts[0].Trim());
-            }
+                {
+                    return getCondition(parts[0].Trim());
+                }
             default:
-            {
-                var conditions = parts.Select(x => getCondition(x.Trim()));
-                return Condition.Join(Op.AND, conditions);
-            }
+                {
+                    var conditions = parts.Select(x => getCondition(x.Trim()));
+                    return Condition.Join(Op.AND, conditions);
+                }
         }
 
         ICondition getCondition(string part)

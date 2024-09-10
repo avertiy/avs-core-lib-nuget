@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using AVS.CoreLib.Guards;
 using System.Reflection;
+using AVS.CoreLib.Guards;
 
 namespace AVS.CoreLib.Utilities;
 

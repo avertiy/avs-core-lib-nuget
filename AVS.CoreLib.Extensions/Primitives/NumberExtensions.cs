@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 
 namespace AVS.CoreLib.Extensions
 {
@@ -37,8 +36,8 @@ namespace AVS.CoreLib.Extensions
         {
             return value.Abs() switch
             {
-               // > 10000 => 0,
-               // > 1000 => 1,
+                // > 10000 => 0,
+                // > 1000 => 1,
                 > 100 => 2,
                 > 10 => 3,
                 > 1 => 4,
@@ -102,7 +101,7 @@ namespace AVS.CoreLib.Extensions
             return Math.Round(value, decimals, MidpointRounding.AwayFromZero);
         }
 
-        public static decimal Round(this decimal value, int? roundDecimals = null, int extraPrecision = 0, int minPrecision =0)
+        public static decimal Round(this decimal value, int? roundDecimals = null, int extraPrecision = 0, int minPrecision = 0)
         {
             var dec = (roundDecimals ?? GetRoundDecimals(value)) + extraPrecision;
             if (minPrecision > 0 && dec < minPrecision)
@@ -228,7 +227,7 @@ namespace AVS.CoreLib.Extensions
         {
             return value <= other ? value : other;
         }
-        
+
         public static int Abs(this int value)
         {
             return value < 0 ? -value : value;

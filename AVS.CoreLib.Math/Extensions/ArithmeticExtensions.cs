@@ -134,7 +134,7 @@ namespace AVS.CoreLib.Math.Extensions
 
         public static int ComputePartialFactorial(this int n, int count)
         {
-            if(n < count)
+            if (n < count)
                 throw new ArgumentException($"Count {count} should not exceed N {n}");
 
             if (n <= 0)

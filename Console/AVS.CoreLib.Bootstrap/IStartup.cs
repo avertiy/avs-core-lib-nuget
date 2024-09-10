@@ -79,5 +79,5 @@ public class Startup<TStartupService> : IStartup where TStartupService : class, 
             ConfigureLogging(builder);
         });
     }
-    
+
 }

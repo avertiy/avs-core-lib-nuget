@@ -60,7 +60,7 @@ namespace AVS.CoreLib.PowerConsole
 
         public static void ApplyColors(Colors colors)
         {
-            if(colors.Foreground.HasValue)
+            if (colors.Foreground.HasValue)
                 Console.ForegroundColor = colors.Foreground.Value;
 
             if (colors.Background.HasValue)
@@ -87,7 +87,7 @@ namespace AVS.CoreLib.PowerConsole
         {
             ColorScheme.Default = DefaultSchemeBackup;
         }
-        
+
         public static void ClearLine(int left = 0)
         {
             int currentLineCursor = Console.CursorTop;

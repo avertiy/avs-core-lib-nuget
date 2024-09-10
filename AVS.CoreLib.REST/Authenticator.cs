@@ -27,10 +27,10 @@ namespace AVS.CoreLib.REST
 
         public void SetKeys(string publicKey, string privateKey)
         {
-            if(string.IsNullOrEmpty(privateKey))
+            if (string.IsNullOrEmpty(privateKey))
                 return;
 
-            if(PublicKey == publicKey)
+            if (PublicKey == publicKey)
                 return;
 
             PublicKey = publicKey;

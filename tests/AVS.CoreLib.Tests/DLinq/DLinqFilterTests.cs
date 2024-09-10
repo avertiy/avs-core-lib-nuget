@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using AVS.CoreLib.DLinq;
 using AVS.CoreLib.DLinq.Enums;
 using AVS.CoreLib.Extensions.Dynamic;
 using FluentAssertions;
@@ -54,8 +53,8 @@ public class DLinqFilterTests
 
         // act
         var result = source.Filter("day,hour");
-        var list = result as List<IDictionary<string,int>>;
-        
+        var list = result as List<IDictionary<string, int>>;
+
         //assert
         Assert.IsNotNull(list);
         list.Count.Should().Be(source.Length);
@@ -98,7 +97,7 @@ public class DLinqFilterTests
     {
         //arrange
 
-        var source = new object[] { new { Prop = new []{1,2} }, new { Prop = new[] { 3, 4 } }, new { Prop = new[] { 5, 6 } } };
+        var source = new object[] { new { Prop = new[] { 1, 2 } }, new { Prop = new[] { 3, 4 } }, new { Prop = new[] { 5, 6 } } };
 
         // act
         var result = source.Filter("prop[1]");
@@ -148,7 +147,7 @@ public class DLinqFilterTests
     public void Filter_By_Index_For_Single_Property_Of_List_Type_Should_Return_List_Of_Values()
     {
         //arrange
-        var source = new[] { new { Prop = new List<int>()}, new { Prop = new List<int>() }, new { Prop = new List<int>() } };
+        var source = new[] { new { Prop = new List<int>() }, new { Prop = new List<int>() }, new { Prop = new List<int>() } };
         source[0].Prop.Add(1);
         source[0].Prop.Add(10);
         source[1].Prop.Add(2);
@@ -172,14 +171,14 @@ public class DLinqFilterTests
     public void Filter_By_Key_For_Single_Property_Should_Return_List_Of_Values()
     {
         //arrange
-        var source = new[] { new { Prop = new Dictionary<string, int>()}, new { Prop = new Dictionary<string, int>() }, new { Prop = new Dictionary<string, int>() } };
+        var source = new[] { new { Prop = new Dictionary<string, int>() }, new { Prop = new Dictionary<string, int>() }, new { Prop = new Dictionary<string, int>() } };
         source[0].Prop.Add("key1", 1);
         source[0].Prop.Add("key2", 10);
         source[1].Prop.Add("key1", 2);
         source[1].Prop.Add("key2", 20);
         source[2].Prop.Add("key1", 3);
         source[2].Prop.Add("key2", 30);
- 
+
         // act
         var result = source.Filter("prop[\"key1\"]");
         var result2 = source.Filter("prop[\"key2\"]");
@@ -217,7 +216,7 @@ public class DLinqFilterTests
 
         // act
         var result = source.Filter("prop[\"key2\"],prop[\"key3\"]");
-        
+
         var list = result as List<IDictionary<string, int>>;
 
         //assert

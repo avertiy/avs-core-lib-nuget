@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AVS.CoreLib.PowerConsole.Enums
+﻿namespace AVS.CoreLib.PowerConsole.Enums
 {
     /// <summary>
     /// Basic enumeration of message statuses, analog of LogLevel same purpose

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace AVS.CoreLib.Extensions;
 
@@ -10,7 +9,7 @@ public static class ArrayExtensions
     {
         var result = new T[arr1.Length + arr2.Length];
         Array.Copy(arr1, result, arr1.Length);
-        Array.Copy(arr2,0, result, arr1.Length, arr2.Length);
+        Array.Copy(arr2, 0, result, arr1.Length, arr2.Length);
         return result;
     }
 
@@ -21,7 +20,7 @@ public static class ArrayExtensions
 
         for (var i = 0; i < arr.Length; i++)
         {
-            if(!arr[i].IsEqual(arrToCompare[i], tolerance))
+            if (!arr[i].IsEqual(arrToCompare[i], tolerance))
                 return false;
         }
 
@@ -36,10 +35,10 @@ public static class ArrayExtensions
         {
             if (i + maxCount >= arr1.Length)
                 break;
-            
-            var ind = Array.FindIndex(arr2, x=> arr1[i].IsEqual(x, tolerance));
 
-            if(ind == -1)
+            var ind = Array.FindIndex(arr2, x => arr1[i].IsEqual(x, tolerance));
+
+            if (ind == -1)
                 continue;
 
             if (ind + maxCount >= arr2.Length)
@@ -47,7 +46,7 @@ public static class ArrayExtensions
 
             var count = 1;
 
-            for (var j = ind+1; j < arr2.Length; j++)
+            for (var j = ind + 1; j < arr2.Length; j++)
             {
                 if (i + count == arr1.Length)
                     break;
@@ -88,7 +87,7 @@ public static class ArrayExtensions
             list.AddRange(source);
             list.Insert(index, item);
         }
-        
+
         return list.ToArray();
     }
 }

@@ -48,7 +48,7 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
                 0.000000069m,
             };
 
-            PowerConsole.Print($"a|amount format:",colors: ConsoleColor.DarkYellow);
+            PowerConsole.Print($"a|amount format:", colors: ConsoleColor.DarkYellow);
 
             foreach (var d in arr)
             {

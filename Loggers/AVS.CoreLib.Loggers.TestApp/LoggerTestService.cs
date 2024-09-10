@@ -4,6 +4,7 @@ using System.Linq;
 using AVS.CoreLib.BootstrapTools;
 using AVS.CoreLib.Debugging;
 using AVS.CoreLib.Extensions.Stringify;
+using AVS.CoreLib.Logging.ColorFormatter.Extensions;
 using AVS.CoreLib.Logging.ColorFormatter.Utils;
 using AVS.CoreLib.PowerConsole.Extensions;
 using Microsoft.Extensions.Logging;
@@ -24,33 +25,129 @@ namespace AVS.CoreLib.Loggers.TestApp
         public override void Test(string[] args)
         {
             ConsoleLogProfiler.Enabled = true;
+
+            // basic tests
+            LogLevelTests();
+            ScopeTests();
+            NewLineHandlingTests();
+            TestDumpObject();
+
+            return;
+
+            FeaturesTests();
             TestArgsColorFormatter();
             ArgsFormatTests();
-            ConsoleFormatterFeaturesTests();
+
             TagFormattingTests();
-            
+
             ArgHighlightTests();
-            TestDumpObject();
+
             var log = ConsoleLogProfiler.Flush();
         }
 
+        #region Basic tests
+
+        private void LogLevelTests()
+        {
+            using (_logger.BeginScope("LogLevelTests"))
+            {
+                _logger.LogDebug("debug log");
+                _logger.LogInformation("info log");
+                _logger.LogWarning("warning log");
+                _logger.LogError("error log without exception");
+
+                try
+                {
+                    _service.Throw("test error");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "error log");
+                }
+
+                try
+                {
+                    _service.ThrowWithInnerException("test error");
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "error log");
+                }
+
+                _logger.LogCritical("critical log");
+            }
+        }
+
+        private void NewLineHandlingTests()
+        {
+            using (_logger.BeginScope("NewLineHandlingTests"))
+            {
+                // should handle new line at the beginning of the message nicely
+                _logger.LogInformation("regular log message");
+                _logger.LogInformation("\r\n\\r\\n there should be 1 empty line above");
+                _logger.LogInformation("the next log message will be string.Empty");
+                _logger.LogInformation("");
+                _logger.LogInformation("there should be 1 empty line above");
+                _logger.LogInformation("\r\n\r\n\\r\\n\\r\\n there should be 2 empty lines above");
+            }
+        }
+
+        private void ScopeTests()
+        {
+            // scope
+            using (var scope = _logger.BeginScope("simple scope test"))
+            {
+                _logger.LogInformation("log under simple scope {arg:N2}", 200.222);
+            }
+
+            _logger.LogInformation("log outside of simple scope");
+
+            using (var scope = _logger.Context(("nested scope", "test")))
+            {
+                _logger.LogInformation("log under parent scope {arg:N2}", 44.4444);
+                //nested scope
+                _service.ScopeTest();
+                _logger.LogError("error log under parent scope");
+            }
+
+            _logger.LogInformation("log outside of scopes");
+
+            using (var scope = _logger.BeginScope("scope with context args test\r\n{arg1}\r\n{arg2}", "arg1", new { Prop1 = 25.5, Prop2 = "abc" }))
+            {
+                _logger.LogInformation("log under scope with args {arg:N2}", 30.333);
+            }
+
+            _logger.LogInformation("info outside of scope with args");
+
+
+        }
+
+        #endregion
+
         private void TestDumpObject()
         {
-            var arr = new object[] { "1", 2, 3.0m, 54, 6 };
-            var list = new List<object>() { "|", "123213", new object(), new { RRR = 11 } };
-            var obj = new { Prop1 = "abc", Price = 252.2, Prop3 = arr, Prop4 = list };
-            _logger.LogInformation("Dump object test {obj}", obj.Dump());
+            using (var scope = _logger.BeginScope("TestDumpObject"))
+            {
+                var arr = new object[] { "1", 2, 3.0m, 54, 6 };
+                var list = new List<object>() { "|", "123213", new object(), new { RRR = 11 } };
+                var obj = new { Prop1 = "abc", Price = 252.2, Prop3 = arr, Prop4 = list };
+                _logger.LogInformation("object dump:\r\n{obj}", obj.Dump());
+            }
         }
 
         private void TestArgsColorFormatter()
         {
+            _logger.LogInformation("{req} => {response}", "GetTradesFuturesRequest", "OK: [{\"symbol\":\"ALGOUSDT\",\"id\":360651546,\"orderId\":11000955971, ... yer\":false,\"maker\":false}](Length=106803)");
+            _logger.LogInformation("Sending.. {request}", "GetTradesFuturesRequest GET https://fapi.binance.com/fapi/v1/userTrades?recvWindow=5000&signature=2601A6DD817F00ADD7263C0E9410B52DBC00F2262B4B35174C3FFB4EBC8ED936&symbol=ALGOUSDT&timestamp=1724857781154 (SIGNED)");
+
+
             _logger.LogInformation("enum value:{arg1:D}; enum value with custom format:{arg2:G}", ConsoleColor.Cyan, ConsoleColor.DarkYellow);
             //_logger.LogInformation("enum value:{arg1:D}; enum value with custom format:{arg2:G}", ConsoleColor.Cyan, ConsoleColor.DarkYellow);
             _logger.LogInformation("string:{arg1}; currency:{arg2:C}", "my-str", 10.21m);
             var dict = new Dictionary<string, object>();
 
             var str = "string:my-str; currency:$10.21";
-            if(State.TryParse(dict.ToList(), out var state))
+            if (State.TryParse(dict.ToList(), out var state))
             {
                 var formatter = new ArgsColorFormatter(new ColorProvider());
                 var msg = formatter.Format(state);
@@ -79,58 +176,42 @@ namespace AVS.CoreLib.Loggers.TestApp
             //
         }
 
-        private void ConsoleFormatterFeaturesTests()
-        {
-            _logger.LogDebug("simple debug log");
-            _logger.LogInformation("simple info log");
-            _logger.LogWarning("simple warning log");
-            _logger.LogError("simple error log");
-            _logger.LogError(new ArgumentException("test error"),"error log with error");
-            _logger.LogCritical("simple critical log");
 
-            //new line
-            _logger.LogInformation("");
-            _logger.LogInformation("new line test");
-            _logger.LogInformation("\r\nanother line test");
-            _logger.LogInformation("\r\n\r\ndouble new lines test at the begging");
+
+
+
+        private void FeaturesTests()
+        {
+
 
             //stamps
             _logger.LogInformation("[time]");
 
-            // scope
-            using (var scope = _logger.BeginScope($"test logger scope"))
-            {
-                _logger.LogWarning("log inside outer scope {arg:P}", 1.117);
-                //nested scope
-                _service.Print();
-                _logger.LogError("test error log inside outer scope");
-            }
 
-            _logger.LogInformation("info log out of scope");
         }
 
-        
+
 
         private void ArgHighlightTests()
         {
             _logger.LogInformation("\r\n\r\nArgument auto highlight tests:");
 
-            _logger.LogInformation("string:{arg1}; bool:{arg2}/{arg3}; null: {arg4}; empty:{arg5}", "string value", true, false, null,"");
+            _logger.LogInformation("string:{arg1}; bool:{arg2}/{arg3}; null: {arg4}; empty:{arg5}", "string value", true, false, null, "");
             _logger.LogInformation("integers and count:  short {arg1}/{arg2}; int #{arg3}/{arg4}; long {arg5}/{arg6}",
                 (short)10, (short)-1,
-                100,-10, 
-                500L,-2000L);
+                100, -10,
+                500L, -2000L);
             _logger.LogInformation("integers/percentage: {arg1:P}; {arg2:P}; {arg3:P}", 2, -1, 0);
             _logger.LogInformation("floating: double {arg1}/{arg2}; decimal {arg3}/{arg4}; float {arg5}/{arg6}",
-                1.01, -1.22, 
-                100.01m, -10.22m, 
+                1.01, -1.22,
+                100.01m, -10.22m,
                 (float)1.33, (float)-2.50);
             _logger.LogInformation("float/currency:  {arg1:C}; {arg2:C}; {arg3:C};{arg4:C}", 501.01, -10.22m, (float)-1.33, 0.00);
-            _logger.LogInformation("float/percentage:  {arg1:P}/{arg2:P}; {arg3:P}/{arg4:P}; {arg5:P}",0.25,-0.33, 0.22m, (float)-1.33, 0.00);
-            _logger.LogInformation("date: {arg1:g}; time {arg2:t}; timespan {arg3}", DateTime.Now, DateTime.Now, (DateTime.Now-DateTime.Today));
-            _logger.LogInformation("array: {arg1}; arr2: {arg2}", new []{1,2,3}, new[] { 1.11, 2.1, -3.333 });
-            _logger.LogInformation("array: {arg1}; arr2: {arg2}", (new []{1,2,3}).Stringify(), (new[] { 1.11, 2.1, -3.333 }).Stringify());
-            _logger.LogInformation("array: {arg1}; arr2: {arg2}", new []{"a", "bb","blah-blah"}, new object[] { DateTime.Now, 250,"abc"});
+            _logger.LogInformation("float/percentage:  {arg1:P}/{arg2:P}; {arg3:P}/{arg4:P}; {arg5:P}", 0.25, -0.33, 0.22m, (float)-1.33, 0.00);
+            _logger.LogInformation("date: {arg1:g}; time {arg2:t}; timespan {arg3}", DateTime.Now, DateTime.Now, (DateTime.Now - DateTime.Today));
+            _logger.LogInformation("array: {arg1}; arr2: {arg2}", new[] { 1, 2, 3 }, new[] { 1.11, 2.1, -3.333 });
+            _logger.LogInformation("array: {arg1}; arr2: {arg2}", (new[] { 1, 2, 3 }).Stringify(), (new[] { 1.11, 2.1, -3.333 }).Stringify());
+            _logger.LogInformation("array: {arg1}; arr2: {arg2}", new[] { "a", "bb", "blah-blah" }, new object[] { DateTime.Now, 250, "abc" });
 
 
             var obj = new
@@ -167,11 +248,38 @@ namespace AVS.CoreLib.Loggers.TestApp
             _logger = logger;
         }
 
-        public void Print()
+        public void Throw(string message)
+        {
+            throw new ArgumentException(message);
+        }
+
+        public void ThrowWithInnerException(string message)
+        {
+            try
+            {
+                Throw("inner exception");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(message, ex);
+            }
+        }
+
+        public void ScopeTest()
+        {
+            _logger.LogInformation("ScopeTest: log outside of nested scope, arg:{arg:g}", DateTime.Today);
+
+            using (var scope = _logger.BeginScope(("@request", new TestRequest())))
+            {
+                _logger.LogInformation("log under nested scope arg:{arg:N2}", 0.002);
+            }
+        }
+
+        public void Execute()
         {
             _logger.LogInformation($"{nameof(NestedService)} nested info log {{arg}}", "string argument");
             _logger.LogWarning($"{nameof(NestedService)} nested warning log {{arg:C}}", 1);
-            _logger.LogError($"{nameof(NestedService)} error log {{arg123:C --Gray}}",123);
+            _logger.LogError($"{nameof(NestedService)} error log {{arg123:C --Gray}}", 123);
 
             using (var scope = _logger.BeginScope($"{nameof(NestedService)} scope"))
             {
@@ -180,5 +288,12 @@ namespace AVS.CoreLib.Loggers.TestApp
                 _logger.LogError($"{nameof(NestedService)} error log");
             }
         }
+    }
+
+    public class TestRequest
+    {
+        public string RequestId { get; set; } = Guid.NewGuid().ToString();
+        public object Data { get; set; } = new[] { 11, 123, 224.0 };
+        public DateTime Timestamp { get; set; } = DateTime.Now;
     }
 }

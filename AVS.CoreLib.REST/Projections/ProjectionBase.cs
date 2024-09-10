@@ -2,11 +2,11 @@
 using System;
 using System.IO;
 using System.Net;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Reflection;
+using AVS.CoreLib.REST.Helpers;
 using AVS.CoreLib.REST.Responses;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -15,12 +15,6 @@ namespace AVS.CoreLib.REST.Projections
 {
     public abstract class ProjectionBase
     {
-        const string REGEX_PATTERN = "\"(?<msg>message|error|err-msg|error-message)\"[\\s:]+\"(?<err>.+)\"";
-        //public static Regex ErrorRegex =
-        //    new Regex("(error|err-msg|error-message)\\\\?[\"']:[\\s\\\\\"']+(?<error>[=():/\\-\\.\\?\\w\\s&]+)[\"']?",
-        //        RegexOptions.IgnoreCase);
-        public static Regex ErrorRegex = new Regex(REGEX_PATTERN, RegexOptions.IgnoreCase);
-
         private string? _selectTokenPath;
 
         public string JsonText { get; set; }
@@ -36,42 +30,23 @@ namespace AVS.CoreLib.REST.Projections
             Source = response.Source;
             Request = response.Request;
             StatusCode = response.StatusCode;
-            JsonText = response.Content ?? string.Empty;            
+            JsonText = response.Content ?? string.Empty;
             Error = GetErrorText(response);
-            if(Error == null && !response.IsSuccessStatusCode)
-                Error = StatusCode.ToString();
         }
 
         private string? GetErrorText(RestResponse response)
         {
             var error = response.Error;
             if (!string.IsNullOrEmpty(error))
-            {
                 return error;
-            }
 
-            if (string.IsNullOrEmpty(JsonText))
-            {
-                return null;
-            }
+            if (ResponseHelper.ContainsError(response.Content, out error))
+                return error;
 
-            if(JsonText.Length > 500)
-                return null;
+            if (!response.IsSuccessStatusCode)
+                return response.StatusCode.ToString();
 
-            var match = ErrorRegex.Match(JsonText);
-
-            if (!match.Success)
-                return null;
-
-            if (match.Groups["msg"].Value == "message")
-            {
-                var c_ind = JsonText.IndexOf("code");
-                if (c_ind == -1 || JsonText.IndexOf("200", c_ind) > 0)
-                    return null;
-            }
-
-            error = match.Groups["err"].Value;
-            return string.IsNullOrEmpty(error) ? JsonText : error;
+            return null;
         }
 
         protected Response<T> CreateResponse<T>() where T : new()
@@ -190,5 +165,5 @@ namespace AVS.CoreLib.REST.Projections
             return IsEmpty || JsonText.Length < 2000 ? Task.FromResult(map()) : Task.Factory.StartNew(map);
         }
 
-    }    
+    }
 }

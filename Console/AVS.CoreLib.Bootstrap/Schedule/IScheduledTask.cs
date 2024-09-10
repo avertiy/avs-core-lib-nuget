@@ -19,6 +19,9 @@ public interface IScheduledTask
 public class ScheduleOptions
 {
     public string? Name { get; set; }
+    /// <summary>
+    /// Interval in seconds
+    /// </summary>
     public int Interval { get; set; }
     public bool IgnoreError { get; set; }
     public int? StartDelay { get; set; }

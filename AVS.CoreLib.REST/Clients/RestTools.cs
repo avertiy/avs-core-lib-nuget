@@ -1,12 +1,12 @@
 ﻿#nullable enable
 using System;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions.Rest;
+using AVS.CoreLib.REST.Helpers;
 
 namespace AVS.CoreLib.REST.Clients
 {
@@ -63,7 +63,7 @@ namespace AVS.CoreLib.REST.Clients
 
             // 4. prepare response
             var response = await PrepareResponse(request, responseMessage);
-            
+
             return response;
         }
 
@@ -72,15 +72,15 @@ namespace AVS.CoreLib.REST.Clients
             // 1. adjust rate limit by status code
             AdjustRateLimit(responseMessage);
 
-            // 2. verify 429 status code
-            var error = await VerifyStatusCode(responseMessage);
+            // 2. get content and/or error 
+            var (content, error) = await GetContentAndError(responseMessage);
 
-            var response = new RestResponse(Source, request, responseMessage.StatusCode);
-
-            if (error != null)
-                response.Error = error;
-            else
-                response.Content = await responseMessage.Content.ReadAsStringAsync();
+            var response = new RestResponse(Source, responseMessage.StatusCode)
+            {
+                Request = request,
+                Content = content,
+                Error = error,
+            };
 
             OnResponseReady(response);
             return response;
@@ -101,23 +101,28 @@ namespace AVS.CoreLib.REST.Clients
             RateLimiter.Adjust(response.StatusCode);
         }
 
-        protected virtual async ValueTask<string?> VerifyStatusCode(HttpResponseMessage responseMessage)
+        protected async ValueTask<(string content, string? error)> GetContentAndError(HttpResponseMessage responseMessage)
         {
-            if (responseMessage.StatusCode == HttpStatusCode.TooManyRequests)
-            {
-                var error = responseMessage.ReasonPhrase;
-                if (string.IsNullOrEmpty(error))
-                    error = $"{HttpStatusCode.TooManyRequests} - too many requests";
-                return error;
-            }
-
+            var content = string.Empty;
+            var error = responseMessage.ReasonPhrase;
+            // verify 429 status code
             if (!responseMessage.IsSuccessStatusCode)
             {
-                var error = await responseMessage.Content.ReadAsStringAsync();
-                return error;
+                if (string.IsNullOrEmpty(error))
+                {
+                    error = responseMessage.StatusCode == HttpStatusCode.TooManyRequests
+                        ? "Too many requests"
+                        : await responseMessage.Content.ReadAsStringAsync();
+                }
+
+                return (content, $"{responseMessage.StatusCode} - {error}");
             }
 
-            return null;
+            content = await responseMessage.Content.ReadAsStringAsync();
+
+            return ResponseHelper.ContainsError(content, out error)
+                ? (string.Empty, error)
+                : (content, error);
         }
 
         protected virtual void OnResponseReady(RestResponse response)
@@ -127,7 +132,7 @@ namespace AVS.CoreLib.REST.Clients
 
             if (string.IsNullOrEmpty(response.Content))
                 return;
-            
+
             var re = new Regex("(error|err-msg|error-message)\"?:\"?(?<error>.+?)\"", RegexOptions.IgnoreCase);
             var match = re.Match(response.Content);
 
@@ -153,7 +158,7 @@ namespace AVS.CoreLib.REST.Clients
         {
             return _requestMessageBuilder.Build(request);
         }
-        
+
         protected async Task<HttpResponseMessage> SendAsync(HttpClient client, HttpRequestMessage request, int attempts, CancellationToken ct)
         {
             var requestedUrl = request.RequestUri.ToString();
@@ -188,5 +193,4 @@ namespace AVS.CoreLib.REST.Clients
             RequestLastTime = DateTime.UtcNow;
         }
     }
-
 }

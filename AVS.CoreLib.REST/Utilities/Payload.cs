@@ -71,8 +71,8 @@ namespace AVS.CoreLib.REST.Utilities
             foreach (var kp in queryString.Params)
             {
                 Items.Add(kp.Key, kp.Value?.ToString() ?? "");
-            } 
-             
+            }
+
             return this;
         }
 

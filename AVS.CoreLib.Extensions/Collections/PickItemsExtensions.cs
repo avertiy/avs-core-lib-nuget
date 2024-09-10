@@ -102,7 +102,7 @@ namespace AVS.CoreLib.Extensions.Collections
         /// <summary>
         /// pick items unique by key from dictionary values
         /// </summary>
-        public static Dictionary<TItemKey, TItem> PickUniqueItems<TKey, TValue, TItemKey, TItem>(this IDictionary<TKey, TValue> source, 
+        public static Dictionary<TItemKey, TItem> PickUniqueItems<TKey, TValue, TItemKey, TItem>(this IDictionary<TKey, TValue> source,
             Func<TValue, IEnumerable<TItem>> selector, Func<TItem, TItemKey> key)
         {
             var dict = new Dictionary<TItemKey, TItem>();
@@ -120,7 +120,7 @@ namespace AVS.CoreLib.Extensions.Collections
                         continue;
 
                     dict.Add(itemKey, item);
-                }                
+                }
             }
 
             return dict;

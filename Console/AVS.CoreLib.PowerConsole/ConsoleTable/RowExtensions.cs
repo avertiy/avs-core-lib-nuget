@@ -16,7 +16,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
         public static Row AddCell(this Row row, string text, int colspan = 1, int columnWidth = 0, ColorScheme? scheme = null)
         {
             var (width, height) = text.GetWidthAndHeight();
-            width = columnWidth > width + 2 ? columnWidth : width +2;
+            width = columnWidth > width + 2 ? columnWidth : width + 2;
             var cell = new Cell()
             {
                 Text = text,

@@ -65,12 +65,12 @@ public class State
         return string.Format($"{{0:{parts[0]}}}", val);
     }
 
-    public static bool TryParse<T>(T state, out State args)
+    public static bool TryParse(object state, out State args)
     {
         args = default;
         if (state is IReadOnlyList<KeyValuePair<string, object>> s)
         {
-            args = new State(s);            
+            args = new State(s);
             return true;
         }
 

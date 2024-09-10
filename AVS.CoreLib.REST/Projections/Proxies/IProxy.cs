@@ -17,7 +17,7 @@
     {
         TResult Create();
     }
-    
+
 
     /// <summary>
     /// It used by <see cref="KeyedProjection{T,TItem}"/>

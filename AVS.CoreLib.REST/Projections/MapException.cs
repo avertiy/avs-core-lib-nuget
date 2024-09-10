@@ -6,7 +6,7 @@ namespace AVS.CoreLib.REST.Projections
 {
     public class MapException : AppException
     {
-        public string JsonText { get; set; }        
+        public string JsonText { get; set; }
         public MapException(string message) : base(message)
         {
         }

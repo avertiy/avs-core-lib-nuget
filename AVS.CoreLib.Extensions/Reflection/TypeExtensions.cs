@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -37,7 +36,7 @@ namespace AVS.CoreLib.Extensions.Reflection
 
                 var value = propertyInfo.GetValue(obj);
 
-                if(attrImp == null && predicate != null && !predicate.Invoke(propertyInfo.Name, value))
+                if (attrImp == null && predicate != null && !predicate.Invoke(propertyInfo.Name, value))
                     continue;
 
                 dict.Add(propertyInfo.Name, value);
@@ -80,7 +79,7 @@ namespace AVS.CoreLib.Extensions.Reflection
         {
             var methodInfo = type.GetMethod(type.IsArray ? "Get" : "get_Item", BindingFlags.Instance | BindingFlags.Public, [typeArg]);
 
-            if(methodInfo == null)
+            if (methodInfo == null)
                 throw new ArgumentException($"Indexer [get_Item({typeArg.Name})] not found in {type.Name} type definition.");
 
             return methodInfo;
@@ -122,7 +121,7 @@ namespace AVS.CoreLib.Extensions.Reflection
             return list.ToArray();
         }
 
-        public static Dictionary<string,PropertyInfo> SearchProperties(this Type type, BindingFlags flags, IEnumerable<string> properties)
+        public static Dictionary<string, PropertyInfo> SearchProperties(this Type type, BindingFlags flags, IEnumerable<string> properties)
         {
             var props = type.GetProperties(flags);
 
@@ -311,6 +310,6 @@ namespace AVS.CoreLib.Extensions.Reflection
                    || type.IsEnum
                    || type == typeof(string)
                    || type == typeof(decimal);
-        }        
+        }
     }
 }

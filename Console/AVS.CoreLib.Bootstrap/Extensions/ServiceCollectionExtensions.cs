@@ -18,7 +18,7 @@ public static class ServiceCollectionExtensions
     /// <param name="configureLogging"></param>
     /// <param name="environment"></param>
     /// <param name="addCustomUserSecrets"></param>
-    public static void RegisterCommonServices(this IServiceCollection services, Action<ILoggingBuilder>? configureLogging = null,  string environment = "dev",
+    public static void RegisterCommonServices(this IServiceCollection services, Action<ILoggingBuilder>? configureLogging = null, string environment = "dev",
         bool addCustomUserSecrets = true)
     {
         var configuration = services.AddConfiguration(environment, addCustomUserSecrets);
@@ -119,7 +119,7 @@ public static class ServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection AddScheduler(this IServiceCollection services, Action<ISchedulerBuilder> setup)
     {
-        return services.AddSingleton<IScheduler>(sp=>
+        return services.AddSingleton<IScheduler>(sp =>
         {
             var builder = new SchedulerBuilder() { ServiceProvider = sp };
             setup(builder);

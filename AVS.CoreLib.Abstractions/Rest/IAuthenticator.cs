@@ -17,6 +17,6 @@ namespace AVS.CoreLib.Abstractions.Rest
 
         byte[] Sign(string payload, out byte[] bytes);
 
-        byte[] ComputeHash(byte[] bytes);        
-    }       
+        byte[] ComputeHash(byte[] bytes);
+    }
 }

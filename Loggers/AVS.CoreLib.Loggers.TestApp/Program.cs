@@ -7,6 +7,7 @@ using AVS.CoreLib.Logging.ColorFormatter.Extensions;
 using AVS.CoreLib.PowerConsole.Printers2;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 
 namespace AVS.CoreLib.Loggers.TestApp;
 
@@ -16,13 +17,13 @@ public class Program
     {
         var sp = Bootstrap.ConfigureServices(services =>
         {
-                services.AddSingleton<ScheduledTaskTest>();
-                services.AddScheduler(x => x.Schedule<ScheduledTaskTest>(new ScheduleOptions() { Interval = 5 }));
-                AddConsoleFormatter(services)
+            services.AddSingleton<ScheduledTaskTest>();
+            services.AddScheduler(x => x.Schedule<ScheduledTaskTest>(new ScheduleOptions() { Interval = 30 }));
+            AddConsoleFormatter(services)
                 //AddConsoleLogger(services)
-                    .AddTransient<NestedService, NestedService>()
-                    .AddTransient<ITestService, LoggerTestService>();
-            }).RunAllTest();
+                .AddTransient<NestedService, NestedService>()
+                .AddTransient<ITestService, LoggerTestService>();
+        }).RunAllTest();
         sp.GetRequiredService<IScheduler>().Start();
         System.Console.ReadLine();
     }
@@ -51,9 +52,10 @@ public class Program
                     .AddConsoleWithColorFormatter(x =>
                     {
                         x.IncludeScopes = true;
-                        x.SingleLine = true;
+                        x.SingleLine = false;
                         x.TimestampFormat = "T";
                         x.UseUtcTimestamp = true;
+                        x.ColorBehavior = LoggerColorBehavior.Enabled;
                     });
             });
     }
@@ -107,15 +109,12 @@ public class Program
         }
 
     }
-
-
-    
 }
 
 public class ScheduledTaskTest : ScheduledTask
 {
     public override void Invoke()
     {
-        PowerConsole.PowerConsole.Printer2.Print("test printer2", PrintOptions2.Default, ConsoleColor.DarkGreen);
+        PowerConsole.PowerConsole.Printer2.Print("ScheduledTaskTest: test printer2", PrintOptions2.Default, ConsoleColor.DarkGreen);
     }
 }

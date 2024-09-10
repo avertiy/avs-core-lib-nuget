@@ -13,46 +13,33 @@ using Newtonsoft.Json.Linq;
 
 namespace AVS.CoreLib.REST
 {
-    [DebuggerDisplay("{ToString()}")]
+    [DebuggerDisplay("RestResponse {ToString()}")]
     public class RestResponse
     {
         public string Source { get; set; }
-        public IRequest? Request { get; set; }
-        public string? Content { get; set; }
-        public string? Error { get; set; }
         public HttpStatusCode StatusCode { get; set; }
+
+        public IRequest? Request { get; set; }
+        public string Content { get; set; }
+        public string? Error { get; set; }
+
         public bool IsSuccess => Error == null && IsSuccessStatusCode;
         public bool IsSuccessStatusCode => ((int)StatusCode) >= 200 && (int)StatusCode < 300;
+        public string? RequestType => Request?.RequestId;
 
-        public RestResponse(string source, IRequest? request, HttpStatusCode code)
+        public RestResponse(string source, HttpStatusCode code)
         {
             Source = source;
             StatusCode = code;
-            Request = request;
+            Content = string.Empty;
         }
-              
 
         public override string ToString()
         {
-            var content = Content == null ? string.Empty : Content.Truncate(90, $".. (Length={Content.Length})");
-            return IsSuccess ? $"RestResponse - {StatusCode} => {content}" : $"RestResponse - Failed ({StatusCode}) - {Error}";
-        }
-
-        public static RestResponse OK(string source, string? content = null, IRequest? request = null, HttpStatusCode code = HttpStatusCode.OK)
-        {
-            return new RestResponse(source, request, code) { Content = content };
-        }
-
-        internal static RestResponse FromResponse(HttpWebResponse response, string source, IRequest request)
-        {
-            var result = new RestResponse(source, request, response.StatusCode);
-
-            if(response.StatusCode == HttpStatusCode.OK)
-                result.Content = response.GetContent();
-            else
-                result.Error = response.StatusDescription;
-
-            return result;
+            var content = Content.Truncate(550, TruncateOptions.CutOffTheMiddle);
+            return IsSuccess
+                ? $"{StatusCode}: {content}"
+                : $"Failed ({StatusCode}) - {Error}";
         }
 
         public T? Deserialize<T>()
@@ -66,10 +53,35 @@ namespace AVS.CoreLib.REST
                 throw new Exception($"RestResponse.Deserialize<{typeof(T).Name}>() failed", ex);
             }
         }
+
+        //public static RestResponse OK(string source, string? content = null, HttpStatusCode code = HttpStatusCode.OK, IRequest? request = null)
+        //{
+        //    return new RestResponse(source, code) { Content = content, Request = request };
+        //}
+
+        internal static RestResponse FromResponse(HttpWebResponse response, string source, IRequest request)
+        {
+            var result = new RestResponse(source, response.StatusCode) { Request = request };
+
+            if (response.StatusCode == HttpStatusCode.OK)
+                result.Content = response.GetContent();
+            else
+                result.Error = response.StatusDescription;
+
+            return result;
+        }
     }
 
     public static class RestResponseExtensions
     {
+        public static bool ContainsError(this RestResponse response, string errorText)
+        {
+            if (response.Error == null)
+                return false;
+
+            return response.Error.Contains(errorText);
+        }
+
         public static bool TryDeserialize<T>(this RestResponse response, out T? value, out string? error)
         {
             try
@@ -86,10 +98,11 @@ namespace AVS.CoreLib.REST
             }
         }
 
-        public static RestResponse Copy(this RestResponse response, string? content = null)
+        public static RestResponse Copy(this RestResponse response, string content)
         {
-            return new RestResponse(response.Source,response.Request, response.StatusCode)
+            return new RestResponse(response.Source, response.StatusCode)
             {
+                Request = response.Request,
                 Content = content,
                 Error = response.Error,
             };

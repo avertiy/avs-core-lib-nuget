@@ -98,7 +98,7 @@ namespace AVS.CoreLib.REST.Projections
             catch (Exception ex)
             {
                 throw new MapException(ex, this);
-            }            
+            }
         }
 
         public Response<T> Map<TType>() where TType : T, new()
@@ -150,7 +150,7 @@ namespace AVS.CoreLib.REST.Projections
                 }
 
                 var obj = proxy.Create();
-                _postProcess?.Invoke(obj);                
+                _postProcess?.Invoke(obj);
                 response.Data = obj;
                 return response;
             }
@@ -185,11 +185,11 @@ namespace AVS.CoreLib.REST.Projections
             return this;
         }
 
-        public Projection<T,TType> PostProcess(Action<TType> action)
+        public Projection<T, TType> PostProcess(Action<TType> action)
         {
             _postProcess = action;
             return this;
-        }        
+        }
 
         public T? InspectDeserialization(Action<JToken, TType> inspect, out Exception? err)
         {
@@ -238,7 +238,7 @@ namespace AVS.CoreLib.REST.Projections
         }
 
         [Obsolete("looks not needed, IndirectProjection<T,TType> should cover it i guess")]
-        public Response<T> Map<TProxy>() where TProxy : class, IProxy<TType,T>, new()
+        public Response<T> Map<TProxy>() where TProxy : class, IProxy<TType, T>, new()
         {
             try
             {

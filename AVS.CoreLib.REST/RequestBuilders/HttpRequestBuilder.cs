@@ -50,7 +50,7 @@ namespace AVS.CoreLib.REST.RequestBuilders
         {
             OnRequestCreating(request);
             var url = request.GetFullUrl(OrderQueryStringParameters);
-            var httpRequest = WebRequestHelper.ConstructHttpWebRequest(request.Method, url, Proxy);
+            var httpRequest = WebRequestHelper.ConstructHttpWebRequest(request.HttpMethod, url, Proxy);
             OnRequestCreated(httpRequest, request);
             return httpRequest;
         }
@@ -72,27 +72,28 @@ namespace AVS.CoreLib.REST.RequestBuilders
                         if (Authenticator == null)
                             throw new Exception("Authenticator must be initialized");
 
-
-                        var signature = Authenticator.Sign(request.Data.ToHttpQueryString(), out var bytes);
+                        var qs = request.Data?.ToHttpQueryString() ?? string.Empty;
+                        var signature = Authenticator.Sign(qs, out var bytes);
                         httpRequest.Headers["Key"] = Authenticator.PublicKey;
                         httpRequest.Headers["Sign"] = signature.ToBase64String();
                         //work around for stupid .net protocol violation check
                         httpRequest.Method = "POST";
                         httpRequest.WriteBytes(bytes);
-                        httpRequest.Method = request.Method;
+                        httpRequest.Method = request.HttpMethod;
                         break;
                     }
                 default:
                     if (httpRequest.Method != "GET")
                     {
-                        var bytes = Authenticator.Encoding.GetBytes(request.Data.ToHttpQueryString());
+                        var qs = request.Data?.ToHttpQueryString() ?? string.Empty;
+                        var bytes = Authenticator.Encoding.GetBytes(qs);
                         httpRequest.WriteBytes(bytes);
                     }
                     break;
             }
         }
 
-
+        /*
         [Obsolete("Use Build(IRequest request)")]
         public virtual HttpWebRequest Build(IEndpoint endpoint, IPayload data = null)
         {
@@ -119,7 +120,7 @@ namespace AVS.CoreLib.REST.RequestBuilders
                 url = UrlHelper.Combine(url, data.ToHttpQueryString());
 
             return url;
-        }
+        }*/
 
         /// <summary>
         /// use OnRequestCreating to add something to each payload
@@ -252,7 +253,7 @@ namespace AVS.CoreLib.REST.RequestBuilders
         protected static HttpWebRequest CreateHttpWebRequest(IRequest input, bool orderQueryStringParameters, IWebProxy proxy, string contentType)
         {
             var url = input.GetFullUrl(orderQueryStringParameters);
-            return WebRequestHelper.ConstructHttpWebRequest(input.Method, url, proxy, contentType);
+            return WebRequestHelper.ConstructHttpWebRequest(input.HttpMethod, url, proxy, contentType);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
 
         public int Width
         {
-            get; 
+            get;
             set;
         }
         public ColorScheme? ColorScheme { get; set; }

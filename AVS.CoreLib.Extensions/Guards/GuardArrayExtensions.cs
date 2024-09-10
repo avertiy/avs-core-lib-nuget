@@ -20,7 +20,7 @@ public static class GuardArrayExtensions
         if (arr.Length != length)
             throw new ArgumentOutOfRangeException(message ?? $"{length} element(s) expected");
     }
-   
+
 
     public static void MinLength<T>(this IArrayGuardClause guardClause, T[] arr, int minLength, string? message = null)
     {
@@ -28,7 +28,7 @@ public static class GuardArrayExtensions
             throw new ArgumentOutOfRangeException(message ?? $"at least {minLength} element(s) required");
     }
 
-    
+
 
     public static void MaxLength<T>(this IArrayGuardClause guardClause, T[] arr, int maxLength, string? message = null)
     {
@@ -78,7 +78,7 @@ public static class GuardArrayExtensions
             throw new ArgumentOutOfRangeException($"{name} must have at least #{itemsCount} items");
     }
 
-    
+
 
     #endregion
 }

@@ -13,7 +13,7 @@ namespace AVS.CoreLib.PowerConsole
         {
             Printer2.Write(str);
         }
-     
+
         public static void Write(string str, ConsoleColor color)
         {
             Printer2.Write(str, color);

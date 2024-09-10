@@ -24,7 +24,7 @@ public static class AutoFormatterExtensions
     {
         formatter.AddFormatter<decimal>(x => x.Round().ToString(CultureInfo.CurrentCulture));
         formatter.AddFormatter<double>(x => x.Round().ToString(CultureInfo.CurrentCulture));
-        formatter.AddFormatter<DateTime>(x => x.ToString("g",CultureInfo.CurrentCulture));
+        formatter.AddFormatter<DateTime>(x => x.ToString("g", CultureInfo.CurrentCulture));
         return formatter;
     }
 
@@ -41,7 +41,7 @@ public static class AutoFormatterExtensions
         return formatter;
     }
 
-    
+
 
     public static IEnumerable<string> FormatAll(this IAutoFormatter formatter, IEnumerable source)
     {
@@ -62,7 +62,7 @@ public static class AutoFormatterExtensions
         }
     }
 
-    public static void AddFormatter<T>(this AutoFormatter formatter,string key, Func<T, string> format)
+    public static void AddFormatter<T>(this AutoFormatter formatter, string key, Func<T, string> format)
     {
         formatter.Formatters.Register(key, x => format((T)x));
     }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -12,7 +11,7 @@ namespace AVS.CoreLib.Extensions
 
         public static StringBuilder Pad(this StringBuilder sb, char symbol, int width)
         {
-            for(var i=0; i< width; i++)
+            for (var i = 0; i < width; i++)
                 sb.Append(symbol);
             return sb;
         }
@@ -200,7 +199,7 @@ namespace AVS.CoreLib.Extensions
             if (ind == -1 || ind > offset)
                 return lineIndex;
 
-            startIndex =ind + Environment.NewLine.Length;
+            startIndex = ind + Environment.NewLine.Length;
             lineIndex++;
             goto start;
         }
@@ -218,7 +217,7 @@ namespace AVS.CoreLib.Extensions
 
             if (ind == -1 || ind > offset)
                 return lineIndex;
-           
+
             startIndex = ind + Environment.NewLine.Length;
             lineIndex++;
             goto start;
@@ -235,8 +234,8 @@ namespace AVS.CoreLib.Extensions
             start:
             var ind = sb.IndexOf(Environment.NewLine, startIndex);
 
-            if(index == lineIndex)
-                return sb.ToString(startIndex, ind > -1? ind-startIndex : sb.Length - startIndex);
+            if (index == lineIndex)
+                return sb.ToString(startIndex, ind > -1 ? ind - startIndex : sb.Length - startIndex);
 
             if (ind == -1)
                 return string.Empty;
@@ -253,9 +252,9 @@ namespace AVS.CoreLib.Extensions
         {
             var ind = sb.IndexOf(Environment.NewLine, startIndex);
             if (ind == -1)
-               return sb.ToString(startIndex + Environment.NewLine.Length, sb.Length - startIndex);
+                return sb.ToString(startIndex + Environment.NewLine.Length, sb.Length - startIndex);
 
-            return sb.ToString(startIndex+ Environment.NewLine.Length, ind - startIndex);
+            return sb.ToString(startIndex + Environment.NewLine.Length, ind - startIndex);
         }
 
         public static string[] ReadAllLines(this StringBuilder sb, int startIndex = 0)
@@ -271,7 +270,7 @@ namespace AVS.CoreLib.Extensions
                 //    lines.Add(line);
                 return lines.ToArray();
             }
-            
+
             line = sb.ToString(startIndex + Environment.NewLine.Length, ind - startIndex);
             lines.Add(line);
             startIndex += line.Length + Environment.NewLine.Length;

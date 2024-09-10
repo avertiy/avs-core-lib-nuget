@@ -109,7 +109,7 @@ public static class GuardAgainstExtensions
     {
         if (dict.Count == 0)
             throw new ArgumentNullException(message ?? $"Arg IDictionary<{typeof(TKey).Name},{typeof(T).Name}> must be not empty");
-    } 
+    }
     #endregion
 
     public static void MinValue(this IAgainstGuardClause guardClause, DateTime param, string? message = null)

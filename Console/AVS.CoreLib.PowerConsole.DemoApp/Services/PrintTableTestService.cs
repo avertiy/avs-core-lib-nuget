@@ -1,9 +1,9 @@
-﻿using AVS.CoreLib.BootstrapTools;
-using AVS.CoreLib.PowerConsole.ConsoleTable;
-using AVS.CoreLib.PowerConsole.Utilities;
+﻿using System;
 using System.Collections.Generic;
-using System;
+using AVS.CoreLib.BootstrapTools;
+using AVS.CoreLib.PowerConsole.ConsoleTable;
 using AVS.CoreLib.PowerConsole.Enums;
+using AVS.CoreLib.PowerConsole.Utilities;
 
 namespace AVS.CoreLib.PowerConsole.DemoApp.Services
 {
@@ -17,7 +17,7 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
                 PrintArrayAsHorizontalTable();
                 PrintObjectAsVerticalTable();
                 PrintObjectAsHorizontalTable();
-                
+
                 PrintTableTests();
             }
             catch (Exception ex)
@@ -34,7 +34,7 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
             PowerConsole.PrintTable(arr);
         }
 
-        
+
         private void PrintObjectAsHorizontalTable()
         {
             PowerConsole.PrintHeader($"Print object as table (horizontal orientation)");
@@ -53,7 +53,7 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
         {
             PowerConsole.PrintHeader($"PrintTable tests");
 
-            
+
 
 
             var tbl = Table.Create(new[] { "Col1", "Col2" },

@@ -17,7 +17,7 @@ public class PropSpecTests
         //arrange
         var time = DateTime.Now;
         var source = new[] { time, time.AddDays(1), time.AddDays(2) };
-        var spec = new PropSpec() { Name = "Day"};
+        var spec = new PropSpec() { Name = "Day" };
 
         // act
         var result = source.Select(spec, SelectMode.ToList);

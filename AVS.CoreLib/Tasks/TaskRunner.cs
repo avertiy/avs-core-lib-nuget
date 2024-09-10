@@ -63,7 +63,7 @@ public class TaskRunner<TResult>
         return fn(arg);
     }
 
-    public async Task<TaskResults<T,TResult>> RunAll<T>(IEnumerable<T> args, CancellationToken ct = default) where T : notnull
+    public async Task<TaskResults<T, TResult>> RunAll<T>(IEnumerable<T> args, CancellationToken ct = default) where T : notnull
     {
         if (BatchSize > 0)
             return await ExecuteInBatchMode(args, ct);
@@ -71,13 +71,13 @@ public class TaskRunner<TResult>
         var tasks = StartAll(args);
         await Task.WhenAll(tasks.Values);
 
-        var results = new TaskResults<T,TResult>(tasks.Count);
-        foreach(var kp in tasks)
+        var results = new TaskResults<T, TResult>(tasks.Count);
+        foreach (var kp in tasks)
         {
             var res = kp.Value.Result;
-            results.Add(kp.Key, res);            
+            results.Add(kp.Key, res);
         }
-        
+
         return results;
     }
 
@@ -88,10 +88,11 @@ public class TaskRunner<TResult>
         var stopwatch = new Stopwatch();
         stopwatch.Start();
 
-        var queue = new Queue<(T key, Task<TResult> result)>(BatchSize+1);
-        var results = new TaskResults<T, TResult>(BatchSize*2);
-        
-        var processQueue = async () => {
+        var queue = new Queue<(T key, Task<TResult> result)>(BatchSize + 1);
+        var results = new TaskResults<T, TResult>(BatchSize * 2);
+
+        var processQueue = async () =>
+        {
             while (queue.Count > 0)
             {
                 if (Timeout > 0 && stopwatch.ElapsedMilliseconds > Timeout)
@@ -120,10 +121,10 @@ public class TaskRunner<TResult>
                 await processQueue();
                 var delay = BatchTimespan - (int)stopwatch.ElapsedMilliseconds - elapsed;
                 Sleep(delay);
-                elapsed =(int)stopwatch.ElapsedMilliseconds;
+                elapsed = (int)stopwatch.ElapsedMilliseconds;
             }
         }
-        
+
         await processQueue();
 
         return results;
@@ -163,14 +164,16 @@ public static class TaskRunner
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static TaskRunner<TResult> Create<T, TResult>(Func<T, Task<TResult>> job, Options options)
     {
-        return new TaskRunner<TResult>(job) { 
-            Delay = options.Delay, 
-            Timeout = options.Timeout, 
-            BatchSize = options.BatchSize, 
-            BatchTimespan = options.BatchTimespan };
+        return new TaskRunner<TResult>(job)
+        {
+            Delay = options.Delay,
+            Timeout = options.Timeout,
+            BatchSize = options.BatchSize,
+            BatchTimespan = options.BatchTimespan
+        };
     }
 
-    public static async Task<TaskResults<T,TResult>> ExecuteOne<T,TResult>(this TaskRunner<TResult> runner, T arg) where T : notnull
+    public static async Task<TaskResults<T, TResult>> ExecuteOne<T, TResult>(this TaskRunner<TResult> runner, T arg) where T : notnull
     {
         var res = await runner.Start(arg);
         var results = new TaskResults<T, TResult>
@@ -216,7 +219,7 @@ public static class TaskRunner
         public int Delay;
         public int Timeout;
 
-        public Options(int delay =0, int timeout = 0, int batchSize =0, int batchTimespan = 0)
+        public Options(int delay = 0, int timeout = 0, int batchSize = 0, int batchTimespan = 0)
         {
             BatchSize = batchSize;
             BatchTimespan = batchTimespan;

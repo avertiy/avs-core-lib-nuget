@@ -1,5 +1,4 @@
 ﻿#nullable enable
-using System;
 using AVS.CoreLib.REST.Projections;
 
 namespace AVS.CoreLib.REST.Extensions

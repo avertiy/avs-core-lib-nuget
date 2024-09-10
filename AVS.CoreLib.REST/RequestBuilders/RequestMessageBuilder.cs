@@ -58,7 +58,7 @@ namespace AVS.CoreLib.REST.RequestBuilders
         protected virtual HttpRequestMessage CreateHttpRequestMessage(IRequest input)
         {
             var url = input.GetFullUrl(OrderQueryStringParameters);
-            var httpMethod = new HttpMethod(input.Method);
+            var httpMethod = new HttpMethod(input.HttpMethod);
             var requestMessage = new HttpRequestMessage(httpMethod, url);
             var queryString = input.Data.ToHttpQueryString(orderBy: OrderQueryStringParameters);
 

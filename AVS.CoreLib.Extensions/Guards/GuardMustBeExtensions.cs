@@ -1,7 +1,7 @@
 ﻿using System;
-using AVS.CoreLib.Extensions.Stringify;
 using System.Linq;
 using AVS.CoreLib.Extensions;
+using AVS.CoreLib.Extensions.Stringify;
 
 namespace AVS.CoreLib.Guards;
 
@@ -15,7 +15,7 @@ public static class GuardMustBeExtensions
             throw new ArgumentException(message ?? $"'{arg1}' must be equal '{arg2}'");
     }
 
-    public static void EnumEqual<T>(this IMustBeGuardClause guardClause, T arg1, T arg2, string? message = null) where T: Enum
+    public static void EnumEqual<T>(this IMustBeGuardClause guardClause, T arg1, T arg2, string? message = null) where T : Enum
     {
         if (!arg1.Equals(arg2))
             throw new ArgumentException(message ?? $"'{arg1}' must be equal '{arg2}'");
@@ -90,7 +90,7 @@ public static class GuardMustBeExtensions
         if (arg1 == null || arg1.Equals(arg2))
             throw new ArgumentException(message ?? $"'{arg1}' must be not equal to '{arg2}'");
     }
-    
+
 
     #endregion
 

@@ -41,7 +41,7 @@ namespace AVS.CoreLib.Text.Formatters.ColorMarkup
             return match.Success;
         }
 
-        
+
 
         /// <summary>
         /// remove color markup from the text
@@ -91,7 +91,7 @@ namespace AVS.CoreLib.Text.Formatters.ColorMarkup
             // strip @:Color i.e. markup at the end of the string  
             if (match2.Success)
                 text = text.Substring(0, match2.Index);
-            
+
             return text;
         }
 
@@ -169,7 +169,7 @@ namespace AVS.CoreLib.Text.Formatters.ColorMarkup
             }
 
             //foreground color: -Color e.g. -Red
-            if (ind == 0  && TryParseConsoleColor(str.Substring(1), out color))
+            if (ind == 0 && TryParseConsoleColor(str.Substring(1), out color))
             {
                 foreground = color;
             }

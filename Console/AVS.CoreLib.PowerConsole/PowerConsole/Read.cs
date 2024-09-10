@@ -26,8 +26,8 @@ namespace AVS.CoreLib.PowerConsole
         public static async Task<ConsoleKeyInfo> ReadKeyAsync(bool intercept, int millisecondsTimeout)
         {
             var task = ReadKeyAsync(intercept);
-            
-            if (millisecondsTimeout <= 0) 
+
+            if (millisecondsTimeout <= 0)
                 return await task;
 
             var completedTask = await Task.WhenAny(task, Task.Delay(millisecondsTimeout));
@@ -57,7 +57,7 @@ namespace AVS.CoreLib.PowerConsole
             {
                 Write($"   [{millisecondsTimeout / 1000} sec. to answer]");
             }
-            
+
             Console.SetCursorPosition(left, Console.CursorTop);
             //, new ConsoleKeyInfo(defaultAnswer, defaultAnswer == 'y'? ConsoleKey.Y: ConsoleKey.N, false,false,false)
             var keyInfo = await ReadKeyAsync(false, millisecondsTimeout);
@@ -74,7 +74,7 @@ namespace AVS.CoreLib.PowerConsole
             }
             else
             {
-                Print("No",PrintOptions2.PlainText, ConsoleColor.DarkRed);
+                Print("No", PrintOptions2.PlainText, ConsoleColor.DarkRed);
                 return false;
             }
         }
@@ -86,7 +86,7 @@ namespace AVS.CoreLib.PowerConsole
             Write($"\r\n{message} (y - yes/n - no): ");
             int left = Console.CursorLeft;
             //, new ConsoleKeyInfo(defaultAnswer, defaultAnswer == 'y'? ConsoleKey.Y: ConsoleKey.N, false,false,false)
-            var keyInfo= Console.ReadKey(false);
+            var keyInfo = Console.ReadKey(false);
 
             if (keyInfo.Key == ConsoleKey.Escape)
                 Write(defaultAnswer.ToString());
@@ -95,7 +95,7 @@ namespace AVS.CoreLib.PowerConsole
             if (keyInfo.Key == ConsoleKey.Y || (keyInfo.Key == ConsoleKey.Escape && defaultAnswer == ConsoleKey.Y))
             {
                 //default answer
-                Print("Yes", PrintOptions2.PlainText,  ConsoleColor.DarkGreen);
+                Print("Yes", PrintOptions2.PlainText, ConsoleColor.DarkGreen);
                 return true;
             }
             else

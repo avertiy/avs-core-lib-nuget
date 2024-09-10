@@ -16,7 +16,7 @@ namespace AVS.CoreLib.PowerConsole
             Printer2.PrintConsoleColors();
         }
 
-        public static void PrintHeader(string header, Colors? colors =null,  string template = "============", string indentation ="\r\n")
+        public static void PrintHeader(string header, Colors? colors = null, string template = "============", string indentation = "\r\n")
         {
             Printer2.PrintHeader(header, template, indentation, colors);
         }
@@ -31,13 +31,13 @@ namespace AVS.CoreLib.PowerConsole
             string? message = null,
             PrintOptions2 options = PrintOptions2.Default, Colors? colors = null)
         {
-            Printer2.PrintTimeElapsed(message, dateTime, options, colors );
+            Printer2.PrintTimeElapsed(message, dateTime, options, colors);
         }
 
         [Conditional("DEBUG")]
         public static void PrintDebug(string message, PrintOptions2 options = PrintOptions2.Default, Colors? colors = null)
         {
-            Printer2.Print(MessageLevel.Debug, message,options, colors);
+            Printer2.Print(MessageLevel.Debug, message, options, colors);
         }
 
         public static void PrintError(Exception ex, string? message = null, bool printStackTrace = true, PrintOptions2 options = PrintOptions2.Default)

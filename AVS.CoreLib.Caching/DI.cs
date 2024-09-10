@@ -43,7 +43,7 @@ namespace AVS.CoreLib.Caching
             // Set up configuration files.
             services.AddSingleton<ICacheManager, CacheManager>();
         }
-        
+
         /// <summary>
         /// Add <see cref="ICacheKeysBookkeeper"/> if you need to track keys that are stored in cache
         /// </summary>

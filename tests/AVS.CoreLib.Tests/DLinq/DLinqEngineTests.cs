@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using AVS.CoreLib.DLinq;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -11,7 +10,7 @@ namespace AVS.CoreLib.Tests.DLinq;
 public class DLinqEngineTests
 {
     private readonly DLinqEngine _engine = new();
-    
+
     [TestMethod]
     public void Select_Compound_Index_Expression_Should_Return_Typed_List()
     {
@@ -58,7 +57,7 @@ public class DLinqEngineTests
     public void Select_By_Index_Should_Return_Typed_List()
     {
         // arrange
-        var source = new[] { new[] {1,2}, new[] { 3, 4 }, new[] { 5, 6 } };
+        var source = new[] { new[] { 1, 2 }, new[] { 3, 4 }, new[] { 5, 6 } };
 
         // act
         var result = _engine.Process(source, "[1]", null);
@@ -125,7 +124,7 @@ public class DLinqEngineTests
     {
         // arrange
         var source = new[] { new[] { 1, 2 }, new[] { 3, 4 }, new[] { 5, 6 } };
-        
+
         // act
         var result = _engine.Process(source, "MAX([1])", null);
         var list = result as IList<object>;
@@ -175,7 +174,7 @@ public class DLinqEngineTests
         list[0]["val"].Should().Be(2);
         list[1].ContainsKey("val").Should().BeTrue();
         list[1]["val"].Should().Be(6);
-        
+
     }
 
     #endregion
@@ -275,7 +274,7 @@ public class DLinqEngineTests
         list[0].ContainsKey("close").Should().BeTrue();
         list[0]["key1"].Should().Be(25L);
         list[0]["close"].Should().Be(3);
-    } 
+    }
     #endregion
 
     #region OrderBy & ThenBy tests
@@ -375,6 +374,6 @@ public class DLinqEngineTests
         list[0]["close"].Should().Be(3);
         list[1]["key1"].Should().Be(15L);
         list[1]["close"].Should().Be(2);
-    } 
+    }
     #endregion
 }

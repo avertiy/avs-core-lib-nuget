@@ -15,20 +15,20 @@ namespace AVS.CoreLib.REST.Extensions
 
         public static string GetRequestBody(this IRequest request, bool orderParameters = false)
         {
-            var requestBody = request.Method == "GET" ? "" : request.Data.ToHttpQueryString(orderParameters);
+            var requestBody = request.HttpMethod != "GET" && request.Data != null ? request.Data.ToHttpQueryString(orderParameters) : string.Empty;
             return requestBody;
         }
 
         public static string GetQueryString(this IRequest request, bool orderParameters = false)
         {
-            var requestBody = request.Method == "GET" ? request.Data.ToHttpQueryString(orderParameters) : "";
+            var requestBody = request.HttpMethod == "GET" && request.Data != null ? request.Data.ToHttpQueryString(orderParameters) : string.Empty;
             return requestBody;
         }
 
         public static string GetFullUrl(this IRequest request, bool orderParameters = true)
         {
             var url = request.BaseUrl + request.Path;
-            if (request.Method == "GET" && request.Data != null && request.Data.Any())
+            if (request.HttpMethod == "GET" && request.Data != null && request.Data.Any())
                 url = UrlHelper.Combine(url, request.Data.ToHttpQueryString(orderParameters));
             return url;
         }
@@ -37,12 +37,12 @@ namespace AVS.CoreLib.REST.Extensions
         {
             var url = request.BaseUrl + request.Path;
 
-            if (request.Method == "GET" && request.Data != null && request.Data.Any())
+            if (request.HttpMethod == "GET" && request.Data != null && request.Data.Any())
             {
                 var queryString = request.Data.ToHttpQueryString(orderParameters);
-                url = UrlHelper.Combine(url, queryString);                
+                url = UrlHelper.Combine(url, queryString);
             }
-                
+
             return new Uri(url);
         }
     }

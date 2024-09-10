@@ -5,7 +5,7 @@ namespace AVS.CoreLib.Dates
     public static class UnixEpoch
     {
         public static readonly DateTime Start = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-        
+
         /// <summary>
         /// convert datetime to unix timestamp in seconds from unix epoch start
         /// </summary>

@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Diagnostics;
+using System.Text;
 using System.Text.Json.Serialization;
-using AVS.CoreLib.Extensions;
 
+[assembly: InternalsVisibleTo("AVS.CoreLib.Tests")]
 namespace AVS.CoreLib.Extensions
 {
     public static class SystemExtensions
@@ -15,85 +15,103 @@ namespace AVS.CoreLib.Extensions
         /// </summary>
         /// <param name="ex">exception</param>
         /// <param name="format">when true takes first few stack calls and ones that point to line numbers in the code</param>
-        public static string GetStackTrace(this Exception ex, ReductionFormat format = ReductionFormat.Truncated)
+        public static string? GetStackTrace(this Exception ex, ErrorFormat format = ErrorFormat.Truncated)
         {
             if (ex.StackTrace == null)
-                return string.Empty;
+                return null;
 
             var lines = ex.GetStackTraceLines(format);
             return string.Join(Environment.NewLine, lines);
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string[] GetStackTraceLines(this Exception ex, ReductionFormat format = ReductionFormat.Truncated, int extraLines = 0)
+        public static string[] GetStackTraceLines(this Exception ex, ErrorFormat format = ErrorFormat.Truncated, int extraLines = 0)
         {
             if (ex.StackTrace == null)
                 return Array.Empty<string>();
 
             var lines = ex.StackTrace.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+
+            if (lines.Length <= 4)
+                return lines;
+
             lines = StackTraceHelper.Reduce(lines, format, extraLines);
 
             var list = new List<string>(lines);
             list = StackTraceHelper.CutPaths(list);
             list = StackTraceHelper.CutNamespaces(list);
             return list.ToArray();
-
-            //if (ex.InnerException?.StackTrace == null)
-            //    return StackTraceHelper.Shorten(lines, format, extraLines);
-
-            //var lines2 = ex.InnerException.StackTrace.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
-
-            //lines = StackTraceHelper.Reduce(lines, format, extraLines);
-            //lines2 = StackTraceHelper.Reduce(lines2, format, extraLines);
-
-            //var list = new List<string>(lines.Length + 2 + lines2.Length);
-            //list.AddRange(lines);
-            //list.Add("---------------------------------------------");
-            //list.Add("InnerException: " + ex.InnerException.Message);
-            //list.AddRange(lines2);
-            //return list.ToArray();
         }
 
-        public static ErrorDetails ToPlainObject(this Exception ex, bool addStackTrace = false)
+        public static ErrorDetails ToErrorDetails(this Exception ex, bool inclStackTrace = false)
         {
-            var view = new ErrorDetails()
+            var details = new ErrorDetails()
             {
-                Message = ex.Message,
+                Error = ex.Message,
                 Type = ex.GetType().Name,
                 Source = ex.Source,
             };
 
-            if(ex.Data is { Count: > 0 })
-                view.Data = ex.Data;
+            if (ex.Data is { Count: > 0 })
+                details.Data = ex.Data;
 
-            if (addStackTrace)
-                view.StackTrace = ex.GetStackTraceLines();
+            if (inclStackTrace)
+                details.StackTrace = ex.GetStackTraceLines();
 
             if (ex.InnerException != null)
             {
-                view.InnerException = ToPlainObject(ex.InnerException, addStackTrace);
+                details.InnerException = ToErrorDetails(ex.InnerException, inclStackTrace);
             }
 
-            return view;
+            return details;
         }
 
-        public static string ToString(this Exception ex, ReductionFormat format = ReductionFormat.Truncated)
+        public static string ToString(this Exception ex, ErrorFormat format, string? padding = null)
         {
-            var str = ex.ToString();
-            
-            if (format == ReductionFormat.None)
-                return str;
-            var n = ex.InnerException == null ? 1 : 2;
+            switch (format)
+            {
+                case ErrorFormat.None:
+                    return ex.ToString();
+                case ErrorFormat.Console:
+                    return ex.ToStringForConsole(padding);
+                default:
+                    {
+                        var str = ex.ToString();
+                        var n = ex.InnerException == null ? 1 : 2;
+                        var lines = str.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+                        lines = lines.Shorten(format, extraLines: n);
+                        return string.Join(Environment.NewLine, lines);
+                    }
+            }
+        }
 
-            var lines = str.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
-            lines = lines.Shorten(format, extraLines: n);
-            return string.Join(Environment.NewLine, lines);
+        private static string ToStringForConsole(this Exception ex, string? padding = null)
+        {
+            var sb = new StringBuilder(ex.InnerException == null ? 500 : 1000);
+
+            sb.Append(padding + ex.GetType().Name);
+            sb.Append(": ");
+            sb.AppendLine(ex.Message);
+
+            if (ex.InnerException != null)
+            {
+                sb.Append(padding + "---> ");
+                var innerErrorStr = ex.InnerException.ToStringForConsole();
+                sb.Append(innerErrorStr);
+                sb.AppendLine(padding + "--- End of inner exception stack trace ---");
+            }
+
+            var stackTrace = ex.GetStackTrace(ErrorFormat.Truncated);
+            sb.AppendLine(stackTrace);
+
+            //sb.Append(padding + "StackTrace: ");
+            //sb.AppendLine(padding +  ?? "N/A");
+            return sb.ToString();
         }
     }
 
     public class ErrorDetails
     {
-        public required string Message { get; set; }
+        public required string Error { get; set; }
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Type { get; set; }
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -101,19 +119,19 @@ namespace AVS.CoreLib.Extensions
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public object? Data { get; set; }
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public object? StackTrace { get; set; }
+        public string[]? StackTrace { get; set; }
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ErrorDetails? InnerException { get; set; }
     }
 
     internal static class StackTraceHelper
     {
-        internal static string[] Reduce(this string[] lines, ReductionFormat format, int extraLines = 0)
+        internal static string[] Reduce(this string[] lines, ErrorFormat format, int extraLines = 0)
         {
-            if (format == ReductionFormat.None || lines.Length <= 8)
+            if (format == ErrorFormat.None || lines.Length <= 8)
                 return lines;
 
-            var n = format == ReductionFormat.Truncated ? 4 : 7;
+            var n = format == ErrorFormat.Truncated ? 4 : 7;
             var take = n + extraLines;
 
             if (lines.Length < take + 2)
@@ -129,7 +147,7 @@ namespace AVS.CoreLib.Extensions
             return list.ToArray();
         }
 
-        internal static string[] Shorten(this string[] lines, ReductionFormat format, int extraLines = 0)
+        internal static string[] Shorten(this string[] lines, ErrorFormat format, int extraLines = 0)
         {
             var list = new List<string>(Reduce(lines, format, extraLines));
 
@@ -185,13 +203,13 @@ namespace AVS.CoreLib.Extensions
 
                 var ind = line.IndexOf("(", StringComparison.Ordinal);
                 var atIndex = line.IndexOf("at ", StringComparison.Ordinal);
-                if (ind == -1 || atIndex == -1 || atIndex+ind > line.Length)
-                    continue;
-                
-                if(line.Length <= 100)
+                if (ind == -1 || atIndex == -1 || atIndex + ind > line.Length)
                     continue;
 
-                var ns = line.Substring(atIndex+3, ind - 3);
+                if (line.Length <= 100)
+                    continue;
+
+                var ns = line.Substring(atIndex + 3, ind - 3);
                 var count = ns.Count(x => x == '.');
 
                 if (count < 3)

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Linq;
 using AVS.CoreLib.Extensions;
-using AVS.CoreLib.Extensions.Stringify;
 using AVS.CoreLib.PowerConsole.Utilities;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace AVS.CoreLib.PowerConsole.ConsoleTable
 {
@@ -25,10 +23,10 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
             var (width, height) = text.GetWidthAndHeight();
             return new Cell()
             {
-                Text = text, 
-                Row = row, 
+                Text = text,
+                Row = row,
                 ColorScheme = scheme,
-                Width = width+2,
+                Width = width + 2,
                 Height = height,
             };
         }
@@ -101,7 +99,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
 
                 width += colspan - 1;
             }
-            
+
             cell.Width = width;
             return width;
         }

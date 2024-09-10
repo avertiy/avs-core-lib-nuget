@@ -60,10 +60,10 @@ namespace AVS.CoreLib.WebSockets
 
         #region events
         public event Action<string> ConnectionClosed;
-        public event Action<string> MessageArrived; 
+        public event Action<string> MessageArrived;
         #endregion
 
-        public WebSocketClient(ILogger logger): this(new SocketCommunicator(), logger)
+        public WebSocketClient(ILogger logger) : this(new SocketCommunicator(), logger)
         {
         }
 
@@ -83,7 +83,8 @@ namespace AVS.CoreLib.WebSockets
             if (_uri == null)
             {
                 Uri = new Uri(url);
-            }else if (_uri.ToString() != url)
+            }
+            else if (_uri.ToString() != url)
             {
                 throw new ArgumentException($"WebSocket state {State} does not allow to switch uri. Multiple websocket connections not supported yet.");
             }
@@ -207,7 +208,7 @@ namespace AVS.CoreLib.WebSockets
                 if (attempt < ReconnectAttempts)
                 {
                     //let some time to fix the network issue before the app fails
-                    Thread.Sleep(ReconnectInterval * (1+ attempt));
+                    Thread.Sleep(ReconnectInterval * (1 + attempt));
                     goto connect;
                 }
 

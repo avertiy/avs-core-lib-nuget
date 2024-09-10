@@ -15,7 +15,7 @@ public interface IStringificator
         StringifyOptions? options = null,
         Func<T, string>? formatter = null);
 
-    string Stringify<TKey, TValue>(IDictionary<TKey,TValue> dictionary,
+    string Stringify<TKey, TValue>(IDictionary<TKey, TValue> dictionary,
         StringifyOptions? options = null,
         Func<TKey, TValue, string>? formatter = null);
 }
@@ -118,7 +118,7 @@ public sealed class Stringificator : IStringificator
     {
         var format = StringifyFormat.Default;
         var separator = ",";
-        var maxLength =0;
+        var maxLength = 0;
         if (options != null)
         {
             format = options.Format;

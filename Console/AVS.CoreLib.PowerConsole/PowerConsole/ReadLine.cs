@@ -15,7 +15,7 @@ namespace AVS.CoreLib.PowerConsole
 
         public static IEnumerable<string> ReadLines(int count)
         {
-            for(var i=0; i<count;i++)
+            for (var i = 0; i < count; i++)
                 yield return Console.ReadLine()!;
         }
 
@@ -58,7 +58,7 @@ namespace AVS.CoreLib.PowerConsole
             }
             catch (Exception ex)
             {
-                PowerConsole.PrintError(ex,$"{nameof(ReadLine)} failed", true);
+                PowerConsole.PrintError(ex, $"{nameof(ReadLine)} failed", true);
                 return ReadLine<T>(message, options);
             }
         }

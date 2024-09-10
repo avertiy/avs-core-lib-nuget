@@ -50,7 +50,7 @@ namespace AVS.CoreLib.PowerConsole.Printers2
         {
             var inline = options.HasFlag(PrintOptions2.Inline);
             var text = !inline || options.HasFlag(PrintOptions2.NoTimestamp) ? message : message.AddTimestamp(GetTime(), Options.TimeFormat);
-            
+
             //as this is a printer without coloring options we assume message does not contain any color tags
             //thus no need to process tags
 

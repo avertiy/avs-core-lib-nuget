@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Metrics;
 using System.Linq;
 using AVS.CoreLib.Guards;
 
@@ -43,7 +42,7 @@ namespace AVS.CoreLib.Extensions.Collections
         /// </summary>        
         public static int AddDistinct<T>(this IList<T> list, params T[] items)
         {
-            if(items == null || items.Length == 0)
+            if (items == null || items.Length == 0)
                 return 0;
 
             var counter = 0;
@@ -116,7 +115,7 @@ namespace AVS.CoreLib.Extensions.Collections
             return counter;
         }
 
-        
+
 
         public static bool ContainsAll<T>(this IList<T> source, params T[] items)
         {
@@ -140,7 +139,7 @@ namespace AVS.CoreLib.Extensions.Collections
         /// <summary>
         /// Merge source with another collection into a new list of items, dropping duplicates
         /// </summary>
-        public static List<T> Merge<T, TKey>(this IEnumerable<T> source, IEnumerable<T> other, Func<T, TKey> key, Func<(T source, T other),T>? resolve = null)
+        public static List<T> Merge<T, TKey>(this IEnumerable<T> source, IEnumerable<T> other, Func<T, TKey> key, Func<(T source, T other), T>? resolve = null)
         {
             var dict = new Dictionary<TKey, T>();
             foreach (var item in source)
@@ -260,7 +259,7 @@ namespace AVS.CoreLib.Extensions.Collections
         [Obsolete("Use Array.FindIndex(arr, startIndex, count, predicate)")]
         public static int FindIndex<T>(this IList<T> source, int startIndex, int count, Predicate<T> match)
         {
-            if ((uint)startIndex > (uint) source.Count)
+            if ((uint)startIndex > (uint)source.Count)
                 throw new ArgumentOutOfRangeException($"{nameof(startIndex)} must be less than {source.Count}");
 
             if (count < 0 || startIndex > source.Count - count)
@@ -276,7 +275,7 @@ namespace AVS.CoreLib.Extensions.Collections
 
             return -1;
         }
-        
+
         public static int[] FindIndexes1(this IList<decimal> source, decimal qty, int startIndex = 0, int limitRecursion = 0)
         {
             for (var i = startIndex; i < source.Count; i++)
@@ -292,7 +291,7 @@ namespace AVS.CoreLib.Extensions.Collections
 
                 var rest = qty - source[i];
 
-                var arr = FindIndexes1(source, rest, i + 1, limitRecursion-1);
+                var arr = FindIndexes1(source, rest, i + 1, limitRecursion - 1);
 
                 if (arr.Any())
                     return arr.Insert(i);

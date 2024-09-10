@@ -39,11 +39,11 @@ namespace AVS.CoreLib.Debugging
                 var str = FormatValue(element);
                 if (str.Length < 12)
                 {
-                    WriteInline(str+",");
+                    WriteInline(str + ",");
                 }
                 else
                 {
-                    Write(str+",");
+                    Write(str + ",");
                 }
             }
             else
@@ -159,7 +159,7 @@ namespace AVS.CoreLib.Debugging
 
         private void WriteInline(string value, params object[]? args)
         {
-            if (_stringBuilder.Length > 3 &&  (_stringBuilder[^3] == '[' || _stringBuilder[^3] == '{'))
+            if (_stringBuilder.Length > 3 && (_stringBuilder[^3] == '[' || _stringBuilder[^3] == '{'))
             {
                 _stringBuilder.Length -= 2;
             }
@@ -167,7 +167,7 @@ namespace AVS.CoreLib.Debugging
             if (args is { Length: > 0 })
                 value = string.Format(value, args);
 
-            _stringBuilder.Append(' '+ value);
+            _stringBuilder.Append(' ' + value);
         }
 
         private void Write(string value, params object[] args)

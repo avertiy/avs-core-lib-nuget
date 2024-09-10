@@ -28,7 +28,7 @@ namespace AVS.CoreLib.Caching
 
         protected CacheManagerBase(IMemoryCache memoryCache)
         {
-            _memoryCache = memoryCache;            
+            _memoryCache = memoryCache;
         }
 
         /// <summary>
@@ -49,9 +49,9 @@ namespace AVS.CoreLib.Caching
         {
             _memoryCache.Remove(key);
             ItemRemoved?.Invoke(key);
-            
+
         }
-      
+
         /// <summary>
         /// Clear all cached data
         /// </summary>
@@ -100,7 +100,7 @@ namespace AVS.CoreLib.Caching
             ItemAdded?.Invoke(key, value!);
         }
 
-       
+
 
         /// <summary>
         /// Prepare cache entry options for the passed key

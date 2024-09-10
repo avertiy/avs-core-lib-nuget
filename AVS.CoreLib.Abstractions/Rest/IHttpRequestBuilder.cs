@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 
 namespace AVS.CoreLib.Abstractions.Rest
 {
@@ -12,7 +11,7 @@ namespace AVS.CoreLib.Abstractions.Rest
         HttpWebRequest Build(IRequest request);
         void SwitchKeys(string publicKey, string privateKey);
 
-        [Obsolete("Use Build(IRequest request)")]
-        HttpWebRequest Build(IEndpoint endpoint, IPayload data = null);
+        //[Obsolete("Use Build(IRequest request)")]
+        //HttpWebRequest Build(IEndpoint endpoint, IPayload data = null);
     }
 }

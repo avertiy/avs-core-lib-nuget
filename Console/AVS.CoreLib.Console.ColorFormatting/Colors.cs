@@ -21,7 +21,7 @@ namespace AVS.CoreLib.Console.ColorFormatting
 
         public override string ToString()
         {
-            if(Foreground.HasValue && Background.HasValue)
+            if (Foreground.HasValue && Background.HasValue)
                 return $"-{Foreground} --{Background}";
 
             if (Foreground.HasValue)
@@ -101,7 +101,7 @@ namespace AVS.CoreLib.Console.ColorFormatting
             return true;
         }
 
-        
+
     }
 
     public static class ColorsExtensions
@@ -137,7 +137,8 @@ namespace AVS.CoreLib.Console.ColorFormatting
         }
     }
 
-    internal static class ConsoleColorHelper{
+    internal static class ConsoleColorHelper
+    {
 
         public static bool TryGetColors(string str, out ConsoleColor? color, out ConsoleColor? bgColor)
         {

@@ -1,8 +1,8 @@
-﻿using System.Linq.Expressions;
-using System;
+﻿using System;
 using System.Diagnostics;
-using AVS.CoreLib.Utilities;
+using System.Linq.Expressions;
 using AVS.CoreLib.DLinq.Enums;
+using AVS.CoreLib.Utilities;
 
 namespace AVS.CoreLib.DLinq.Specs.Predicates.Comparison;
 

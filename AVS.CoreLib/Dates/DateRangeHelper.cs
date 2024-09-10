@@ -52,7 +52,7 @@ namespace AVS.CoreLib.Dates
         {
             var modifier = str.GetModifier();
             str = str.TrimModifier(modifier);
-            
+
             //e.g. 3D or 2W
             if (str.Length == 2 && int.TryParse(str.Substring(0, 1), out var n))
             {
@@ -120,10 +120,10 @@ namespace AVS.CoreLib.Dates
                         range = DateRange.Create(date.Date.StartOfYear().AddYears(-1), 365);
                         return true;
                     default:
-                    {
-                        range = default;
-                        return false;
-                    }
+                        {
+                            range = default;
+                            return false;
+                        }
                 }
             }
         }

@@ -1,7 +1,5 @@
 ﻿using System;
-using AVS.CoreLib.Text.Formatters;
 using AVS.CoreLib.Text.Formatters.GenericFormatter;
-using AVS.CoreLib.Text.Formatters.GenericTypeFormatter;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AVS.CoreLib.Text.Extensions

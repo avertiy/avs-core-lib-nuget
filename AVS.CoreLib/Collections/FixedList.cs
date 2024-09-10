@@ -2,8 +2,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using AVS.CoreLib.Guards;
 
 namespace AVS.CoreLib.Collections;
@@ -43,7 +41,7 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
 
     public void Add(T item)
     {
-        if (Count >= Capacity) 
+        if (Count >= Capacity)
             throw new ExceedCapacityException($"List reached a max number of elements ({Capacity})");
 
         Items[(Head + Count) % Capacity] = item;
@@ -82,9 +80,9 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
     /// Put item on top of the list (if item already exists, removes it and add to the end)
     /// </summary>
     public void Put(T item)
-    {   
+    {
         var ind = IndexOf(item);
-        
+
         if (ind == -1)
         {
             Add(item, force: true);
@@ -108,7 +106,7 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
             Items[^1] = item;
             return;
         }
-        
+
         RemoveAt(ind);
         Add(item, true);
     }
@@ -138,7 +136,7 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
     {
         if (Count == 0)
             return false;
-        
+
         if (Head == 0)
             return Array.IndexOf(Items, item, Head, Count) >= 0;
 
@@ -177,7 +175,7 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
         }
         return -1;
     }
-    
+
     public void Insert(int index, T item)
     {
         if (Count < Capacity && Head == 0)
@@ -229,7 +227,7 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
         {
             var items = new T[Capacity];
 
-            for (var i = 0; i < Count-1; i++)
+            for (var i = 0; i < Count - 1; i++)
             {
                 if (i < index)
                 {
@@ -238,7 +236,7 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
                 }
                 else
                 {
-                    var ind = (Head + i+1) % Capacity;
+                    var ind = (Head + i + 1) % Capacity;
                     items[i] = Items[ind];
                 }
             }

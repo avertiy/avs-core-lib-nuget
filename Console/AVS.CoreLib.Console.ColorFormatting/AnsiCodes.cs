@@ -10,7 +10,7 @@ namespace AVS.CoreLib.Console.ColorFormatting
         //public const string DEFAULT_FOREGROUND_COLOR = "\x1B[39m\x1B[22m";
         //public const string RESET = "RESET";
         public const string RESET = "\u001b[0m";
-        
+
         public static string Code(int code)
         {
             //seems the same $"\x1B[{code}m";
@@ -81,9 +81,9 @@ namespace AVS.CoreLib.Console.ColorFormatting
         {
             return color switch
             {
-                ConsoleColor.Black => Code(AnsiCode.Black +10),
-                ConsoleColor.DarkRed => Code(AnsiCode.DarkRed +10),
-                ConsoleColor.DarkGreen => Code(AnsiCode.DarkGreen+10),
+                ConsoleColor.Black => Code(AnsiCode.Black + 10),
+                ConsoleColor.DarkRed => Code(AnsiCode.DarkRed + 10),
+                ConsoleColor.DarkGreen => Code(AnsiCode.DarkGreen + 10),
                 ConsoleColor.DarkYellow => Code(AnsiCode.DarkYellow + 10),
                 ConsoleColor.DarkBlue => Code(AnsiCode.DarkBlue + 10),
                 ConsoleColor.DarkMagenta => Code(AnsiCode.DarkMagenta + 10),

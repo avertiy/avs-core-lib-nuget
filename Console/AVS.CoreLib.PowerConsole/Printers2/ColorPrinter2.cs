@@ -34,8 +34,8 @@ namespace AVS.CoreLib.PowerConsole.Printers2
         public override void WriteLine(MessageLevel level, string message)
         {
             var text = level.GetText();
-            if(!string.IsNullOrEmpty(text))
-                Writer.Write(level.GetText()+": ", level.GetColors());
+            if (!string.IsNullOrEmpty(text))
+                Writer.Write(level.GetText() + ": ", level.GetColors());
 
             Writer.WriteLine(message);
         }
@@ -118,9 +118,9 @@ namespace AVS.CoreLib.PowerConsole.Printers2
             {
                 case ColorMode.Default:
                 case ColorMode.AnsiCodes:
-                {
-                    return new ColorOutputWriter(textWriter);
-                }
+                    {
+                        return new ColorOutputWriter(textWriter);
+                    }
                 default:
                     throw new NotImplementedException("other modes not supported at the moment");
             }

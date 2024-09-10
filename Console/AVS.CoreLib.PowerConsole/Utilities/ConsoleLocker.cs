@@ -1,14 +1,12 @@
-﻿using System;
-using System.Threading;
-
-namespace AVS.CoreLib.PowerConsole.Utilities
+﻿namespace AVS.CoreLib.PowerConsole.Utilities
 {
+    /*
     /// <summary>
     /// Synchronize output to console for multi-threading flows,
     /// remember and restore console color scheme <see cref="ColorScheme"/>
     /// usage: 
     /// <code>
-    /// using(var locker = ConsoleLocker.Create()){  console write operations..}
+    ///     using(var locker = ConsoleLocker.Create()){  console write operations..}
     /// </code>
     /// </summary>
     public sealed class ConsoleLocker : IDisposable
@@ -43,5 +41,5 @@ namespace AVS.CoreLib.PowerConsole.Utilities
             if (_lockWasTaken)
                 Monitor.Exit(_lock);
         }
-    }
+    }*/
 }

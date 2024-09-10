@@ -25,6 +25,6 @@ namespace AVS.CoreLib.REST.Clients
             var response = await Client.SendRequestAsync(request, ct).ConfigureAwait(false);
             var result = RestResponse.FromResponse(response, Name, request);
             return result;
-        }        
+        }
     }
 }

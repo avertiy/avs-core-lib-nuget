@@ -8,7 +8,7 @@ namespace AVS.CoreLib.Extensions.Reflection;
 public static class ReflectionHelper
 {
     public static bool IsNullable(Type type)
-    { 
+    {
         return type is { IsValueType: true, IsGenericType: true } && type.GetGenericTypeDefinition() == typeof(Nullable<>);
     }
 

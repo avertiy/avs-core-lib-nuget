@@ -22,11 +22,11 @@ public class ColorProvider : IColorProvider
             case ObjType.List:
                 return new Colors(ConsoleColor.Yellow, null);
             case ObjType.Dictionary:
-                return new Colors(ConsoleColor.Cyan, null);            
+                return new Colors(ConsoleColor.Cyan, null);
             case ObjType.Boolean:
                 return new Colors(ConsoleColor.Blue, null);
             case ObjType.Enum:
-                return new Colors(ConsoleColor.DarkYellow, null);             
+                return new Colors(ConsoleColor.DarkYellow, null);
             case ObjType.DateTime:
             case ObjType.Time:
             case ObjType.String:
@@ -34,7 +34,7 @@ public class ColorProvider : IColorProvider
             default:
                 return new Colors(null, null);
         }
-    }  
+    }
 
     public Colors GetColorsFor(LogPart part, LogLevel logLevel)
     {
@@ -51,38 +51,38 @@ public class ColorProvider : IColorProvider
                 colors = new Colors(ConsoleColor.DarkGray, null);
                 break;
             case LogPart.Category:
-                colors = new Colors(ConsoleColor.DarkYellow, null);
+                colors = new Colors(ConsoleColor.DarkGray, null);
                 break;
             case LogPart.LogLevel:
                 colors = logLevel.GetLogLevelColors();
                 break;
             case LogPart.Message:
-            {
-                switch (logLevel)
                 {
-                    case LogLevel.Debug:
-                        colors = new Colors(ConsoleColor.Gray, null);
-                        break;
-                    case LogLevel.Information:
-                        colors = Colors.Empty;
-                        break;
-                    case LogLevel.Warning:
-                        colors = new Colors(ConsoleColor.Yellow, null);
-                        break;
-                    case LogLevel.Error:
-                        colors = new Colors(ConsoleColor.DarkRed, null);
-                        break;
-                    case LogLevel.Critical:
-                        colors = new Colors(ConsoleColor.White, ConsoleColor.DarkRed);
-                        break;
+                    switch (logLevel)
+                    {
+                        case LogLevel.Debug:
+                            colors = new Colors(ConsoleColor.Gray, null);
+                            break;
+                        case LogLevel.Information:
+                            colors = Colors.Empty;
+                            break;
+                        case LogLevel.Warning:
+                            colors = new Colors(ConsoleColor.Yellow, null);
+                            break;
+                        case LogLevel.Error:
+                            colors = new Colors(ConsoleColor.DarkRed, null);
+                            break;
+                        case LogLevel.Critical:
+                            colors = new Colors(ConsoleColor.White, ConsoleColor.DarkRed);
+                            break;
+                    }
+                    break;
                 }
-                break;
-            }
             default:
-            {
-                colors = new Colors(ConsoleColor.Gray, null);
-                break;
-            }
+                {
+                    colors = new Colors(ConsoleColor.Gray, null);
+                    break;
+                }
         }
         return colors;
     }
@@ -108,13 +108,19 @@ public class ColorProvider : IColorProvider
             case TextKind.Keyword:
                 return new Colors(ConsoleColor.Yellow, null);
             case TextKind.SpecialKeyword:
-                return new Colors(ConsoleColor.DarkYellow, null);
+                return new Colors(ConsoleColor.Magenta, null);
+            case TextKind.OK:
+                return new Colors(ConsoleColor.DarkGreen, null);
+            case TextKind.Error:
+                return new Colors(ConsoleColor.DarkRed, null);
             case TextKind.Percentage:
                 return new Colors(ConsoleColor.Blue, null);
             case TextKind.Quotes:
                 return new Colors(ConsoleColor.White, null);
             case TextKind.DoubleQuotes:
                 return new Colors(ConsoleColor.Magenta, null);
+            case TextKind.FilePath:
+                return new Colors(ConsoleColor.DarkGray, null);
             default:
                 return new Colors(ConsoleColor.Gray, null);
         }
@@ -129,7 +135,7 @@ public class ColorProvider : IColorProvider
 
         if (flags.HasFlag(NumberFlags.Currency))
         {
-            return flags.PickColorBySignFlags(@default: ConsoleColor.Green, negative: ConsoleColor.Red, zero:ConsoleColor.Yellow);
+            return flags.PickColorBySignFlags(@default: ConsoleColor.Green, negative: ConsoleColor.Red, zero: ConsoleColor.Yellow);
         }
 
         if (flags.HasFlag(NumberFlags.Float))
@@ -138,7 +144,7 @@ public class ColorProvider : IColorProvider
         }
 
         // regular integers
-        return flags.PickColorBySignFlags(@default: ConsoleColor.Blue, ConsoleColor.Red, ConsoleColor.DarkYellow);        
+        return flags.PickColorBySignFlags(@default: ConsoleColor.Blue, ConsoleColor.Red, ConsoleColor.DarkYellow);
     }
 
     ConsoleColor GetFloatColor(NumberFlags flags)
@@ -164,5 +170,5 @@ public static class FormatFlagsExtensions
         if (flags.HasFlag(NumberFlags.Zero))
             return zero;
         return flags.HasFlag(NumberFlags.Negative) ? negative : @default;
-    }   
+    }
 }

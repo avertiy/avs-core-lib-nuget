@@ -83,7 +83,7 @@ namespace AVS.CoreLib.Extensions.AutoFormatters
             get => _instance ??= new AutoFormatter().AddBaseFormatters().AddFinancialFormatters();
             set => _instance = value;
         }
-        
+
         public IFormatterRegistry Formatters { get; set; } = new FormatterRegistry();
         /// <summary>
         /// keyword allows to use match keys by keyword & value type
@@ -147,14 +147,14 @@ namespace AVS.CoreLib.Extensions.AutoFormatters
 
             if (value == null)
                 return Formatters[DEFAULT_FORMATTER];
-            
+
             var type = value.GetType();
             // e.g. EntryPrice
             if (Match(key, type, out var specialFormatterKey))
             {
                 return Formatters[specialFormatterKey];
             }
-            
+
             // e.g. DateTime
             var formatter = Formatters.GetFormatterOrDefault(type.Name, DEFAULT_FORMATTER);
             return formatter;
@@ -168,7 +168,7 @@ namespace AVS.CoreLib.Extensions.AutoFormatters
                 if (!str.Contains(kp.Key))
                     continue;
 
-                if(kp.Value.StartsWith(type.Name + ":") || kp.Value.StartsWith(type.BaseType?.Name + ":"))
+                if (kp.Value.StartsWith(type.Name + ":") || kp.Value.StartsWith(type.BaseType?.Name + ":"))
                 {
                     specialFormatterKey = kp.Value;
                     return true;

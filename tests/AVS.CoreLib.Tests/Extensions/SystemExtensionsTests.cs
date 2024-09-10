@@ -46,7 +46,7 @@ public class SystemExtensionsTests
         {
             var dt = DateRange.Create(DateTime.Now, DateTime.Today);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             throw new ApplicationException("Test exception", ex);
         }

@@ -26,7 +26,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
                 return table;
 
             var dict = props.ToDictionary(pi => pi.GetDisplayName(), _ => (width: 0, values: new List<string>()));
-            
+
 
             foreach (var obj in data)
             {
@@ -42,8 +42,8 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
 
                     var str = value.Stringify(pi.Name);
 
-                    if(tuple.width < str.Length +2)
-                        tuple.width = str.Length+2;
+                    if (tuple.width < str.Length + 2)
+                        tuple.width = str.Length + 2;
 
                     tuple.values.Add(str);
                     dict[pi.GetDisplayName()] = tuple;
@@ -57,7 +57,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
                 //skip columns with no values
                 if (kp.Value.width == 0)
                     continue;
-                
+
                 var width = table.AddColumn(kp.Key, width: kp.Value.width);
 
                 for (var i = 0; i < table.Rows.Count; i++)
@@ -117,7 +117,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
             var width = 0;
             var keys = new List<string>(propValues.Count);
             var values = new List<string>(propValues.Count);
-            
+
             foreach (var kp in propValues)
             {
                 var str = kp.Value.Stringify(kp.Key);
@@ -136,11 +136,11 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
             else
             {
                 var count = keys.Count / 3;
-                int n = Math.Max(width / 100 + 2, count+1);
-                
+                int n = Math.Max(width / 100 + 2, count + 1);
+
                 var slicedKeys = keys.Slice(n).ToArray();
                 var slicedValues = values.Slice(n).ToArray();
-                
+
                 for (var j = 0; j < n; j++)
                 {
                     table.AddRow(new Row());
@@ -148,7 +148,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
 
                 for (var i = 0; i < slicedKeys.Length; i++)
                 {
-                    for (var j = 0; j < n && j<slicedKeys[i].Length; j++)
+                    for (var j = 0; j < n && j < slicedKeys[i].Length; j++)
                     {
                         var key = slicedKeys[i][j];
                         var val = slicedValues[i][j];

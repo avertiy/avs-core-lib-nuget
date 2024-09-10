@@ -194,7 +194,7 @@ namespace AVS.CoreLib.Debugging
                 AttachDebugger();
                 Timer.Start();
 
-                if (FuncAsync !=null)
+                if (FuncAsync != null)
                 {
                     var res = await FuncAsync(Obj);
                     SetResult(res);

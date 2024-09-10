@@ -3,8 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
-using AVS.CoreLib.Dates;
 using System.Text.Json.Serialization;
+using AVS.CoreLib.Dates;
 
 namespace AVS.CoreLib.Json
 {
@@ -108,7 +108,7 @@ namespace AVS.CoreLib.Json
         public static Dictionary<string, T>? DeserializeDict<T>(this string json, JsonSerializerOptions? options = null) where T : new()
         {
             return JsonSerializer.Deserialize<Dictionary<string, T>>(json, options ?? DefaultOptions);
-        } 
+        }
         #endregion
     }
 }

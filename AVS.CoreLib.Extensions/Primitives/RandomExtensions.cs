@@ -20,14 +20,14 @@ namespace AVS.CoreLib.Extensions
 
             if (d > to)
             {
-                var r = d %  (from + to)/2; 
+                var r = d % (from + to) / 2;
                 d = from + r;
                 goto start;
             }
 
             if (d < from)
             {
-                var r = (from+to)/2 % d;
+                var r = (from + to) / 2 % d;
                 d = from + r;
                 goto start;
             }

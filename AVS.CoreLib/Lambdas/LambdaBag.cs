@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using AVS.CoreLib.Collections;
 using System.Reflection;
+using AVS.CoreLib.Collections;
 using AVS.CoreLib.Extensions.Reflection;
 
 namespace AVS.CoreLib.Lambdas;

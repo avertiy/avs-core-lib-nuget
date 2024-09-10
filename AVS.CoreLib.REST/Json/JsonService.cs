@@ -19,12 +19,12 @@ namespace AVS.CoreLib.REST.Json
 
         public string SerializeObject(object obj, Type? type = null)
         {
-            return SerializeObjectInternal(obj, type, Serializer);            
+            return SerializeObjectInternal(obj, type, Serializer);
         }
 
         public object? DeserializeObject(string? json, Type type)
         {
-            if(json == null)
+            if (json == null)
                 return null;
 
             using (JsonTextReader reader = new JsonTextReader(new StringReader(json)))
@@ -35,7 +35,7 @@ namespace AVS.CoreLib.REST.Json
 
         public void Populate(object target, string json)
         {
-            if(target == null)
+            if (target == null)
                 throw new ArgumentNullException(nameof(target));
 
             using (JsonTextReader reader = new JsonTextReader(new StringReader(json)))
@@ -44,13 +44,13 @@ namespace AVS.CoreLib.REST.Json
             }
         }
 
-        public string SerializeObject(object obj, Type? type =null, params Type[] converters)
-        {         
-            if(converters == null || converters.Length == 0)
+        public string SerializeObject(object obj, Type? type = null, params Type[] converters)
+        {
+            if (converters == null || converters.Length == 0)
                 return this.SerializeObject(obj);
 
             var conv = converters.Select(x => (JsonConverter)Activator.CreateInstance(x)!);
-            var settings = new JsonSerializerSettings { Converters = conv.ToArray(), NullValueHandling = NullValueHandling };            
+            var settings = new JsonSerializerSettings { Converters = conv.ToArray(), NullValueHandling = NullValueHandling };
             var serializer = JsonSerializer.CreateDefault(settings);
             return SerializeObjectInternal(obj, type, serializer);
         }

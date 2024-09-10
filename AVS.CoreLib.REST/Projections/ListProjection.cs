@@ -88,7 +88,7 @@ namespace AVS.CoreLib.REST.Projections
 
                             if (_where != null && !_where(item))
                                 continue;
-                            
+
                             list.Add(item);
                         }
                         catch (Exception ex)
@@ -148,7 +148,7 @@ namespace AVS.CoreLib.REST.Projections
 
                             if (_where != null && !_where(item))
                                 continue;
-                            
+
                             list.Add(item);
                         }
                         catch (Exception ex)
@@ -156,7 +156,7 @@ namespace AVS.CoreLib.REST.Projections
                             throw new Exception($"Failed to process {type.Name} item at index={i} [jtoken: {jToken}]", ex);
                         }
 
-                        if(take > 0 && i == take)
+                        if (take > 0 && i == take)
                             break;
                     }
 
@@ -165,7 +165,7 @@ namespace AVS.CoreLib.REST.Projections
                 }
 
                 return response;
-            }            
+            }
             catch (Exception ex)
             {
                 throw new MapException($"{this.GetTypeName()}.{nameof(MapWith)} failed - {ex.Message}", ex);
@@ -177,7 +177,7 @@ namespace AVS.CoreLib.REST.Projections
             return MapWith<TProxy, T>(configure, take);
         }
 
-        public Response<List<T>> MapWith<TProxy, TType>(Action<TProxy>? configure = null, int take =0)            
+        public Response<List<T>> MapWith<TProxy, TType>(Action<TProxy>? configure = null, int take = 0)
             where TProxy : IProxy<T, List<T>>, new()
             where TType : T
         {
@@ -211,7 +211,7 @@ namespace AVS.CoreLib.REST.Projections
 
                             if (_where != null && !_where(item))
                                 continue;
-                            
+
                             proxy!.Add(item);
                         }
                         catch (Exception ex)

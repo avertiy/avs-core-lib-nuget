@@ -44,7 +44,7 @@ namespace AVS.CoreLib.Caching
         /// in minutes
         /// </summary>
         public int UpdateInterval { get; set; } = 15;
-        
+
         public void AddKey(string key)
         {
             if (!_keys.Contains(key))
@@ -60,7 +60,7 @@ namespace AVS.CoreLib.Caching
 
         private void CleanUp()
         {
-            if(_keys.Count < 100 || TimeSinceLastUpdate.TotalMinutes < UpdateInterval) 
+            if (_keys.Count < 100 || TimeSinceLastUpdate.TotalMinutes < UpdateInterval)
                 return;
 
             foreach (var key in _keys.ToArray())

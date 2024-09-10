@@ -91,7 +91,7 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
             PowerConsole.ClearLine(4);
         }
 
-        
+
 
         public void PrintUtilitiesTests()
         {
@@ -107,7 +107,7 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
         }
 
         //Colors Colors => new Colors(ConsoleColor.DarkBlue, ConsoleColor.DarkYellow);
-        
+
 
         public async Task ReadLineAsync()
         {
@@ -149,7 +149,7 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
             //PowerConsole.PrintF($"4) <square>5x5:`abc`</square>");
         }
 
-        
+
 
         public void PrintTableFormattedString()
         {

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using AVS.CoreLib.DLinq.Enums;
 using AVS.CoreLib.DLinq.Specs.CompoundBlocks;
+using AVS.CoreLib.DLinq.Specs.Predicates.Comparison;
 using AVS.CoreLib.Guards;
 using AVS.CoreLib.Lambdas;
-using AVS.CoreLib.DLinq.Specs.Predicates.Comparison;
 
 namespace AVS.CoreLib.DLinq.Specs.Predicates;
 

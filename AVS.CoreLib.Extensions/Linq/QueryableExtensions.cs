@@ -14,7 +14,7 @@ namespace AVS.CoreLib.Extensions.Linq
 
         public static IOrderedQueryable<T> OrderBy<T, Key>(this IQueryable<T> source, Expression<Func<T, Key>> keySelector, Sort sort)
         {
-            return sort == Sort.Desc ? source.OrderByDescending(keySelector) : source.OrderBy(keySelector);            
+            return sort == Sort.Desc ? source.OrderByDescending(keySelector) : source.OrderBy(keySelector);
         }
 
         public static IQueryable<T> ThenBy<T, Key>(this IOrderedQueryable<T> source, Expression<Func<T, Key>> keySelector, Sort sort)

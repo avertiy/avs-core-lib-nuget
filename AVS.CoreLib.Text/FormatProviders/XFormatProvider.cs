@@ -2,7 +2,6 @@
 using AVS.CoreLib.Text.Formatters;
 using AVS.CoreLib.Text.Formatters.ColorMarkup;
 using AVS.CoreLib.Text.Formatters.GenericFormatter;
-using AVS.CoreLib.Text.Formatters.GenericTypeFormatter;
 
 namespace AVS.CoreLib.Text.FormatProviders
 {

@@ -154,7 +154,7 @@ namespace AVS.CoreLib.REST.Projections
             response.Data = dict;
 
             return response;
-        } 
+        }
         #endregion
 
         private IEnumerator<(string Key, TValue Value)> GetEnumerator(Type valueType)
@@ -163,7 +163,7 @@ namespace AVS.CoreLib.REST.Projections
                 yield break;
 
             var jObject = LoadToken<JObject>();
-            if(!jObject.HasValues)
+            if (!jObject.HasValues)
                 yield break;
 
             foreach (var kp in jObject)

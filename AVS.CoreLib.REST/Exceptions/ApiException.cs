@@ -12,7 +12,7 @@ namespace AVS.CoreLib.REST
     /// </summary>
     [DebuggerDisplay("ApiException [{Message}; Source={Source}; Request:{RequestInfo}")]
     public sealed class ApiException : Exception
-    {   
+    {
         public HttpStatusCode? StatusCode { get; set; }
         public string? RequestInfo { get; set; }
         public ApiException(string message) : base(message)
@@ -41,8 +41,8 @@ namespace AVS.CoreLib.REST
         /// </summary>
         public int? GetStatusCode()
         {
-            if(StatusCode.HasValue)
-                return (int) StatusCode.Value;
+            if (StatusCode.HasValue)
+                return (int)StatusCode.Value;
 
             if (Message.Contains("401"))
                 return 401;

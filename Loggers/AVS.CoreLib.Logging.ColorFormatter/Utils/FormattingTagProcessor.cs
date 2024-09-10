@@ -1,11 +1,6 @@
 ﻿using System.Text;
-using AVS.CoreLib.Console.ColorFormatting;
 using AVS.CoreLib.Console.ColorFormatting.Tags;
 using AVS.CoreLib.Extensions;
-using AVS.CoreLib.Logging.ColorFormatter.Enums;
-using AVS.CoreLib.Logging.ColorFormatter.Extensions;
-using Microsoft.Extensions.Options;
-using AVS.CoreLib.Console.ColorFormatting.Extensions;
 
 namespace AVS.CoreLib.Logging.ColorFormatter.Utils;
 

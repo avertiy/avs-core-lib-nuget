@@ -1,8 +1,6 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
 using AVS.CoreLib.Configuration;
-using AVS.CoreLib.Utilities;
 using Microsoft.Extensions.Configuration;
 using Xunit.Abstractions;
 
@@ -40,8 +38,8 @@ namespace AVS.CoreLib.UnitTesting.xUnit
 
         public TConfiguration GetSection<TConfiguration>(string sectionKey)
         {
-	        // load keys from custom user secrets file at 
-	        // %userprofile%/.secrets/AVS.Exchange.Core.Tests/secrets.json
+            // load keys from custom user secrets file at 
+            // %userprofile%/.secrets/AVS.Exchange.Core.Tests/secrets.json
             return Configuration.GetSection(sectionKey).Get<TConfiguration>();
         }
 
@@ -52,10 +50,10 @@ namespace AVS.CoreLib.UnitTesting.xUnit
         {
             var attribute = this.GetType().GetCustomAttributes<ConfigurationAttribute>().FirstOrDefault();
             _configuration = attribute == null ? ConfigurationHelper.LoadConfiguration() : ConfigurationHelper.LoadConfiguration(attribute);
-            
+
             return _configuration;
         }
     }
 
-    
+
 }

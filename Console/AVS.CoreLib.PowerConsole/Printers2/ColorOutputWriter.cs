@@ -20,7 +20,7 @@ namespace AVS.CoreLib.PowerConsole.Printers2
     public class ColorOutputWriter : OutputWriter2, IColorOutputWriter
     {
         protected TagProcessor TagProcessor { get; set; }
-        public ColorOutputWriter(TextWriter writer) :base(writer)
+        public ColorOutputWriter(TextWriter writer) : base(writer)
         {
             TagProcessor = GetDefaultTagsProcessor();
         }
@@ -40,7 +40,7 @@ namespace AVS.CoreLib.PowerConsole.Printers2
             {
                 var text = colors.Value.Colorize(message);
                 Write(text, endLine);
-            }   
+            }
         }
 
         public void WriteLine(string message, Colors? colors)

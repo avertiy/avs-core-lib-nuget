@@ -234,7 +234,7 @@ namespace AVS.CoreLib.Math.Bytes.Extensions
         public static byte[] Swap(this byte[] arr, int index1 = 0, int? index2 = null)
         {
             Guard.Array.CheckIndex(arr, index1);
-            var ind2 = index2.GetValueOrDefault(arr.Length-1); 
+            var ind2 = index2.GetValueOrDefault(arr.Length - 1);
             Guard.Array.CheckIndex(arr, ind2);
 
             (arr[index1], arr[ind2]) = (arr[ind2], arr[index1]);

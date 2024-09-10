@@ -14,7 +14,7 @@ namespace AVS.CoreLib.REST.Clients
     /// <remarks>
     /// if endpoint requires Authentication, the authentication delegated to <see cref="HttpRequestBuilder"/>
     /// </remarks>
-    [Obsolete("Use RestTools instead (in .NET Core 5+ HttpWebRequest is recommented instead of HttpClient)")]
+    [Obsolete("Use RestTools instead (in .NET Core 5+ HttpWebRequest is recommended instead of HttpClient)")]
     public class RestClient : IRestClient
     {
         protected IHttpRequestBuilder HttpRequestBuilder { get; }
@@ -40,12 +40,12 @@ namespace AVS.CoreLib.REST.Clients
             return httpRequest.FetchHttpResponseAsync(maxAttempts: 2, ct);
         }
 
-        [Obsolete("Use SendRequestAsync(IRequest request)")]
-        public Task<string> QueryAsync(IEndpoint endpoint, IPayload data = null)
-        {
-            var request = HttpRequestBuilder.Build(endpoint, data);
-            return FetchResponse(request);
-        }
+        //[Obsolete("Use SendRequestAsync(IRequest request)")]
+        //public Task<string> QueryAsync(IEndpoint endpoint, IPayload data = null)
+        //{
+        //    var request = HttpRequestBuilder.Build(endpoint, data);
+        //    return FetchResponse(request);
+        //}
 
         protected async Task<string> FetchResponse(HttpWebRequest request, int attempts = 2)
         {

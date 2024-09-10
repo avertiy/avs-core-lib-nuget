@@ -14,12 +14,12 @@ using TrueException = AVS.CoreLib.UnitTesting.XUnit.Exceptions.TrueException;
 #nullable enable
 namespace AVS.CoreLib.UnitTesting.xUnit
 {
-    public partial class Assert: Xunit.Assert
+    public partial class Assert : Xunit.Assert
     {
         public static void Success(IResponse response, string userMessage)
         {
             if (!response.Success)
-                throw new TrueException($"\r\n {userMessage}\r\n Error: {response.Error}", response.Success);            
+                throw new TrueException($"\r\n {userMessage}\r\n Error: {response.Error}", response.Success);
         }
 
         public static void Null([MaybeNull] object? obj, string userMessage = "Expected null value")
@@ -73,7 +73,7 @@ namespace AVS.CoreLib.UnitTesting.xUnit
 
             if (expected == actual)
                 return;
-            
+
             if (actual != null && expected != null)
             {
                 index1 = 0;

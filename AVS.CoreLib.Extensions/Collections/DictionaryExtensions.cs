@@ -8,16 +8,16 @@ namespace AVS.CoreLib.Extensions.Collections
 {
     public static class DictionaryExtensions
     {
-	    public static void AddIfNotEmpty(this IDictionary<string, object> dictionary, string key, object value)
-	    {
-			if(value == null)
+        public static void AddIfNotEmpty(this IDictionary<string, object> dictionary, string key, object value)
+        {
+            if (value == null)
                 return;
-			var str = value.ToString();
-            if(string.IsNullOrEmpty(str) || str == "0")
+            var str = value.ToString();
+            if (string.IsNullOrEmpty(str) || str == "0")
                 return;
 
             dictionary.Add(key, value);
-	    }
+        }
 
         /// <summary>
         /// Add <paramref name="other"/> dictionary key/values into a <paramref name="source"/> dictionary        
@@ -26,7 +26,7 @@ namespace AVS.CoreLib.Extensions.Collections
         {
             foreach (var kvp in other)
             {
-                source.Add(kvp.Key, kvp.Value);                
+                source.Add(kvp.Key, kvp.Value);
             }
         }
 
@@ -55,7 +55,7 @@ namespace AVS.CoreLib.Extensions.Collections
         /// Merge <paramref name="dict1"/> and <paramref name="dict2"/> into a new dictionary
         /// </summary>
         /// <remarks>if you expect merge into dict1 <see cref="Upsert"/> </remarks>
-        public static Dictionary<K, V> Merge<K,V>(this IDictionary<K, V> dict1, IDictionary<K, V> dict2, bool overwrite = true)
+        public static Dictionary<K, V> Merge<K, V>(this IDictionary<K, V> dict1, IDictionary<K, V> dict2, bool overwrite = true)
         {
             // Create a new dictionary to hold the merged result
             var mergedDictionary = new Dictionary<K, V>(dict1);
@@ -63,9 +63,9 @@ namespace AVS.CoreLib.Extensions.Collections
             foreach (var kvp in dict2)
             {
                 // If the key already exists in the first dictionary, update the value.
-                if (mergedDictionary.ContainsKey(kvp.Key) )
+                if (mergedDictionary.ContainsKey(kvp.Key))
                 {
-                    if(overwrite)
+                    if (overwrite)
                         mergedDictionary[kvp.Key] = kvp.Value;
                 }
                 // If the key does not exist, add it to the merged dictionary.
@@ -134,6 +134,6 @@ namespace AVS.CoreLib.Extensions.Collections
             }
             sb.Length -= separator.Length;
             return sb.ToString();
-        }        
+        }
     }
 }

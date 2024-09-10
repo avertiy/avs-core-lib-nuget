@@ -50,7 +50,7 @@ namespace AVS.CoreLib.REST.Projections
         protected Action<string, TItem>? _keyValueAction;
         protected Func<string, string>? _preprocessKey;
         protected Func<string, bool>? _whereKey = null;
-        protected Func<(string Key,TItem Value), bool>? _whereKeyValue = null;
+        protected Func<(string Key, TItem Value), bool>? _whereKeyValue = null;
 
         public ContainerProjection(RestResponse response) : base(response)
         {
@@ -102,7 +102,7 @@ namespace AVS.CoreLib.REST.Projections
             return this;
         }
 
-        public ContainerProjection<T, TItem> Where(Func<(string Key,TItem Value), bool> predicate)
+        public ContainerProjection<T, TItem> Where(Func<(string Key, TItem Value), bool> predicate)
         {
             _whereKeyValue = predicate;
             return this;
@@ -113,8 +113,8 @@ namespace AVS.CoreLib.REST.Projections
         /// <summary>
         /// Map json array when <typeparamref name="TContainer"/> implements <see cref="ICollection{TItem}"/>
         /// </summary>
-        public Response<T> Map<TContainer>() 
-            where TContainer : T, ICollection<TItem>, new()            
+        public Response<T> Map<TContainer>()
+            where TContainer : T, ICollection<TItem>, new()
         {
             var response = Response.Create<T>(Source, Error, Request);
             if (HasError)
@@ -147,7 +147,7 @@ namespace AVS.CoreLib.REST.Projections
 
                             if (_where != null && !_where(item))
                                 continue;
-                            
+
                             data.Add(item);
                         }
                         catch (Exception ex)
@@ -160,7 +160,8 @@ namespace AVS.CoreLib.REST.Projections
 
                 _postProcess?.Invoke(data);
                 return response;
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw new MapException($"Mapping failed - {ex.Message}", ex);
             }
@@ -203,7 +204,7 @@ namespace AVS.CoreLib.REST.Projections
 
                             if (_where != null && !_where(item))
                                 continue;
-                            
+
                             add(container, item);
                         }
                         catch (Exception ex)
@@ -259,7 +260,7 @@ namespace AVS.CoreLib.REST.Projections
 
                             if (_where != null && !_where(item))
                                 continue;
-                            
+
                             proxy.Add(item);
                         }
                         catch (Exception ex)
@@ -356,7 +357,7 @@ namespace AVS.CoreLib.REST.Projections
             }
         }
 
-        private void ProcessKeyValue(IContainer<string, TItem> data, string key, JToken? jToken, Type itemType)            
+        private void ProcessKeyValue(IContainer<string, TItem> data, string key, JToken? jToken, Type itemType)
         {
             if (jToken == null)
                 throw new NullReferenceException($"value is null [key={key}]");
@@ -383,7 +384,7 @@ namespace AVS.CoreLib.REST.Projections
                     return;
 
                 _keyValueAction?.Invoke(key, item);
-                
+
                 data.Add(key, item);
             }
             catch (Exception ex)
@@ -391,5 +392,5 @@ namespace AVS.CoreLib.REST.Projections
                 throw new Exception($"Failed to process {itemType.Name} item at key={key}", ex);
             }
         }
-    } 
+    }
 }

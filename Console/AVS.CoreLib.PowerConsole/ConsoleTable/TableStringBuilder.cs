@@ -14,7 +14,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
 
         public void AddTitle(string? title)
         {
-            if(string.IsNullOrEmpty(title))
+            if (string.IsNullOrEmpty(title))
                 return;
             sb.AppendLine(BorderLine);
             sb.Append(Style.Bar);
@@ -28,7 +28,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
 
         public void AddColumns(IList<Column>? columns)
         {
-            if(columns == null || columns.Count == 0)
+            if (columns == null || columns.Count == 0)
                 return;
             sb.AppendLine(BorderLine);
 
@@ -84,7 +84,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
                 }
                 sb.AppendLine();
             }
-            
+
         }
 
         private void AppendCell(Row row, int index, int width, int line)
@@ -100,7 +100,7 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
             //if(line > 0)
 
             var spacing = Style.Spacing ?? " ";
-            
+
             var text = cell.Text ?? "";
 
             if (cell.Height > 1)
@@ -134,12 +134,12 @@ namespace AVS.CoreLib.PowerConsole.ConsoleTable
             for (var i = 0; i < cols; i++)
             {
                 var width = fullRow[i].Width;
-                AppendCell(row,i, width, 0);
+                AppendCell(row, i, width, 0);
                 sb.Append(Style.Bar);
             }
             sb.AppendLine();
         }
-            
+
         public override string ToString()
         {
             return sb.ToString();

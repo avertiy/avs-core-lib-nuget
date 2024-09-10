@@ -45,7 +45,7 @@ namespace AVS.CoreLib.REST.Projections
                     }
                 }
 
-                return response;                
+                return response;
             }
             catch (Exception ex)
             {
@@ -81,11 +81,11 @@ namespace AVS.CoreLib.REST.Projections
         }
 
 
-        
+
 
         public IEnumerator<T> GetEnumerator()
         {
-            return GetEnumerator(typeof(T));            
+            return GetEnumerator(typeof(T));
         }
 
         IEnumerator IEnumerable.GetEnumerator()

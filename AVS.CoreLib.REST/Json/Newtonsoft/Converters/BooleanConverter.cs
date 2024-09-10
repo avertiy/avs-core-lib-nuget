@@ -2,7 +2,6 @@
 using System.Runtime.CompilerServices;
 using AVS.CoreLib.Enums;
 using AVS.CoreLib.Extensions.Reflection;
-using AVS.CoreLib.Utilities;
 using Newtonsoft.Json;
 
 namespace AVS.CoreLib.REST.Json.Newtonsoft.Converters
@@ -68,7 +67,7 @@ namespace AVS.CoreLib.REST.Json.Newtonsoft.Converters
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            if(value == null)
+            if (value == null)
                 return;
 
             var bValue = (bool)value;

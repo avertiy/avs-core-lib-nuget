@@ -69,7 +69,7 @@ namespace AVS.CoreLib.REST.Helpers
             {
                 return $"{{ \"error\": \"Request to {request.RequestUri} failed. {ex.Message}\" }}";
             }
-        } 
+        }
         #endregion
 
         public static async Task<string> FetchResponseAsync(HttpWebRequest request)
@@ -86,6 +86,6 @@ namespace AVS.CoreLib.REST.Helpers
             return jsonText;
         }
 
-        
+
     }
 }

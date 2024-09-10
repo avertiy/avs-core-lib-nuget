@@ -1,5 +1,4 @@
 ﻿using System;
-using AVS.CoreLib.Text.Formatters.GenericFormatter;
 
 namespace AVS.CoreLib.Text.Formatters.GenericTypeFormatter
 {

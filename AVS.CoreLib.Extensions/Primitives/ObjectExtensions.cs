@@ -7,7 +7,8 @@ public static class ObjectExtensions
 {
     public static bool IsEmpty(this object? obj)
     {
-        if(obj == null) return true;
+        if (obj == null)
+            return true;
 
         return obj switch
         {
@@ -77,8 +78,8 @@ public static class ObjectExtensions
     {
         return obj switch
         {
-            int i => i == 0 ? 0 : i > 0? 1: -1,
-            long l => l == 0 ? 0 :l > 0 ? 1 : -1,
+            int i => i == 0 ? 0 : i > 0 ? 1 : -1,
+            long l => l == 0 ? 0 : l > 0 ? 1 : -1,
             double d => d == 0 ? 0 : d > 0 ? 1 : -1,
             decimal dec => dec == 0 ? 0 : dec > 0 ? 1 : -1,
             short s => s == 0 ? 0 : s > 0 ? 1 : -1,

@@ -129,12 +129,13 @@ namespace AVS.CoreLib.Messaging.PubSub
         private IEventConsumer[] ResolveAllConsumers<TEvent>(Type eventType, Type contextType, bool mandatory)
             where TEvent : class, IEvent
         {
-            
+
             var type = typeof(TEvent);
             // get consumers of TEvent type
             var consumers = ResolveConsumers(type, contextType, mandatory);
 
-            if (eventType == type) return consumers;
+            if (eventType == type)
+                return consumers;
 
             // if TEvent is base type get consumers of the concrete event type
             var allConsumers = new List<IEventConsumer>(consumers);

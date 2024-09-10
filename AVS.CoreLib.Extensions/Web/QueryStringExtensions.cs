@@ -46,7 +46,7 @@ namespace AVS.CoreLib.Extensions.Web
             if (ind == -1)
                 return string.Empty;
 
-            ind+=key.Length+1;
+            ind += key.Length + 1;
             var endInd = queryString.IndexOf('&', ind);
             return endInd == -1 ? queryString.Substring(ind) : queryString.Substring(ind, endInd - ind);
         }

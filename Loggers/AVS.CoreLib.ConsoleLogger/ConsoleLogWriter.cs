@@ -4,6 +4,7 @@ using AVS.CoreLib.AbstractLogger;
 using AVS.CoreLib.PowerConsole.Printers2;
 using AVS.CoreLib.PowerConsole.Utilities;
 using AVS.CoreLib.Text.Formatters.ColorMarkup;
+using AVS.CoreLib.Utilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Console1 = AVS.CoreLib.PowerConsole.PowerConsole;
@@ -24,18 +25,17 @@ namespace AVS.CoreLib.ConsoleLogger
 
         public void Write(string str, bool endLine = true)
         {
-            if(endLine)
+            if (endLine)
                 Console1.WriteLine(str);
-            else 
+            else
                 Console1.Write(str);
         }
 
         public void Write(string logger, EventId eventId, LogLevel logLevel, string message, Exception exception = null)
         {
-            
             //this looks wierd message starting from @Color will be colorized.. not good solution
             //var color = ColorSchemeHelper.ExtractColor(ref message, scheme.Foreground);
-            
+
             using (var locker = ConsoleLocker.Create())
             {
                 var schemeBackup = ColorScheme.GetCurrentScheme();
@@ -93,7 +93,7 @@ namespace AVS.CoreLib.ConsoleLogger
             }
             else
             {
-                Console1.WriteLine($" ===== begin scope: {scope} =====\r\n",colors: ConsoleColor.Cyan);
+                Console1.WriteLine($" ===== begin scope: {scope} =====\r\n", colors: ConsoleColor.Cyan);
             }
             WriteLine(false);
         }

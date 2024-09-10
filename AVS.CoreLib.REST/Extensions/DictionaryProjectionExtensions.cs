@@ -12,6 +12,6 @@ namespace AVS.CoreLib.REST.Extensions
 
             response.Source = result.Source;
             return response;
-        }        
+        }
     }
 }

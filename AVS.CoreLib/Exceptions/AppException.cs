@@ -6,7 +6,7 @@ namespace AVS.CoreLib.Exceptions
     {
         public string? Hint { get; set; }
         public AppException(string message) : base(message)
-        {            
+        {
         }
 
         public AppException(string message, string hint) : base(message)

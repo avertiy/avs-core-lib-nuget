@@ -26,7 +26,8 @@ public static class LogEntryExtensions
             }
 
             return message;
-        }catch(Exception ex)
+        }
+        catch (Exception ex)
         {
             return ex.ToString();
         }

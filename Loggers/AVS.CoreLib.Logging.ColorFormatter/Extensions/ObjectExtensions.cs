@@ -9,7 +9,7 @@ public static class ObjectExtensions
     public static NumberFlags GetNumberFlags(this object val, string formattedValue)
     {
         var flags = NumberFlags.None;
-        var sign = val.GetSign();        
+        var sign = val.GetSign();
         if (sign < 0)
             flags = flags | NumberFlags.Negative;
         else if (sign == 0)
@@ -20,7 +20,7 @@ public static class ObjectExtensions
         if (formattedValue.ContainsAny("$", "USD", "EUR", "UAH"))
             flags = flags | NumberFlags.Currency;
         return flags;
-    }   
+    }
 
     public static ObjType GetObjType(this object obj)
     {

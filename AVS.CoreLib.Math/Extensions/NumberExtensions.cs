@@ -222,6 +222,6 @@ namespace AVS.CoreLib.Math.Extensions
         {
             return BitConverter.GetBytes(value);
         }
-        
+
     }
 }

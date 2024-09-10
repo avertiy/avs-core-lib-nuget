@@ -80,8 +80,8 @@ namespace AVS.CoreLib.WebSockets
         public async Task Subscribe(string channelName, string command, bool autoReconnect = true)
         {
             await Client.SendAsync(BaseAddress, command);
-            
-            if(autoReconnect)
+
+            if (autoReconnect)
                 _channels.Add(channelName, command);
         }
 
@@ -95,7 +95,7 @@ namespace AVS.CoreLib.WebSockets
                 _channels.Remove(channelName);
             }
         }
-        
+
         public void Dispose()
         {
             Client?.Dispose();

@@ -57,10 +57,10 @@ public static class ParallelExtensions
         return TaskRunner.Create(job, delay).RunAll(enumerable, x => x.ToList());
     }
 
-    
+
     [DebuggerStepThrough]
     public static Task<List<TItem>> ParallelFetchUniqueItems<T, TResult, TItem, TItemKey>(this IEnumerable<T> enumerable,
-        Func<T, Task<TResult>> job, 
+        Func<T, Task<TResult>> job,
         Func<TResult, IEnumerable<TItem>> selector, Func<TItem, TItemKey> itemKeySelector, int delay = 0) where T : notnull
     {
         return TaskRunner.Create(job, delay).RunAll(enumerable, x => x.PickUniqueItems(selector, itemKeySelector));

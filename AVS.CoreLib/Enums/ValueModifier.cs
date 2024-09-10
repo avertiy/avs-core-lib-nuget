@@ -26,7 +26,7 @@
         /// <summary>
         /// round down
         /// </summary>
-        Floor, 
+        Floor,
         /// <summary>
         /// truncate value
         /// </summary>

@@ -80,7 +80,7 @@ namespace AVS.CoreLib.Console.ColorFormatting
         //        Console.WriteLine("Background colors:\r\n");
         //        foreach (var color in colors)
         //        {
-                
+
         //            var background = GetBackgroundColorEscapeCode(color);
         //            var suffix = background == DEFAULT_BACKGROUND_COLOR ? "[DEFAULT_FOREGROUND_COLOR]" : "";
 

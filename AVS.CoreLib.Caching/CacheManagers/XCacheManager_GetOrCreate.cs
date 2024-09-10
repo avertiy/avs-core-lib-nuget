@@ -43,7 +43,7 @@ namespace AVS.CoreLib.Caching
             var value = await acquire().ConfigureAwait(false);
 
             // create CacheEntry
-            if(CreateCacheEntry(key, value, defaultCacheTime, out CachedObject<T?>? result))
+            if (CreateCacheEntry(key, value, defaultCacheTime, out CachedObject<T?>? result))
                 return result!;
             return new CachedObject<T?>(default);
         }

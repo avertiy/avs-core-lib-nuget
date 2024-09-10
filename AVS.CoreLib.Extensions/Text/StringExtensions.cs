@@ -284,10 +284,10 @@ namespace AVS.CoreLib.Extensions
 
                     if (i + separator.Length >= str.Length)
                         continue;
-                    
+
                     var ind = str.IndexOf(separator, i, StringComparison.Ordinal);
 
-                    if(ind != i)
+                    if (ind != i)
                         continue;
 
                     add(str.Substring(start, i - start));
@@ -313,25 +313,47 @@ namespace AVS.CoreLib.Extensions
             return result.ToArray();
         }
 
-        public static string Truncate(this string str, int maxLength)
+        /// <summary>
+        /// Truncates string
+        /// </summary>
+        public static string Truncate(this string str, int maxLength = 1000, TruncateOptions options = TruncateOptions.None)
         {
             if (string.IsNullOrEmpty(str) || str.Length <= maxLength)
                 return str;
 
-            return str.Substring(0, maxLength);
-        }
+            string truncatedStr;
 
-        public static string Truncate(this string str, int maxLength, string append)
-        {
-            if (string.IsNullOrEmpty(str) || str.Length <= (maxLength + append.Length))
-                return str;
+            if (options.HasFlag(TruncateOptions.CutOffTheMiddle))
+            {
+                var startIndex = maxLength / 2;
+                var ind = str.IndexOf(',', startIndex, startIndex / 2);
 
-            return str.Substring(0, maxLength)+append;
+                if (ind == -1)
+                    return str.Substring(0, maxLength);
+
+                var startStr = str.Substring(0, ind + 1);
+                var count = maxLength - (ind + 1);
+                var ind2 = str.LastIndexOf(',', str.Length - 1, count);
+                var endStr = str.Substring(ind2 + 1);
+                truncatedStr = $"{startStr} ... {endStr}";
+            }
+            else
+            {
+                truncatedStr = str.Substring(0, maxLength);
+            }
+
+            if (options.HasFlag(TruncateOptions.AppendLength))
+            {
+                truncatedStr += $"(Length={str.Length})";
+            }
+
+            return truncatedStr;
         }
 
         /// <summary>
-        /// Truncate json string cutting the middle
+        /// Truncates json cutting the middle if text is too long
         /// </summary>
+
         public static string TruncateJson(this string str, int maxLength = 1000)
         {
             if (string.IsNullOrEmpty(str) || str.Length <= maxLength)
@@ -404,7 +426,7 @@ namespace AVS.CoreLib.Extensions
             }
             return count;
         }
-        
+
         public static string ReadWord(this string str, int fromIndex = 0)
         {
             if (str.Length <= fromIndex)
@@ -443,4 +465,17 @@ namespace AVS.CoreLib.Extensions
         }
     }
 
+    [Flags]
+    public enum TruncateOptions
+    {
+        /// <summary>
+        /// by default cuts off the end
+        /// </summary>
+        None = 0,
+        /// <summary>
+        /// cuts off the middle
+        /// </summary>
+        CutOffTheMiddle = 1,
+        AppendLength = 2,
+    }
 }

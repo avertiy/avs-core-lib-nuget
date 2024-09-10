@@ -22,7 +22,7 @@
         /// </summary>
         NoReversed = 27,
 
-    
+
         Black = 30,
         DarkRed = 31,
         DarkGreen = 32,

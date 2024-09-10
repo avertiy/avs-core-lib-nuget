@@ -1,6 +1,4 @@
-﻿using AVS.CoreLib.Text.Formatters.GenericFormatter;
-
-namespace AVS.CoreLib.Text.Formatters.GenericTypeFormatter
+﻿namespace AVS.CoreLib.Text.Formatters.GenericTypeFormatter
 {
     /// <summary>
     /// Type formatter interface <seealso cref="GenericTypeFormatter"/>

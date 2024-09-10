@@ -49,5 +49,5 @@ namespace AVS.CoreLib.Messaging.Abstractions.PubSub
         bool AnyConsumers(Type eventType, Type contextType);
     }
 
-    
+
 }

@@ -8,7 +8,7 @@ namespace AVS.CoreLib.Extensions.Linq
 {
     public static class EnumerableExtensions
     {
-        public static IEnumerable<TResult> Cast<T,TResult>(this IEnumerable<T> source)
+        public static IEnumerable<TResult> Cast<T, TResult>(this IEnumerable<T> source)
         {
             return new CastIterator<T, TResult>(source);
         }
@@ -60,7 +60,7 @@ namespace AVS.CoreLib.Extensions.Linq
         public static int Count(this IEnumerable col)
         {
             var counter = 0;
-            
+
             foreach (var item in col)
                 counter++;
 

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Linq.Expressions;
-using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Reflection;
 
 namespace AVS.CoreLib.DLinq.Specs.BasicBlocks;
@@ -44,10 +42,10 @@ public class IndexSpec : PropSpec
         expr = Expression.Call(expr, methodInfo, Expression.Constant(Index));
         return expr;
     }
-    
+
     public override string GetKey()
     {
-        return Name == null ? Index.ToString(): $"{Name}_{Index}";
+        return Name == null ? Index.ToString() : $"{Name}_{Index}";
     }
 
     public override string GetCacheKey()

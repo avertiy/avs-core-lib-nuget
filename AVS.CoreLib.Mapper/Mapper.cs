@@ -36,12 +36,12 @@ namespace AVS.CoreLib.Mapper
 
         public Delegate this[string mappingKey]
         {
-            get 
+            get
             {
                 if (!Delegates.ContainsKey(mappingKey))
                     throw new MappingNotFoundException(mappingKey);
 
-                return Delegates[mappingKey]; 
+                return Delegates[mappingKey];
             }
         }
 
@@ -72,7 +72,7 @@ namespace AVS.CoreLib.Mapper
             //RegisterDelegate(mappingKey, wrapper);
             RegisterDelegate(mappingKey, @delegate);
         }
-        
+
         /// <summary>        
         /// Execute one-to-one mapping to PRODUCE NEW <see cref="TDestination"/> object
         /// <code>
@@ -153,7 +153,7 @@ namespace AVS.CoreLib.Mapper
                 throw new MapException($"Update{mappingKey} Failed", ex, delegateRef);
             }
         }
-        
+
         #endregion
     }
 }

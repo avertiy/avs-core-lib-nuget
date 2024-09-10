@@ -24,13 +24,13 @@ namespace AVS.CoreLib.REST.Clients
         /// <param name="ct"></param>
         /// <returns>true if delay does not exceed a <see cref="RequestTimeout"/>, otherwise false</returns>
         Task<bool> DelayAsync(int count = 1, CancellationToken ct = default);
-        void Adjust(HttpStatusCode statusCode);        
+        void Adjust(HttpStatusCode statusCode);
     }
 
     public class RateLimiter : IRateLimiter
     {
         private int _exponentialBackoff = 0;
-        private DateTime? _blockTill;        
+        private DateTime? _blockTill;
         public int RequestTimeout { get; set; } = 20_000;
         public int Duration { get; set; } = 50;
 
@@ -95,7 +95,7 @@ namespace AVS.CoreLib.REST.Clients
 
             var k = 2;
             var delay = 1000;
-            for (var i = 0; i < _exponentialBackoff && i <=10; i++)
+            for (var i = 0; i < _exponentialBackoff && i <= 10; i++)
             {
                 delay *= k;
             }

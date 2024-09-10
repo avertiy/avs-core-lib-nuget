@@ -1,5 +1,4 @@
-﻿using AVS.CoreLib.Logging.ColorFormatter.OutputBuilders;
-using AVS.CoreLib.Logging.ColorFormatter.Utils;
+﻿using AVS.CoreLib.Logging.ColorFormatter.Utils;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Logging.Console;
@@ -9,9 +8,10 @@ namespace AVS.CoreLib.Logging.ColorFormatter;
 
 public class ColorFormatter : ConsoleFormatter, IDisposable
 {
-    private readonly IDisposable _optionsReloadToken;
-    protected ColorFormatterOptions _options;
     public static IColorProvider ColorProvider = new ColorProvider();
+    private readonly IDisposable _optionsReloadToken;
+    private ColorFormatterOptions _options;
+
     public ColorFormatter(IOptionsMonitor<ColorFormatterOptions> options)
         : base(nameof(ColorFormatter))
     {
@@ -23,33 +23,41 @@ public class ColorFormatter : ConsoleFormatter, IDisposable
         IExternalScopeProvider scopeProvider,
         TextWriter textWriter)
     {
-        var outputBuilder = GetOutputBuilder();
-        outputBuilder.Init(logEntry, scopeProvider);
-        var message = outputBuilder.Build();
+        var message = logEntry.Formatter?.Invoke(logEntry.State, logEntry.Exception);
 
-        // write message to memory buffer if profiling enabled
-        ConsoleLogProfiler.Write(message);
+        var builder = new OutputBuilder()
+        {
+            FormatterOptions = _options,
+            ColorProvider = ColorProvider
+        };
 
-        // write message to console stream
-        textWriter.Write(message);
+        builder
+            .WithTimestamp(_options.TimestampFormat)
+            .WithPrefix(_options.CustomPrefix)
+            .WithCategory(logEntry.Category, logEntry.EventId.Id)
+            .WithLogLevel(logEntry.LogLevel)
+            .WithScope(scopeProvider);
+
+        builder
+            .WithMessage(message)
+            .WithError(logEntry.Exception);
+
+        if (_options.ArgsColorFormat == ArgsColorFormat.Auto && State.TryParse(logEntry.State, out var state))
+            builder = builder.WithHighlightedArgs(state);
+
+        var logMessage = builder.Build();
+
+        // write message to memory buffer (if profiling enabled)
+        ConsoleLogProfiler.Write(logMessage);
+
+        // write output to console stream
+        textWriter.Write(logMessage);
         return;
     }
+
     private void ReloadLoggerOptions(ColorFormatterOptions formatterOptions)
     {
         _options = formatterOptions;
-    }
-    private IOutputBuilder GetOutputBuilder()
-    {
-        IOutputBuilder builder;
-        if (_options.ColorBehavior == LoggerColorBehavior.Disabled)
-        {
-            builder = new OutputBuilder() { Options = _options };
-        }
-        else
-        {
-            builder = new ColorOutputBuilder() { ColorProvider = ColorProvider, Options = _options };
-        }
-        return builder;
     }
 
     public void Dispose()

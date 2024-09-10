@@ -39,7 +39,7 @@ namespace AVS.CoreLib.PowerConsole
             get => Console.OutputEncoding;
             set => Console.OutputEncoding = value;
         }
-        
+
         public static int BufferHeight
         {
             get => Console.BufferHeight;

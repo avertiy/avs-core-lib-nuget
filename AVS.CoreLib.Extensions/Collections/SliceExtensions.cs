@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Collections.Generic;
 using System.Linq;
 using AVS.CoreLib.Guards;
 
@@ -19,7 +17,7 @@ namespace AVS.CoreLib.Extensions.Collections
             }
         }
 
-        public static IEnumerable<KeyValuePair<TKey, TValue>[]> Slice<TKey, TValue>(this IDictionary<TKey,TValue> source, int n, int startIndex = 0)
+        public static IEnumerable<KeyValuePair<TKey, TValue>[]> Slice<TKey, TValue>(this IDictionary<TKey, TValue> source, int n, int startIndex = 0)
         {
             Guard.MustBe.GreaterThan(n, 0);
             while (startIndex < source.Count)

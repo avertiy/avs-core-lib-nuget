@@ -28,7 +28,7 @@ namespace AVS.CoreLib.REST.Responses
 
         public static IResponse<T> Failed<T>(Exception ex, string source, object? request = null)
         {
-            return new Response<T>(source, error: ex.Message, request:request);
+            return new Response<T>(source, error: ex.Message, request: request);
         }
 
         #endregion

@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AVS.CoreLib.Abstractions.Responses;
 using AVS.CoreLib.REST.Responses;
-using AVS.CoreLib.REST.Utilities;
 
 namespace AVS.CoreLib.REST.Extensions
 {
@@ -42,14 +40,14 @@ namespace AVS.CoreLib.REST.Extensions
                 }
 
                 results.Add(kp.Key, task.Result.Data);
-            } 
+            }
 
             return results;
         }
 
-        public static async Task<List<TItem>> ParallelFetch<T, TResult,TItem>(this IEnumerable<T> enumerable, 
+        public static async Task<List<TItem>> ParallelFetch<T, TResult, TItem>(this IEnumerable<T> enumerable,
             Func<T, Task<Response<TResult>>> fetchFn,
-            Func<TResult,IEnumerable<TItem>> selector,
+            Func<TResult, IEnumerable<TItem>> selector,
             int delay = 500,
             bool throwOnError = true)
         {
@@ -68,7 +66,8 @@ namespace AVS.CoreLib.REST.Extensions
             if (failedTasks > 0 && failedTasks == tasks.Count && throwOnError)
             {
                 tasks.First().Value.Result.ThrowOnError();
-            }else if (failedTasks > 0 && failedTasks != tasks.Count)
+            }
+            else if (failedTasks > 0 && failedTasks != tasks.Count)
             {
                 var keys = tasks.Where(x => x.Value.Result.Success == false).Select(x => x.Key);
 
@@ -92,7 +91,7 @@ namespace AVS.CoreLib.REST.Extensions
                     task.Result.ThrowOnError();
                 }
 
-                var items= selector(task.Result.Data);
+                var items = selector(task.Result.Data);
                 results.AddRange(items);
             }
 
