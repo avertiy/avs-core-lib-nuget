@@ -7,17 +7,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.REST.Helpers;
+using Microsoft.Extensions.Logging;
 
 namespace AVS.CoreLib.REST.Clients
 {
     public interface IRestTools
     {
         string Source { get; set; }
-        int RequestMinDelay { get; set; }
-        DateTime RequestLastTime { get; }
-        string? LastRequestedUrl { get; }
-        int FetchAttempts { get; set; }
-        Task<RestResponse> GetResponse(IRequest request, CancellationToken ct = default);
+        string HttpClientName { get; set; }
+        string? LastRequestUrl { get; }
+        Task<RestResponse> SendRequest(IRequest request, CancellationToken ct = default);
     }
 
     /// <summary>
@@ -27,44 +26,48 @@ namespace AVS.CoreLib.REST.Clients
     {
         private readonly IRequestMessageBuilder _requestMessageBuilder;
         private readonly IHttpClientFactory _httpClientFactory;
+        protected ILogger Logger { get; }
         protected IRateLimiter RateLimiter { get; }
-        public string Source { get; set; } = "default";
-        /// <summary>
-        /// prevents from being blocked when sending multiple parallel requests
-        /// API provider might set rate limits like Binance or just return access denied when detects too many requests within a small timeframe
-        /// </summary>
-        public int RequestMinDelay { get; set; } = 25;
-        public DateTime RequestLastTime { get; private set; } = DateTime.UtcNow;
-        public string? LastRequestedUrl { get; set; }
+        public string Source { get; set; } = nameof(RestTools);
+        public string HttpClientName { get; set; } = "DefaultHttpClient";
+        public string? LastRequestUrl { get; private set; }
         /// <summary>
         /// sometimes api source might return 422 error, we can make a few attempts to do the request
         /// </summary>
-        public int FetchAttempts { get; set; } = 2;
+        public int RetryAttempts { get; set; } = 2;
 
-        public RestTools(IRequestMessageBuilder requestMessageBuilder, IHttpClientFactory httpClientFactory, IRateLimiter rateLimiter)
+        public RestTools(IRequestMessageBuilder requestMessageBuilder, IHttpClientFactory httpClientFactory, IRateLimiter rateLimiter, ILogger logger)
         {
             _requestMessageBuilder = requestMessageBuilder;
             _httpClientFactory = httpClientFactory;
             RateLimiter = rateLimiter;
+            Logger = logger;
         }
 
-        public async Task<RestResponse> GetResponse(IRequest request, CancellationToken ct = default)
+        public async Task<RestResponse> SendRequest(IRequest request, CancellationToken ct = default)
         {
-            var client = _httpClientFactory.CreateClient(Source);
+            try
+            {
+                var client = _httpClientFactory.CreateClient(HttpClientName);
 
-            // 1. rate limit
-            await RateLimit(count: request.RateLimit, ct);
+                // 1. rate limit
+                await RateLimiter.Execute(HttpClientName, request.RateLimit, ct);
 
-            // 2. prepare http request message
-            using var requestMessage = GetHttpRequestMessage(request);
+                // 2. prepare http request message
+                using var requestMessage = GetHttpRequestMessage(request);
 
-            // 3. send request
-            var responseMessage = await SendAsync(client, requestMessage, FetchAttempts, ct);
+                // 3. send request
+                var responseMessage = await SendAsync(client, requestMessage, RetryAttempts, ct);
 
-            // 4. prepare response
-            var response = await PrepareResponse(request, responseMessage);
-
-            return response;
+                // 4. prepare response
+                var response = await PrepareResponse(request, responseMessage);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"{nameof(SendRequest)} failed");
+                throw;
+            }
         }
 
         protected virtual async ValueTask<RestResponse> PrepareResponse(IRequest request, HttpResponseMessage responseMessage)
@@ -84,16 +87,6 @@ namespace AVS.CoreLib.REST.Clients
 
             OnResponseReady(response);
             return response;
-        }
-
-        protected async ValueTask RateLimit(int count, CancellationToken ct)
-        {
-            //if (_rateLimiter == null)
-            //    return;
-            if (!await RateLimiter.DelayAsync(count, ct))
-            {
-                throw new RateLimitExceededException(Source);
-            }
         }
 
         protected virtual void AdjustRateLimit(HttpResponseMessage response)
@@ -161,11 +154,9 @@ namespace AVS.CoreLib.REST.Clients
 
         protected async Task<HttpResponseMessage> SendAsync(HttpClient client, HttpRequestMessage request, int attempts, CancellationToken ct)
         {
-            var requestedUrl = request.RequestUri.ToString();
-            LastRequestedUrl = requestedUrl;
+            LastRequestUrl = request.RequestUri?.ToString();
 
             var attempt = 0;
-            EnsureRequestDelay();
             start:
             var response = await client.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct).ConfigureAwait(false);
 
@@ -176,21 +167,6 @@ namespace AVS.CoreLib.REST.Clients
             }
 
             return response;
-        }
-
-        protected void EnsureRequestDelay()
-        {
-            if (RequestMinDelay <= 0)
-                return;
-
-            var ts = DateTime.UtcNow - RequestLastTime;
-            if (ts.TotalMilliseconds < RequestMinDelay)
-            {
-                var timeout = RequestMinDelay - Convert.ToInt32(ts.TotalMilliseconds);
-                Thread.Sleep(timeout);
-            }
-
-            RequestLastTime = DateTime.UtcNow;
         }
     }
 }

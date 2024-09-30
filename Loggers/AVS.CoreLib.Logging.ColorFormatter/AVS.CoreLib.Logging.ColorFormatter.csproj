@@ -42,10 +42,11 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
-    <PackageReference Include="System.Text.Json" Version="7.0.2" />
+    <PackageReference Include="System.Text.Json" Version="7.0.4" />
   </ItemGroup>
  <ItemGroup>
    <ProjectReference Include="..\..\AVS.CoreLib.Extensions\AVS.CoreLib.Extensions.csproj" />
+   <ProjectReference Include="..\..\AVS.CoreLib\AVS.CoreLib.csproj" />
    <ProjectReference Include="..\..\Console\AVS.CoreLib.Console.ColorFormatting\AVS.CoreLib.Console.ColorFormatting.csproj" />
  </ItemGroup>
 

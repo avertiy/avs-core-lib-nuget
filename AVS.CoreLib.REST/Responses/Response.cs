@@ -1,8 +1,12 @@
 ﻿#nullable enable
 using System;
 using System.Diagnostics;
+using System.Text.Json.Serialization;
 using AVS.CoreLib.Abstractions.Responses;
+using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Dynamic;
+using AVS.CoreLib.Json;
+//using Newtonsoft.Json;
 
 namespace AVS.CoreLib.REST.Responses
 {
@@ -38,7 +42,11 @@ namespace AVS.CoreLib.REST.Responses
     public class Response<T> : IResponse<T>
     {
         public string Source { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public object? Request { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Error { get; set; }
         public T? Data { get; set; }
         public virtual bool Success => Error == null;
@@ -53,13 +61,17 @@ namespace AVS.CoreLib.REST.Responses
 
         public override string ToString()
         {
-            if (Success)
-            {
-                var count = Data.GetCount();
-                return count.HasValue ? $"Response<{typeof(T).Name}> - OK (#{count})" : $"Response<{typeof(T).Name}> - OK";
-            }
+            if (Error != null)
+                return $"Response<{typeof(T).Name}> - Failed ({Error})";
 
-            return $"Response<{typeof(T).Name}> - Failed ({Error})";
+            if (Data == null)
+                return $"Response<{typeof(T).Name}> - OK (NO DATA)";
+
+            if (Data.TryGetCount(out var count))
+                return $"Response<{typeof(T).Name}> - OK (#{count})";
+
+            var data = Data.ToBriefJson().Truncate(600, TruncateOptions.CutOffTheMiddle);
+            return $"Response<{typeof(T).Name}> - OK  {data}";
         }
     }
 }

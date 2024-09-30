@@ -38,6 +38,7 @@ public static class ObjectExtensions
             Array => ObjType.Array,
             IList => ObjType.List,
             IDictionary => ObjType.Dictionary,
+            IEnumerable => ObjType.Enumerable,
             _ => ObjType.Object
         };
 

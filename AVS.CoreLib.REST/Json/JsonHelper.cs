@@ -1,16 +1,17 @@
 ﻿#nullable enable
 using System;
 using AVS.CoreLib.Abstractions.Json;
+using AVS.CoreLib.REST.Json.Newtonsoft;
 
 namespace AVS.CoreLib.REST.Json
 {
     /// <summary>
     /// JsonHelper cleared from static dependency on Newtonsoft, 
-    /// instead it realies on an abstraction layer (<see cref="IJsonService"/>)
+    /// instead it realies on an abstraction layer (<see cref="IJsonSerializer"/>)
     /// </summary>
     public static class JsonHelper
     {
-        public static IJsonService Serializer { get; set; } = new JsonService();
+        public static IJsonSerializer Serializer { get; set; } = new NewtonsoftJsonSerializer();
 
         public static string SerializeObject(object obj, Type? type = null, params Type[] converters)
         {

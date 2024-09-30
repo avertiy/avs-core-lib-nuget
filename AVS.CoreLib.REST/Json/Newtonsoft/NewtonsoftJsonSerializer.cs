@@ -7,9 +7,9 @@ using System.Text;
 using AVS.CoreLib.Abstractions.Json;
 using Newtonsoft.Json;
 
-namespace AVS.CoreLib.REST.Json
+namespace AVS.CoreLib.REST.Json.Newtonsoft
 {
-    public class JsonService : IJsonService
+    public class NewtonsoftJsonSerializer : IJsonSerializer
     {
         private static NullValueHandling NullValueHandling { get; set; } = NullValueHandling.Ignore;
 
@@ -27,10 +27,8 @@ namespace AVS.CoreLib.REST.Json
             if (json == null)
                 return null;
 
-            using (JsonTextReader reader = new JsonTextReader(new StringReader(json)))
-            {
+            using (var reader = new JsonTextReader(new StringReader(json)))
                 return Serializer.Deserialize(reader, type);
-            }
         }
 
         public void Populate(object target, string json)
@@ -38,16 +36,14 @@ namespace AVS.CoreLib.REST.Json
             if (target == null)
                 throw new ArgumentNullException(nameof(target));
 
-            using (JsonTextReader reader = new JsonTextReader(new StringReader(json)))
-            {
+            using (var reader = new JsonTextReader(new StringReader(json)))
                 Serializer.Populate(reader, target);
-            }
         }
 
         public string SerializeObject(object obj, Type? type = null, params Type[] converters)
         {
             if (converters == null || converters.Length == 0)
-                return this.SerializeObject(obj);
+                return SerializeObject(obj);
 
             var conv = converters.Select(x => (JsonConverter)Activator.CreateInstance(x)!);
             var settings = new JsonSerializerSettings { Converters = conv.ToArray(), NullValueHandling = NullValueHandling };
@@ -59,7 +55,7 @@ namespace AVS.CoreLib.REST.Json
         {
             var sb = new StringBuilder(256);
             var sw = new StringWriter(sb, CultureInfo.InvariantCulture);
-            using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
+            using (var jsonWriter = new JsonTextWriter(sw))
             {
                 jsonWriter.Formatting = Serializer.Formatting;
                 serializer.Serialize(jsonWriter, value, type);

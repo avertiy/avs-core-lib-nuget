@@ -2,6 +2,9 @@
 using System.Text;
 using AVS.CoreLib.Console.ColorFormatting;
 using AVS.CoreLib.Extensions;
+using AVS.CoreLib.Extensions.Linq;
+using AVS.CoreLib.Extensions.Reflection;
+using AVS.CoreLib.Json;
 using AVS.CoreLib.Logging.ColorFormatter.Enums;
 using AVS.CoreLib.Logging.ColorFormatter.Extensions;
 
@@ -55,11 +58,20 @@ public class ArgsColorFormatter
                 continue;
             }
 
-            if (key.StartsWith("@") || obj is IList)
+            if (obj is IEnumerable enumerable)
             {
-                var json = obj.ToJsonString();
-                json = json.Truncate(100, TruncateOptions.CutOffTheMiddle);
-                var formattedStr = Frmt(obj.GetType().Name, TextKind.Keyword) + " " + Frmt(json, TextKind.Json);
+                var formattedStr = FormatEnumerable(key, enumerable);
+                sb.Replace(keyInBrackets, formattedStr);
+                continue;
+            }
+
+            if (key.StartsWith("@"))
+            {
+                var json = key.StartsWith("@@")
+                    ? obj.ToJson().Truncate(1000, TruncateOptions.CutOffTheMiddle)
+                    : obj.ToBriefJson().Truncate(100, TruncateOptions.CutOffTheMiddle);
+
+                var formattedStr = Frmt(obj.GetType().GetReadableName(), TextKind.Keyword) + " " + Frmt(json, TextKind.Json);
                 sb.Replace(keyInBrackets, formattedStr);
                 continue;
             }
@@ -98,6 +110,24 @@ public class ArgsColorFormatter
 
         FrmtStartKeywords(sb);
         return sb.ToString();
+    }
+
+    private string FormatEnumerable(string key, IEnumerable enumerable)
+    {
+        string json;
+        if (key.StartsWith("@@"))
+        {
+            json = enumerable.ToJson();
+            json = json.Truncate(1000, TruncateOptions.CutOffTheMiddle);
+        }
+        else
+        {
+            json = enumerable.ToBriefJson();
+            json = json.Truncate(100, TruncateOptions.CutOffTheMiddle);
+        }
+        
+        var formattedStr = Frmt(json,  TextKind.Array);
+        return formattedStr;
     }
 
     private string FormatObject(string str)
@@ -306,7 +336,7 @@ public class ArgsColorFormatter
     }
 
     public static Dictionary<string, string> StartKeywords = new(11);
-    public static Dictionary<string, string> Keywords = new(5);
+    public static Dictionary<string, string> Keywords = new(6);
     public static Dictionary<string, string> EndKeywords = new(3);
     public static Dictionary<string, string> Verbs = new(5);
 
@@ -333,15 +363,11 @@ public class ArgsColorFormatter
         foreach (var keyword in keywords)
             StartKeywords[keyword] = Frmt(keyword, TextKind.Keyword);
 
-        keywords = new[] { "Request", "Response" };
-
-        foreach (var keyword in keywords)
-        {
-            Keywords[keyword] = Frmt(keyword, TextKind.Keyword);
-        }
-
-        Keywords["OK"] = Frmt("OK", TextKind.OK);
-        Keywords["Failed"] = Frmt("Failed", TextKind.Error);
+        Keywords["Request"] = Frmt("Request", TextKind.Keyword);
+        Keywords["Response"] = Frmt("Response", TextKind.Keyword);
+        Keywords["(OK)"] = Frmt("(OK)", TextKind.OK);
+        Keywords[" OK"] = Frmt(" OK", TextKind.OK);
+        Keywords[" Failed"] = Frmt(" Failed", TextKind.Error);
         Keywords["BadRequest"] = Frmt("BadRequest", TextKind.Error);
 
         EndKeywords["(FROM CACHE)"] = Frmt("(FROM CACHE)", TextKind.Keyword);
@@ -354,109 +380,3 @@ public class ArgsColorFormatter
             Verbs[keyword] = Frmt(keyword, TextKind.HttpVerb);
     }
 }
-
-/*
-  private string FrmtStartKeywords(string str)
-   {
-       foreach (var keyword in StartKeywords)
-       {
-           if (str.StartsWith(keyword.Key))
-           {
-               return str.Replace(keyword.Key, keyword.Value);
-           }
-       }
-
-       return str;
-   }
-
-   private string FrmtResponse(string str, int count)
-   {
-       var ind = str.IndexOf(" => ", 0, count);
-
-       if (ind < 0)
-           return str;
-
-       var ind2 = ind + 4;
-       if (str.Length > ind2 && str[ind2].Either('[', '{'))
-       {
-           var substr = str.Substring(ind2);
-           str = str.Replace(substr, Frmt(substr, TextKind.Json));
-       }
-
-       return str;
-   }
-
-   private string FrmtKeywords(string str, int count)
-   {
-       foreach (var keyword in Keywords)
-       {
-           var ind = str.IndexOf(keyword.Key, 0, count);
-
-           if (ind < 0)
-               continue;
-
-           var startInd = str.IndexOf(' ', 0, ind);
-           if (startInd < 0)
-           {
-               startInd = 0;
-           }
-           else
-           {
-               startInd++;
-           }
-
-           var textToReplace = str.Substring(startInd, ind - startInd + keyword.Key.Length);
-           var value = keyword.Value.Replace(keyword.Key, textToReplace);
-           return str.Replace(textToReplace, value);
-       }
-
-       return str;
-   }
-
-   private string FrmtEndKeywords(string str)
-   {
-       if (str.Length > 200)
-           return str;
-
-       foreach (var keyword in EndKeywords)
-       {
-           if (str.EndsWith(keyword.Key))
-           {
-               str = str.Replace(keyword.Key, keyword.Value);
-               break;
-           }
-       }
-
-       return str;
-   }
-
-   private string FrmtHttpVerbs(string str, int count)
-   {
-       foreach (var verb in Verbs)
-       {
-           var ind = str.IndexOf(verb.Key, 0, count, StringComparison.Ordinal);
-           if (ind < 0)
-               continue;
-
-           str = str.Replace(verb.Key, verb.Value);
-           break;
-       }
-
-       return str;
-   }
-   private string FrmtStringWithUrl(string str, int count)
-   {
-       var ind = str.IndexOf("https://", 0, count, StringComparison.Ordinal);
-
-       if (ind > 0)
-       {
-           var endInd = str.IndexOf(" ", ind, StringComparison.Ordinal);
-           var length = endInd > -1 ? endInd - ind: str.Length - ind;
-           var substr = str.Substring(ind, length);
-           str = str.Replace(substr, Frmt(substr, TextKind.Url));
-       }
-
-       return str;
-   }
- 
- */

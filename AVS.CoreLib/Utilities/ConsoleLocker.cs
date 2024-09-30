@@ -39,6 +39,9 @@ public sealed class ConsoleLocker : IDisposable
             ThreadId = Thread.CurrentThread.ManagedThreadId
         };
 
+        if (millisecondsTimeout <= 0)
+            return locker;
+
         // Attempt to acquire the semaphore asynchronously
         locker.LockTaken = await _semaphore.WaitAsync(millisecondsTimeout);
 
@@ -56,6 +59,9 @@ public sealed class ConsoleLocker : IDisposable
             ThreadId = Thread.CurrentThread.ManagedThreadId,
             IsDebug = debugMode
         };
+
+        if (millisecondsTimeout <= 0)
+            return locker;
 
         // Try to acquire the semaphore within the specified timeout
         locker.LockTaken = _semaphore.Wait(millisecondsTimeout);

@@ -14,7 +14,7 @@ namespace AVS.CoreLib.Json
     public static class JSON
     {
         private static JsonSerializerOptions? _options;
-        public static JsonSerializerOptions DefaultOptions => _options ??= Setup();
+        private static Lazy<JsonSerializerOptions> DefaultOptions { get; } = new(() => Setup());
 
         /// <summary>
         /// Setup <see cref="DefaultOptions"/> 
@@ -23,25 +23,65 @@ namespace AVS.CoreLib.Json
         /// </summary>
         public static JsonSerializerOptions Setup(Action<JsonSerializerOptions>? setup = null)
         {
-            if (_options == null)
-            {
-                _options = new JsonSerializerOptions
-                {
-                    NumberHandling = JsonNumberHandling.AllowReadingFromString,
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                    PropertyNameCaseInsensitive = true,
-                    AllowTrailingCommas = true
-                };
-                _options.Converters.Add(new JsonStringEnumConverter());
-                _options.Converters.Add(new DateRangeJsonConverter());
-            }
+            _options ??= CreateJsonSerializerOptions();
             setup?.Invoke(_options);
             return _options;
         }
 
+        private static JsonSerializerOptions CreateJsonSerializerOptions()
+        {
+            var options = new JsonSerializerOptions
+            {
+                NumberHandling = JsonNumberHandling.AllowReadingFromString,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                PropertyNameCaseInsensitive = true,
+                AllowTrailingCommas = true,
+                WriteIndented = false
+            };
+            options.Converters.Add(new JsonStringEnumConverter());
+            options.Converters.Add(new DateRangeJsonConverter());
+            return options;
+        }
+
         public static string ToJson(this object obj, JsonSerializerOptions? options = null)
         {
-            var json = JsonSerializer.Serialize(obj, options ?? DefaultOptions);
+            var json = JsonSerializer.Serialize(obj, options ?? DefaultOptions.Value);
+            return json;
+        }
+
+        private static Lazy<JsonSerializerOptions> BriefJsonOptions { get; } = new(() =>
+        {
+            var options = CreateJsonSerializerOptions();
+            options.Converters.Add(new PlainJsonConverter()
+            {
+                Mode = SerializationMode.Brief,
+                MaxItemsCount = 2,
+                MaxPropsCount = 5,
+                BytesLimit = 500,
+                DepthLimit = 2
+            });
+            return options;
+        });
+
+        public static string ToBriefJson(this object obj, JsonSerializerOptions? options = null)
+        {
+            var json = JsonSerializer.Serialize(obj, options ?? BriefJsonOptions.Value);
+            return json;
+        }
+
+        public static string ToPlainJson(this object obj, bool writeIndented = false, int maxDepth = 2, SerializationMode mode = SerializationMode.Brief, int maxItemsCount = 0, int maxPropsCount = 0, int sizeLimit = 0)
+        {
+            var serializationOptions = CreateJsonSerializerOptions();
+            serializationOptions.WriteIndented = writeIndented;
+            serializationOptions.Converters.Add(new PlainJsonConverter()
+            {
+                Mode = mode,
+                MaxItemsCount = maxItemsCount,
+                MaxPropsCount = maxPropsCount,
+                DepthLimit = maxDepth,
+                BytesLimit = sizeLimit
+            });
+            var json = JsonSerializer.Serialize(obj, serializationOptions);
             return json;
         }
 
@@ -49,7 +89,7 @@ namespace AVS.CoreLib.Json
         {
             try
             {
-                return JsonSerializer.Serialize(obj, options ?? DefaultOptions);
+                return JsonSerializer.Serialize(obj, options ?? DefaultOptions.Value);
             }
             catch (Exception ex)
             {
@@ -60,12 +100,12 @@ namespace AVS.CoreLib.Json
         #region Deserialize extensions
         public static T? Deserialize<T>(this string json, JsonSerializerOptions? options = null) where T : new()
         {
-            return JsonSerializer.Deserialize<T>(json, options ?? DefaultOptions);
+            return JsonSerializer.Deserialize<T>(json, options ?? DefaultOptions.Value);
         }
 
         public static T? Deserialize<T, TType>(this string json, JsonSerializerOptions? options = null) where TType : class, T
         {
-            return (T?)JsonSerializer.Deserialize<TType>(json, options ?? DefaultOptions);
+            return (T?)JsonSerializer.Deserialize<TType>(json, options ?? DefaultOptions.Value);
         }
 
         /// <summary>
@@ -75,7 +115,7 @@ namespace AVS.CoreLib.Json
         /// </summary>
         public static List<T>? DeserializeList<T, TType>(this string json, JsonSerializerOptions? options = null) where TType : class, T
         {
-            var list = JsonSerializer.Deserialize<List<TType>>(json, options ?? DefaultOptions);
+            var list = JsonSerializer.Deserialize<List<TType>>(json, options ?? DefaultOptions.Value);
             return list?.Select(x => (T)x).ToList();
         }
 
@@ -86,7 +126,7 @@ namespace AVS.CoreLib.Json
         /// </summary>
         public static List<T>? DeserializeList<T>(this string json, JsonSerializerOptions? options = null) where T : new()
         {
-            return JsonSerializer.Deserialize<List<T>>(json, options ?? DefaultOptions);
+            return JsonSerializer.Deserialize<List<T>>(json, options ?? DefaultOptions.Value);
         }
 
         /// <summary>
@@ -96,7 +136,7 @@ namespace AVS.CoreLib.Json
         /// </summary>
         public static Dictionary<string, T>? DeserializeDict<T, TType>(this string json, JsonSerializerOptions? options = null) where TType : class, T
         {
-            var dict = JsonSerializer.Deserialize<Dictionary<string, TType>>(json, options ?? DefaultOptions);
+            var dict = JsonSerializer.Deserialize<Dictionary<string, TType>>(json, options ?? DefaultOptions.Value);
             return dict?.ToDictionary(x => x.Key, v => (T)v.Value);
         }
 
@@ -107,7 +147,7 @@ namespace AVS.CoreLib.Json
         /// </summary>
         public static Dictionary<string, T>? DeserializeDict<T>(this string json, JsonSerializerOptions? options = null) where T : new()
         {
-            return JsonSerializer.Deserialize<Dictionary<string, T>>(json, options ?? DefaultOptions);
+            return JsonSerializer.Deserialize<Dictionary<string, T>>(json, options ?? DefaultOptions.Value);
         }
         #endregion
     }

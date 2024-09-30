@@ -13,6 +13,11 @@ namespace AVS.CoreLib.Extensions.Linq
             return new CastIterator<T, TResult>(source);
         }
 
+        public static IEnumerable<TResult> Cast<TResult>(this IEnumerable source, Func<object, TResult> cast)
+        {
+            return new CastIterator<TResult>(source, cast);
+        }
+
         public static void ForEach<T>(this IEnumerable<T> items, Action<T> action)
         {
             foreach (var item in items)

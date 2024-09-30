@@ -6,7 +6,6 @@ using AVS.CoreLib.Debugging;
 using AVS.CoreLib.Extensions.Stringify;
 using AVS.CoreLib.Logging.ColorFormatter.Extensions;
 using AVS.CoreLib.Logging.ColorFormatter.Utils;
-using AVS.CoreLib.PowerConsole.Extensions;
 using Microsoft.Extensions.Logging;
 
 namespace AVS.CoreLib.Loggers.TestApp
@@ -25,7 +24,7 @@ namespace AVS.CoreLib.Loggers.TestApp
         public override void Test(string[] args)
         {
             ConsoleLogProfiler.Enabled = true;
-
+            
             // basic tests
             LogLevelTests();
             ScopeTests();
@@ -96,6 +95,33 @@ namespace AVS.CoreLib.Loggers.TestApp
         {
             // scope
             using (var scope = _logger.BeginScope("simple scope test"))
+            {
+                _logger.LogInformation("log under simple scope {arg:N2}", 200.222);
+            }
+
+            using (var scope = _logger.BeginScope("scope test with string arg {arg}","2"))
+            {
+                _logger.LogInformation("log under simple scope {arg:N2}", 200.222);
+            }
+
+            using (var scope = _logger.BeginScope("scope test with int arg {arg$}", 3))
+            {
+                _logger.LogInformation("log under simple scope {arg:N2}", 200.222);
+            }
+
+            var objArg = new { Prop1 = "value1", Prop2 = 2 };
+            using (var scope = _logger.BeginScope("scope test with obj arg {@test}", objArg))
+            {
+                _logger.LogInformation("log under simple scope {arg:N2}", 200.222);
+            }
+
+            using (var scope = _logger.BeginScope("scope test with empty arg: {arg$}", string.Empty))
+            {
+                _logger.LogInformation("log under simple scope {arg:N2}", 200.222);
+            }
+
+            object? emptyArg = null;
+            using (var scope = _logger.BeginScope("scope test with null arg: {arg}", emptyArg))
             {
                 _logger.LogInformation("log under simple scope {arg:N2}", 200.222);
             }

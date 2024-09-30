@@ -14,7 +14,8 @@ public enum ObjType
     Object,
     Array,
     List,
-    Dictionary
+    Dictionary,
+    Enumerable
 }
 
 [Flags]

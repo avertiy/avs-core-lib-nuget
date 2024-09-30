@@ -42,7 +42,7 @@ public static class ObjectExtensions
 
     public static bool IsNumeric(this object obj)
     {
-        return obj is int or long or short or double or decimal or float;
+        return obj is int or long or short or double or decimal or float or byte;
     }
 
     public static bool IsPrimitive<T>(this T obj)

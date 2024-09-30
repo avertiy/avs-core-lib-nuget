@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\AVS.CoreLib.Extensions\AVS.CoreLib.Extensions.csproj" />
+    <ProjectReference Include="..\..\AVS.CoreLib.REST\AVS.CoreLib.REST.csproj" />
     <ProjectReference Include="..\..\AVS.CoreLib\AVS.CoreLib.csproj" />
     <ProjectReference Include="..\..\Console\AVS.CoreLib.Bootstrap\AVS.CoreLib.Bootstrap.csproj" />
     <ProjectReference Include="..\AVS.CoreLib.ConsoleLogger\AVS.CoreLib.ConsoleLogger.csproj" />

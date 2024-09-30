@@ -160,7 +160,7 @@ public sealed class Stringificator : IStringificator
             if (multiLine)
                 sb.AppendLine();
 
-            if (padding.Length > 0)
+            if (padding.Length > 0 && sb.Length > 2)
                 sb.Append(padding);
 
             sb.Append(str);
@@ -192,7 +192,7 @@ public sealed class Stringificator : IStringificator
         if (brackets)
             sb.Append(']');
 
-        if (displayCount && (count > 4 || reachedLimit))
+        if (displayCount && (count > 6 || reachedLimit))
             sb.Append($" (#{count})");
 
         return sb.ToString();

@@ -59,23 +59,32 @@ namespace AVS.CoreLib.Logging.ColorFormatter.Extensions
 
             if (scope is IReadOnlyList<KeyValuePair<string, object?>> list && list.Count > 0)
             {
-                var sb = new StringBuilder(scope.ToString());
+                var sb = new StringBuilder(list[^1].Value?.ToString() ?? scope.ToString());
                 sb.Replace("\r\n", "\r\n => ");
                 foreach (var kp in list)
                 {
-                    var val = kp.Value?.ToString();
+                    var keyInBrackets = '{' + kp.Key + '}';
 
-                    if (val == null)
-                        continue;
-
-                    var ind = sb.IndexOf(val);
+                    var ind = sb.IndexOf(keyInBrackets);
                     if (ind == -1)
                         continue;
 
-                    if (sb.IndexOf(kp.Key + ":") > -1)
-                        continue;
+                    var val = kp.Value == null 
+                        ? "(null)"
+                        : kp.Key.StartsWith('@') 
+                            ? kp.Value.ToJsonString()
+                            : kp.Value.ToString();
 
-                    sb.Replace(val, $"{{\"{kp.Key}\": {val}}}", ind, val.Length);
+                    if (kp.Key.EndsWith('$'))
+                    {
+                        var key = kp.Key.TrimStart('@').TrimEnd('$');
+                        sb.Replace(keyInBrackets, $"{{\"{key}\": \"{val}\"}}", ind, keyInBrackets.Length);
+                    }
+                    else
+                    {
+                        sb.Replace(keyInBrackets, val, ind, keyInBrackets.Length);
+                    }
+                        
                 }
 
                 return sb.ToString();
@@ -86,27 +95,7 @@ namespace AVS.CoreLib.Logging.ColorFormatter.Extensions
                 return tuple.Length == 2 && tuple[0] is string key && key.StartsWith("@") && tuple[1] != null
                     ? $"{key}:{tuple[1].ToJsonString()}"
                     : tuple.ToString()!;
-                //switch (tuple)
-                //{
-                //    case ValueTuple<string, string>:
-                //    case ValueTuple<string, int>:
-                //    case ValueTuple<string, double>:
-                //    case ValueTuple<string, decimal>:
-                //        return tuple.ToString()!;
-                //    case ValueTuple<string, object> objTuple:
-                //    {
-                //        return objTuple.Item1.StartsWith("@") 
-                //            ? objTuple.ToJsonString() // $"{objTuple.Item1}:{objTuple.Item2.ToJsonString()}"
-                //            : objTuple.ToString();
-                //    }
-                //    default:
-                //    {
-
-                //    }
-                //}
             }
-
-
 
             return scope.ToString()!;
         }

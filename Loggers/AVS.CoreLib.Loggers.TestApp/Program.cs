@@ -22,7 +22,8 @@ public class Program
             AddConsoleFormatter(services)
                 //AddConsoleLogger(services)
                 .AddTransient<NestedService, NestedService>()
-                .AddTransient<ITestService, LoggerTestService>();
+                //.AddTransient<ITestService, LoggerTestService>()
+                .AddTransient<ITestService, PlainJsonConverterTestService>();
         }).RunAllTest();
         sp.GetRequiredService<IScheduler>().Start();
         System.Console.ReadLine();

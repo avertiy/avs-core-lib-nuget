@@ -32,6 +32,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Clients\ApiClientBase.cs" />
+    <Compile Remove="Clients\RestClientOld.cs" />
     <Compile Remove="Extensions\Extensions.cs" />
     <Compile Remove="Extensions\IndirectListProjectionExtensions.cs" />
     <Compile Remove="Extensions\PropsContainerExtensions.cs" />

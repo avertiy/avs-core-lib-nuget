@@ -18,12 +18,10 @@ namespace AVS.CoreLib.REST.Clients
         /// </summary>
         public int Duration { get; set; }
         /// <summary>
-        /// Executes a delay 
+        /// min delay between requests in milliseconds
         /// </summary>
-        /// <param name="count">number of delay portionsm, delay = count * <see cref="Duration"/> </param>
-        /// <param name="ct"></param>
-        /// <returns>true if delay does not exceed a <see cref="RequestTimeout"/>, otherwise false</returns>
-        Task<bool> DelayAsync(int count = 1, CancellationToken ct = default);
+        int MinDelay { get; set; }
+        Task Execute(string httpClientName, int count = 1, CancellationToken ct = default);
         void Adjust(HttpStatusCode statusCode);
     }
 
@@ -31,10 +29,30 @@ namespace AVS.CoreLib.REST.Clients
     {
         private int _exponentialBackoff = 0;
         private DateTime? _blockTill;
+        /// <summary>
+        /// timeout in milliseconds
+        /// </summary>
         public int RequestTimeout { get; set; } = 20_000;
+
+        /// <summary>
+        /// 1 portion of delay in milliseconds
+        /// </summary>
         public int Duration { get; set; } = 50;
 
-        public async Task<bool> DelayAsync(int count = 1, CancellationToken ct = default)
+        /// <summary>
+        /// Min delay between requests in milliseconds
+        /// (Prevents from being blocked when sending multiple parallel requests API provider might set rate limits,
+        /// e.g. Binance returns access denied when detects too many requests within a small timespan)
+        /// </summary>
+        public int MinDelay { get; set; } = 25;
+
+        /// <summary>
+        /// Executes a request delay 
+        /// </summary>
+        /// <param name="httpClientName">Http Client Name</param>
+        /// <param name="count">number of delay portions, delay = count * <see cref="Duration"/> </param>
+        /// <param name="ct"></param>
+        public async Task Execute(string httpClientName, int count = 1, CancellationToken ct = default)
         {
             Guard.MustBe.Positive(count);
 
@@ -42,10 +60,12 @@ namespace AVS.CoreLib.REST.Clients
             var delay = blockDelay > Duration * count ? blockDelay : Duration * count;
 
             if (delay > RequestTimeout)
-                return false;
+                throw new RateLimitExceededException($"{httpClientName}: Rate limit exceeded a timeout ({RequestTimeout} ms)", httpClientName);
+
+            if (MinDelay > 0 && delay < MinDelay)
+                delay = MinDelay;
 
             await Task.Delay(delay, ct).ConfigureAwait(false);
-            return true;
         }
 
         public void Adjust(HttpStatusCode statusCode)

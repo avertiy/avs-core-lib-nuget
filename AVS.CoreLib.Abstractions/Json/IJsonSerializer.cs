@@ -4,10 +4,10 @@ using System;
 namespace AVS.CoreLib.Abstractions.Json
 {
     /// <summary>
-    /// An absraction layer to avoid implicit Newtonsoft dependency by means of 
+    /// An abstraction layer to avoid implicit Newtonsoft dependency by means of 
     /// JsonConvert.SerializeObject(obj) / JsonConvert.DeserializeObject(obj) methods
     /// </summary>
-    public interface IJsonService
+    public interface IJsonSerializer
     {
         string SerializeObject(object obj, Type? type = null);
         string SerializeObject(object obj, Type? type = null, params Type[] converters);
@@ -15,9 +15,9 @@ namespace AVS.CoreLib.Abstractions.Json
         void Populate(object target, string json);
     }
 
-    public static class JsonServiceExtensions
+    public static class JsonSerializerExtensions
     {
-        public static T? DeserializeObject<T>(this IJsonService jsonService, string json)
+        public static T? DeserializeObject<T>(this IJsonSerializer jsonService, string json)
         {
             return (T?)jsonService.DeserializeObject(json, typeof(T));
         }

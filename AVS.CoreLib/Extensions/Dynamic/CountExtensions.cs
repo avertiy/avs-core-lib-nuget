@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Linq;
 
 namespace AVS.CoreLib.Extensions.Dynamic;
@@ -9,13 +8,13 @@ public static class CountExtensions
     /// <summary>
     /// if object either is countable i.e. contains Count property or it is IEnumerable or it contains Data property with Count like Response.Data.Count or Response.Data.Items.Count 
     /// </summary>
-    public static int? GetCount<T>(this T obj)
+    public static int? GetCount<T>(this T? obj)
     {
         if (obj == null)
             return null;
 
         // test Count property
-        if (TryGetCount(obj, out var count))
+        if (TryGetCountProperty(obj, out var count))
             return count;
 
         if (obj is IEnumerable col)
@@ -27,31 +26,46 @@ public static class CountExtensions
             return null;
 
         // test Data?.Count 
-        if (TryGetCount(data, out count))
+        if (TryGetCountProperty(data, out count))
             return count;
 
         // test Data.Items?.Count 
         var items = TryGetItems(data);
 
-        if (TryGetCount(items, out count))
+        if (TryGetCountProperty(items, out count))
             return count;
 
         return null;
     }
 
-    public static bool TryGetCount(dynamic obj, out int count)
+    public static bool TryGetCount<T>(this T? obj, out int count)
     {
-        // Attempt to get the "Count" property from the dynamic object
-        try
+        count = 0;
+        if (obj == null)
+            return false;
+
+        // test Count property
+        if (TryGetCountProperty(obj, out count))
+            return true;
+
+        if (obj is IEnumerable col)
         {
-            count = obj.Count;
+            count = col.Count();
             return true;
         }
-        catch
-        {
-            count = 0;
+
+        // test Data property
+        var data = TryGetData(obj);
+        if (data == null)
             return false;
-        }
+
+        // test Data?.Count 
+        if (TryGetCountProperty(data, out count))
+            return true;
+
+        // test Data.Items?.Count 
+        var items = TryGetItems(data);
+        return TryGetCountProperty(items, out count);
     }
 
     public static bool TryGetLength(dynamic obj, out int length)
@@ -65,6 +79,21 @@ public static class CountExtensions
         catch
         {
             length = 0;
+            return false;
+        }
+    }
+
+    private static bool TryGetCountProperty(dynamic obj, out int count)
+    {
+        // Attempt to get the "Count" property from the dynamic object
+        try
+        {
+            count = obj.Count;
+            return true;
+        }
+        catch
+        {
+            count = 0;
             return false;
         }
     }

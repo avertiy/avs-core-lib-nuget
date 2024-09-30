@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.Extensions.Web;
@@ -44,6 +45,14 @@ namespace AVS.CoreLib.REST.Extensions
             }
 
             return new Uri(url);
+        }
+
+        public static void AddParams(this IRequest request, IDictionary<string, object> parameters)
+        {
+            foreach (var kp in parameters)
+            {
+                request.Data.Add(kp.Key, kp.Value);
+            }
         }
     }
 }

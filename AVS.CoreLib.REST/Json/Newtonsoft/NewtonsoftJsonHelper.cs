@@ -13,7 +13,7 @@ namespace AVS.CoreLib.REST.Json.Newtonsoft
             if (jToken == null)
                 return default;
 
-            return (T?)JsonService.Serializer.Deserialize(jToken.CreateReader(), itemType);
+            return (T?)NewtonsoftJsonSerializer.Serializer.Deserialize(jToken.CreateReader(), itemType);
             //return (T?)Serializer.DeserializeObject(token.ToString(Formatting.None), itemType);
         }
 
@@ -23,7 +23,7 @@ namespace AVS.CoreLib.REST.Json.Newtonsoft
         /// </summary>        
         internal static void Populate<T>(JToken jToken, T target)
         {
-            JsonService.Serializer.Populate(jToken.CreateReader(), target!);
+            NewtonsoftJsonSerializer.Serializer.Populate(jToken.CreateReader(), target!);
             //var json = jToken.ToString(Formatting.None);
             //Serializer.Populate(target!, json);
         }
