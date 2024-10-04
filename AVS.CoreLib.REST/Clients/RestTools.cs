@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.REST.Helpers;
+using AVS.CoreLib.Utilities;
 using Microsoft.Extensions.Logging;
 
 namespace AVS.CoreLib.REST.Clients
@@ -17,6 +18,7 @@ namespace AVS.CoreLib.REST.Clients
         string HttpClientName { get; set; }
         string? LastRequestUrl { get; }
         Task<RestResponse> SendRequest(IRequest request, CancellationToken ct = default);
+        Task<RestResponse> SendRequestWithRetry(IRequest request, Func<RestResponse, bool> predicate, int retryCount = 3, CancellationToken ct = default);
     }
 
     /// <summary>
@@ -32,7 +34,8 @@ namespace AVS.CoreLib.REST.Clients
         public string HttpClientName { get; set; } = "DefaultHttpClient";
         public string? LastRequestUrl { get; private set; }
         /// <summary>
-        /// sometimes api source might return 422 error, we can make a few attempts to do the request
+        /// Default retry attempts to overcome 422 error
+        /// some apis might return 422 error, we can make a few attempts to do the request
         /// </summary>
         public int RetryAttempts { get; set; } = 2;
 
@@ -44,30 +47,97 @@ namespace AVS.CoreLib.REST.Clients
             Logger = logger;
         }
 
-        public async Task<RestResponse> SendRequest(IRequest request, CancellationToken ct = default)
+        public async Task<RestResponse> SendRequestWithRetry(IRequest request, Func<RestResponse, bool> predicate, int retryCount = 3, CancellationToken ct = default)
         {
+            using var locker = await Locker.CreateAsync(millisecondsTimeout: request.Timeout > 0 ? request.Timeout : 1000);
             try
             {
-                var client = _httpClientFactory.CreateClient(HttpClientName);
+                RestResponse response;
+                using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
 
-                // 1. rate limit
-                await RateLimiter.Execute(HttpClientName, request.RateLimit, ct);
+                if (request.Timeout > 0)
+                    cts.CancelAfter(request.Timeout);
 
-                // 2. prepare http request message
-                using var requestMessage = GetHttpRequestMessage(request);
+                Logger.LogInformation("Sending.. {request}", request);
 
-                // 3. send request
-                var responseMessage = await SendAsync(client, requestMessage, RetryAttempts, ct);
+                do
+                {
+                    response = await SendRequestInternal(request, cts.Token);
 
-                // 4. prepare response
-                var response = await PrepareResponse(request, responseMessage);
+                    if (!predicate(response))
+                        break;
+
+                    // request builders will handle retry attempt by increasing recvWindow and re-loading timestamp offset
+                    request.RetryAttempt++;
+                    Logger.LogInformation("Sending.. {request} (RETRY #{retryAttempt} due to {error})", request, request.RetryAttempt, response.Error);
+                    
+                    var delay = request.GetRetryDelay(); 
+                    await Task.Delay(delay, cts.Token);
+
+                } while (request.RetryAttempt < retryCount);
+
+                Logger.LogInformation("Received response => {response}", response);
                 return response;
+            }
+            catch (TaskCanceledException ex) when (!ct.IsCancellationRequested)
+            {
+                Logger.LogError(ex, $"{nameof(SendRequestWithRetry)}: the request timed out.");
+                return RestResponse.Timeout(Source);
+                //throw new TimeoutException("The request timed out.");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, $"{nameof(SendRequestWithRetry)} failed");
+                throw;
+            }
+        }
+        
+        public async Task<RestResponse> SendRequest(IRequest request, CancellationToken ct = default)
+        {
+            using var locker = await Locker.CreateAsync(millisecondsTimeout: request.Timeout > 0 ? request.Timeout : 1000);
+            try
+            {
+                using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+
+                if (request.Timeout > 0)
+                    cts.CancelAfter(request.Timeout);
+
+                Logger.LogInformation("Sending.. {request}", request);
+
+                var response = await SendRequestInternal(request, cts.Token);
+
+                Logger.LogInformation("Received response => {response}", response);
+                return response;
+            }
+            catch (TaskCanceledException ex) when (!ct.IsCancellationRequested)
+            {
+                Logger.LogError(ex, $"{nameof(SendRequest)}: the request timed out.");
+                return RestResponse.Timeout(Source);
+                //throw new TimeoutException("The request timed out.");
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, $"{nameof(SendRequest)} failed");
                 throw;
             }
+        }
+
+        protected async Task<RestResponse> SendRequestInternal(IRequest request, CancellationToken ct)
+        {
+            var client = _httpClientFactory.CreateClient(HttpClientName);
+
+            // 1. rate limit
+            await RateLimiter.Execute(HttpClientName, request.RateLimit, ct);
+
+            // 2. prepare http request message
+            using var requestMessage = GetHttpRequestMessage(request);
+
+            // 3. send request
+            var responseMessage = await SendAsync(client, requestMessage, RetryAttempts, ct);
+
+            // 4. prepare response
+            var response = await PrepareResponse(request, responseMessage);
+            return response;
         }
 
         protected virtual async ValueTask<RestResponse> PrepareResponse(IRequest request, HttpResponseMessage responseMessage)
@@ -170,3 +240,23 @@ namespace AVS.CoreLib.REST.Clients
         }
     }
 }
+
+
+//public struct Retry
+//{
+//    public int RetryCount;
+//    public Func<RestResponse, bool> Predicate;
+//    public int Delay;
+
+//    public Retry(Func<RestResponse, bool> predicate, int retryCount = 3, int delay = 0)
+//    {
+//        RetryCount = retryCount;
+//        Predicate = predicate;
+//        Delay = delay;
+//    }
+
+//    public static Retry When(Func<RestResponse, bool> predicate, int retryCount = 3, int delay = 0)
+//    {
+//        return new Retry(predicate, retryCount, delay);
+//    }
+//}

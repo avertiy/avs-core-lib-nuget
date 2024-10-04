@@ -5,13 +5,16 @@ using System.Threading.Tasks;
 namespace AVS.CoreLib.Utilities;
 
 /// <summary>
-/// Synchronize output to console for multi-threading flows 
+/// Locker helps to sync operations for example logging to console in multi-threading/parallel-tasks scenarios
 /// usage: 
 /// <code>
-///     using(var locker = ConsoleLocker.Create()){  console write operations..}
+///     using var locker = await Locker.CreateAsync();
+///     Logger.Log("Starting operation");
+///     await Operation();
+///     Logger.Log("Finished operation"); 
 /// </code>
 /// </summary>
-public sealed class ConsoleLocker : IDisposable
+public sealed class Locker : IDisposable
 {
     private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1); // 1 means it's essentially a mutex
     public bool LockTaken { get; private set; }
@@ -31,9 +34,9 @@ public sealed class ConsoleLocker : IDisposable
             Console.WriteLine($"Lock released ({Guid}, thread #{ThreadId})");
     }
 
-    public static async Task<ConsoleLocker> CreateAsync(int millisecondsTimeout = 1000, bool debug = false)
+    public static async Task<Locker> CreateAsync(int millisecondsTimeout = 1000, bool debug = false)
     {
-        var locker = new ConsoleLocker
+        var locker = new Locker
         {
             Guid = Guid.NewGuid(),
             ThreadId = Thread.CurrentThread.ManagedThreadId
@@ -51,9 +54,9 @@ public sealed class ConsoleLocker : IDisposable
         return locker;
     }
 
-    public static ConsoleLocker Create(int millisecondsTimeout = 1000, bool debugMode = false)
+    public static Locker Create(int millisecondsTimeout = 1000, bool debugMode = false)
     {
-        var locker = new ConsoleLocker
+        var locker = new Locker
         {
             Guid = Guid.NewGuid(),
             ThreadId = Thread.CurrentThread.ManagedThreadId,
@@ -80,28 +83,3 @@ public sealed class ConsoleLocker : IDisposable
         }
     }
 }
-
-//public sealed class ConsoleLocker : IDisposable
-//{
-//    private static readonly object _lock = new object();
-//    private bool _lockWasTaken = false;
-//    public Guid Guid { get; set; }
-//    public int ThreadId { get; set; }
-//    public static ConsoleLocker Create(int millisecondsTimeout = 1000)
-//    {
-//        var locker = new ConsoleLocker() { Guid = Guid.NewGuid() };
-//        locker._lockWasTaken = Monitor.TryEnter(_lock, millisecondsTimeout);
-//        //Monitor.Enter(_lock, ref locker._lockWasTaken);
-//        locker.ThreadId = Thread.CurrentThread.ManagedThreadId;
-//        return locker;
-//    }
-
-//    public void Dispose()
-//    {
-//        if (_lockWasTaken)
-//        {
-//            Monitor.Exit(_lock);
-//            _lockWasTaken = false;
-//        }
-//    }
-//}

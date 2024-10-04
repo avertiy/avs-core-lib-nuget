@@ -36,7 +36,7 @@ namespace AVS.CoreLib.ConsoleLogger
             //this looks wierd message starting from @Color will be colorized.. not good solution
             //var color = ColorSchemeHelper.ExtractColor(ref message, scheme.Foreground);
 
-            using (var locker = ConsoleLocker.Create())
+            using (var locker = Locker.Create())
             {
                 var schemeBackup = ColorScheme.GetCurrentScheme();
                 PrintTimestampAndLogLevel(logLevel);

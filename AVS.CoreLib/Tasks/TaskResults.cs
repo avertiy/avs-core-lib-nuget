@@ -38,6 +38,14 @@ public sealed class TaskResults<T, TResult> : IEnumerable<KeyValuePair<T, TResul
         Items.Add(key, value);
     }
 
+    public void Add(TaskResults<T, TResult> other)
+    {
+        foreach (var kp in other.Items)
+        {
+            Items.Add(kp.Key, kp.Value);
+        }
+    }
+
     public TOutput? Peek<TOutput>(Func<TResult, TOutput> selector)
     {
         return Items.Values.Select(selector).FirstOrDefault();
@@ -98,10 +106,18 @@ public sealed class TaskResults<T, TResult> : IEnumerable<KeyValuePair<T, TResul
         sb.Append(')');
         return sb.ToString();
     }
+
+    
 }
 
 public static class TaskResultsExtensions
 {
+    public static string? GetError<TKey, TResult>(this TaskResults<TKey, TResult> results, Func<TResult, string?> selector)
+        where TKey : notnull
+    {
+        return results.Items.Select(kp => selector(kp.Value)).FirstOrDefault(x => !string.IsNullOrEmpty(x));
+    }
+    
     public static string? GetErrors<T, TResult>(this TaskResults<T, TResult> results, Func<TResult, string?> selector, Func<T, string>? keySelector = null) where T : notnull
     {
         if (results.Count == 0)

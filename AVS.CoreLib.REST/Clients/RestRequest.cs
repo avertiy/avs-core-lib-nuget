@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
@@ -15,6 +16,9 @@ namespace AVS.CoreLib.REST.Clients
         public string BaseUrl { get; set; } = null!;
         public string Path { get; set; } = null!;
         public Dictionary<string, object> Data { get; set; } = new();
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public int Timeout { get; set; }
         public int RateLimit { get; set; } = 1;
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
@@ -22,6 +26,12 @@ namespace AVS.CoreLib.REST.Clients
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? RequestId { get; set; }
+
+        public int GetRetryDelay()
+        {
+            // Exponential backoff
+            return (int)Math.Pow(2, RetryAttempt) * 1000;
+        }
 
         public override string ToString()
         {
