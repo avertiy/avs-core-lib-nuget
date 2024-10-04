@@ -9,14 +9,16 @@ namespace AVS.CoreLib.Tasks;
 
 public static class ParallelExtensions
 {
-    /// <summary>
-    /// Run job for each item in parallel mode <see cref="TaskRunner"/>
-    /// returns <see cref="TaskResults{T,TResult}"/>
-    /// </summary>    
     [DebuggerStepThrough]
-    public static Task<TaskResults<T, TResult>> RunInParallel<T, TResult>(this IEnumerable<T> args, Func<T, CancellationToken, Task<TResult>> func, int delay = 0, CancellationToken ct = default) where T : notnull
+    public static Task<TaskResults<T, TResult>> RunInParallel<T, TResult>(this IList<T> args, Func<T, CancellationToken, Task<TResult>> func, TaskRunnerOptions options, CancellationToken ct = default) where T : notnull
     {
-        return TaskRunner.Create(func, new TaskRunnerOptions(delay)).RunAll(args, ct);
+        return TaskRunner.Create(func, options).RunAll(args, ct);
+    }
+
+    [DebuggerStepThrough]
+    public static Task<TaskResults<T, TResult>> RunInParallel<T, TResult>(this IList<T> args, Func<T, Task<TResult>> func, TaskRunnerOptions options, CancellationToken ct = default) where T : notnull
+    {
+        return TaskRunner.Create(func, options).RunAll(args, ct);
     }
 
     [DebuggerStepThrough]
@@ -24,6 +26,7 @@ public static class ParallelExtensions
     {
         return TaskRunner.Create(func, options).RunAll(args, ct);
     }
+
 
     [DebuggerStepThrough]
     public static Task<TaskResults<T, TResult>> RunInParallel<T, TResult>(this IList<T> args, Func<T, CancellationToken, Task<TResult>> func, int delay = 0, CancellationToken ct = default) where T : notnull
@@ -37,10 +40,14 @@ public static class ParallelExtensions
         return TaskRunner.Create(func, new TaskRunnerOptions(delay)).RunAll(args, ct);
     }
 
+    /// <summary>
+    /// Run job for each item in parallel mode <see cref="TaskRunner"/>
+    /// returns <see cref="TaskResults{T,TResult}"/>
+    /// </summary>    
     [DebuggerStepThrough]
-    public static Task<TaskResults<T, TResult>> RunInParallel<T, TResult>(this IList<T> args, Func<T, CancellationToken, Task<TResult>> func, TaskRunnerOptions options, CancellationToken ct = default) where T : notnull
+    public static Task<TaskResults<T, TResult>> RunInParallel<T, TResult>(this IEnumerable<T> args, Func<T, CancellationToken, Task<TResult>> func, int delay = 0, CancellationToken ct = default) where T : notnull
     {
-        return TaskRunner.Create(func, options).RunAll(args, ct);
+        return TaskRunner.Create(func, new TaskRunnerOptions(delay)).RunAll(args, ct);
     }
 
     /*
