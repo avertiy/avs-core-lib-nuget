@@ -8,7 +8,6 @@ namespace AVS.CoreLib.Extensions.Web
 {
     public static class QueryStringExtensions
     {
-        //[DebuggerStepThrough]
         public static string ToHttpQueryString(this IDictionary<string, object> data, bool orderBy = true)
         {
             if (data.Count == 0)

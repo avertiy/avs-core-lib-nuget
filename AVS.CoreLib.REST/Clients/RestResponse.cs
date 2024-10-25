@@ -2,8 +2,10 @@
 using System;
 using System.Diagnostics;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Text.Json.Serialization;
 using AVS.CoreLib.Abstractions.Rest;
+using AVS.CoreLib.Collections;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.REST.Extensions;
 using AVS.CoreLib.REST.Json;
@@ -24,6 +26,7 @@ namespace AVS.CoreLib.REST
 
         [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
         public IRequest? Request { get; set; }
+        public MultiDictionary<string, string>? Headers { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public string? RequestId => Request?.RequestId;
@@ -67,6 +70,21 @@ namespace AVS.CoreLib.REST
         internal static RestResponse FromHttpWebResponse(HttpWebResponse response, string source, IRequest request)
         {
             var result = new RestResponse(source, response.StatusCode) { Request = request };
+
+            if (response.Headers.Count > 0)
+            {
+                result.Headers = new MultiDictionary<string, string>();
+
+                foreach (string key in response.Headers)
+                {
+                    var values = response.Headers.GetValues(key);
+
+                    if (values == null)
+                        continue;
+
+                    result.Headers.Add(key, values);
+                }
+            }
 
             if (response.StatusCode == HttpStatusCode.OK)
                 result.Content = response.GetContent();

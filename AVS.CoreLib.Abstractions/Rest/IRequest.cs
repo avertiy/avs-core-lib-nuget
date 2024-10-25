@@ -1,5 +1,7 @@
 ﻿#nullable enable
+using System;
 using System.Collections.Generic;
+using System.Net.Http;
 
 namespace AVS.CoreLib.Abstractions.Rest
 {
@@ -9,6 +11,7 @@ namespace AVS.CoreLib.Abstractions.Rest
         string HttpMethod { get; set; }
         string BaseUrl { get; set; }
         string Path { get; set; }
+        Dictionary<string, string>? Headers { get; set; }
         Dictionary<string, object> Data { get; set; }
 
         /// <summary>
@@ -26,6 +29,11 @@ namespace AVS.CoreLib.Abstractions.Rest
         /// optional field
         /// </summary>
         string? RequestId { get; set; }
+
+        /// <summary>
+        /// A function to run after configuration of the HTTP request (e.g. set last minute headers)
+        /// </summary>
+        Action<HttpRequestMessage>? OnRequestMessageReady { get; set; }
 
         int GetRetryDelay();
     }

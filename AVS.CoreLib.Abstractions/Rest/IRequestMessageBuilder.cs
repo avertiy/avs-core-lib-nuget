@@ -7,7 +7,7 @@ namespace AVS.CoreLib.Abstractions.Rest
     /// </summary>
     public interface IRequestMessageBuilder
     {
-        HttpRequestMessage Build(IRequest input);
+        HttpRequestMessage Build(IRequest request);
     }
 
     public interface IPublicRequestMessageBuilder : IRequestMessageBuilder

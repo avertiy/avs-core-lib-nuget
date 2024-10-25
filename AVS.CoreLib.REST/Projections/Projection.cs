@@ -169,33 +169,33 @@ namespace AVS.CoreLib.REST.Projections
     ///   Response{IOrder} response = projection.Map();
     /// </code>
     /// </summary>
-    public class Projection<T, TType> : ProjectionBase where TType : T
+    public class Projection<TContainer, T> : ProjectionBase where T : TContainer
     {
-        protected Action<TType>? _postProcess;
-        protected Action<TType>? _preProcess;
+        protected Action<T>? _postProcess;
+        protected Action<T>? _preProcess;
 
         [DebuggerStepThrough]
         public Projection(RestResponse response) : base(response)
         {
         }
 
-        public Projection<T, TType> PreProcess(Action<TType> action)
+        public Projection<TContainer, T> PreProcess(Action<T> action)
         {
             _preProcess = action;
             return this;
         }
 
-        public Projection<T, TType> PostProcess(Action<TType> action)
+        public Projection<TContainer, T> PostProcess(Action<T> action)
         {
             _postProcess = action;
             return this;
         }
 
-        public T? InspectDeserialization(Action<JToken, TType> inspect, out Exception? err)
+        public TContainer? InspectDeserialization(Action<JToken, T> inspect, out Exception? err)
         {
             try
             {
-                var obj = Activator.CreateInstance<TType>();
+                var obj = Activator.CreateInstance<T>();
                 var jToken = LoadToken<JToken>();
                 inspect(jToken, obj);
                 NewtonsoftJsonHelper.Populate(jToken, obj);
@@ -209,15 +209,15 @@ namespace AVS.CoreLib.REST.Projections
             }
         }
 
-        public Response<T> Map()
+        public Response<TContainer> Map()
         {
             try
             {
-                var response = Response.Create<T>(Source, Error, Request);
+                var response = Response.Create<TContainer>(Source, Error, Request);
                 if (HasError)
                     return response;
 
-                var obj = Activator.CreateInstance<TType>();
+                var obj = Activator.CreateInstance<T>();
                 _preProcess?.Invoke(obj);
 
                 if (!IsEmpty)
@@ -237,36 +237,36 @@ namespace AVS.CoreLib.REST.Projections
             }
         }
 
-        [Obsolete("looks not needed, IndirectProjection<T,TType> should cover it i guess")]
-        public Response<T> Map<TProxy>() where TProxy : class, IProxy<TType, T>, new()
-        {
-            try
-            {
-                var response = Response.Create<T>(Source, Error, Request);
-                if (HasError)
-                    return response;
+        //[Obsolete("use IndirectProjection<T,TType> instead")]
+        //public Response<TContainer> Map<TProxy>() where TProxy : class, IProxy<T, TContainer>, new()
+        //{
+        //    try
+        //    {
+        //        var response = Response.Create<TContainer>(Source, Error, Request);
+        //        if (HasError)
+        //            return response;
 
-                var proxy = new TProxy();
+        //        var proxy = new TProxy();
 
-                var obj = Activator.CreateInstance<TType>();
-                _preProcess?.Invoke(obj);
+        //        var obj = Activator.CreateInstance<T>();
+        //        _preProcess?.Invoke(obj);
 
-                if (!IsEmpty)
-                {
-                    var jToken = LoadToken<JToken>();
-                    NewtonsoftJsonHelper.Populate(jToken, obj);
-                }
+        //        if (!IsEmpty)
+        //        {
+        //            var jToken = LoadToken<JToken>();
+        //            NewtonsoftJsonHelper.Populate(jToken, obj);
+        //        }
 
-                _postProcess?.Invoke(obj);
-                proxy.Add(obj);
-                response.Data = proxy.Create();
+        //        _postProcess?.Invoke(obj);
+        //        proxy.Add(obj);
+        //        response.Data = proxy.Create();
 
-                return response;
-            }
-            catch (Exception ex)
-            {
-                throw new MapException(ex, this);
-            }
-        }
+        //        return response;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new MapException(ex, this);
+        //    }
+        //}
     }
 }

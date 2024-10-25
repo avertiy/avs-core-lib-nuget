@@ -12,8 +12,8 @@ namespace AVS.CoreLib.Collections
     /// <typeparam name="TValue1">The type of the first value</typeparam>
     /// <typeparam name="TValue2">The type of the second value</typeparam>
     [Serializable]
-    public class Trictionary<TKey, TValue1, TValue2>
-        : Dictionary<TKey, DualObject<TValue1, TValue2>> where TKey : notnull
+    public sealed class DualDictionary<TKey, TValue1, TValue2>
+        : BaseDictionary<TKey, DualObject<TValue1, TValue2>> where TKey : notnull
     {
         public IEnumerable<TValue1?> Values1 => this.Values.Select(v => v.Value1);
         public IEnumerable<TValue2?> Values2 => this.Values.Select(v => v.Value2);
@@ -21,7 +21,7 @@ namespace AVS.CoreLib.Collections
         /// <summary>
         /// Initializes a new instance of the Trictionary class
         /// </summary>
-        public Trictionary()
+        public DualDictionary()
         {
         }
 
@@ -33,7 +33,7 @@ namespace AVS.CoreLib.Collections
         /// required information for serialization</param>
         /// <param name="context">StreamingContext structure 
         /// for serialization</param>
-        protected Trictionary(SerializationInfo info, StreamingContext context)
+        internal DualDictionary(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
         }
@@ -61,4 +61,32 @@ namespace AVS.CoreLib.Collections
             this.Add(key, new DualObject<TValue1, TValue2>(value1, value2));
         }
     }
+
+
+    /*
+    public class MultiKeyDictionary<TKey1, TKey2, TValue> : BaseDictionary<(TKey1 key1, TKey2 key2), TValue>
+    {
+        public MultiKeyDictionary()
+        {
+        }
+
+        public MultiKeyDictionary(int capacity) : base(capacity)
+        {
+        }
+
+        public MultiKeyDictionary(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+        }
+
+        public TValue this[TKey1 key1, TKey2 key2]
+        {
+            get => this[(key1, key2)];
+            set => this[(key1, key2)] = value;
+        }
+
+        public void Add(TKey1 key1, TKey2 key2, TValue value)
+        {
+            this.Add((key1,key2), value);
+        }
+    }*/
 }

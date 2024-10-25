@@ -4,7 +4,7 @@ using System.Diagnostics;
 namespace AVS.CoreLib.Collections
 {
     /// <summary>
-    /// Represents a class that can hold two types values
+    /// Represents a class that can hold values of two types
     /// </summary>
     /// <typeparam name="TValue1">The first type</typeparam>
     /// <typeparam name="TValue2">The second type</typeparam>

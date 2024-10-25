@@ -1,11 +1,13 @@
 ﻿#nullable enable
 using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions.Rest;
+using AVS.CoreLib.Collections;
 using AVS.CoreLib.REST.Helpers;
 using AVS.CoreLib.Utilities;
 using Microsoft.Extensions.Logging;
@@ -49,7 +51,7 @@ namespace AVS.CoreLib.REST.Clients
 
         public async Task<RestResponse> SendRequestWithRetry(IRequest request, Func<RestResponse, bool> predicate, int retryCount = 3, CancellationToken ct = default)
         {
-            using var locker = await Locker.CreateAsync(millisecondsTimeout: request.Timeout > 0 ? request.Timeout : 1000);
+            using var locker = await Locker.CreateAsync(millisecondsTimeout: 1000);
             try
             {
                 RestResponse response;
@@ -130,8 +132,8 @@ namespace AVS.CoreLib.REST.Clients
             await RateLimiter.Execute(HttpClientName, request.RateLimit, ct);
 
             // 2. prepare http request message
-            using var requestMessage = GetHttpRequestMessage(request);
-
+            using var requestMessage = BuildHttpRequestMessage(request);
+            
             // 3. send request
             var responseMessage = await SendAsync(client, requestMessage, RetryAttempts, ct);
 
@@ -153,7 +155,13 @@ namespace AVS.CoreLib.REST.Clients
                 Request = request,
                 Content = content,
                 Error = error,
+                Headers = new MultiDictionary<string, string>()
             };
+
+            foreach (var header in responseMessage.Headers)
+            {
+                response.Headers.Add(header.Key, header.Value.ToArray());
+            }
 
             OnResponseReady(response);
             return response;
@@ -217,9 +225,11 @@ namespace AVS.CoreLib.REST.Clients
             return responseMessage.IsSuccessStatusCode;
         }
 
-        protected HttpRequestMessage GetHttpRequestMessage(IRequest request)
+        protected HttpRequestMessage BuildHttpRequestMessage(IRequest request)
         {
-            return _requestMessageBuilder.Build(request);
+            var requestMessage = _requestMessageBuilder.Build(request);
+            request.OnRequestMessageReady?.Invoke(requestMessage);
+            return requestMessage;
         }
 
         protected async Task<HttpResponseMessage> SendAsync(HttpClient client, HttpRequestMessage request, int attempts, CancellationToken ct)

@@ -17,6 +17,9 @@ namespace AVS.CoreLib.Utilities;
 public sealed class Locker : IDisposable
 {
     private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1); // 1 means it's essentially a mutex
+
+    private static int _lockedByThreadId;
+    
     public bool LockTaken { get; private set; }
     public Guid Guid { get; set; }
     public int ThreadId { get; set; }
@@ -29,6 +32,7 @@ public sealed class Locker : IDisposable
             return;
 
         _semaphore.Release();
+        _lockedByThreadId = 0;
         LockTaken = false; // Reset the flag
         if (IsDebug)
             Console.WriteLine($"Lock released ({Guid}, thread #{ThreadId})");
@@ -36,20 +40,27 @@ public sealed class Locker : IDisposable
 
     public static async Task<Locker> CreateAsync(int millisecondsTimeout = 1000, bool debug = false)
     {
+        var threadId = Thread.CurrentThread.ManagedThreadId;
         var locker = new Locker
         {
             Guid = Guid.NewGuid(),
-            ThreadId = Thread.CurrentThread.ManagedThreadId
+            ThreadId = threadId
         };
+
+        if (threadId == _lockedByThreadId)
+            return locker;
 
         if (millisecondsTimeout <= 0)
             return locker;
-
         // Attempt to acquire the semaphore asynchronously
         locker.LockTaken = await _semaphore.WaitAsync(millisecondsTimeout);
 
-        if (debug && locker.LockTaken)
-            Console.WriteLine($"Lock acquired ({locker.Guid}, thread #{locker.ThreadId})");
+        if (locker.LockTaken)
+        {
+            _lockedByThreadId = threadId;
+            if (debug)
+                Console.WriteLine($"Lock acquired ({locker.Guid}, thread #{locker.ThreadId})");
+        }
 
         return locker;
     }

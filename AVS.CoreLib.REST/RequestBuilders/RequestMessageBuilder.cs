@@ -5,7 +5,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using AVS.CoreLib.Abstractions.Rest;
-using AVS.CoreLib.Extensions.Collections;
 using AVS.CoreLib.Extensions.Web;
 using AVS.CoreLib.REST.Extensions;
 using AVS.CoreLib.Utilities;
@@ -20,6 +19,7 @@ namespace AVS.CoreLib.REST.RequestBuilders
     {
         public bool UseTonce { get; set; }
         public bool OrderQueryStringParameters { get; set; } = true;
+        public bool UseMediaTypeApplicationJson { get; set; } = true;
         public IAuthenticator Authenticator { get; set; }
 
         public RequestMessageBuilder(IAuthenticator authenticator)
@@ -27,12 +27,12 @@ namespace AVS.CoreLib.REST.RequestBuilders
             Authenticator = authenticator;
         }
 
-        public HttpRequestMessage Build(IRequest input)
+        public HttpRequestMessage Build(IRequest request)
         {
             try
             {
-                OnHttpRequestMessageCreating(input);
-                var requestMessage = CreateHttpRequestMessage(input);
+                OnHttpRequestMessageCreating(request);
+                var requestMessage = CreateHttpRequestMessage(request);
                 OnHttpRequestMessageCreated(requestMessage);
                 return requestMessage;
             }
@@ -55,29 +55,30 @@ namespace AVS.CoreLib.REST.RequestBuilders
                     request.Data["nonce"] = NonceHelper.GetNonce();
         }
 
-        protected virtual HttpRequestMessage CreateHttpRequestMessage(IRequest input)
+        protected virtual HttpRequestMessage CreateHttpRequestMessage(IRequest request)
         {
-            var url = input.GetFullUrl(OrderQueryStringParameters);
-            var httpMethod = new HttpMethod(input.HttpMethod);
+            var url = request.GetFullUrl(OrderQueryStringParameters);
+            var httpMethod = new HttpMethod(request.HttpMethod);
             var requestMessage = new HttpRequestMessage(httpMethod, url);
-            var queryString = input.Data.ToHttpQueryString(orderBy: OrderQueryStringParameters);
+            var queryString = request.Data.ToHttpQueryString(orderBy: OrderQueryStringParameters);
 
             if (httpMethod != HttpMethod.Get)
                 requestMessage.Content = new StringContent(queryString);
 
-            AddHeaders(requestMessage, queryString);
+            AddHeaders(requestMessage, request);
             return requestMessage;
         }
 
-        protected virtual void AddHeaders(HttpRequestMessage requestMessage, string queryString)
+        protected void AddHeaders(HttpRequestMessage requestMessage, IRequest request)
         {
-            requestMessage.Headers.AcceptApplicationJsonContent();
-            if (Authenticator == null)
+            if (UseMediaTypeApplicationJson)
+                requestMessage.Headers.AcceptApplicationJsonContent();
+
+            if (request.Headers == null || request.Headers.Count == 0)
                 return;
 
-            requestMessage.Headers.Add("Key", Authenticator.PublicKey);
-            var signature = Authenticator.Sign(queryString);
-            requestMessage.Headers.Add("Sign", signature.ToBase64String());
+            foreach (var kp in request.Headers)
+                requestMessage.Headers.Add(kp.Key, kp.Value);
         }
     }
 

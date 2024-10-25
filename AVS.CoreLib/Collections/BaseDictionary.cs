@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using AVS.CoreLib.Extensions.Stringify;
 
 namespace AVS.CoreLib.Collections
@@ -17,6 +18,11 @@ namespace AVS.CoreLib.Collections
         protected BaseDictionary(int capacity)
         {
             Data = new Dictionary<TKey, TValue>(capacity);
+        }
+
+        protected BaseDictionary(SerializationInfo info, StreamingContext context)
+        {
+            throw new System.NotImplementedException();
         }
 
         public virtual IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()

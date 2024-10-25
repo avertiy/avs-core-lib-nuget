@@ -16,18 +16,18 @@ public static class ParallelExtensions
     }
 
     [DebuggerStepThrough]
+    public static Task<TaskResults<T, TResult>> RunInParallel<T, TResult>(this IList<T> args, Func<T, CancellationToken, Task<TResult>> func, TaskRunnerOptions options, Func<TResult, bool> isSuccess, CancellationToken ct = default) where T : notnull
+    {
+        return TaskRunner.Create(func, options, isSuccess).RunAll(args, ct);
+    }
+
+    [DebuggerStepThrough]
     public static Task<TaskResults<T, TResult>> RunInParallel<T, TResult>(this IList<T> args, Func<T, Task<TResult>> func, TaskRunnerOptions options, CancellationToken ct = default) where T : notnull
     {
         return TaskRunner.Create(func, options).RunAll(args, ct);
     }
 
-    [DebuggerStepThrough]
-    public static Task<TaskResults<T, TResult>> RunInParallel<T, TResult>(this IEnumerable<T> args, Func<T, CancellationToken, Task<TResult>> func, TaskRunnerOptions options, CancellationToken ct = default) where T : notnull
-    {
-        return TaskRunner.Create(func, options).RunAll(args, ct);
-    }
-
-
+    
     [DebuggerStepThrough]
     public static Task<TaskResults<T, TResult>> RunInParallel<T, TResult>(this IList<T> args, Func<T, CancellationToken, Task<TResult>> func, int delay = 0, CancellationToken ct = default) where T : notnull
     {
@@ -48,6 +48,12 @@ public static class ParallelExtensions
     public static Task<TaskResults<T, TResult>> RunInParallel<T, TResult>(this IEnumerable<T> args, Func<T, CancellationToken, Task<TResult>> func, int delay = 0, CancellationToken ct = default) where T : notnull
     {
         return TaskRunner.Create(func, new TaskRunnerOptions(delay)).RunAll(args, ct);
+    }
+
+    [DebuggerStepThrough]
+    public static Task<TaskResults<T, TResult>> RunInParallel<T, TResult>(this IEnumerable<T> args, Func<T, CancellationToken, Task<TResult>> func, TaskRunnerOptions options, CancellationToken ct = default) where T : notnull
+    {
+        return TaskRunner.Create(func, options).RunAll(args, ct);
     }
 
     /*

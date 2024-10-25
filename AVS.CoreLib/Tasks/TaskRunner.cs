@@ -89,7 +89,7 @@ public class TaskRunner<TResult>
     {
         var result = await InvokeFunc(args[0], ct);
 
-        if (IsSuccess(result))
+        if (!IsSuccess(result))
             return new TaskResults<T, TResult> { { args[0], result } };
 
         var results = Options.BatchSize > 0

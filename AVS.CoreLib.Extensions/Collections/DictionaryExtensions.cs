@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
@@ -55,7 +56,7 @@ namespace AVS.CoreLib.Extensions.Collections
         /// Merge <paramref name="dict1"/> and <paramref name="dict2"/> into a new dictionary
         /// </summary>
         /// <remarks>if you expect merge into dict1 <see cref="Upsert"/> </remarks>
-        public static Dictionary<K, V> Merge<K, V>(this IDictionary<K, V> dict1, IDictionary<K, V> dict2, bool overwrite = true)
+        public static Dictionary<K, V> Merge<K, V>(this IDictionary<K, V> dict1, IDictionary<K, V> dict2, bool overwrite = true) where K : notnull
         {
             // Create a new dictionary to hold the merged result
             var mergedDictionary = new Dictionary<K, V>(dict1);
@@ -125,7 +126,21 @@ namespace AVS.CoreLib.Extensions.Collections
             return nameValueCollection;
         }
 
-        public static string ToKeyValueString<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, string keyValueSeparator = " => ", string separator = "\r\n")
+        public static string ToKeyValueString(this IDictionary<string, string> dict, string format = "\"{0}\":\"{1}\"",
+            string separator = ", ")
+        {
+            var sb = new StringBuilder();
+            foreach (var kp in dict)
+            {
+                sb.AppendFormat(format, kp.Key, kp.Value);
+                sb.Append(separator);
+            }
+            sb.Length -= separator.Length;
+            return sb.ToString();
+        }
+
+        public static string ToKeyValueString<TKey, TValue>(this IDictionary<TKey, TValue> dictionary,
+            string keyValueSeparator = " => ", string separator = "\r\n")
         {
             var sb = new StringBuilder();
             foreach (var kp in dictionary)

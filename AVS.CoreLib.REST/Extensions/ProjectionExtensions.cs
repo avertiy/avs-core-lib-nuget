@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using System;
 using AVS.CoreLib.REST.Projections;
 
 namespace AVS.CoreLib.REST.Extensions
@@ -22,7 +23,7 @@ namespace AVS.CoreLib.REST.Extensions
         ///   Response{IOrderBook} response = projection.MapWith{OrderBookBuilder}();
         /// </code>
         /// </summary>
-        public static Projection<T> Projection<T>(this RestResponse response)
+        public static Projection<T> ToProjection<T>(this RestResponse response)
         {
             return new Projection<T>(response);
         }
@@ -38,7 +39,7 @@ namespace AVS.CoreLib.REST.Extensions
         ///   Response{IOrder} response = projection.Map();
         /// </code>
         /// </summary>
-        public static Projection<T, TType> Projection<T, TType>(this RestResponse response) where TType : T
+        public static Projection<T, TType> ToProjection<T, TType>(this RestResponse response) where TType : T
         {
             return new Projection<T, TType>(response);
         }
@@ -47,15 +48,15 @@ namespace AVS.CoreLib.REST.Extensions
         #endregion
 
         /// <summary>
-        /// Create <see cref="Projections.IndirectProjection{T,TType}"/> projection
-        /// where T is an abstraction of TType i.e. TType:T
+        /// Creates <see cref="Projections.IndirectProjection{T,TType}"/> projection.
+        /// It suits well when T-container and T-map are decoupled i.e there is no inheritance between them
         /// <code>
         ///   //indirect projection through proxy
         ///   var projection = restResponse.IndirectProjection{IOrderResult, BinanceOrder}();
         ///   Response{IOrder} response = projection.MapWith{OrderBuilder}();
         /// </code>
         /// </summary>
-        public static IndirectProjection<T, TType> IndirectProjection<T, TType>(this RestResponse response) where TType : T
+        public static IndirectProjection<T, TType> ToIndirectProjection<T, TType>(this RestResponse response)
         {
             return new IndirectProjection<T, TType>(response);
         }
@@ -101,7 +102,7 @@ namespace AVS.CoreLib.REST.Extensions
         ///    Response{IOrder} list = projection.FirstOrDefault{BinanceOrder}();
         /// </code>
         /// </summary>
-        public static EnumerableProjection<T> EnumerableProjection<T>(this RestResponse response) where T : class
+        public static EnumerableProjection<T> ToEnumerableProjection<T>(this RestResponse response) where T : class
         {
             return new EnumerableProjection<T>(response);
         }
@@ -111,47 +112,48 @@ namespace AVS.CoreLib.REST.Extensions
         #region ContainerProjection<TItem>
 
         /// <summary>
-        /// Create <see cref="ContainerProjection{T,TItem}"/> to map json array type structure [...] into T items container
+        /// Creates <see cref="ContainerProjection{TContainer, TItem}"/> to map json array type structure [...]
         /// <code>
         ///     // 1. when container implements ICollection{TItem}
-        ///     var projection = response.ContainerProjection{IOpenOrders, BinanceOrder}()
+        ///     var projection = response.ToContainerProjection{IOpenOrders, BinanceOrder}()
         ///     Response{IOpenOrders} result = projection.Map{OpenOrdersCollection}();
         ///     
         ///     // 2. when container does not implement ICollection{TItem}
-        ///     var projection = response.ContainerProjection{IOpenOrders, BinanceOrder}()
+        ///     var projection = response.ToContainerProjection{IOpenOrders, BinanceOrder}()
         ///     Response{IOpenOrders} result = projection.Map{OpenOrdersCollection}((x,item) => x.Add(item));
         ///     
         ///     // 3. when we use proxy to produce container 
-        ///     var projection = response.ContainerProjection{IOpenOrders, BinanceOrder}()
+        ///     var projection = response.ToContainerProjection{IOpenOrders, BinanceOrder}()
         ///     // OpenOrdersBuilder: IListProxy{IOpenOrders, BinanceOrder} see IListProxy{out T, in TItem}
         ///     Response{IOpenOrders} result = projection.MapWith{OpenOrdersBuilder}();
         /// </code>
         /// </summary>
-        public static ContainerProjection<T, TItem> Container<T, TItem>(this RestResponse response) where T : class
+        public static ContainerProjection<TContainer, TItem> ToContainerProjection<TContainer, TItem>(this RestResponse response) where TContainer : class
         {
-            return new ContainerProjection<T, TItem>(response);
+            return new ContainerProjection<TContainer, TItem>(response);
         }
 
         /// <summary>
         /// Create <see cref="ContainerProjection{T,TItem}"/> to map json array type structure [...] into T items container
         /// <code>
         ///     // 1. when container implements ICollection{TItem}
-        ///     var projection = response.ContainerProjection{IOpenOrders, BinanceOrder}()
+        ///     var projection = response.ToContainerProjection{IOpenOrders, BinanceOrder}()
         ///     Response{IOpenOrders} result = projection.Map{OpenOrdersCollection}();
         ///     
         ///     // 2. when container does not implement ICollection{TItem}
-        ///     var projection = response.ContainerProjection{IOpenOrders, BinanceOrder}()
+        ///     var projection = response.ToContainerProjection{IOpenOrders, BinanceOrder}()
         ///     Response{IOpenOrders} result = projection.Map{OpenOrdersCollection}((x,item) => x.Add(item));
         ///     
         ///     // 3. when we use proxy to produce container 
-        ///     var projection = response.ContainerProjection{IOpenOrders, BinanceOrder}()
+        ///     var projection = response.ToContainerProjection{IOpenOrders, BinanceOrder}()
         ///     // OpenOrdersBuilder: IListProxy{IOpenOrders, BinanceOrder} see IListProxy{out T, in TItem}
         ///     Response{IOpenOrders} result = projection.MapWith{OpenOrdersBuilder}();
         /// </code>
         /// </summary>
-        public static ContainerProjection<T, TItem> ToList<T, TItem>(this RestResponse response) where T : class
+        [Obsolete("Use ToContainerProjection()")]
+        public static ContainerProjection<TContainer, TItem> ToList<TContainer, TItem>(this RestResponse response) where TContainer : class
         {
-            return new ContainerProjection<T, TItem>(response);
+            return new ContainerProjection<TContainer, TItem>(response);
         }
 
         #endregion
@@ -168,7 +170,7 @@ namespace AVS.CoreLib.REST.Extensions
         ///     Response{IDictionary{string,ICancelOrderResult}} = projection.MapWith{OrdersBuilder}();
         /// </code>
         /// </summary>
-        public static DictionaryProjection<TValue> Dictionary<TValue>(this RestResponse response)
+        public static DictionaryProjection<TValue> ToDictionary<TValue>(this RestResponse response)
         {
             return new DictionaryProjection<TValue>(response);
         }
