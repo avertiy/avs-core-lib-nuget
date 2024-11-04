@@ -41,18 +41,24 @@ public static class CountExtensions
     public static bool TryGetCount<T>(this T? obj, out int count)
     {
         count = 0;
+
         if (obj == null)
             return false;
 
-        // test Count property
-        if (TryGetCountProperty(obj, out count))
+        if (obj is IList list)
+        {
+            count = list.Count;
             return true;
+        }
 
         if (obj is IEnumerable col)
         {
             count = col.Count();
             return true;
         }
+
+        if (TryGetCountProperty(obj, out count))
+            return true;
 
         // test Data property
         var data = TryGetData(obj);

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using AVS.CoreLib.Guards;
+using AVS.CoreLib.REST.Json;
 using Newtonsoft.Json.Linq;
 
 namespace AVS.CoreLib.REST.Extensions;
@@ -46,23 +47,23 @@ public static class RestResponseExtensions
     /// <summary>
     /// Match JsonText with a regex pattern to select property value which is either json object or json array
     /// <code>
-    /// result.Select("data",JTokenType.Object):
+    /// result.Select("data",JsonType.Object):
     /// JsonText = { "data": { Item1 = "..."} } you might pick data property value i.e. { Item1 = "..."}
     ///
-    /// result.Select("data", JTokenType.Array):
+    /// result.Select("data", JsonType.Array):
     /// JsonText = { "data": [{...},{...},...] } => [{...},{...},...]
     /// </code>
     /// Returns new JsonResult object unless the result contains an error
     /// </summary>
-    public static RestResponse Select(this RestResponse result, string name, JTokenType tokenType)
+    public static RestResponse Select(this RestResponse result, string name, JsonType tokenType)
     {
         // if has error do nothing
         if (result.Error != null || string.IsNullOrEmpty(result.Content))
             return result;
 
-        Guard.MustBe.OneOf(tokenType, JTokenType.Object, JTokenType.Array);
+        Guard.MustBe.OneOf(tokenType, JsonType.Object, JsonType.Array);
 
-        var regex = tokenType == JTokenType.Object
+        var regex = tokenType == JsonType.Object
             ? $"\"{name}\":(?<data>{{.*?}})"
             : $"\"{name}\":(?<data>\\[.*?\\])";
 

@@ -17,27 +17,10 @@ namespace AVS.CoreLib.REST.Json.Newtonsoft
             () => new JsonSerializer() { NullValueHandling = NullValueHandling });
         internal static JsonSerializer Serializer => LazySerializer.Value;
 
+        #region Serialization
         public string SerializeObject(object obj, Type? type = null)
         {
             return SerializeObjectInternal(obj, type, Serializer);
-        }
-
-        public object? DeserializeObject(string? json, Type type)
-        {
-            if (json == null)
-                return null;
-
-            using (var reader = new JsonTextReader(new StringReader(json)))
-                return Serializer.Deserialize(reader, type);
-        }
-
-        public void Populate(object target, string json)
-        {
-            if (target == null)
-                throw new ArgumentNullException(nameof(target));
-
-            using (var reader = new JsonTextReader(new StringReader(json)))
-                Serializer.Populate(reader, target);
         }
 
         public string SerializeObject(object obj, Type? type = null, params Type[] converters)
@@ -62,6 +45,27 @@ namespace AVS.CoreLib.REST.Json.Newtonsoft
             }
 
             return sw.ToString();
+        } 
+        #endregion
+
+        public object? DeserializeObject(string? json, Type type)
+        {
+            if (json == null)
+                return null;
+
+            using var reader = new JsonTextReader(new StringReader(json));
+            return Serializer.Deserialize(reader, type);
         }
+
+        public void Populate(object target, string json)
+        {
+            if (target == null)
+                throw new ArgumentNullException(nameof(target));
+
+            using var reader = new JsonTextReader(new StringReader(json));
+            Serializer.Populate(reader, target);
+        }
+
+        
     }
 }

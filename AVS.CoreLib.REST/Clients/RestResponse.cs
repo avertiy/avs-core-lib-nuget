@@ -1,13 +1,12 @@
 ﻿#nullable enable
-using System;
 using System.Diagnostics;
 using System.Net;
-using System.Net.Http.Headers;
 using System.Text.Json.Serialization;
 using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.Collections;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.REST.Extensions;
+using AVS.CoreLib.REST.Helpers;
 using AVS.CoreLib.REST.Json;
 
 namespace AVS.CoreLib.REST
@@ -17,26 +16,24 @@ namespace AVS.CoreLib.REST
     {
         public string Source { get; set; }
         public HttpStatusCode StatusCode { get; set; }
-
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public string Content { get; set; }
-
+        
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Error { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
         public IRequest? Request { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public MultiDictionary<string, string>? Headers { get; set; }
 
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? RequestId => Request?.RequestId;
+        [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
 
         public bool IsSuccess => Error == null && IsSuccessStatusCode;
-
-        [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
         public bool IsSuccessStatusCode => ((int)StatusCode) >= 200 && (int)StatusCode < 300;
         
-
         public RestResponse(string source, HttpStatusCode code)
         {
             Source = source;
@@ -46,28 +43,48 @@ namespace AVS.CoreLib.REST
 
         public override string ToString()
         {
-            var content = Content.Truncate(550, TruncateOptions.CutOffTheMiddle);
+            var content = GetBriefContent(550);
 
-            var reqId = RequestId != null ? $"(Req.Id #{RequestId})" : null;
+            var reqId = RequestId != null ? $" RequestId={RequestId}" : null;
 
             return IsSuccess
-                ? $"{StatusCode}: {content} {reqId}"
-                : $"Failed ({StatusCode}) - {Error} {reqId}";
+                ? $"{StatusCode}: Content={content} (Length={Content.Length}){reqId}"
+                : $"Failed ({StatusCode}) - {Error}{reqId}";
         }
 
         public T? Deserialize<T>()
         {
-            try
-            {
-                return JsonHelper.DeserializeObject<T>(Content);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"RestResponse.Deserialize<{typeof(T).Name}>() failed", ex);
-            }
+            return JsonHelper.Deserialize<T>(Content);
         }
 
-        internal static RestResponse FromHttpWebResponse(HttpWebResponse response, string source, IRequest request)
+        public string GetBriefContent(int maxLength, TruncateOptions options = TruncateOptions.CutOffTheMiddle)
+        {
+            return Content.Truncate(maxLength, options);
+        }
+
+        internal static RestResponse Timeout(string source)
+        {
+            return new RestResponse(source, HttpStatusCode.RequestTimeout) { Error = "The request timed out." };
+        }
+    }
+
+    internal static class RestResponseExtensions
+    {
+        internal static bool IsSuccessful(this RestResponse response)
+        {
+            if (!response.IsSuccess)
+                return false;
+
+            if (ResponseHelper.ContainsError(response.Content, out var error))
+            {
+                response.Error = error;
+                return false;
+            }
+
+            return true;
+        }
+
+        internal static RestResponse ToRestResponse(this HttpWebResponse response, IRequest request, string source)
         {
             var result = new RestResponse(source, response.StatusCode) { Request = request };
 
@@ -92,11 +109,6 @@ namespace AVS.CoreLib.REST
                 result.Error = response.StatusDescription;
 
             return result;
-        }
-
-        internal static RestResponse Timeout(string source)
-        {
-            return new RestResponse(source, HttpStatusCode.RequestTimeout) { Error = "The request timed out." };
         }
     }
 }

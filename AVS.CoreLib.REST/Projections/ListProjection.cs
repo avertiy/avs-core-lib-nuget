@@ -61,7 +61,7 @@ namespace AVS.CoreLib.REST.Projections
         {
             try
             {
-                var response = Response.Create<List<T>>(Source, Error, Request);
+                var response = Response.Create<List<T>>(Source, content: JsonText, Error, Request);
                 if (HasError)
                     return response;
 
@@ -71,7 +71,7 @@ namespace AVS.CoreLib.REST.Projections
                 }
                 else
                 {
-                    var jArray = LoadToken<JArray>();
+                    var jArray = LoadToken<JArray>(JsonText);
                     var list = new List<T>(jArray.Count);
                     var type = typeof(T);
                     var i = 0;
@@ -121,7 +121,7 @@ namespace AVS.CoreLib.REST.Projections
         {
             try
             {
-                var response = Response.Create<List<T>>(Source, Error, Request);
+                var response = Response.Create<List<T>>(Source, content: JsonText, Error, Request);
                 if (HasError)
                     return response;
 
@@ -131,7 +131,7 @@ namespace AVS.CoreLib.REST.Projections
                 }
                 else
                 {
-                    var jArray = LoadToken<JArray>();
+                    var jArray = LoadToken<JArray>(JsonText);
                     var list = new List<T>(jArray.Count);
                     var type = typeof(TType);
                     var i = 0;
@@ -183,7 +183,7 @@ namespace AVS.CoreLib.REST.Projections
         {
             try
             {
-                var response = Response.Create<List<T>>(Source, Error, Request);
+                var response = Response.Create<List<T>>(Source, content: JsonText, Error, Request);
                 if (HasError)
                     return response;
 
@@ -195,7 +195,7 @@ namespace AVS.CoreLib.REST.Projections
                 }
                 else
                 {
-                    var jArray = LoadToken<JArray>();
+                    var jArray = LoadToken<JArray>(JsonText);
                     var i = 0;
                     var itemType = typeof(TType);
                     foreach (var jToken in jArray)

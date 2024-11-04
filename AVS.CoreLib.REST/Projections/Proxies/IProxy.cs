@@ -1,4 +1,6 @@
-﻿namespace AVS.CoreLib.REST.Projections
+﻿using System;
+
+namespace AVS.CoreLib.REST.Projections
 {
     /// <summary>
     /// Proxy{in T,out TResult} provides an interface to add T item(s) and produce the TResult     
@@ -6,6 +8,10 @@
     public interface IProxy<in T, out TResult> : IContainer<T>, IProxy<TResult>
     {
     }
+    // TO-DO swap Iproxty generic args
+    //public interface IProxy2<out TResult, in T> : IContainer<T>, IProxy<TResult>
+    //{
+    //}
 
 
     /// <summary>
@@ -20,14 +26,13 @@
 
 
     /// <summary>
-    /// It used by <see cref="KeyedProjection{T,TItem}"/>
+    /// It used by KeyedProjection{T,TItem}
     /// in case json represents an object with key values pairs but the target object model can't be deserialized directly
     /// the builder object is used like a proxy to deserialize json into it and than build the target T object i.e. call <see cref="Create"/>
     /// </summary>
-    public interface IKeyedCollectionProxy<out T, in TItem>
+    public interface IKeyedCollectionProxy<out T, in TItem> : IProxy<T>
     {
         void Add(string key, TItem item);
-        T Create();
     }
 
     public interface IContainer<in T>

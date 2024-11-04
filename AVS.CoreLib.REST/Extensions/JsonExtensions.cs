@@ -22,7 +22,7 @@ namespace AVS.CoreLib.REST.Extensions
 
         private static string Serialize(this object value, JsonConverterAttribute attr)
         {
-            return JsonHelper.SerializeObject(value, null, attr.ConverterType);
+            return JsonHelper.Serialize(value, null, attr.ConverterType);
         }
 
         private static JsonConverterAttribute? GetJsonConverterAttribute(this PropertyInfo prop)
@@ -50,14 +50,14 @@ namespace AVS.CoreLib.REST.Extensions
 
         public static string ToJson(this object obj)
         {
-            return JsonHelper.SerializeObject(obj);
+            return JsonHelper.Serialize(obj);
         }
 
         public static string ToJsonOrToString(this object obj)
         {
             try
             {
-                return JsonHelper.SerializeObject(obj);
+                return JsonHelper.Serialize(obj);
             }
             catch
             {
@@ -69,7 +69,7 @@ namespace AVS.CoreLib.REST.Extensions
         {
             try
             {
-                return JsonHelper.SerializeObject(obj);
+                return JsonHelper.Serialize(obj);
             }
             catch (Exception ex)
             {
@@ -80,7 +80,7 @@ namespace AVS.CoreLib.REST.Extensions
         [Obsolete("Use JsonHelper.DeserializeObject or IJsonService instead")]
         public static T? Deserialize<T>(this string? json)
         {
-            return JsonHelper.DeserializeObject<T>(json);
+            return JsonHelper.Deserialize<T>(json);
         }
     }
 }

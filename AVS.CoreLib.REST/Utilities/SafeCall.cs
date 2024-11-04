@@ -19,7 +19,7 @@ namespace AVS.CoreLib.REST.Utilities
             }
             catch (Exception ex)
             {
-                return Response.Failed<T>(ex, source, requestedUrl);
+                return Response.Failed<T>(ex, source, string.Empty, requestedUrl);
             }
         }
         /// <summary>
@@ -29,12 +29,12 @@ namespace AVS.CoreLib.REST.Utilities
         {
             try
             {
-                T data = await func();
-                return Response.OK(data, source, requestedUrl);
+                var data = await func();
+                return Response.OK(data, source, string.Empty, requestedUrl);
             }
             catch (Exception ex)
             {
-                return Response.Failed<T>(ex, source, requestedUrl);
+                return Response.Failed<T>(ex, source, string.Empty, requestedUrl);
             }
         }
     }

@@ -52,7 +52,7 @@ namespace AVS.CoreLib.REST.Projections
             try
             {
                 var proxy = new TProxy();
-                var token = LoadToken<JToken>();
+                var token = LoadToken<JToken>(JsonText);
                 inspect(token, proxy);
                 NewtonsoftJsonHelper.Populate(token, proxy);
                 var data = proxy!.Create();
@@ -70,7 +70,7 @@ namespace AVS.CoreLib.REST.Projections
         {
             try
             {
-                var response = Response.Create<TContainer>(Source, Error, Request);
+                var response = Response.Create<TContainer>(Source, content: JsonText, Error, Request);
                 if (HasError)
                     return response;
 
@@ -85,7 +85,7 @@ namespace AVS.CoreLib.REST.Projections
                 {
                     var obj = Activator.CreateInstance<T>();
                     _preProcess?.Invoke(obj);
-                    var token = LoadToken<JToken>();
+                    var token = LoadToken<JToken>(JsonText);
                     NewtonsoftJsonHelper.Populate(token, obj);
                     _postProcess?.Invoke(obj);
                     proxy!.Add(obj);
@@ -106,7 +106,7 @@ namespace AVS.CoreLib.REST.Projections
         {
             try
             {
-                var response = Response.Create<TContainer>(Source, Error, Request);
+                var response = Response.Create<TContainer>(Source, content: JsonText, Error, Request);
                 if (HasError)
                     return response;
 
@@ -118,7 +118,7 @@ namespace AVS.CoreLib.REST.Projections
                 {
                     var obj = Activator.CreateInstance<T>();
                     _preProcess?.Invoke(obj);
-                    var token = LoadToken<JToken>();
+                    var token = LoadToken<JToken>(JsonText);
                     NewtonsoftJsonHelper.Populate(token, obj);
                     _postProcess?.Invoke(obj);
                     proxy!.Add(obj);

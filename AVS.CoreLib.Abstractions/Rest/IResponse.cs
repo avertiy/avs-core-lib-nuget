@@ -7,6 +7,7 @@ namespace AVS.CoreLib.Abstractions.Responses
         string Source { get; set; }
         object? Request { get; set; }
         string? Error { get; set; }
+        string? RawContent { get; }
         bool Success { get; }
     }
 

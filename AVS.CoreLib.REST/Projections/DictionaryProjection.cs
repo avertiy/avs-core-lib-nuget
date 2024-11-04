@@ -58,7 +58,7 @@ namespace AVS.CoreLib.REST.Projections
         /// </summary>        
         public Response<IDictionary<string, TValue>> Map()
         {
-            var response = Response.Create<IDictionary<string, TValue>>(Source, Error, Request);
+            var response = Response.Create<IDictionary<string, TValue>>(Source, content: JsonText, Error, Request);
             if (HasError)
                 return response;
 
@@ -85,7 +85,7 @@ namespace AVS.CoreLib.REST.Projections
         /// <typeparam name="TProjection">type to deserialize value part of the json object with key-value structure</typeparam>
         public Response<IDictionary<string, TValue>> Map<TProjection>() where TProjection : TValue
         {
-            var response = Response.Create<IDictionary<string, TValue>>(Source, Error, Request);
+            var response = Response.Create<IDictionary<string, TValue>>(Source, content: JsonText, Error, Request);
             if (HasError)
                 return response;
 
@@ -112,7 +112,7 @@ namespace AVS.CoreLib.REST.Projections
         public Response<IDictionary<string, TValue>> MapWith<TProxy>()
             where TProxy : IProxy<IDictionary<string, TValue>>, IContainer<string, TValue>, new()
         {
-            var response = Response.Create<IDictionary<string, TValue>>(Source, Error, Request);
+            var response = Response.Create<IDictionary<string, TValue>>(Source, content: JsonText, Error, Request);
             if (HasError)
                 return response;
 
@@ -136,7 +136,7 @@ namespace AVS.CoreLib.REST.Projections
             where TProxy : IProxy<IDictionary<string, TValue>>, IContainer<string, TValue>, new()
             where TValueType : TValue
         {
-            var response = Response.Create<IDictionary<string, TValue>>(Source, Error, Request);
+            var response = Response.Create<IDictionary<string, TValue>>(Source, content: JsonText, Error, Request);
             if (HasError)
                 return response;
 
@@ -162,7 +162,7 @@ namespace AVS.CoreLib.REST.Projections
             if (IsEmpty || HasError)
                 yield break;
 
-            var jObject = LoadToken<JObject>();
+            var jObject = LoadToken<JObject>(JsonText);
             if (!jObject.HasValues)
                 yield break;
 

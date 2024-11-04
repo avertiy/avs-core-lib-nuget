@@ -174,26 +174,28 @@ namespace AVS.CoreLib.REST.Clients
 
         protected async ValueTask<(string content, string? error)> GetContentAndError(HttpResponseMessage responseMessage)
         {
-            var content = string.Empty;
-            var error = responseMessage.ReasonPhrase;
-            // verify 429 status code
-            if (!responseMessage.IsSuccessStatusCode)
-            {
-                if (string.IsNullOrEmpty(error))
-                {
-                    error = responseMessage.StatusCode == HttpStatusCode.TooManyRequests
-                        ? "Too many requests"
-                        : await responseMessage.Content.ReadAsStringAsync();
-                }
+            var content = await responseMessage.Content.ReadAsStringAsync();
+            string? error;
 
-                return (content, $"{responseMessage.StatusCode} - {error}");
+            // verify 429 status code
+            if (responseMessage.IsSuccessStatusCode)
+            {
+                return ResponseHelper.ContainsError(content, out error)
+                    ? (string.Empty, error)
+                    : (content, error);
             }
 
-            content = await responseMessage.Content.ReadAsStringAsync();
+            if (string.IsNullOrEmpty(content))
+            {
+                error = responseMessage.ReasonPhrase == responseMessage.StatusCode.ToString()
+                    ? responseMessage.ReasonPhrase
+                    : $"{responseMessage.StatusCode} - {responseMessage.ReasonPhrase}";
 
-            return ResponseHelper.ContainsError(content, out error)
-                ? (string.Empty, error)
-                : (content, error);
+                return (string.Empty, error);
+            }
+
+            error = $"{responseMessage.StatusCode} - {content}";
+            return (string.Empty, error);
         }
 
         protected virtual void OnResponseReady(RestResponse response)

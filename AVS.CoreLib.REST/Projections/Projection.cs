@@ -1,6 +1,8 @@
 ﻿#nullable enable
 using System;
 using System.Diagnostics;
+using AVS.CoreLib.Extensions;
+using AVS.CoreLib.REST.Json;
 using AVS.CoreLib.REST.Json.Newtonsoft;
 using AVS.CoreLib.REST.Responses;
 using Newtonsoft.Json.Linq;
@@ -57,7 +59,7 @@ namespace AVS.CoreLib.REST.Projections
             try
             {
                 var obj = Activator.CreateInstance<T>();
-                var jToken = LoadToken<JToken>();
+                var jToken = LoadToken<JToken>(JsonText);
                 inspect(jToken, obj);
                 NewtonsoftJsonHelper.Populate(jToken, obj);
                 err = null;
@@ -74,7 +76,7 @@ namespace AVS.CoreLib.REST.Projections
         {
             try
             {
-                var response = Response.Create<T>(Source, Error, Request);
+                var response = Response.Create<T>(Source, content: JsonText, Error, Request);
                 if (HasError)
                     return response;
 
@@ -87,7 +89,9 @@ namespace AVS.CoreLib.REST.Projections
                 }
                 else
                 {
-                    var token = LoadToken<JToken>();
+                    //JsonHelper.Populate(obj, JsonText, _selectTokenPath);
+
+                    var token = LoadToken<JToken>(JsonText);
                     NewtonsoftJsonHelper.Populate(token, obj);
                     _postProcess?.Invoke(obj);
                     response.Data = obj;
@@ -105,7 +109,7 @@ namespace AVS.CoreLib.REST.Projections
         {
             try
             {
-                var response = Response.Create<T>(Source, Error, Request);
+                var response = Response.Create<T>(Source, content: JsonText, Error, Request);
                 if (HasError)
                     return response;
 
@@ -118,7 +122,7 @@ namespace AVS.CoreLib.REST.Projections
                 }
                 else
                 {
-                    var token = LoadToken<JToken>();
+                    var token = LoadToken<JToken>(JsonText);
                     NewtonsoftJsonHelper.Populate(token, obj);
                     _postProcess?.Invoke(obj);
                     response.Data = obj;
@@ -136,7 +140,7 @@ namespace AVS.CoreLib.REST.Projections
         {
             try
             {
-                var response = Response.Create<T>(Source, Error, Request);
+                var response = Response.Create<T>(Source, content: JsonText, Error, Request);
                 if (HasError)
                     return response;
 
@@ -145,7 +149,7 @@ namespace AVS.CoreLib.REST.Projections
 
                 if (!IsEmpty)
                 {
-                    var jToken = LoadToken<JToken>();
+                    var jToken = LoadToken<JToken>(JsonText);
                     NewtonsoftJsonHelper.Populate(jToken, proxy);
                 }
 
@@ -196,7 +200,7 @@ namespace AVS.CoreLib.REST.Projections
             try
             {
                 var obj = Activator.CreateInstance<T>();
-                var jToken = LoadToken<JToken>();
+                var jToken = LoadToken<JToken>(JsonText);
                 inspect(jToken, obj);
                 NewtonsoftJsonHelper.Populate(jToken, obj);
                 err = null;
@@ -213,7 +217,7 @@ namespace AVS.CoreLib.REST.Projections
         {
             try
             {
-                var response = Response.Create<TContainer>(Source, Error, Request);
+                var response = Response.Create<TContainer>(Source, content: JsonText, Error, Request);
                 if (HasError)
                     return response;
 
@@ -222,7 +226,7 @@ namespace AVS.CoreLib.REST.Projections
 
                 if (!IsEmpty)
                 {
-                    var jToken = LoadToken<JToken>();
+                    var jToken = LoadToken<JToken>(JsonText);
                     NewtonsoftJsonHelper.Populate(jToken, obj);
                 }
 
@@ -236,37 +240,7 @@ namespace AVS.CoreLib.REST.Projections
                 throw new MapException(ex, this);
             }
         }
-
-        //[Obsolete("use IndirectProjection<T,TType> instead")]
-        //public Response<TContainer> Map<TProxy>() where TProxy : class, IProxy<T, TContainer>, new()
-        //{
-        //    try
-        //    {
-        //        var response = Response.Create<TContainer>(Source, Error, Request);
-        //        if (HasError)
-        //            return response;
-
-        //        var proxy = new TProxy();
-
-        //        var obj = Activator.CreateInstance<T>();
-        //        _preProcess?.Invoke(obj);
-
-        //        if (!IsEmpty)
-        //        {
-        //            var jToken = LoadToken<JToken>();
-        //            NewtonsoftJsonHelper.Populate(jToken, obj);
-        //        }
-
-        //        _postProcess?.Invoke(obj);
-        //        proxy.Add(obj);
-        //        response.Data = proxy.Create();
-
-        //        return response;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new MapException(ex, this);
-        //    }
-        //}
     }
+
+    
 }

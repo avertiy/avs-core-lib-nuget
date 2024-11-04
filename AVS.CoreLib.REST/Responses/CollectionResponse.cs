@@ -1,10 +1,12 @@
 ﻿#nullable enable
+using System;
 using System.Collections.ObjectModel;
 using AVS.CoreLib.Abstractions.Responses;
 using AVS.CoreLib.REST.Attributes;
 
 namespace AVS.CoreLib.REST.Responses
 {
+    [Obsolete("Obsolete don't use")]
     public abstract class CollectionResponse<T> : KeyedCollection<string, T>, IResponse
     {
         #region Properties
@@ -16,6 +18,8 @@ namespace AVS.CoreLib.REST.Responses
         {
             return Error != null;
         }
+
+        public string? RawContent { get; set; }
 
         public bool Success => string.IsNullOrEmpty(Error);
 

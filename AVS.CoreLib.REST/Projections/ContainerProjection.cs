@@ -116,7 +116,7 @@ namespace AVS.CoreLib.REST.Projections
         public Response<TContainer> Map<TContainerImpl>()
             where TContainerImpl : TContainer, ICollection<TItem>, new()
         {
-            var response = Response.Create<TContainer>(Source, Error, Request);
+            var response = Response.Create<TContainer>(source: Source, content: JsonText, error:Error, request:Request);
             if (HasError)
                 return response;
 
@@ -131,7 +131,7 @@ namespace AVS.CoreLib.REST.Projections
                 }
                 else
                 {
-                    var jArray = LoadToken<JArray>();
+                    var jArray = LoadToken<JArray>(JsonText);
                     var i = 0;
                     var type = typeof(TItem);
                     foreach (JToken jToken in jArray)
@@ -172,7 +172,7 @@ namespace AVS.CoreLib.REST.Projections
         /// </summary>
         public Response<TContainer> Map<TContainerImpl>(Action<TContainerImpl, TItem> add) where TContainerImpl : TContainer, new()
         {
-            var response = Response.Create<TContainer>(Source, Error, Request);
+            var response = Response.Create<TContainer>(Source, content:JsonText, Error, Request);
             if (HasError)
                 return response;
 
@@ -188,7 +188,7 @@ namespace AVS.CoreLib.REST.Projections
                 }
                 else
                 {
-                    var jArray = LoadToken<JArray>();
+                    var jArray = LoadToken<JArray>(JsonText);
                     var i = 0;
                     var type = typeof(TItem);
                     foreach (var jToken in jArray)
@@ -230,7 +230,7 @@ namespace AVS.CoreLib.REST.Projections
         public Response<TContainer> MapWith<TProxy>(Action<TProxy>? configure = null)
             where TProxy : IProxy<TContainer>, IContainer<TItem>, new()
         {
-            var response = Response.Create<TContainer>(Source, Error, Request);
+            var response = Response.Create<TContainer>(Source, content: JsonText, Error, Request);
             if (HasError)
                 return response;
 
@@ -244,7 +244,7 @@ namespace AVS.CoreLib.REST.Projections
                 }
                 else
                 {
-                    var jArray = LoadToken<JArray>();
+                    var jArray = LoadToken<JArray>(JsonText);
                     var i = 0;
                     var type = typeof(TItem);
                     foreach (JToken jToken in jArray)
@@ -285,7 +285,7 @@ namespace AVS.CoreLib.REST.Projections
         /// </summary>
         public Response<TContainer> MapWith(IProxy<TItem, TContainer> proxy)
         {
-            var response = Response.Create<TContainer>(Source, Error, Request);
+            var response = Response.Create<TContainer>(Source, content: JsonText, Error, Request);
             if (HasError)
                 return response;
 
@@ -297,7 +297,7 @@ namespace AVS.CoreLib.REST.Projections
                 }
                 else
                 {
-                    var jArray = LoadToken<JArray>();
+                    var jArray = LoadToken<JArray>(JsonText);
                     var i = 0;
                     var type = typeof(TItem);
                     foreach (var jToken in jArray)
@@ -339,7 +339,7 @@ namespace AVS.CoreLib.REST.Projections
         public Response<TContainer> MapObject<TContainerImpl>()
             where TContainerImpl : IContainer<string, TItem>, TContainer, new()
         {
-            var response = Response.Create<TContainer>(Source, Error, Request);
+            var response = Response.Create<TContainer>(Source, content: JsonText, Error, Request);
             if (HasError)
                 return response;
 
@@ -350,7 +350,7 @@ namespace AVS.CoreLib.REST.Projections
 
                 if (!IsEmpty)
                 {
-                    var jObject = LoadToken<JObject>();
+                    var jObject = LoadToken<JObject>(JsonText);
                     if (jObject.HasValues)
                     {
                         var type = typeof(TItem);
@@ -378,7 +378,7 @@ namespace AVS.CoreLib.REST.Projections
         public Response<TContainer> MapObjectWith<TProxy>(Action<TProxy>? configure = null)
             where TProxy : IProxy<TContainer>, IContainer<string, TItem>, new()
         {
-            var response = Response.Create<TContainer>(Source, Error, Request);
+            var response = Response.Create<TContainer>(Source, content: JsonText, Error, Request);
             if (HasError)
                 return response;
 
@@ -388,7 +388,7 @@ namespace AVS.CoreLib.REST.Projections
                 configure?.Invoke(proxy);
                 if (!IsEmpty)
                 {
-                    var jObject = LoadToken<JObject>();
+                    var jObject = LoadToken<JObject>(JsonText);
                     if (jObject.HasValues)
                     {
                         var type = typeof(TItem);

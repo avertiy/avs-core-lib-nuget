@@ -1,7 +1,5 @@
 ﻿#nullable enable
 using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace AVS.CoreLib.REST.Json.Newtonsoft
@@ -24,9 +22,9 @@ namespace AVS.CoreLib.REST.Json.Newtonsoft
         internal static void Populate<T>(JToken jToken, T target)
         {
             NewtonsoftJsonSerializer.Serializer.Populate(jToken.CreateReader(), target!);
-            //var json = jToken.ToString(Formatting.None);
-            //Serializer.Populate(target!, json);
         }
+
+        /*
         [Obsolete("seems no usages")]
         private static IDictionary<TKey, TValue> ParseDictionary<TKey, TValue>(JObject jObject,
             Func<dynamic, TKey> keyFunc,
@@ -130,6 +128,6 @@ namespace AVS.CoreLib.REST.Json.Newtonsoft
                 throw new Exception(
                     $"Unable to parse {itemType.Name} from json array (consider using [ArrayConverter] attribute)", ex);
             }
-        }
+        }*/
     }
 }

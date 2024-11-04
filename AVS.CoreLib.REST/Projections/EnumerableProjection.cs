@@ -30,7 +30,7 @@ namespace AVS.CoreLib.REST.Projections
         {
             try
             {
-                var response = Response.Create<T>(Source, Error, Request);
+                var response = Response.Create<T>(Source, content: JsonText, Error, Request);
                 if (HasError || IsEmpty)
                     return response;
 
@@ -57,7 +57,7 @@ namespace AVS.CoreLib.REST.Projections
         {
             try
             {
-                var response = Response.Create<T>(Source, Error, Request);
+                var response = Response.Create<T>(Source, content: JsonText, Error, Request);
                 if (HasError || IsEmpty)
                     return response;
 
@@ -98,7 +98,7 @@ namespace AVS.CoreLib.REST.Projections
             if (IsEmpty || HasError)
                 yield break;
 
-            var jArray = LoadToken<JArray>();
+            var jArray = LoadToken<JArray>(JsonText);
             var i = 0;
 
             foreach (var jToken in jArray)

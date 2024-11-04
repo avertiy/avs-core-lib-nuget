@@ -16,6 +16,7 @@ namespace AVS.CoreLib.REST.Responses
     /// of the same data type
     /// </summary>
     [DebuggerDisplay("Count = {Count}, Error = {Error}")]
+    [Obsolete("Obsolete don't use")]
     public class AggregatedResponse<T> : BaseDictionary<string, Response<T>>, IAggregatedResponse
     {
         public AggregatedResponse()
@@ -26,7 +27,10 @@ namespace AVS.CoreLib.REST.Responses
         {
         }
 
-        #region IResponse 
+        #region IResponse
+
+        public string RawContent { get; set; }
+
         public bool Success => Error == null;
 
         [ArrayProperty(-10)]

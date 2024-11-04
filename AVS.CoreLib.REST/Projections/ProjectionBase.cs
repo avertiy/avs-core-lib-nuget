@@ -1,13 +1,9 @@
 ﻿#nullable enable
-using System;
 using System.IO;
 using System.Net;
-using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.Extensions;
-using AVS.CoreLib.Extensions.Reflection;
 using AVS.CoreLib.REST.Helpers;
-using AVS.CoreLib.REST.Responses;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -49,26 +45,6 @@ namespace AVS.CoreLib.REST.Projections
             return null;
         }
 
-        protected Response<T> CreateResponse<T>() where T : new()
-        {
-            var response = Response.Create<T>(Source, Error, Request);
-            if (IsEmpty)
-            {
-                response.Data = new T();
-            }
-            return response;
-        }
-
-        protected Response<T> CreateResponse<T, TProjection>() where TProjection : T, new()
-        {
-            var response = Response.Create<T>(Source, Error, Request);
-            if (IsEmpty)
-            {
-                response.Data = new TProjection();
-            }
-            return response;
-        }
-
         /// <summary>
         /// Selects a <see cref="T:Newtonsoft.Json.Linq.JToken" /> using a JSONPath expression. Selects the token that matches the object path.
         /// </summary>
@@ -81,9 +57,9 @@ namespace AVS.CoreLib.REST.Projections
         }
 
         //method is public to allow caller code to debug token deserialization in case map fails without error
-        public TToken LoadToken<TToken>() where TToken : JToken
+        public TToken LoadToken<TToken>(string json) where TToken : JToken
         {
-            using var stringReader = new StringReader(JsonText);
+            using var stringReader = new StringReader(json);
             using var reader = new JsonTextReader(stringReader);
             var token = JToken.Load(reader);
 
@@ -101,69 +77,5 @@ namespace AVS.CoreLib.REST.Projections
 
             throw new JsonReaderException($"Unexpected JTokenType {token.Type}, expected {typeof(TToken).Name} [json: {JsonText.Truncate(100)}]");
         }
-
-        protected void LoadToken(Action<JToken> action)
-        {
-            try
-            {
-                var token = LoadToken<JToken>();
-                action(token);
-            }
-            catch (Exception ex)
-            {
-                throw;
-                //throw new MapException("LoadToken failed", ex) {JsonText = JsonText, Source = Source };
-            }
-        }
-
-        protected void LoadToken<TToken, T, TItem>(Action<TToken> action) where TToken : JContainer
-        {
-            try
-            {
-                var token = LoadToken<TToken>();
-                action(token);
-            }
-            catch (Exception ex)
-            {
-                throw;
-                //throw new MapJsonException<T, TItem>(ex) { JsonText = JsonText, Source = Source };
-            }
-        }
-
-        protected void LoadToken<TToken, TProjection>(Action<TToken> action) where TToken : JContainer
-        {
-            try
-            {
-                var token = LoadToken<TToken>();
-                action(token);
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
-
-        protected Response<T> MapInternal<T>(Action<Response<T>> map)
-        {
-            var response = Response.Create<T>(Source, Error, Request);
-            if (HasError)
-                return response;
-            try
-            {
-                map(response);
-                return response;
-            }
-            catch (MapException) { throw; }
-            catch (Exception ex)
-            {
-                throw new MapException($"{this.GetType().GetReadableName()}::Map json failed.", ex) { JsonText = JsonText, Source = Source };
-            }
-        }
-
-        protected Task<Response<T>> MapAsyncInternal<T>(Func<Response<T>> map)
-        {
-            return IsEmpty || JsonText.Length < 2000 ? Task.FromResult(map()) : Task.Factory.StartNew(map);
-        }
-
     }
 }

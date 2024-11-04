@@ -65,6 +65,7 @@ namespace AVS.CoreLib.REST.Extensions
         {
             return Response.Create(default(T),
                     response.Source,
+                    response.RawContent ?? string.Empty,
                     GetErrorText(response.Error, errorMessage), response.Request);
         }
 
