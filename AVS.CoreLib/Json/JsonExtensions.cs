@@ -55,8 +55,8 @@ namespace AVS.CoreLib.Json
             options.Converters.Add(new PlainJsonConverter()
             {
                 Mode = SerializationMode.Brief,
-                MaxItemsCount = 2,
-                MaxPropsCount = 5,
+                MaxItemsCount = 3,
+                MaxPropsCount = 10,
                 BytesLimit = 500,
                 DepthLimit = 2
             });

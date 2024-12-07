@@ -334,12 +334,24 @@ namespace AVS.CoreLib.Extensions
                 var startStr = str.Substring(0, ind + 1);
                 var count = maxLength - (ind + 1);
                 var ind2 = str.LastIndexOf(',', str.Length - 1, count);
-                var endStr = str.Substring(ind2 + 1);
+
+                var endStrLength = (str.Length - 1) - ind2;
+                string? endStr = null;
+                if (endStrLength < maxLength / 3)
+                {
+                    count = count - endStrLength;
+                    var ind3 = str.LastIndexOf(',', ind2 - 1, count);
+
+                    if (ind3 > 0)
+                        endStr = str.Substring(ind3 + 1);
+                }
+
+                endStr ??= str.Substring(ind2 + 1);
                 truncatedStr = $"{startStr} ... {endStr}";
             }
             else
             {
-                truncatedStr = str.Substring(0, maxLength);
+                truncatedStr = str.Substring(0, maxLength-3) + ".." + str[^1];
             }
 
             if (options.HasFlag(TruncateOptions.AppendLength))

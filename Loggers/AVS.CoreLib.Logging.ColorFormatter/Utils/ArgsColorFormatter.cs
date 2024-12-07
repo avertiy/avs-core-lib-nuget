@@ -65,13 +65,18 @@ public class ArgsColorFormatter
                 continue;
             }
 
-            if (key.StartsWith("@"))
+            //"{@request$}
+            if (key.StartsWith('@'))
             {
                 var json = key.StartsWith("@@")
                     ? obj.ToJson().Truncate(1000, TruncateOptions.CutOffTheMiddle)
-                    : obj.ToBriefJson().Truncate(100, TruncateOptions.CutOffTheMiddle);
+                    : obj.ToBriefJson().Truncate(280);
 
-                var formattedStr = Frmt(obj.GetType().GetReadableName(), TextKind.Keyword) + " " + Frmt(json, TextKind.Json);
+                var prefix = key.EndsWith('$')
+                    ? Frmt(obj.GetType().GetReadableName(), TextKind.Keyword) + " "
+                    : " ";
+
+                var formattedStr = prefix + Frmt(json, TextKind.Json);
                 sb.Replace(keyInBrackets, formattedStr);
                 continue;
             }
@@ -146,7 +151,7 @@ public class ArgsColorFormatter
 
         var sb = new StringBuilder(str);
         //limit str scanning with 50 symbols
-        var count = str.Length < 50 ? str.Length : 50;
+        var count = str.Length < STR_LOOKUP_LENGTH ? str.Length : STR_LOOKUP_LENGTH;
         FrmtJson(sb, count);
         FrmtStringWithUrl(sb, count);
         FrmtHttpVerbs(sb, count);
@@ -335,9 +340,14 @@ public class ArgsColorFormatter
         return colors.FormatWithTags(str);
     }
 
+    public static int STR_LOOKUP_LENGTH { get; set; } = 50;
+
     public static Dictionary<string, string> StartKeywords = new(11);
-    public static Dictionary<string, string> Keywords = new(6);
-    public static Dictionary<string, string> EndKeywords = new(3);
+    /// <summary>
+    /// <see cref="FrmtKeywords"/> - for keywords in the middle of the string
+    /// </summary>
+    public static Dictionary<string, string> Keywords = new(8);
+    public static Dictionary<string, string> EndKeywords = new(4);
     public static Dictionary<string, string> Verbs = new(5);
 
     private void InitKeywords()
@@ -363,16 +373,21 @@ public class ArgsColorFormatter
         foreach (var keyword in keywords)
             StartKeywords[keyword] = Frmt(keyword, TextKind.Keyword);
 
+        // e.g. GetTradesRequest will highlight the whole world
         Keywords["Request"] = Frmt("Request", TextKind.Keyword);
         Keywords["Response"] = Frmt("Response", TextKind.Keyword);
+        Keywords["Test"] = Frmt("Test", TextKind.Keyword);
+        Keywords["PASSED"] = Frmt("PASSED", TextKind.OK);
         Keywords["(OK)"] = Frmt("(OK)", TextKind.OK);
         Keywords[" OK"] = Frmt(" OK", TextKind.OK);
         Keywords[" Failed"] = Frmt(" Failed", TextKind.Error);
         Keywords["BadRequest"] = Frmt("BadRequest", TextKind.Error);
+        
 
         EndKeywords["(FROM CACHE)"] = Frmt("(FROM CACHE)", TextKind.Keyword);
         EndKeywords[" OK"] = Frmt(" OK", TextKind.OK);
         EndKeywords["Failed"] = Frmt("Failed", TextKind.Error);
+        EndKeywords["FAILED"] = Frmt("FAILED", TextKind.Error);
 
         var httpVerbs = new[] { "GET", "POST", "PUT", "DELETE", "PATCH" };
 

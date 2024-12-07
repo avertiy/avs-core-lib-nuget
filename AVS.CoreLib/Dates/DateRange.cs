@@ -206,13 +206,20 @@ namespace AVS.CoreLib.Dates
         ///     <item>
         ///       <term>g</term>
         ///       <description> - general short:  04/18/2023 06:00 etc.</description>
-        ///     </item> 
+        ///     </item>
+        ///     <item>
+        ///       <term>P - period</term>
+        ///       <description> - general long e.g. 04/18/2023 06:00:00 AM - 31/12/2024 9:00:00 PM</description>
+        ///     </item>
+        ///     <item>
         ///   </list>
         /// </param>
         /// <returns></returns>
         public string ToString(string format)
         {
-            return $"[{From.ToString(format)};{To.ToString(format)}]";
+            return format == "P" 
+                ? $"[{From:G} - {To:G}]"
+                : $"[{From.ToString(format)};{To.ToString(format)}]";
         }
 
         #region static methods
@@ -275,10 +282,22 @@ namespace AVS.CoreLib.Dates
             return new DateRange(from, now);
         }
 
-        public static DateRange FromSource<T>(IList<T> source, Func<T, DateTime> selector)
+        public static DateRange FromSource<T>(IList<T> source, Func<T, DateTime> selector, Sort sort = Sort.None)
         {
-            var (from, to) = source.MinMax(selector);
-            return new DateRange(from, to);
+            if (source.Count == 0)
+                return DateRange.Empty;
+
+            switch (sort)
+            {
+                case Sort.Asc:
+                    return new DateRange(from: selector(source[0]), to: selector(source[1]));
+                case Sort.Desc:
+                    return new DateRange(from: selector(source[^1]), to: selector(source[0]));
+                case Sort.None:
+                default:
+                    var (from, to) = source.MinMax(selector);
+                    return new DateRange(from, to);
+            }
         }
 
         public static DateRange FromToday(DateTime from)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using AVS.CoreLib.Extensions.Enums;
 
 namespace AVS.CoreLib.Extensions;
@@ -38,5 +39,10 @@ public static class GenericExtensions
     public static string ToString<T>(this T value, StringCase @case, string format = "G") where T : Enum
     {
         return value.ToString(format).FormatString(@case);
+    }
+
+    public static bool IsNullOrEmpty<T>(this IList<T>? source)
+    {
+        return source == null || source.Count == 0;
     }
 }

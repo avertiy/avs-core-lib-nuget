@@ -49,6 +49,63 @@ namespace AVS.CoreLib.Extensions.Linq
             return direction == Enums.Sort.Asc ? source.OrderBy(selector) : source.OrderByDescending(selector);
         }
 
+        public static bool IsAscending<T, TKey>(this IEnumerable<T> source, Func<T, TKey> selector, int count = 0) where TKey : IComparable<TKey>
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
+            using var enumerator = source.GetEnumerator();
+
+            if (!enumerator.MoveNext())
+                return true; // An empty sequence is considered ascending.
+
+            var previous = selector(enumerator.Current);
+
+            while (enumerator.MoveNext())
+            {
+                var current = selector(enumerator.Current);
+
+                if (current.CompareTo(previous) < 0)
+                    return false;
+
+                previous = current;
+                count--;
+                if (count == 0)
+                    break;
+            }
+
+            return true;
+        }
+
+        public static bool IsDescending<T, TKey>(this IEnumerable<T> source, Func<T, TKey> selector, int count = 0) where TKey : IComparable<TKey>
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+
+            using var enumerator = source.GetEnumerator();
+
+            if (!enumerator.MoveNext())
+                return true; // An empty sequence is considered descending.
+
+            var previous = selector(enumerator.Current);
+
+            while (enumerator.MoveNext())
+            {
+                var current = selector(enumerator.Current);
+
+                if (previous.CompareTo(current) < 0)
+                    return false;
+
+                previous = current;
+
+                count--;
+                if (count == 0)
+                    break;
+            }
+
+            return true;
+        }
+
         public static IOrderedEnumerable<T> ThenBy<T, Key>(this IOrderedEnumerable<T> source, Func<T, Key> selector, Sort direction)
         {
             if (direction == Enums.Sort.None)

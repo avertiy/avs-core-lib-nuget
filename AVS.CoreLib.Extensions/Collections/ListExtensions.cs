@@ -7,12 +7,16 @@ namespace AVS.CoreLib.Extensions.Collections
 {
     public static class ListExtensions
     {
+        #region AddRange extensions
         /// <summary>
         /// Adds the elements of the given collection one-by-one to the end of this list.
         /// </summary>        
         public static int AddRange<T>(this IList<T> list, params T[] items)
         {
-            var counter = 0;
+            if (items.Length == 0)
+                return 0;
+
+            var counter = 0;//for debug purposes
             foreach (var item in items)
             {
                 list.Add(item);
@@ -42,7 +46,7 @@ namespace AVS.CoreLib.Extensions.Collections
         /// </summary>        
         public static int AddDistinct<T>(this IList<T> list, params T[] items)
         {
-            if (items == null || items.Length == 0)
+            if (items.Length == 0)
                 return 0;
 
             var counter = 0;
@@ -80,13 +84,13 @@ namespace AVS.CoreLib.Extensions.Collections
         /// <summary>
         /// Adds unique by key items of the given collection to the end of the source list.        
         /// </summary>
-        public static int AddRange<T, TKey>(this IList<T> source, IEnumerable<T> items, Func<T, TKey> key)
+        public static int AddRange<T, TKey>(this IList<T> source, IEnumerable<T> items, Func<T, TKey> keySelector)
         {
-            var knownKeys = new HashSet<TKey>(source.Select(key));
+            var knownKeys = new HashSet<TKey>(source.Select(keySelector));
             var counter = 0;
             foreach (var item in items)
             {
-                var itemKey = key(item);
+                var itemKey = keySelector(item);
                 if (knownKeys.Add(itemKey))
                 {
                     source.Add(item);
@@ -100,108 +104,23 @@ namespace AVS.CoreLib.Extensions.Collections
         /// Adds unique by key items of the given collection to the end of the source list.
         /// if they are satisfying a predicate condition
         /// </summary>
-        public static int AddRange<T, TKey>(this IList<T> target, IEnumerable<T> second, Func<T, TKey> key, Func<T, bool> predicate)
+        public static int AddRange<T, TKey>(this IList<T> target, IEnumerable<T> second, Func<T, TKey> keySelector, Func<T, bool> predicate)
         {
-            var knownKeys = new HashSet<TKey>(target.Select(key));
+            var knownKeys = new HashSet<TKey>(target.Select(keySelector));
             var counter = 0;
             foreach (var item in second)
             {
-                if (predicate(item) && knownKeys.Add(key(item)))
+                if (predicate(item) && knownKeys.Add(keySelector(item)))
                 {
                     target.Add(item);
                     counter++;
                 }
             }
             return counter;
-        }
+        } 
+        #endregion
 
-
-
-        public static bool ContainsAll<T>(this IList<T> source, params T[] items)
-        {
-            if (source.Count < items.Length)
-                return false;
-
-            var result = true;
-
-            foreach (var item in items)
-            {
-                if (!source.Contains(item))
-                {
-                    result = false;
-                    break;
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
-        /// Merge source with another collection into a new list of items, dropping duplicates
-        /// </summary>
-        public static List<T> Merge<T, TKey>(this IEnumerable<T> source, IEnumerable<T> other, Func<T, TKey> key, Func<(T source, T other), T>? resolve = null)
-        {
-            var dict = new Dictionary<TKey, T>();
-            foreach (var item in source)
-            {
-                var itemKey = key(item);
-                if (dict.ContainsKey(itemKey))
-                {
-                    dict[itemKey] = resolve != null ? resolve.Invoke((dict[itemKey], item)) : dict[itemKey];
-                }
-                else
-                {
-                    dict[itemKey] = item;
-                }
-            }
-
-            foreach (var item in other)
-            {
-                var itemKey = key(item);
-                if (dict.ContainsKey(itemKey))
-                {
-                    dict[itemKey] = resolve != null ? resolve.Invoke((dict[itemKey], item)) : dict[itemKey];
-                }
-                else
-                {
-                    dict[itemKey] = item;
-                }
-            }
-
-            return dict.Values.ToList();
-        }
-
-        public static IList<T> Shrink<T>(this IList<T> items, Func<T, double> selector, double threshold = 0.0)
-        {
-            var avg = items.Average(selector);
-            if (threshold <= 0)
-                threshold = avg;
-            return items.Where(i => selector(i) >= threshold).ToList();
-        }
-
-        public static int FindIndex2<T>(this IList<T> source, int startIndex, int count, Predicate<(int index, T item)> match)
-        {
-            Guard.MustBe.GreaterThanOrEqual(startIndex, 0);
-            Guard.MustBe.LessThan(startIndex, source.Count, $"{nameof(startIndex)} exceeds number of elements");
-
-            var endIndex = startIndex + count;
-            endIndex = source.Count < endIndex ? source.Count : endIndex;
-            for (var i = startIndex; i < endIndex; i++)
-            {
-                if (match((i, source[i])))
-                    return i;
-            }
-            return -1;
-        }
-
-        /// <summary>
-        /// Select element(s) by their respective indices
-        /// </summary>
-        public static T[] ElementsAt<T>(this IList<T> source, params int[] indices)
-        {
-            return indices.Select(i => source[i]).ToArray();
-        }
-
+        #region Remove extensions
         /// <summary>
         /// Removes elements from the list. 
         /// </summary>
@@ -249,7 +168,9 @@ namespace AVS.CoreLib.Extensions.Collections
                 source.RemoveAt(ind);
             }
         }
+        #endregion
 
+        #region FindIndex
         [Obsolete("Use Array.FindIndex(arr, startIndex, predicate)")]
         public static int FindIndex<T>(this IList<T> source, int startIndex, Predicate<T> match)
         {
@@ -299,5 +220,205 @@ namespace AVS.CoreLib.Extensions.Collections
 
             return Array.Empty<int>();
         }
+
+        public static int FindIndex2<T>(this IList<T> source, int startIndex, int count, Predicate<(int index, T item)> match)
+        {
+            Guard.MustBe.GreaterThanOrEqual(startIndex, 0);
+            Guard.MustBe.LessThan(startIndex, source.Count, $"{nameof(startIndex)} exceeds number of elements");
+
+            var endIndex = startIndex + count;
+            endIndex = source.Count < endIndex ? source.Count : endIndex;
+            for (var i = startIndex; i < endIndex; i++)
+            {
+                if (match((i, source[i])))
+                    return i;
+            }
+            return -1;
+        }
+        #endregion
+
+        public static bool ContainsAll<T>(this IList<T> source, params T[] items)
+        {
+            if (source.Count < items.Length)
+                return false;
+
+            var result = true;
+
+            foreach (var item in items)
+            {
+                if (!source.Contains(item))
+                {
+                    result = false;
+                    break;
+                }
+            }
+
+            return result;
+        }
+
+        
+        public static IList<T> Shrink<T>(this IList<T> items, Func<T, double> selector, double threshold = 0.0)
+        {
+            var avg = items.Average(selector);
+            if (threshold <= 0)
+                threshold = avg;
+            return items.Where(i => selector(i) >= threshold).ToList();
+        }
+
+
+
+        /// <summary>
+        /// Select element(s) by their respective indices
+        /// </summary>
+        public static T[] ElementsAt<T>(this IList<T> source, params int[] indices)
+        {
+            return indices.Select(i => source[i]).ToArray();
+        }
+
+        /// <summary>
+        /// Inserts elements of the other list at the beginning of the source list
+        /// It`s an optimized equivalent of <see cref="List{T}.InsertRange"/>
+        /// </summary>
+        public static void InsertRange<T>(this IList<T> source, IList<T> other)
+        {
+            if (other.Count == 0)
+                return;
+
+            if (other.Count == 1)
+            {
+                source.Insert(0, other[0]);
+                return;
+            }
+
+            var size = source.Count + other.Count;
+            var arr = new T[size];
+
+            // copy elements of the other list to a new array
+            other.CopyTo(arr, 0);
+
+            // Copy the original list's elements into the new array after the inserted items
+            source.CopyTo(arr, other.Count);
+            source.Clear();
+            source.AddRange(arr);
+        }
+
+        /// <summary>
+        /// Merge source with another collection into a new list of items, dropping duplicates
+        /// </summary>
+        public static List<T> Merge<T, TKey>(this IEnumerable<T> source, IEnumerable<T> other, Func<T, TKey> key, Func<(T source, T other), T>? resolve = null) where TKey : notnull
+        {
+            var dict = new Dictionary<TKey, T>();
+            foreach (var item in source)
+            {
+                var itemKey = key(item);
+                if (dict.ContainsKey(itemKey))
+                {
+                    dict[itemKey] = resolve != null ? resolve.Invoke((dict[itemKey], item)) : dict[itemKey];
+                }
+                else
+                {
+                    dict[itemKey] = item;
+                }
+            }
+
+            foreach (var item in other)
+            {
+                var itemKey = key(item);
+                if (dict.ContainsKey(itemKey))
+                {
+                    dict[itemKey] = resolve != null ? resolve.Invoke((dict[itemKey], item)) : dict[itemKey];
+                }
+                else
+                {
+                    dict[itemKey] = item;
+                }
+            }
+
+            return dict.Values.ToList();
+        }
+
+        //public static int MergeDescending<T>(this List<T> records, IList<T> items, Func<T, DateTime> selector, Func<T, T, bool> isDuplicate)
+        //{
+        //    if (items.Count == 0)
+        //        return 0;
+
+        //    Guard.Array.MustBeDescending(items, selector, items.Count / 8);
+        //    records.EnsureCapacity(records.Count + items.Count);
+
+        //    if (records.Count == 0 || selector(records[^1]) > selector(items[0]))
+        //    {
+        //        records.AddRange(items);
+        //        return items.Count;
+        //    }
+
+        //    if (selector(items[^1]) > selector(records[0]))
+        //    {
+        //        records.InsertRange(items);
+        //        return items.Count;
+        //    }
+
+        //    var counter = 0;
+        //    List<T>? skipped = null;
+
+        //    foreach (var item in items)
+        //    {
+        //        var timestamp = selector(item);
+
+        //        if (timestamp < selector(records[^1]))
+        //        {
+        //            records.Add(item);
+        //            counter++;
+        //            continue;
+        //        }
+
+        //        if (timestamp > selector(records[0]))
+        //        {
+        //            records.Insert(0, item);
+        //            counter++;
+        //            continue;
+        //        }
+
+        //        skipped ??= new List<T>(counter == 0 ? items.Count : 10);
+        //        skipped.Add(item);
+        //    }
+
+        //    if (skipped == null)
+        //        return counter;
+
+        //    //if (counter == 0)
+        //    //{
+        //    //    Logger?.LogWarning("Same page detected - {skipped} of {count} records skipped", skipped.Count, items.Count);
+        //    //    return 0;
+        //    //}
+
+        //    // records: [25,20,16,11,10]
+        //    // skipped: [12,11]
+        //    // result: [25,20,16,12,11,11,10]
+
+        //    var index = 1;
+        //    for (var i = 1; i <= skipped.Count; i++)
+        //    {
+        //        var skippedItem = skipped[^i];
+        //        var timestamp = selector(skippedItem);
+
+        //        for (; index < records.Count; index++)
+        //        {
+        //            var record = records[index];
+
+        //            if (timestamp < selector(record))
+        //                continue;
+
+        //            if (!isDuplicate(record, skippedItem))
+        //            {
+        //                records.Insert(index, skippedItem);
+        //                counter++;
+        //            }
+                        
+        //            break;
+        //        }
+        //    }
+
+        //    return counter;
+        //}
     }
 }

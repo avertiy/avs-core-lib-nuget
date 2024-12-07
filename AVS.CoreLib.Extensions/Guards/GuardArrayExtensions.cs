@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using AVS.CoreLib.Extensions.Stringify;
+using System.Linq;
+using AVS.CoreLib.Extensions.Enums;
 
 namespace AVS.CoreLib.Guards;
 
@@ -78,7 +81,88 @@ public static class GuardArrayExtensions
             throw new ArgumentOutOfRangeException($"{name} must have at least #{itemsCount} items");
     }
 
+    public static void MustBeSorted<T>(this IArrayGuardClause guardClause, IList<T> source, Sort sort, IComparer<T> comparer, int count = 0, string? message = null)
+    {
+        if (source == null)
+            throw new ArgumentNullException(nameof(source));
 
+        if (source.Count <= 1 || sort == Sort.None)
+            return;
+
+        if (sort == Sort.Asc)
+        {
+            for (var i = 0; i < source.Count-1; i++)
+            {
+                if (comparer.Compare(source[i], source[i+1]) > 0)
+                    throw new ArgumentException(message ?? "Source must be ordered ascending");
+
+                count--;
+                if (count == 0)
+                    break;
+            }
+        }
+        else
+        {
+            for (var i = 0; i < source.Count - 1; i++)
+            {
+                if (comparer.Compare(source[i], source[i + 1]) < 0)
+                    throw new ArgumentException(message ?? "Source must be ordered descending");
+
+                count--;
+                if (count == 0)
+                    break;
+            }
+        }
+    }
+    
+    public static void MustBeDescending<T, TKey>(this IArrayGuardClause guardClause, IList<T> source, Func<T, TKey> selector, int count = 0, string? message = null) where TKey : IComparable<TKey>
+    {
+        if (source == null)
+            throw new ArgumentNullException(nameof(source));
+
+        if (source.Count <= 1)
+            return;
+
+        var previous = selector(source[0]);
+
+        for (var i = 1; i < source.Count; i++)
+        {
+            var current = selector(source[i]);
+            if (previous.CompareTo(current) < 0)
+                throw new ArgumentException(message ?? "Source must be ordered descending");
+
+            previous = current;
+
+            count--;
+            if (count == 0)
+                break;
+
+        }
+    }
+
+    public static void MustBeAscending<T, TKey>(this IArrayGuardClause guardClause, IList<T> source, Func<T, TKey> selector, int count = 0, string? message = null) where TKey : IComparable<TKey>
+    {
+        if (source == null)
+            throw new ArgumentNullException(nameof(source));
+
+        if (source.Count <= 1)
+            return;
+
+        var previous = selector(source[0]);
+
+        for (var i = 1; i < source.Count; i++)
+        {
+            var current = selector(source[i]);
+            if (current.CompareTo(previous) < 0)
+                throw new ArgumentException(message ?? "Source must be ordered descending");
+
+            previous = current;
+
+            count--;
+            if (count == 0)
+                break;
+        }
+    }
 
     #endregion
 }

@@ -36,14 +36,12 @@ namespace AVS.CoreLib.Extensions
         {
             return value.Abs() switch
             {
-                // > 10000 => 0,
-                // > 1000 => 1,
                 > 100 => 2,
-                > 10 => 3,
-                > 1 => 4,
-                > 0.1 => 5,
-                > 0.01 => 6,
-                > 0.001 => 7,
+                //> 10 => 3,
+                > 1 => 3,
+                > 0.1 => 4,
+                > 0.01 => 5,
+                > 0.001 => 6,
                 _ => 8
             };
         }
@@ -117,11 +115,10 @@ namespace AVS.CoreLib.Extensions
             return value.Abs() switch
             {
                 > 100 => 2,
-                > 10 => 3,
-                > 1 => 4,
-                > 0.1m => 5,
-                > 0.01m => 6,
-                > 0.001m => 7,
+                > 1 => 3,
+                > 0.1m => 4,
+                > 0.01m => 5,
+                > 0.001m => 6,
                 _ => 8
             };
         }
@@ -163,8 +160,7 @@ namespace AVS.CoreLib.Extensions
 
         public static bool IsNotEqual(this decimal value, decimal valueToCompare, decimal tolerance)
         {
-            var equal = Math.Abs(value - valueToCompare) <= tolerance;
-            return !equal;
+            return Math.Abs(value - valueToCompare) > tolerance;
         }
 
         public static decimal Sqrt(this decimal value)

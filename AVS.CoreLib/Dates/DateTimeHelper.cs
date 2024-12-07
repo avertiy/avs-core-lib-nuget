@@ -27,6 +27,13 @@ namespace AVS.CoreLib.Dates
             return UnixEpoch.Start.AddMilliseconds(value);
         }
 
+        public static DateTime FromUnixTimestamp(double value)
+        {
+            return value > 9_999_999_999 
+                ? UnixEpoch.Start.AddMilliseconds(value)
+                : UnixEpoch.Start.AddSeconds(value);
+        }
+
         public static DateTime FromUnixTimestamp(ulong value)
         {
             if (value < 9_999_999_999)

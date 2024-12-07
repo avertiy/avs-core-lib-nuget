@@ -63,7 +63,7 @@ public class ProjectionExtensionsTests
     private RestResponse CreateResponse(string content, HttpStatusCode statusCode = HttpStatusCode.OK, string? error = null)
     {
         var source = "source";
-        var restResponse = new RestResponse(source, statusCode) { Content = content, Error = error };
+        var restResponse = new RestResponse(statusCode, source) { Content = content, Error = error };
         return restResponse;
     }
 

@@ -269,6 +269,9 @@ public class PlainJsonConverter : JsonConverter<object?>
         writer.WriteStartObject();
         var props = type.GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => x.CanRead).ToArray();
         var counter = 0;
+
+        var emptyProps = new List<string>(props.Length);
+
         foreach (var prop in props)
         {
             if (ShouldIgnore(prop, value))
@@ -280,7 +283,7 @@ public class PlainJsonConverter : JsonConverter<object?>
 
             if (val == null)
             {
-                writer.WriteNull(propertyName);
+                emptyProps.Add(propertyName);
                 continue;
             }
 
@@ -288,8 +291,9 @@ public class PlainJsonConverter : JsonConverter<object?>
 
             if (BriefModeEnabled && (MaxPropsCount > 0 && counter > MaxPropsCount || BytesLimit > 0 && (writer.BytesCommitted + writer.BytesPending) > BytesLimit))
             {
-                // [ "item1", /*...*/ ]
-                writer.WriteCommentValue("...");
+                // { "prop1": 123 /*..*/ }
+                writer.WriteCommentValue("..");
+                emptyProps.Clear();
                 break;
             }
 
@@ -301,6 +305,17 @@ public class PlainJsonConverter : JsonConverter<object?>
 
             writer.WritePropertyName(propertyName);
             JsonSerializer.Serialize(writer, val, prop.PropertyType, options);
+        }
+        // append null properties
+        foreach (var propertyName in emptyProps.OrderBy(x => x))
+        {
+            if (BriefModeEnabled && (MaxPropsCount > 0 && counter > MaxPropsCount ||
+                                     BytesLimit > 0 && (writer.BytesCommitted + writer.BytesPending) > BytesLimit))
+            {
+                writer.WriteCommentValue("..");
+                break;
+            }
+            writer.WriteNull(propertyName);
         }
 
         writer.WriteEndObject();
