@@ -33,8 +33,15 @@ namespace AVS.CoreLib.REST
 
         public bool IsSuccess => Error == null && IsSuccessStatusCode;
         public bool IsSuccessStatusCode => ((int)StatusCode) >= 200 && (int)StatusCode < 300;
-        
-        public RestResponse(string source, HttpStatusCode code)
+
+        public RestResponse(HttpStatusCode code = HttpStatusCode.OK)
+        {
+            StatusCode = code;
+            Source = string.Empty;
+            Content = string.Empty;
+        }
+
+        public RestResponse(HttpStatusCode code, string source)
         {
             Source = source;
             StatusCode = code;
@@ -43,13 +50,21 @@ namespace AVS.CoreLib.REST
 
         public override string ToString()
         {
-            var content = GetBriefContent(550);
+            var reqId = RequestId != null ? $" Req.Id={RequestId}" : null;
 
-            var reqId = RequestId != null ? $" RequestId={RequestId}" : null;
+            if (IsSuccessStatusCode)
+            {
+                if (Error != null)
+                    return $"({(int)StatusCode}){reqId} with Error={Error}";
 
-            return IsSuccess
-                ? $"{StatusCode}: Content={content} (Length={Content.Length}){reqId}"
-                : $"Failed ({StatusCode}) - {Error}{reqId}";
+                if (Content.Length <= 360)
+                    return $"({StatusCode}){reqId} Content={Content}";
+
+                var content = GetBriefContent(360);
+                return $"({StatusCode}){reqId} Content={content} (Length={content.Length})";
+            }
+
+            return $"Failed ({StatusCode}){reqId} Error={Error}";
         }
 
         public T? Deserialize<T>()
@@ -64,7 +79,7 @@ namespace AVS.CoreLib.REST
 
         internal static RestResponse Timeout(string source)
         {
-            return new RestResponse(source, HttpStatusCode.RequestTimeout) { Error = "The request timed out." };
+            return new RestResponse(HttpStatusCode.RequestTimeout, source) { Error = "The request timed out." };
         }
     }
 
@@ -86,7 +101,7 @@ namespace AVS.CoreLib.REST
 
         internal static RestResponse ToRestResponse(this HttpWebResponse response, IRequest request, string source)
         {
-            var result = new RestResponse(source, response.StatusCode) { Request = request };
+            var result = new RestResponse(response.StatusCode, source) { Request = request };
 
             if (response.Headers.Count > 0)
             {

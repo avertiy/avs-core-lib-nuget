@@ -36,7 +36,7 @@ public static class RestResponseExtensions
 
     public static RestResponse Copy(this RestResponse response, string content)
     {
-        return new RestResponse(response.Source, response.StatusCode)
+        return new RestResponse(response.StatusCode, response.Source)
         {
             Request = response.Request,
             Content = content,

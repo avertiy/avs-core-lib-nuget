@@ -44,4 +44,16 @@ namespace AVS.CoreLib.REST.Projections
     {
         void Add(TKey key, TValue value);
     }
+
+    /// <summary>
+    /// Use mapper to convert deserialized object to another object
+    /// <code>
+    ///     FuturesTrade trade = mapper.Map(BinanceTrade trade)
+    /// </code>
+    /// </summary>
+    public interface IMapper<in T, out TResult>
+    {
+        TResult Map(T obj);
+    }
+
 }

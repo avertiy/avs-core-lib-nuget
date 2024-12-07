@@ -150,7 +150,7 @@ namespace AVS.CoreLib.REST.Clients
             // 2. get content and/or error 
             var (content, error) = await GetContentAndError(responseMessage);
 
-            var response = new RestResponse(Source, responseMessage.StatusCode)
+            var response = new RestResponse(responseMessage.StatusCode, Source)
             {
                 Request = request,
                 Content = content,

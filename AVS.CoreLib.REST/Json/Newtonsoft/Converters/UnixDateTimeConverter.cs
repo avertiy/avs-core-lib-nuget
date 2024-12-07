@@ -28,25 +28,29 @@ namespace AVS.CoreLib.REST.Json.Newtonsoft.Converters
                 throw new JsonSerializationException($"Cannot convert null value to {objectType.Name}.");
             }
 
-            long seconds;
+            double value;
 
             switch (reader.TokenType)
             {
                 case JsonToken.Integer:
-                    seconds = (long)reader.Value!;
+                    value = (long)reader.Value!;
                     break;
                 case JsonToken.String:
                     {
-                        if (!long.TryParse((string)reader.Value!, out seconds))
+                        if (!double.TryParse((string)reader.Value!, out value))
                             throw new JsonSerializationException($"Unable to parse string token {reader.Value} into long.");
                         break;
                     }
+                case JsonToken.Float:
+                    value = (double)reader.Value!;
+                    break;
+
                 default:
                     throw new JsonSerializationException(
                         $"Parse {objectType.Name} failed. Unexpected token type {reader.TokenType}.");
             }
 
-            var timestamp = DateTimeHelper.FromUnixTimestamp(seconds);
+            var timestamp = DateTimeHelper.FromUnixTimestamp(value);
             return timestamp;
         }
 

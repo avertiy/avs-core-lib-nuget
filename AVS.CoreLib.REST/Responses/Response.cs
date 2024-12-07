@@ -1,11 +1,15 @@
 ﻿#nullable enable
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text.Json.Serialization;
 using AVS.CoreLib.Abstractions.Responses;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Dynamic;
 using AVS.CoreLib.Json;
+using AVS.CoreLib.REST.Projections;
 
 namespace AVS.CoreLib.REST.Responses
 {
@@ -14,16 +18,15 @@ namespace AVS.CoreLib.REST.Responses
     {
         public string Source { get; set; }
         public bool Success => Error == null;
-
-
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public object? Request { get; set; }
-
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        public string? Error { get; set; }
         public T? Data { get; set; }
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? Error { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
+        public object? Request { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
         public string? RawContent { get; set; }
 
         public Response(string source, string rawContent, T? data = default, string? error = null, object? request = null)
@@ -57,8 +60,8 @@ namespace AVS.CoreLib.REST.Responses
                 return $"Response<{typeName}> - OK (#{count})";
 
             var content = RawContent == null 
-                ? Data.ToBriefJson().Truncate(550, TruncateOptions.CutOffTheMiddle)
-                : RawContent.Truncate(550, TruncateOptions.CutOffTheMiddle);
+                ? Data.ToBriefJson().Truncate(180, TruncateOptions.CutOffTheMiddle)
+                : RawContent.Truncate(180, TruncateOptions.CutOffTheMiddle);
 
             return $"Response<{typeName}> - OK ({content})";
         }

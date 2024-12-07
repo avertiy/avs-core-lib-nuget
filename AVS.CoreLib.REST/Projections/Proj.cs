@@ -21,29 +21,39 @@ public sealed class Proj<T>
 
     
 
-    public T? Map(Action<T>? process = null)
+    public T? Map(Action<T>? action = null)
     {
         var obj = JsonHelper.Deserialize<T>(Content);
 
-        if (process != null && obj != null)
-            process(obj);
+        if (action != null && obj != null)
+            action(obj);
 
         return obj;
     }
 
-    public T? Map<TType>(Action<TType>? process = null) where TType : class, T
+    public T? Map<TType>(Action<TType>? action = null) where TType : class, T
     {
         var obj = JsonHelper.Deserialize<TType>(Content);
 
         if (obj == null)
             return default;
 
-        process?.Invoke(obj);
+        action?.Invoke(obj);
         return obj;
     }
 
-    public IList<T> MapArray<TType>(Action<TType>? process = null) where TType : class, T
+    public IList<T> MapArray<TType>(Action<TType>? action = null) where TType : class, T
     {
+        if (Content.StartsWith('{'))
+        {
+            var obj = JsonHelper.Deserialize<TType>(Content);
+            if (obj == null)
+                return Array.Empty<T>();
+
+            action?.Invoke(obj);
+            return new List<T>() { obj };
+        }
+
         var arr = JsonHelper.Deserialize<TType[]>(Content);
 
         if (arr == null)
@@ -53,14 +63,14 @@ public sealed class Proj<T>
 
         foreach (var item in arr)
         {
-            process?.Invoke(item);
+            action?.Invoke(item);
             list.Add(item);
         }
 
         return list;
     }
 
-    public IDictionary<string, T> MapDictionary<TType>(Action<string, TType>? process = null) where TType : class, T
+    public IDictionary<string, T> MapDictionary<TType>(Action<string, TType>? action = null) where TType : class, T
     {
         var dict = JsonHelper.Deserialize<Dictionary<string, TType>>(Content);
 
@@ -71,14 +81,14 @@ public sealed class Proj<T>
 
         foreach (var kp in dict)
         {
-            process?.Invoke(kp.Key, kp.Value);
+            action?.Invoke(kp.Key, kp.Value);
             res.Add(kp.Key, kp.Value);
         }
 
         return res;
     }
 
-    public T? Map<TType, TProxy>(Action<TType>? process = null) where TProxy : IProxy<TType, T>, new()
+    public T? Map<TType, TProxy>(Action<TType>? action = null) where TProxy : IProxy<TType, T>, new()
     {
         var proxy = new TProxy();
 
@@ -86,22 +96,34 @@ public sealed class Proj<T>
 
         if (obj != null)
         {
-            process?.Invoke(obj);
+            action?.Invoke(obj);
             proxy.Add(obj);
         }
 
         return proxy.Create();
     }
 
-    public T? MapArray<TType, TProxy>(Action<TType>? process = null) where TProxy : IProxy<TType, T>, new()
+    public T? MapArray<TType, TProxy>(Action<TType>? action = null) where TProxy : IProxy<TType, T>, new()
     {
         var proxy = new TProxy();
+
+        if (Content.StartsWith('{'))
+        {
+            var obj = JsonHelper.Deserialize<TType>(Content);
+            if (obj == null)
+                return proxy.Create();
+
+            action?.Invoke(obj);
+            proxy.Add(obj);
+            return proxy.Create();
+        }
+
         var arr = JsonHelper.Deserialize<TType[]>(Content);
 
         if (arr == null || arr.Length == 0)
             return proxy.Create();
 
-        if (process == null)
+        if (action == null)
             foreach (var item in arr)
             {
                 proxy.Add(item);
@@ -109,7 +131,7 @@ public sealed class Proj<T>
         else 
             foreach (var item in arr)
             {
-                process.Invoke(item);
+                action.Invoke(item);
                 proxy.Add(item);
             }
 
@@ -117,7 +139,7 @@ public sealed class Proj<T>
         return res;
     }
 
-    public T? MapDictionary<TType, TProxy>(Action<string, TType>? process = null) where TProxy : IKeyedCollectionProxy<T, TType>, new()
+    public T? MapDictionary<TType, TProxy>(Action<string, TType>? action = null) where TProxy : IKeyedCollectionProxy<T, TType>, new()
     {
         var proxy = new TProxy();
 
@@ -127,7 +149,7 @@ public sealed class Proj<T>
         {
             foreach (var kp in dict)
             {
-                process?.Invoke(kp.Key, kp.Value);
+                action?.Invoke(kp.Key, kp.Value);
                 proxy.Add(kp.Key, kp.Value);
             }
         }
@@ -135,86 +157,7 @@ public sealed class Proj<T>
         var res = proxy.Create();
         return res;
     }
-
-    /*
-    #region MapWithProxy
-
-    public IProxy<T>? Proxy { get; set; }
-
-    public IProxyProj<T> UseProxy<TType>(IProxy<TType, T> proxy)
-    {
-        Proxy = proxy;
-        return this;
-    }
-
-    public IKeyedProxyProj<T> UseProxy<TType>(IKeyedCollectionProxy<T, TType> proxy)
-    {
-        Proxy = proxy;
-        return this;
-    }
-
-    T? IProxyProj<T>.Map<TType>(Action<TType>? process)
-    {
-        if (Proxy == null)
-            throw new InvalidOperationException("Proxy is not initialized");
-
-        var proxy = (IProxy<TType, T>)Proxy;
-
-        var obj = JsonHelper.Deserialize<TType>(Content);
-
-        if (obj != null)
-        {
-            process?.Invoke(obj);
-            proxy.Add(obj);
-        }
-
-        return proxy.Create();
-    }
-    T? IProxyProj<T>.MapArray<TType>(Action<TType>? process)
-    {
-        if (Proxy == null)
-            throw new InvalidOperationException("Proxy is not initialized");
-
-        var proxy = (IProxy<TType, T>)Proxy;
-
-        var arr = JsonHelper.Deserialize<TType[]>(Content);
-
-        if (arr != null)
-        {
-            foreach (var item in arr)
-            {
-                process?.Invoke(item);
-                proxy.Add(item);
-            }
-        }
-
-        var res = proxy.Create();
-        return res;
-    }
-    T? IKeyedProxyProj<T>.MapDictionary<TType>(Action<string, TType>? process)
-    {
-        if (Proxy == null)
-            throw new InvalidOperationException("Proxy is not initialized");
-
-        var proxy = (IKeyedCollectionProxy<T, TType>)Proxy;
-
-        var dict = JsonHelper.Deserialize<IDictionary<string, TType>>(Content);
-
-        if (dict != null)
-        {
-            foreach (var kp in dict)
-            {
-                process?.Invoke(kp.Key, kp.Value);
-                proxy.Add(kp.Key, kp.Value);
-            }
-        }
-
-        var res = proxy.Create();
-        return res;
-    }
-
-    #endregion
-    */
+    
     public override string ToString()
     {
         return $"Proj<{typeof(T).Name}> Content={Content.Truncate(maxLength: 255, TruncateOptions.CutOffTheMiddle)}";
@@ -234,7 +177,7 @@ public class ProxyProj<T>
         Proxy = proxy;
     }
 
-    public T? Map<TType>(Action<TType>? process = null)
+    public T? Map<TType>(Action<TType>? action = null)
     {
         var proxy = (IProxy<TType, T>)Proxy;
 
@@ -242,13 +185,15 @@ public class ProxyProj<T>
 
         if (obj != null)
         {
-            process?.Invoke(obj);
+            action?.Invoke(obj);
             proxy.Add(obj);
         }
 
-        return proxy.Create();
+        var builder = (IProxy<T>)proxy;
+        // explicit interface call due to builder might implement few IProxy<T> interfaces 
+        return builder.Create();
     }
-    public T? MapArray<TType>(Action<TType>? process = null)
+    public T? MapArray<TType>(Action<TType>? action = null)
     {
         var proxy = (IProxy<TType, T>)Proxy;
 
@@ -258,13 +203,14 @@ public class ProxyProj<T>
         {
             foreach (var item in arr)
             {
-                process?.Invoke(item);
+                action?.Invoke(item);
                 proxy.Add(item);
             }
         }
 
-        var res = proxy.Create();
-        return res;
+        var builder = (IProxy<T>)proxy;
+        // explicit interface call due to builder might implement few IProxy<T> interfaces 
+        return builder.Create();
     }
 
     public override string ToString()
@@ -286,7 +232,7 @@ public class KeyedProxyProj<T>
         Proxy = proxy;
     }
 
-    public T? MapDictionary<TType>(Action<string, TType>? process = null)
+    public T? MapDictionary<TType>(Action<string, TType>? action = null)
     {
         var proxy = (IKeyedCollectionProxy<T, TType>)Proxy;
 
@@ -296,13 +242,13 @@ public class KeyedProxyProj<T>
         {
             foreach (var kp in dict)
             {
-                process?.Invoke(kp.Key, kp.Value);
+                action?.Invoke(kp.Key, kp.Value);
                 proxy.Add(kp.Key, kp.Value);
             }
         }
 
-        var res = proxy.Create();
-        return res;
+        var builder = (IProxy<T>)proxy;
+        return builder.Create();
     }
 
     public override string ToString()
