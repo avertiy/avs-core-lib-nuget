@@ -255,7 +255,6 @@ namespace AVS.CoreLib.Extensions.Collections
 
             return result;
         }
-
         
         public static IList<T> Shrink<T>(this IList<T> items, Func<T, double> selector, double threshold = 0.0)
         {
@@ -264,8 +263,6 @@ namespace AVS.CoreLib.Extensions.Collections
                 threshold = avg;
             return items.Where(i => selector(i) >= threshold).ToList();
         }
-
-
 
         /// <summary>
         /// Select element(s) by their respective indices
@@ -336,89 +333,5 @@ namespace AVS.CoreLib.Extensions.Collections
 
             return dict.Values.ToList();
         }
-
-        //public static int MergeDescending<T>(this List<T> records, IList<T> items, Func<T, DateTime> selector, Func<T, T, bool> isDuplicate)
-        //{
-        //    if (items.Count == 0)
-        //        return 0;
-
-        //    Guard.Array.MustBeDescending(items, selector, items.Count / 8);
-        //    records.EnsureCapacity(records.Count + items.Count);
-
-        //    if (records.Count == 0 || selector(records[^1]) > selector(items[0]))
-        //    {
-        //        records.AddRange(items);
-        //        return items.Count;
-        //    }
-
-        //    if (selector(items[^1]) > selector(records[0]))
-        //    {
-        //        records.InsertRange(items);
-        //        return items.Count;
-        //    }
-
-        //    var counter = 0;
-        //    List<T>? skipped = null;
-
-        //    foreach (var item in items)
-        //    {
-        //        var timestamp = selector(item);
-
-        //        if (timestamp < selector(records[^1]))
-        //        {
-        //            records.Add(item);
-        //            counter++;
-        //            continue;
-        //        }
-
-        //        if (timestamp > selector(records[0]))
-        //        {
-        //            records.Insert(0, item);
-        //            counter++;
-        //            continue;
-        //        }
-
-        //        skipped ??= new List<T>(counter == 0 ? items.Count : 10);
-        //        skipped.Add(item);
-        //    }
-
-        //    if (skipped == null)
-        //        return counter;
-
-        //    //if (counter == 0)
-        //    //{
-        //    //    Logger?.LogWarning("Same page detected - {skipped} of {count} records skipped", skipped.Count, items.Count);
-        //    //    return 0;
-        //    //}
-
-        //    // records: [25,20,16,11,10]
-        //    // skipped: [12,11]
-        //    // result: [25,20,16,12,11,11,10]
-
-        //    var index = 1;
-        //    for (var i = 1; i <= skipped.Count; i++)
-        //    {
-        //        var skippedItem = skipped[^i];
-        //        var timestamp = selector(skippedItem);
-
-        //        for (; index < records.Count; index++)
-        //        {
-        //            var record = records[index];
-
-        //            if (timestamp < selector(record))
-        //                continue;
-
-        //            if (!isDuplicate(record, skippedItem))
-        //            {
-        //                records.Insert(index, skippedItem);
-        //                counter++;
-        //            }
-                        
-        //            break;
-        //        }
-        //    }
-
-        //    return counter;
-        //}
     }
 }

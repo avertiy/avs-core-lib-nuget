@@ -7,6 +7,12 @@ public static class ArrayExtensions
 {
     public static T[] Combine<T>(this T[] arr1, T[] arr2)
     {
+        if (arr2.Length == 0)
+            return arr1;
+
+        if (arr1.Length == 0)
+            return arr2;
+
         var result = new T[arr1.Length + arr2.Length];
         Array.Copy(arr1, result, arr1.Length);
         Array.Copy(arr2, 0, result, arr1.Length, arr2.Length);
