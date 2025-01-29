@@ -29,7 +29,7 @@ namespace AVS.CoreLib.Caching
         /// <summary>
         /// this method aka replacement to standard extension method  _memoryCache.GetOrCreateAsync()
         /// </summary>
-        protected async Task<CachedObject<T?>> GetOrCreateInternalAsync<T>(CacheKey key, Func<Task<T?>> acquire, int defaultCacheTime)
+        protected async Task<CachedObject<T?>> GetOrCreateInternalAsync<T>(CacheKey key, Func<Task<T>> acquire, int defaultCacheTime)
         {
             if (Options.CachingEnabled == false)
             {

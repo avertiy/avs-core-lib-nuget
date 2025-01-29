@@ -158,5 +158,16 @@ namespace AVS.CoreLib.Extensions.Linq
 
             return (min: minValue, max: maxValue);
         }
+
+        public static IEnumerable<T> ExceptBy<T, TKey>(this IEnumerable<T> source, HashSet<TKey> keys, Func<T, TKey> keySelector)
+        {
+            return source.Where(x => !keys.Contains(keySelector(x)));
+        }
+
+        public static IEnumerable<T> ExceptBy<T, TKey>(this IEnumerable<T> source, IEnumerable<T> other, Func<T, TKey> keySelector)
+        {
+            var otherKeys = new HashSet<TKey>(other.Select(keySelector));
+            return source.Where(x => !otherKeys.Contains(keySelector(x)));
+        }
     }
 }

@@ -15,7 +15,7 @@ namespace AVS.CoreLib.Caching
         /// Get <see cref="T"/> value from cache by the given key. If value is not present in cache acquire it with <see cref="acquire"/> callback.
         /// If <see cref="cacheDuration"/>(in minutes) is positive puts the value into cache 
         /// </summary>
-        Task<T?> GetOrCreate<T>(string key, Func<Task<T?>> acquire, int? cacheDuration = null);
+        Task<CacheResult<T>> GetOrCreate<T>(string key, Func<Task<T>> acquire, int? cacheDuration = null);
 
         bool TryGetValue<T>(string key, out T? value);
 
@@ -26,7 +26,7 @@ namespace AVS.CoreLib.Caching
         /// </summary>
         /// <param name="key">cache key</param>
         /// <param name="item">object to stored in cache</param>
-        /// <param name="cacheDuration">in minutes, if not provided the default value is used</param>
+        /// <param name="cacheDuration">in minutes, if not provided the default value (10 min.) is used</param>
         void Set<T>(string key, T? item, int? cacheDuration = null);
 
         bool IsSet(string key);

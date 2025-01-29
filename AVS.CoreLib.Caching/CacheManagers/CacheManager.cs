@@ -41,22 +41,23 @@ namespace AVS.CoreLib.Caching
 
         public void Refresh<T>(string key, T value, int? cacheDuration = null)
         {
-            if (!CachingEnabled || key == null || value == null || value.Equals(default) || !IsSet(key))
+            if (!CachingEnabled || string.IsNullOrEmpty(key) || value == null || value.Equals(default) || !IsSet(key))
                 return;
 
             CreateCacheEntry(key, value, cacheDuration ?? DefaultCacheDuration);
         }
 
-        public async Task<T?> GetOrCreate<T>(string key, Func<Task<T?>> acquire, int? cacheDuration = null)
+        public async Task<CacheResult<T>> GetOrCreate<T>(string key, Func<Task<T>> acquire, int? cacheDuration = null)
         {
-            if (CachingEnabled && TryGetValue(key, out T? cachedObj))
-                return cachedObj;
+            if (TryGetValue(key, out T? val) && val !=null)
+                return new CacheResult<T>(val, true);
 
             var value = await acquire().ConfigureAwait(false);
 
-            var time = cacheDuration ?? DefaultCacheDuration;
-            if (time > 0)
-                CreateCacheEntry(key, value, time);
+            var durationInMinutes = cacheDuration ?? DefaultCacheDuration;
+            if (durationInMinutes > 0)
+                CreateCacheEntry(key, value, durationInMinutes);
+
             return value;
         }
     }

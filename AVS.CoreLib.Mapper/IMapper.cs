@@ -39,7 +39,7 @@ namespace AVS.CoreLib.Mapper
         /// <typeparam name="TDestination">destination type</typeparam>
         /// <param name="source">source object</param>
         /// <param name="delegateRef">dummy parameter helps to track delegate(s) usages</param>
-        TDestination Map<TSource, TDestination>(TSource source, string? delegateRef = null);
+        TDestination Map<TSource, TDestination>(TSource source, string delegateRef);
 
         /// <summary>
         /// Registers type mapping delegate to update existing <see cref="TTarget"/> object

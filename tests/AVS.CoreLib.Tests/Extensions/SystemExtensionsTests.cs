@@ -44,7 +44,7 @@ public class SystemExtensionsTests
     {
         try
         {
-            var dt = DateRange.Create(DateTime.Now, DateTime.Today);
+            var dt = new DateRange(DateTime.Now, DateTime.Today);
         }
         catch (Exception ex)
         {

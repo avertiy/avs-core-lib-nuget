@@ -11,9 +11,7 @@ using AVS.CoreLib.Extensions.Linq;
 
 namespace AVS.CoreLib.Dates
 {
-    //TODO make From and To nullable, null is treated as UtcNow, both null - means no data
-    //the only issue it would be quite a messy way to access the datetime values
-    //TODO Add DateRange Creation by week number e.g. 12 week and slicing range on pieces by week 10,11,12,13,14 etc.
+    //TODO Add slicing range on pieces by week number: week #10, week #11 etc.
 
     /// <summary>
     /// represents period from - to 
@@ -25,38 +23,73 @@ namespace AVS.CoreLib.Dates
     public readonly struct DateRange
     {
         public DateTime From { get; }
-
         public DateTime To { get; }
 
-        public bool HasValue => To > From;
+        public bool HasValue => TotalDays > 0;
         public double TotalDays => (To - From).TotalDays;
         public double TotalSeconds => (To - From).TotalSeconds;
-
         public int Days => Convert.ToInt32(TotalDays);
         public int Hours => Convert.ToInt32(TotalSeconds / 3600);
         public int Seconds => Convert.ToInt32(TotalSeconds);
 
+        #region c-tors
+        /// <summary>
+        /// Creates DateRange from till <see cref="DateTime.Now"/>
+        /// </summary>
+        public DateRange(DateTime from)
+        {
+            var now = DateTime.Now;
+
+            if (from > now)
+                throw new ArgumentOutOfRangeException(nameof(from),$"From date ({from:g}) must be less than now ({now:g})");
+
+            From = from;
+            To = now;
+        }
+
+        public DateRange(DateTime from, int days)
+        {
+            if (days <= 0)
+                throw new ArgumentOutOfRangeException(nameof(days), "Days number must be greater than 0");
+
+            From = from;
+            To = from.AddDays(days);
+        }
+
+        public DateRange(DateTime from, double milliseconds)
+        {
+            if (milliseconds <= 0)
+                throw new ArgumentOutOfRangeException(nameof(milliseconds), "Days number must be greater than 0");
+
+            From = from;
+            To = from.AddMilliseconds(milliseconds);
+        }
+
         public DateRange(DateTime from, DateTime to)
         {
             if (from > to)
-                throw new ArgumentException($"From date must be less or equal to date (({from:g}) <= {to:g})");
+                throw new ArgumentOutOfRangeException($"From date ({from:g}) must be less than To date ({to:g})");
 
             From = from;
             To = to;
+        }
 
+        public DateRange((DateTime from, DateTime to) range)
+        {
+            if (range.from > range.to)
+                throw new ArgumentException($"From date ({range.from:g}) must be less than To date ({range.to:g})");
+
+            From = range.from;
+            To = range.to;
         }
 
         public DateRange(DateRange other)
         {
             From = other.From;
             To = other.To;
-        }
+        } 
 
-        public DateRange((DateTime from, DateTime to) range)
-        {
-            From = range.from;
-            To = range.to;
-        }
+        #endregion
 
         public bool Contains(DateTime date)
         {
@@ -248,19 +281,27 @@ namespace AVS.CoreLib.Dates
             return DateRangeHelper.TryParseFromLiterals(str, out range) || DateRangeHelper.TryParseExact(str, out range);
         }
 
+        public static DateRange Create(DateTime from)
+        {
+            return new DateRange(from, DateTime.Today);
+        }
+
+        [Obsolete("Use c-tor: new DateRange(from, days);")]
         public static DateRange Create(DateTime from, int days)
         {
             return new DateRange(from, from.AddDays(days));
         }
 
-        public static DateRange Create(DateTime from, DateTime to)
-        {
-            return new DateRange(from, to);
-        }
-
         public static DateRange Create(DateTime from, double milliseconds)
         {
             return new DateRange(from, from.AddMilliseconds(milliseconds));
+        }
+
+        public static DateRange FromToday(int days)
+        {
+            return days < 0 
+                ? new DateRange(DateTime.Today.AddDays(days), DateTime.Today)
+                : new DateRange(DateTime.Today, DateTime.Today.AddDays(days));
         }
 
         public static DateRange FromNow(int seconds, bool utcTime = false)
@@ -276,16 +317,18 @@ namespace AVS.CoreLib.Dates
             }
         }
 
+        [Obsolete("Use c-tor: new DateRange(from)")]
         public static DateRange FromNow(DateTime from, bool utcTime = false)
         {
             var now = utcTime ? DateTime.UtcNow : DateTime.Now;
             return new DateRange(from, now);
         }
 
-        public static DateRange FromSource<T>(IList<T> source, Func<T, DateTime> selector, Sort sort = Sort.None)
+        [Obsolete("Use extension method for source.GetDataRange(selector)")]
+        public static DateRange? FromSource<T>(IList<T> source, Func<T, DateTime> selector, Sort sort = Sort.None)
         {
             if (source.Count == 0)
-                return DateRange.Empty;
+                return null;
 
             switch (sort)
             {
@@ -300,18 +343,33 @@ namespace AVS.CoreLib.Dates
             }
         }
 
-        public static DateRange FromToday(DateTime from)
+        public static DateRange FromWeek(int weekNumber, int days = 6, int year = 0)
         {
-            return new DateRange(from, DateTime.Today);
+            if (weekNumber < 1 || weekNumber > 53)
+                throw new ArgumentOutOfRangeException(nameof(weekNumber), "Week number must be between 1 and 53.");
+
+            if (days <= 0)
+                throw new ArgumentOutOfRangeException(nameof(days), "Days number must be greater than 0");
+
+            // Get the first day of the year
+            var yy = year >= 0 ? year : DateTime.Today.Year;
+
+            var firstDayOfYear = new DateTime(yy, 1, 1);
+
+            // ISO 8601: Get the Thursday of the first week of the year
+            // Thursday is used as a reference because it's the middle day of the week
+            int daysToFirstThursday = (DayOfWeek.Thursday - firstDayOfYear.DayOfWeek + 7) % 7;
+            var firstThursdayOfYear = firstDayOfYear.AddDays(daysToFirstThursday);
+
+            // Calculate the first day of the specified week
+            var firstDayOfWeek = firstThursdayOfYear.AddDays((weekNumber - 1) * 7 - 3);
+
+            // The end date is 6 days after the start date
+            var lastDayOfWeek = firstDayOfWeek.AddDays(days);
+
+            return new DateRange(firstDayOfWeek, lastDayOfWeek);
         }
 
-        public static DateRange FromToday(int days)
-        {
-            if (days < 0)
-                return new DateRange(DateTime.Today.AddDays(days), DateTime.Today);
-            else
-                return new DateRange(DateTime.Today, DateTime.Today.AddDays(days));
-        }
         public static DateRange Empty => new(DateTime.MinValue, DateTime.MinValue);
         public static DateRange Day => new(DateTime.Today.AddDays(-1), DateTime.Today);
         public static DateRange Week => new(DateTime.Today.AddDays(-7), DateTime.Today);
@@ -325,6 +383,24 @@ namespace AVS.CoreLib.Dates
 
     public static class DateRangeExtensions
     {
+        public static DateRange? GetDataRange<T>(this IList<T> source, Func<T, DateTime> selector, Sort sort = Sort.None)
+        {
+            if (source.Count == 0)
+                return null;
+
+            switch (sort)
+            {
+                case Sort.Asc:
+                    return new DateRange(from: selector(source[0]), to: selector(source[1]));
+                case Sort.Desc:
+                    return new DateRange(from: selector(source[^1]), to: selector(source[0]));
+                case Sort.None:
+                default:
+                    var (from, to) = source.MinMax(selector);
+                    return new DateRange(from, to);
+            }
+        }
+
         /// <summary>
         /// converts date range (from/to) to UTC time
         /// </summary>
@@ -548,14 +624,11 @@ namespace AVS.CoreLib.Dates
         {
             //var json = $"{{ \"from\": \"{value.From:G}\", \"to\": \"{value.To:G}\" }}";
             //writer.WriteStringValue(json);
+            //var text = $"{value.From:dd/MM/yyyy HH:mm:ss} - {value.To:dd/MM/yyyy HH:mm:ss}";
 
-            //writer.WriteStartObject();
-            //writer.WritePropertyName("from");
-            //writer.WriteStringValue(value.From.ToString("G", CultureInfo.InvariantCulture));
-            //writer.WritePropertyName("to");
-            //writer.WriteStringValue(value.To.ToString("G", CultureInfo.InvariantCulture));
-            //writer.WriteEndObject();
-            var text = $"{value.From:dd/MM/yyyy HH:mm:ss}-{value.To:dd/MM/yyyy HH:mm:ss}";
+            // JavaScript supports only one  date time string format of the ISO 8601 `YYYY-MM-DDTHH:mm:ss.sssZ`
+            // which is in C# yyyy-MM-ddTHH:mm:ss.fffZ or simply :O 
+            var text = $"{value.From:O} - {value.To:O}";
             writer.WriteStringValue(text);
         }
     }

@@ -56,20 +56,6 @@ namespace AVS.CoreLib.Mapper
         public void Register<TSource, TResult>(Func<TSource, TResult> @delegate)
         {
             var mappingKey = $"{typeof(TSource).Name}->{typeof(TResult).Name}";
-
-            //var wrapper = new Func<TSource, TResult>(x =>
-            //{
-            //    try
-            //    {
-            //        return @delegate(x);
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        throw new MapException($"Map {mappingKey} failed", ex);
-            //    }
-            //});
-
-            //RegisterDelegate(mappingKey, wrapper);
             RegisterDelegate(mappingKey, @delegate);
         }
 
@@ -83,7 +69,7 @@ namespace AVS.CoreLib.Mapper
         /// <typeparam name="TDestination">model (destination) type</typeparam>
         /// <param name="source">mapping source</param>
         /// <param name="delegateRef">helps to track mapping delegate(s) usages</param>
-        public TDestination Map<TSource, TDestination>(TSource source, string? delegateRef = null)
+        public TDestination Map<TSource, TDestination>(TSource source, string delegateRef)
         {
             var mappingKey = $"{typeof(TSource).Name}->{typeof(TDestination).Name}";
             var del = this[mappingKey];
@@ -94,7 +80,7 @@ namespace AVS.CoreLib.Mapper
             }
             catch (Exception ex)
             {
-                throw new MapException($"Map {typeof(TSource).Name}->{typeof(TDestination).Name} Failed", ex, delegateRef);
+                throw new MapException($"Map<{typeof(TSource).Name}.{typeof(TDestination).Name}> {typeof(TSource).Name}->{typeof(TDestination).Name} failed", ex, delegateRef);
             }
         }
         #endregion

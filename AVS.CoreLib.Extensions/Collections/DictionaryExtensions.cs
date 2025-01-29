@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
+using Microsoft.VisualBasic;
 
 namespace AVS.CoreLib.Extensions.Collections
 {
@@ -149,6 +151,56 @@ namespace AVS.CoreLib.Extensions.Collections
             }
             sb.Length -= separator.Length;
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// analogue of js flat function e.g. Object.values(dict).flat()
+        /// </summary>
+        public static TValue[] Flat<TKey, TValue>(this IDictionary<TKey, IEnumerable<TValue>> dictionary, bool distinct)
+        {
+            if (distinct)
+            {
+                var set = new HashSet<TValue>(20);
+
+                foreach (var kp in dictionary)
+                {
+                    foreach (var val in kp.Value)
+                    {
+                        set.Add(val);
+                    }
+                }
+
+                var arr = new TValue[set.Count];
+                set.CopyTo(arr);
+                return arr;
+            }
+
+            return dictionary.SelectMany(x => x.Value).ToArray();
+        }
+
+        /// <summary>
+        /// analogue of js flat function e.g. Object.values(dict).flat()
+        /// </summary>
+        public static TValue[] Flat<TKey, TValue>(this IDictionary<TKey, TValue[]> dictionary, bool distinct)
+        {
+            if (distinct)
+            {
+                var set = new HashSet<TValue>(20);
+
+                foreach (var kp in dictionary)
+                {
+                    foreach (var val in kp.Value)
+                    {
+                        set.Add(val);
+                    }
+                }
+
+                var arr = new TValue[set.Count];
+                set.CopyTo(arr);
+                return arr;
+            }
+
+            return dictionary.SelectMany(x => x.Value).ToArray();
         }
     }
 }

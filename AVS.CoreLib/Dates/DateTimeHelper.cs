@@ -5,6 +5,8 @@ namespace AVS.CoreLib.Dates
 {
     public static class DateTimeHelper
     {
+        public const int SECONDS_IN_DAY = 86_400; 
+
         public static DateTime ParseUtcDateTime(string dateTime, string format = "yyyy-MM-dd HH:mm:ss")
         {
             return DateTime.SpecifyKind(DateTime.ParseExact(dateTime, format,

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using AVS.CoreLib.Extensions;
 
 namespace AVS.CoreLib.Dates
@@ -11,10 +12,17 @@ namespace AVS.CoreLib.Dates
             range = new DateRange();
             string[]? parts = null;
 
-            if (str.Contains('-') || str.Contains(';'))
+            if (str.Contains(" - "))
+            {
+                parts = str.Split(" - ", StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length != 2)
+                    return false;
+            }
+
+            if (str.Contains(';') || str.Contains('-'))
             {
                 //01/10/2019 - 02/11/2019
-                parts = str.Split(new[] { '-', ';', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                parts = str.Split(new[] { ';', '-' }, StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length != 2)
                     return false;
             }
@@ -22,11 +30,45 @@ namespace AVS.CoreLib.Dates
             if (parts == null)
                 return false;
 
-            var parse1 = DateTime.TryParse(parts[0].Trim(), CultureInfo.CurrentCulture, DateTimeStyles.None, out var from);
+            var fromStr = parts[0].Trim();
+            var toStr = parts[1].Trim();
 
-            var parse2 = DateTime.TryParse(parts[1].Trim(), CultureInfo.CurrentCulture, DateTimeStyles.None, out var to);
+            if (fromStr.Contains(':'))
+            {
+                var formats = new[] {
+                    "yyyy-MM-ddTHH:mm:ss.fffZ",
+                    "dd/MM/yyyy HH:mm:ss",
+                    "dd/MM/yyyy HH:mm",
+                    "MM/dd/yyyy HH:mm:ss",
+                    "MM/dd/yyyy HH:mm",
+                };
 
-            if (parse1 && parse2)
+                if (DateTime.TryParseExact(fromStr, formats, null, DateTimeStyles.None, out var fromDate) &&
+                    DateTime.TryParseExact(toStr, formats, null, DateTimeStyles.None, out var toDate))
+                {
+                    range = new DateRange(fromDate, toDate);
+                    return true;
+                }
+            }
+            else
+            {
+                var formats = new[] {
+                    "dd/MM/yyyy",
+                    "MM/dd/yyyy",
+                    "yyyy-MM-dd",
+                };
+
+                if (DateTime.TryParseExact(fromStr, formats, null, DateTimeStyles.None, out var fromDate) &&
+                    DateTime.TryParseExact(toStr, formats, null, DateTimeStyles.None, out var toDate))
+                {
+                    range = new DateRange(fromDate, toDate);
+                    return true;
+                }
+            }
+
+            if (DateTime.TryParse(fromStr, CultureInfo.CurrentCulture, DateTimeStyles.None, out var from) &&
+                DateTime.TryParse(toStr, CultureInfo.CurrentCulture, DateTimeStyles.None, out var to)
+               )
             {
                 range = new DateRange(from, to);
                 return true;
@@ -48,84 +90,105 @@ namespace AVS.CoreLib.Dates
         ///    /utc - DateTime.UtcNow instead of DateTime.Today
         ///    /1   - means staring not from today but from the 1st day of the month/quarter/year
         /// </code>
-        internal static bool TryParseFromLiterals(string str, out DateRange range)
+        internal static bool TryParseFromLiterals(string input, out DateRange range)
         {
-            var modifier = str.GetModifier();
-            str = str.TrimModifier(modifier);
+            var modifier = input.GetModifier();
+            var str = input.TrimModifier(modifier);
 
-            //e.g. 3D or 2W
-            if (str.Length == 2 && int.TryParse(str.Substring(0, 1), out var n))
-            {
-                range = CreateDateRange(n, str[^1], modifier);
+            if (TryParseSimpleLiteral(str, modifier, out range))
                 return true;
-            }
-            //35m or 11D
-            else if (str.Length == 3 && int.TryParse(str.Substring(0, 2), out var n2))
+
+            str = str.ToLower();
+            var date = GetDate(modifier, str);
+            switch (str)
             {
-                range = CreateDateRange(n2, str[^1], modifier);
-                return true;
-            }
-            //101D or 600s
-            else if (str.Length == 4 && int.TryParse(str.Substring(0, 3), out var n3))
-            {
-                range = CreateDateRange(n3, str[^1], modifier);
-                return true;
-            }
-            else
-            {
-                str = str.ToLower();
-                var date = GetDate(modifier, str);
-                switch (str)
+                case "YTD":
+                    range = new DateRange(DateTime.Today.StartOfYear(), DateTime.Today);
+                    return true;
+                case "recent":
+                    range = new DateRange(date.Date.AddDays(-7), date);
+                    return true;
+                case "today":
+                    range = new DateRange(date, DateTime.Now);
+                    return true;
+                case "yesterday":
+                    range = new DateRange(date.Date.AddDays(-1), date);
+                    return true;
+                case "day":
+                    range = new DateRange(date.Date.AddDays(-1), date);
+                    return true;
+                case "past-week":
+                    range = new DateRange(date.Date.StartOfWeek(), date);
+                    return true;
+                case "prev-week":
+                    range = new DateRange(date.Date.StartOfWeek().AddDays(-7), 7);
+                    return true;
+                case "week":
+                    range = new DateRange(date.Date.AddDays(-7), date);
+                    return true;
+                case "month":
+                    range = new DateRange(date.Date.AddMonths(-1), date);
+                    return true;
+                case "past-month":
+                    range = new DateRange(date.Date.StartOfMonth().AddMonths(-1), date);
+                    return true;
+                case "prev-month":
+                    range = new DateRange(date.Date.StartOfMonth().AddMonths(-1), 30);
+                    return true;
+                case "quarter":
+                    range = new DateRange(date.Date.AddMonths(-3), date);
+                    return true;
+                case "half-year":
+                    range = new DateRange(date.Date.AddMonths(-6), date);
+                    return true;
+                case "year":
+                    range = new DateRange(date.Date.AddMonths(-12), date);
+                    return true;
+                case "prev-year":
+                    range = new DateRange(date.Date.StartOfYear().AddYears(-1), 365);
+                    return true;
+                default:
                 {
-                    case "recent":
-                        range = new DateRange(date.Date.AddDays(-7), date);
-                        return true;
-                    case "today":
-                        range = new DateRange(date, DateTime.Now);
-                        return true;
-                    case "yesterday":
-                        range = new DateRange(date.Date.AddDays(-1), date);
-                        return true;
-                    case "day":
-                        range = new DateRange(date.Date.AddDays(-1), date);
-                        return true;
-                    case "past-week":
-                        range = new DateRange(date.Date.StartOfWeek(), date);
-                        return true;
-                    case "prev-week":
-                        range = DateRange.Create(date.Date.StartOfWeek().AddDays(-7), 7);
-                        return true;
-                    case "week":
-                        range = new DateRange(date.Date.AddDays(-7), date);
-                        return true;
-                    case "month":
-                        range = new DateRange(date.Date.AddMonths(-1), date);
-                        return true;
-                    case "past-month":
-                        range = new DateRange(date.Date.StartOfMonth().AddMonths(-1), date);
-                        return true;
-                    case "prev-month":
-                        range = DateRange.Create(date.Date.StartOfMonth().AddMonths(-1), 30);
-                        return true;
-                    case "quarter":
-                        range = new DateRange(date.Date.AddMonths(-3), date);
-                        return true;
-                    case "half-year":
-                        range = new DateRange(date.Date.AddMonths(-6), date);
-                        return true;
-                    case "year":
-                        range = new DateRange(date.Date.AddMonths(-12), date);
-                        return true;
-                    case "prev-year":
-                        range = DateRange.Create(date.Date.StartOfYear().AddYears(-1), 365);
-                        return true;
-                    default:
-                        {
-                            range = default;
-                            return false;
-                        }
+                    range = default;
+                    return false;
                 }
             }
+        }
+
+        /// <summary>
+        /// try parse literals like 1m, 24H, 365D, 3600s etc.
+        /// </summary>
+        private static bool TryParseSimpleLiteral(string str, Modifier modifier, out DateRange range)
+        {
+            if (str.Length == 0 || str.Length > 8)
+            {
+                range = default;
+                return false;
+            }
+
+            var letters = new[] { 'y', 'q', 'm', 'w', 'd', 'h', 's', 'Y', 'Q', 'M', 'W','D','H' };
+            var letter = str[^1];
+
+            if (!letters.Contains(letter))
+            {
+                range = default;
+                return false;
+            }
+
+            if (str.Length == 1)
+            {
+                range = CreateDateRange(1, letter, modifier);
+                return true;
+            }
+            
+            if (int.TryParse(str.Substring(0, str.Length - 1), out var n))
+            {
+                range = CreateDateRange(n, letter, modifier);
+                return true;
+            }
+
+            range = default;
+            return false;
         }
 
         internal static DateRange CreateDateRange(int n, char letter, Modifier modifier)

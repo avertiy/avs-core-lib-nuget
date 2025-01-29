@@ -3,6 +3,7 @@ using System.Collections;
 using System.Threading;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
+using Microsoft.VisualBasic;
 
 namespace AVS.CoreLib.Caching
 {
@@ -72,6 +73,16 @@ namespace AVS.CoreLib.Caching
 
             value = default;
             return false;
+        }
+
+        protected T? GetValue<T>(string key)
+        {
+            if (_memoryCache.TryGetValue(key, out var obj))
+            {
+                return (T?)obj;
+            }
+
+            return default;
         }
 
         protected virtual void CreateCacheEntry<T>(string key, T? item, int cacheDuration)
