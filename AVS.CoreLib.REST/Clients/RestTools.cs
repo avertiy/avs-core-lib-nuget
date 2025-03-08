@@ -155,6 +155,7 @@ namespace AVS.CoreLib.REST.Clients
                 Request = request,
                 Content = content,
                 Error = error,
+                StatusCode = responseMessage.StatusCode,
                 Headers = new MultiDictionary<string, string>()
             };
 
@@ -181,8 +182,8 @@ namespace AVS.CoreLib.REST.Clients
             if (responseMessage.IsSuccessStatusCode)
             {
                 return ResponseHelper.ContainsError(content, out error)
-                    ? (string.Empty, error)
-                    : (content, error);
+                    ? (content, error)
+                    : (content, null);
             }
 
             if (string.IsNullOrEmpty(content))
@@ -194,8 +195,11 @@ namespace AVS.CoreLib.REST.Clients
                 return (string.Empty, error);
             }
 
-            error = $"{responseMessage.StatusCode} - {content}";
-            return (string.Empty, error);
+            error = string.IsNullOrEmpty(responseMessage.ReasonPhrase)
+                ? $"{responseMessage.StatusCode} - {content}"
+                : $"{responseMessage.ReasonPhrase} - {content}";
+
+            return (content, error);
         }
 
         protected virtual void OnResponseReady(RestResponse response)

@@ -121,7 +121,7 @@ namespace AVS.CoreLib.Dates
                     range = new DateRange(date.Date.StartOfWeek(), date);
                     return true;
                 case "prev-week":
-                    range = new DateRange(date.Date.StartOfWeek().AddDays(-7), 7);
+                    range = DateRange.Create(date.Date.StartOfWeek().AddDays(-7), 7);
                     return true;
                 case "week":
                     range = new DateRange(date.Date.AddDays(-7), date);
@@ -133,7 +133,7 @@ namespace AVS.CoreLib.Dates
                     range = new DateRange(date.Date.StartOfMonth().AddMonths(-1), date);
                     return true;
                 case "prev-month":
-                    range = new DateRange(date.Date.StartOfMonth().AddMonths(-1), 30);
+                    range = DateRange.Create(date.Date.StartOfMonth().AddMonths(-1), 30);
                     return true;
                 case "quarter":
                     range = new DateRange(date.Date.AddMonths(-3), date);
@@ -145,7 +145,7 @@ namespace AVS.CoreLib.Dates
                     range = new DateRange(date.Date.AddMonths(-12), date);
                     return true;
                 case "prev-year":
-                    range = new DateRange(date.Date.StartOfYear().AddYears(-1), 365);
+                    range = DateRange.Create(date.Date.StartOfYear().AddYears(-1), 365);
                     return true;
                 default:
                 {

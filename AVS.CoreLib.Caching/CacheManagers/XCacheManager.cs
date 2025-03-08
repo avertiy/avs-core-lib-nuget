@@ -14,12 +14,12 @@ namespace AVS.CoreLib.Caching
     {
         public CachingOptions Options { get; }
 
-        public XCacheManager(IMemoryCache memoryCache) : base(memoryCache)
+        public XCacheManager(IMemoryCache memoryCache, int fixedListKeysCapacity = 100) : base(memoryCache, fixedListKeysCapacity)
         {
             Options = new CachingOptions() { DefaultCacheTime = 15, ShortTermCacheTime = 1 };
         }
 
-        public XCacheManager(IMemoryCache memoryCache, IOptions<CachingOptions> options) : base(memoryCache)
+        public XCacheManager(IMemoryCache memoryCache, IOptions<CachingOptions> options, int fixedListKeysCapacity = 100) : base(memoryCache, fixedListKeysCapacity)
         {
             Options = options.Value;
             if (Options.DefaultCacheTime == 0)

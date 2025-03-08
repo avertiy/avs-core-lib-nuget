@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using AVS.CoreLib.Collections;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace AVS.CoreLib.Caching
@@ -13,7 +15,7 @@ namespace AVS.CoreLib.Caching
         public int DefaultCacheDuration { get; set; } = 10;
         public bool CachingEnabled { get; set; } = true;
 
-        public CacheManager(IMemoryCache memoryCache) : base(memoryCache)
+        public CacheManager(IMemoryCache memoryCache, int fixedListKeysCapacity = 100) : base(memoryCache, fixedListKeysCapacity)
         {
         }
 

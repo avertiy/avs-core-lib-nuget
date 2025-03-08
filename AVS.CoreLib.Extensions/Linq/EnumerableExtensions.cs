@@ -129,36 +129,6 @@ namespace AVS.CoreLib.Extensions.Linq
             return counter;
         }
 
-        public static (TResult? min, TResult? max) MinMax<T, TResult>(this IEnumerable<T> source, Func<T, TResult?> selector)
-        {
-            var initialized = false;
-            TResult? minValue = default;
-            TResult? maxValue = default;
-            var comparer = Comparer<TResult>.Default;
-            foreach (var item in source)
-            {
-                var currentValue = selector(item);
-
-                if (currentValue == null)
-                    continue;
-
-                if (!initialized)
-                {
-                    initialized = true;
-                    minValue = currentValue;
-                    maxValue = currentValue;
-                }
-
-                if (comparer.Compare(currentValue, minValue) <= 0)
-                    minValue = currentValue;
-
-                if (comparer.Compare(currentValue, maxValue) >= 0)
-                    maxValue = currentValue;
-            }
-
-            return (min: minValue, max: maxValue);
-        }
-
         public static IEnumerable<T> ExceptBy<T, TKey>(this IEnumerable<T> source, HashSet<TKey> keys, Func<T, TKey> keySelector)
         {
             return source.Where(x => !keys.Contains(keySelector(x)));

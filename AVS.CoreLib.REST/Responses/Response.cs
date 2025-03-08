@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text.Json.Serialization;
 using AVS.CoreLib.Abstractions.Responses;
+using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Dynamic;
 using AVS.CoreLib.Json;
@@ -70,6 +71,11 @@ namespace AVS.CoreLib.REST.Responses
     [DebuggerNonUserCode]
     public static class Response
     {
+        public static Response<T> Create<T>(string source, string? error = null, object? request = null)
+        {
+            return new Response<T>(source, string.Empty, error: error, request: request);
+        }
+
         public static Response<T> Create<T>(string source, string content, string? error, object? request = null)
         {
             return new Response<T>(source, content, error: error, request: request);
@@ -78,6 +84,16 @@ namespace AVS.CoreLib.REST.Responses
         internal static Response<T> Create<T>(T? data, string source, string content, string? error, object? request = null)
         {
             return new Response<T>(source, content, data, error, request);
+        }
+
+        public static Response<T> Create<T>(string source, string? error, Func<T> getData)
+        {
+            var response = new Response<T>(source, string.Empty, error: error);
+
+            if (error == null)
+                response.Data = getData.Invoke();
+
+            return response;
         }
 
         public static Response<T> OK<T>(T data, string source, string content, object? request = null)
@@ -89,16 +105,6 @@ namespace AVS.CoreLib.REST.Responses
         {
             return new Response<T>(source, content, error: ex.Message, request: request);
         }
-
-        //public static Response<T> Create<T>(string source, string? error, object? request = null)
-        //{
-        //    return new Response<T>(source, error: error, request: request);
-        //}
-
-        //internal static Response<T> Create<T>(T? data, string source, string? error, object? request = null)
-        //{
-        //    return new Response<T>(source, data, error, request);
-        //}
     }
 }
 

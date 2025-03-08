@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Net;
 using System.Text.Json.Serialization;
@@ -83,8 +84,26 @@ namespace AVS.CoreLib.REST
         }
     }
 
-    internal static class RestResponseExtensions
+    public static class RestResponseExtensions
     {
+        public static void ThrowIfUnauthorizedOrIpAddressForbidden(this RestResponse response)
+        {
+            if (string.IsNullOrEmpty(response.Error))
+                return;
+
+            if (response.StatusCode == HttpStatusCode.Unauthorized || response.Error.Contains("Unauthorized"))
+                throw new ApiException(response.Error) { StatusCode = HttpStatusCode.Unauthorized };
+
+            if (response.StatusCode == HttpStatusCode.Forbidden)
+                throw new ApiException(response.Error) { StatusCode = HttpStatusCode.Forbidden };
+            
+            if (!response.Error.Contains("IP "))
+                return;
+
+            if (response.Error.Contains("IP address is not trusted") || response.Error.Contains("IP is not in white list"))
+                throw new ApiException(response.Error) { StatusCode = HttpStatusCode.Forbidden };
+        }
+
         internal static bool IsSuccessful(this RestResponse response)
         {
             if (!response.IsSuccess)

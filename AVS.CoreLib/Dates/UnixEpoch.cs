@@ -7,6 +7,11 @@ namespace AVS.CoreLib.Dates
         public static readonly DateTime Start = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
 
         /// <summary>
+        /// returns unix timestamp in milliseconds from unix epoch start
+        /// </summary>
+        public static long Now => DateTime.Now.ToUnixTimeMs();
+
+        /// <summary>
         /// convert datetime to unix timestamp in seconds from unix epoch start
         /// </summary>
         public static long ToUnixTime(this DateTime dateTime)

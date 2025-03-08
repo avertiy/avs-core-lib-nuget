@@ -20,6 +20,11 @@ namespace AVS.CoreLib.Extensions
             return values.Contains(value);
         }
 
+        public static bool Either(this string value, StringComparison comparisonType, params string[] values)
+        {
+            return values.Any(x => x.Equals(value, comparisonType));
+        }
+
         public static bool Either(this char @char, params char[] chars)
         {
             return chars.Contains(@char);

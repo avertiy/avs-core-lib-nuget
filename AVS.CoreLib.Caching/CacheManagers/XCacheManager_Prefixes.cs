@@ -6,7 +6,7 @@ namespace AVS.CoreLib.Caching
     public partial class XCacheManager : CacheManagerBase, IXCacheManager
     {
 
-        private readonly ConcurrentDictionary<string, CancellationTokenSource> _prefixes = new ConcurrentDictionary<string, CancellationTokenSource>();
+        private readonly ConcurrentDictionary<string, CancellationTokenSource> _prefixes = new();
 
         /// <summary>
         /// Removes items by key prefix

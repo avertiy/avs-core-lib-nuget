@@ -32,5 +32,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AVS.CoreLib.Abstractions\AVS.CoreLib.Abstractions.csproj" />
+    <ProjectReference Include="..\AVS.CoreLib\AVS.CoreLib.csproj" />
   </ItemGroup>  
 </Project>

@@ -25,46 +25,6 @@ namespace AVS.CoreLib.Dates
         public DateTime From { get; }
         public DateTime To { get; }
 
-        public bool HasValue => TotalDays > 0;
-        public double TotalDays => (To - From).TotalDays;
-        public double TotalSeconds => (To - From).TotalSeconds;
-        public int Days => Convert.ToInt32(TotalDays);
-        public int Hours => Convert.ToInt32(TotalSeconds / 3600);
-        public int Seconds => Convert.ToInt32(TotalSeconds);
-
-        #region c-tors
-        /// <summary>
-        /// Creates DateRange from till <see cref="DateTime.Now"/>
-        /// </summary>
-        public DateRange(DateTime from)
-        {
-            var now = DateTime.Now;
-
-            if (from > now)
-                throw new ArgumentOutOfRangeException(nameof(from),$"From date ({from:g}) must be less than now ({now:g})");
-
-            From = from;
-            To = now;
-        }
-
-        public DateRange(DateTime from, int days)
-        {
-            if (days <= 0)
-                throw new ArgumentOutOfRangeException(nameof(days), "Days number must be greater than 0");
-
-            From = from;
-            To = from.AddDays(days);
-        }
-
-        public DateRange(DateTime from, double milliseconds)
-        {
-            if (milliseconds <= 0)
-                throw new ArgumentOutOfRangeException(nameof(milliseconds), "Days number must be greater than 0");
-
-            From = from;
-            To = from.AddMilliseconds(milliseconds);
-        }
-
         public DateRange(DateTime from, DateTime to)
         {
             if (from > to)
@@ -74,21 +34,15 @@ namespace AVS.CoreLib.Dates
             To = to;
         }
 
-        public DateRange((DateTime from, DateTime to) range)
-        {
-            if (range.from > range.to)
-                throw new ArgumentException($"From date ({range.from:g}) must be less than To date ({range.to:g})");
+        #region Auto calc. props
+        public bool HasValue => TotalDays > 0;
+        public double TotalDays => (To - From).TotalDays;
+        public double TotalSeconds => (To - From).TotalSeconds;
+        public double TotalMilliseconds => (To - From).TotalMilliseconds;
 
-            From = range.from;
-            To = range.to;
-        }
-
-        public DateRange(DateRange other)
-        {
-            From = other.From;
-            To = other.To;
-        } 
-
+        public int Days => Convert.ToInt32(TotalDays);
+        public int Hours => Convert.ToInt32(TotalSeconds / 3600);
+        public int Seconds => Convert.ToInt32(TotalSeconds); 
         #endregion
 
         public bool Contains(DateTime date)
@@ -190,27 +144,6 @@ namespace AVS.CoreLib.Dates
             return dateRange.TotalSeconds < compare.TotalSeconds;
         }
 
-        //public static bool operator >=(DateRange dateRange, int periodInSeconds)
-        //{
-        //    return dateRange.TotalSeconds >= periodInSeconds;
-        //}
-
-        //public static bool operator >(DateRange dateRange, int periodInSeconds)
-        //{
-        //    return dateRange.TotalSeconds > periodInSeconds;
-        //}
-
-        //public static bool operator <(DateRange dateRange, int periodInSeconds)
-        //{
-        //    return dateRange.TotalSeconds < periodInSeconds;
-        //}
-
-        //public static bool operator <=(DateRange dateRange, int periodInSeconds)
-        //{
-        //    return dateRange.TotalSeconds <= periodInSeconds;
-        //}
-
-
         #endregion
 
         public override string ToString()
@@ -281,21 +214,30 @@ namespace AVS.CoreLib.Dates
             return DateRangeHelper.TryParseFromLiterals(str, out range) || DateRangeHelper.TryParseExact(str, out range);
         }
 
-        public static DateRange Create(DateTime from)
+        #region Create methods
+        public static DateRange Create(DateTime dateTime)
         {
-            return new DateRange(from, DateTime.Today);
+            return new DateRange(dateTime, DateTime.Today);
         }
 
-        [Obsolete("Use c-tor: new DateRange(from, days);")]
-        public static DateRange Create(DateTime from, int days)
+        public static DateRange Create(DateTime dateTime, int days)
         {
-            return new DateRange(from, from.AddDays(days));
+            return days >= 0 ? new DateRange(dateTime, dateTime.AddDays(days)) : new DateRange(dateTime.AddDays(days), dateTime);
         }
 
-        public static DateRange Create(DateTime from, double milliseconds)
+        public static DateRange Create(DateTime dateTime, double milliseconds)
         {
-            return new DateRange(from, from.AddMilliseconds(milliseconds));
+            return milliseconds >= 0 ? new DateRange(dateTime, dateTime.AddMilliseconds(milliseconds)) : new DateRange(dateTime.AddMilliseconds(milliseconds), dateTime);
         }
+
+        public static DateRange Create((DateTime from, DateTime to) range)
+        {
+            if (range.from > range.to)
+                throw new ArgumentException($"From date ({range.from:g}) must be less than To date ({range.to:g})");
+
+            return new DateRange(range.from, range.to);
+        } 
+        #endregion
 
         public static DateRange FromToday(int days)
         {
@@ -316,33 +258,8 @@ namespace AVS.CoreLib.Dates
                 return new DateRange(now, now.AddSeconds(seconds));
             }
         }
-
-        [Obsolete("Use c-tor: new DateRange(from)")]
-        public static DateRange FromNow(DateTime from, bool utcTime = false)
-        {
-            var now = utcTime ? DateTime.UtcNow : DateTime.Now;
-            return new DateRange(from, now);
-        }
-
-        [Obsolete("Use extension method for source.GetDataRange(selector)")]
-        public static DateRange? FromSource<T>(IList<T> source, Func<T, DateTime> selector, Sort sort = Sort.None)
-        {
-            if (source.Count == 0)
-                return null;
-
-            switch (sort)
-            {
-                case Sort.Asc:
-                    return new DateRange(from: selector(source[0]), to: selector(source[1]));
-                case Sort.Desc:
-                    return new DateRange(from: selector(source[^1]), to: selector(source[0]));
-                case Sort.None:
-                default:
-                    var (from, to) = source.MinMax(selector);
-                    return new DateRange(from, to);
-            }
-        }
-
+        
+        
         public static DateRange FromWeek(int weekNumber, int days = 6, int year = 0)
         {
             if (weekNumber < 1 || weekNumber > 53)
@@ -413,7 +330,7 @@ namespace AVS.CoreLib.Dates
         /// <summary>
         /// combine both ranges, taking the earliest From  and the latest To
         /// </summary>
-        public static DateRange Combine(this DateRange range, DateRange other)
+        public static DateRange Extend(this DateRange range, DateRange other)
         {
             return new DateRange(range.From.TakeEarliest(other.From), range.To.TakeLatest(other.To));
         }

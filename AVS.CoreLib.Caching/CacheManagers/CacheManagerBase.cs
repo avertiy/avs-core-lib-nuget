@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading;
+using AVS.CoreLib.Collections;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
-using Microsoft.VisualBasic;
 
 namespace AVS.CoreLib.Caching
 {
@@ -11,6 +14,11 @@ namespace AVS.CoreLib.Caching
     {
         private bool _disposed = false;
         private readonly IMemoryCache _memoryCache;
+        private readonly FixedList<string> _keys;
+        /// <summary>
+        /// Last (by default 100) keys 
+        /// </summary>
+        public IList<string> Keys => _keys;
 
         /// <summary>
         /// Raised when item is removed from cache explicitly via <see cref="Remove"/>
@@ -27,9 +35,10 @@ namespace AVS.CoreLib.Caching
         /// </summary>
         protected CancellationTokenSource _clearToken = new CancellationTokenSource();
 
-        protected CacheManagerBase(IMemoryCache memoryCache)
+        protected CacheManagerBase(IMemoryCache memoryCache, int fixedListKeysCapacity = 100)
         {
             _memoryCache = memoryCache;
+            _keys = new FixedList<string>(fixedListKeysCapacity);
         }
 
         /// <summary>
@@ -50,7 +59,7 @@ namespace AVS.CoreLib.Caching
         {
             _memoryCache.Remove(key);
             ItemRemoved?.Invoke(key);
-
+            Keys.Remove(key);
         }
 
         /// <summary>
@@ -85,21 +94,23 @@ namespace AVS.CoreLib.Caching
             return default;
         }
 
-        protected virtual void CreateCacheEntry<T>(string key, T? item, int cacheDuration)
+        protected virtual bool CreateCacheEntry<T>(string key, T? item, int cacheDuration)
         {
             if (cacheDuration <= 0)
             {
                 if (IsSet(key))
                     Remove(key);
 
-                return;
+                return false;
             }
 
             if (item == null || item.Equals(default(T)) || item is ICollection { Count: 0 })
-                return;
+                return false;
 
             var options = PrepareCacheEntryOptions(key, cacheDuration);
             CreateCacheEntry(key, item, options);
+            _keys.Add(key, true);
+            return true;
         }
 
         protected void CreateCacheEntry<T>(string key, T value, MemoryCacheEntryOptions options)
@@ -151,5 +162,26 @@ namespace AVS.CoreLib.Caching
             _disposed = true;
         }
         #endregion
+
+        public void EnsureKeysCapacity(int capacity)
+        {
+            _keys.EnsureCapacity(capacity);
+        }
+
+        public int RemoveByPattern(string pattern, RegexOptions options)
+        {
+            var regex = new Regex(pattern, options);
+            
+            //Orders 
+            var keys = Keys.Where(x => regex.IsMatch(x)).ToArray();
+
+            if (keys.Length == 0)
+                return 0;
+
+            foreach (var key in keys)
+                Remove(key);
+
+            return keys.Length;
+        }
     }
 }

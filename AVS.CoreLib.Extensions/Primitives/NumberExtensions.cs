@@ -227,7 +227,7 @@ namespace AVS.CoreLib.Extensions
             return Convert.ToInt32(n) * roundBasis;
         }
 
-        public static int GetSmallerValue(this int value, int other)
+        public static int TakeSmallest(this int value, int other)
         {
             return value <= other ? value : other;
         }
@@ -235,6 +235,15 @@ namespace AVS.CoreLib.Extensions
         public static int Abs(this int value)
         {
             return value < 0 ? -value : value;
+        }
+
+        #endregion
+
+        #region long
+
+        public static long TakeSmallest(this long value, long other)
+        {
+            return value <= other ? value : other;
         }
 
         #endregion

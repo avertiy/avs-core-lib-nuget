@@ -29,6 +29,20 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
         Head = 0;
     }
 
+    public void EnsureCapacity(int capacity)
+    {
+        if (Capacity >= capacity)
+            return;
+
+        Capacity = capacity;
+        var arr = new T[capacity];
+
+        for (var i = 0; i < Items.Length; i++)
+            arr[i] = Items[i];
+            
+        Items = arr;
+    }
+
     public T this[int index]
     {
         get

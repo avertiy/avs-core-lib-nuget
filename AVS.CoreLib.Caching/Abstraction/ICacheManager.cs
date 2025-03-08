@@ -1,10 +1,19 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace AVS.CoreLib.Caching
 {
     public interface ICacheManager : IDisposable
     {
+        /// <summary>
+        /// Returns last 100 keys (see c-tor fixed list keys capacity)
+        /// </summary>
+        IList<string> Keys { get; }
+
+        void EnsureKeysCapacity(int capacity);
+
         /// <summary>
         /// default cache duration (in minutes)
         /// </summary>
@@ -41,6 +50,14 @@ namespace AVS.CoreLib.Caching
         /// </summary>
         /// <param name="key">Key of cached item</param>
         void Remove(string key);
+
+        /// <summary>
+        /// Match <see cref="Keys"/> to remove values from the cache 
+        /// </summary>
+        /// <param name="pattern"></param>
+        /// <param name="options"></param>
+        /// <returns>number of keys matched</returns>
+        int RemoveByPattern(string pattern, RegexOptions options);
 
         /// <summary>
         /// Clear all cache data
