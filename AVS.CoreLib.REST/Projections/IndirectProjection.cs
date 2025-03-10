@@ -9,7 +9,7 @@ namespace AVS.CoreLib.REST.Projections
 {
     /// <summary>
     /// Represent a special case called indirect projection.
-    /// This is a case when TContainer (abstraction) and T (projection type) are not linked to each other with inheritance,
+    /// This is a case when TResult (abstraction) and T (projection type) are not linked to each other with inheritance,
     /// and TContainer is produced with a help of TProxy <seealso cref="IProxy{T, TContainer}"/>
     /// <code>
     ///   //indirect projection through proxy
@@ -17,37 +17,37 @@ namespace AVS.CoreLib.REST.Projections
     ///   Response{IOrder} response = projection.MapWith{OrderBuilder}();
     /// </code>
     /// </summary>
-    public class IndirectProjection<TContainer, T> : ProjectionBase
+    public class IndirectProjection<TResult, T> : ProjectionBase
     {
         protected Action<T>? _preProcess;
         protected Action<T>? _postProcess;
-        protected Action<TContainer>? _postProcess2;
+        protected Action<TResult>? _postProcess2;
 
         [DebuggerStepThrough]
         public IndirectProjection(RestResponse response) : base(response)
         {
         }
 
-        public IndirectProjection<TContainer, T> PreProcess(Action<T> action)
+        public IndirectProjection<TResult, T> PreProcess(Action<T> action)
         {
             _preProcess = action;
             return this;
         }
 
-        public IndirectProjection<TContainer, T> PostProcess(Action<T> action)
+        public IndirectProjection<TResult, T> PostProcess(Action<T> action)
         {
             _postProcess = action;
             return this;
         }
 
-        public IndirectProjection<TContainer, T> PostProcess(Action<TContainer> action)
+        public IndirectProjection<TResult, T> PostProcess(Action<TResult> action)
         {
             _postProcess2 = action;
             return this;
         }
 
-        public TContainer? InspectDeserialization<TProxy>(Action<JToken, IProxy<T, TContainer>> inspect, out Exception? err)
-             where TProxy : class, IProxy<T, TContainer>, new()
+        public TResult? InspectDeserialization<TProxy>(Action<JToken, IProxy<T, TResult>> inspect, out Exception? err)
+             where TProxy : class, IProxy<T, TResult>, new()
         {
             try
             {
@@ -66,11 +66,11 @@ namespace AVS.CoreLib.REST.Projections
             }
         }
 
-        public Response<TContainer> MapWith<TProxy>(Action<TProxy>? configure = null) where TProxy : class, IProxy<T, TContainer>, new()
+        public Response<TResult> MapWith<TProxy>(Action<TProxy>? configure = null) where TProxy : class, IProxy<T, TResult>, new()
         {
             try
             {
-                var response = Response.Create<TContainer>(Source, content: JsonText, Error, Request);
+                var response = Response.Create<TResult>(Source, content: JsonText, Error, Request);
                 if (HasError)
                     return response;
 
@@ -102,11 +102,11 @@ namespace AVS.CoreLib.REST.Projections
             }
         }
 
-        public Response<TContainer> MapWith(IProxy<T, TContainer> proxy)
+        public Response<TResult> MapWith(IProxy<T, TResult> proxy)
         {
             try
             {
-                var response = Response.Create<TContainer>(Source, content: JsonText, Error, Request);
+                var response = Response.Create<TResult>(Source, content: JsonText, Error, Request);
                 if (HasError)
                     return response;
 
@@ -134,17 +134,48 @@ namespace AVS.CoreLib.REST.Projections
                 throw new MapException(ex, this);
             }
         }
-    }
 
-    public class IndirectProjection2<TContainer, T> : ProjectionBase
-    {
-        protected Action<T>? _preProcess;
-        protected Action<T>? _postProcess;
-        protected Action<TContainer>? _postProcess2;
-
-        [DebuggerStepThrough]
-        public IndirectProjection2(RestResponse response) : base(response)
+        public Response<TResult> MapWith<TMapper>() where TMapper : IMapper<T, TResult>, new()
         {
+            try
+            {
+                var response = Response.Create<TResult>(Source, content: JsonText, Error, Request);
+
+                if (HasError)
+                    return response;
+                
+                if (!IsEmpty)
+                {
+                    var obj = Activator.CreateInstance<T>();
+                    _preProcess?.Invoke(obj);
+                    var token = LoadToken<JToken>(JsonText);
+                    NewtonsoftJsonHelper.Populate(token, obj);
+                    _postProcess?.Invoke(obj);
+
+                    var mapper = new TMapper();
+                    var data = mapper.Map(obj);
+                    _postProcess2?.Invoke(data);
+                    response.Data = data;
+                }
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                throw new MapException(ex, this);
+            }
         }
     }
+
+    //public class IndirectProjection2<TContainer, T> : ProjectionBase
+    //{
+    //    protected Action<T>? _preProcess;
+    //    protected Action<T>? _postProcess;
+    //    protected Action<TContainer>? _postProcess2;
+
+    //    [DebuggerStepThrough]
+    //    public IndirectProjection2(RestResponse response) : base(response)
+    //    {
+    //    }
+    //}
 }

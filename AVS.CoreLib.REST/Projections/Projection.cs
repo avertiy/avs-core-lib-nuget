@@ -166,40 +166,40 @@ namespace AVS.CoreLib.REST.Projections
     }
 
     /// <summary>
-    /// Represent json projection when T is an abstraction, TType is an implementation of T
+    /// Represent json projection when T is an abstraction, TImpl is an implementation of T
     /// <code>
-    ///   //1. simple direct projection
-    ///   var projection = restResponse.Projection{IOrder, Order}();
+    ///   // simple direct projection
+    ///   var projection = restResponse.Projection{IOrder, Order}(); // where Order : IOrder
     ///   Response{IOrder} response = projection.Map();
     /// </code>
     /// </summary>
-    public class Projection<TContainer, T> : ProjectionBase where T : TContainer
+    public class Projection<T, TImpl> : ProjectionBase where TImpl : T
     {
-        protected Action<T>? _postProcess;
-        protected Action<T>? _preProcess;
+        protected Action<TImpl>? _postProcess;
+        protected Action<TImpl>? _preProcess;
 
         [DebuggerStepThrough]
         public Projection(RestResponse response) : base(response)
         {
         }
 
-        public Projection<TContainer, T> PreProcess(Action<T> action)
+        public Projection<T, TImpl> PreProcess(Action<TImpl> action)
         {
             _preProcess = action;
             return this;
         }
 
-        public Projection<TContainer, T> PostProcess(Action<T> action)
+        public Projection<T, TImpl> PostProcess(Action<TImpl> action)
         {
             _postProcess = action;
             return this;
         }
 
-        public TContainer? InspectDeserialization(Action<JToken, T> inspect, out Exception? err)
+        public T? InspectDeserialization(Action<JToken, TImpl> inspect, out Exception? err)
         {
             try
             {
-                var obj = Activator.CreateInstance<T>();
+                var obj = Activator.CreateInstance<TImpl>();
                 var jToken = LoadToken<JToken>(JsonText);
                 inspect(jToken, obj);
                 NewtonsoftJsonHelper.Populate(jToken, obj);
@@ -213,15 +213,15 @@ namespace AVS.CoreLib.REST.Projections
             }
         }
 
-        public Response<TContainer> Map()
+        public Response<T> Map()
         {
             try
             {
-                var response = Response.Create<TContainer>(Source, content: JsonText, Error, Request);
+                var response = Response.Create<T>(Source, content: JsonText, Error, Request);
                 if (HasError)
                     return response;
 
-                var obj = Activator.CreateInstance<T>();
+                var obj = Activator.CreateInstance<TImpl>();
                 _preProcess?.Invoke(obj);
 
                 if (!IsEmpty)
