@@ -26,6 +26,12 @@ public class Accumulator<T> : IAccumulator<T>
         return 0;
     }
 
+    public T this[int index]
+    {
+        get => Records[index];
+        set => Records[index] = value;
+    }
+
     public void Add(T item)
     {
         Records.Add(item);

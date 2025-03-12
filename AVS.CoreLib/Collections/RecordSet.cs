@@ -34,7 +34,11 @@ namespace AVS.CoreLib.Collections
             Records = new List<T>(capacity);
         }
 
-        public T this[int index] => Records[index];
+        public T this[int index]
+        {
+            get => Records[index];
+            set => Records[index] = value;
+        }
 
         public void Add(T item)
         {

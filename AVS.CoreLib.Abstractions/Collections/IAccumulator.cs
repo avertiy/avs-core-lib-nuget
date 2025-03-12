@@ -12,4 +12,5 @@ public interface IAccumulator<T> : IEnumerable<T>, IListWrapper<T>
     Func<T, bool>? Filter { get; set; }
     int AddRecords(IList<T> records);
     int Count { get; }
+    T this[int index] { get; set; }
 }
