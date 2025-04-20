@@ -30,7 +30,7 @@ namespace AVS.CoreLib.REST.Extensions
                 return;
 
             var message = source == null ? response.Error : $"{source} => {response.Error}";
-            throw new ApiException(message, response.Source, response.Request);
+            throw new ApiException(message, response.Source, response.Request) { RawContent = response.RawContent };
         }
 
         [Obsolete("looks obsolete")]

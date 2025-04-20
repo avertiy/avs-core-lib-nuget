@@ -17,9 +17,9 @@ namespace AVS.CoreLib.Abstractions.Json
 
     public static class JsonSerializerExtensions
     {
-        public static T? DeserializeObject<T>(this IJsonSerializer jsonService, string json)
+        public static T? DeserializeObject<T>(this IJsonSerializer jsonSerializer, string json)
         {
-            return (T?)jsonService.DeserializeObject(json, typeof(T));
+            return (T?)jsonSerializer.DeserializeObject(json, typeof(T));
         }
     }
 }

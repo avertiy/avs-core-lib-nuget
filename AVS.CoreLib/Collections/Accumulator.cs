@@ -3,12 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using AVS.CoreLib.Abstractions.Collections;
+using AVS.CoreLib.Extensions.Enums;
 
 namespace AVS.CoreLib.Collections;
 
 public class Accumulator<T> : IAccumulator<T>
 {
     public RecordSet<T> Records { get; }
+
+    public Sort Sort
+    {
+        get => Records.Sort; 
+        set => Records.Sort = value;
+    }
 
     public Func<T, bool>? Filter { get; set; }
 

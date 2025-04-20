@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using AVS.CoreLib.Extensions.Stringify;
 using System.Linq;
+using AVS.CoreLib.Extensions.Collections;
 using AVS.CoreLib.Extensions.Enums;
 
 namespace AVS.CoreLib.Guards;
@@ -154,7 +154,7 @@ public static class GuardArrayExtensions
         {
             var current = selector(source[i]);
             if (current.CompareTo(previous) < 0)
-                throw new ArgumentException(message ?? "Source must be ordered descending");
+                throw new ArgumentException(message ?? "Source must be ordered ascending");
 
             previous = current;
 
@@ -162,6 +162,20 @@ public static class GuardArrayExtensions
             if (count == 0)
                 break;
         }
+    }
+
+    public static void All<T>(this IArrayGuardClause guardClause, IList<T> source, Func<T,bool> predicate, string? message = null)
+    {
+        var index = source.FindIndex(0, x => !predicate(x));
+        if (index == -1)
+            return;
+
+        var errDetails = $"Element at index [{index}] does not satisfy predicate.";
+        var error = message == null 
+            ? $"All elements must satisfy the given predicate. {errDetails}"
+            : $"{message} {errDetails}";
+        
+        throw new ArgumentException(error, nameof(source));
     }
 
     #endregion

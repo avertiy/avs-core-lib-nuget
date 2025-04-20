@@ -4,17 +4,20 @@ using System.Diagnostics;
 using System.Net;
 using AVS.CoreLib.Abstractions.Responses;
 using AVS.CoreLib.REST.Extensions;
+using AVS.CoreLib.REST.Responses;
 
 namespace AVS.CoreLib.REST
 {
     /// <summary>
     /// an exception that represents api request error 
     /// </summary>
-    [DebuggerDisplay("ApiException [{Message}; Source={Source}; Request:{RequestInfo}")]
-    public sealed class ApiException : Exception
+    [DebuggerDisplay("ApiException [{Message}; Source={Source}]")]
+    public class ApiException : Exception
     {
-        public HttpStatusCode? StatusCode { get; set; }
+        public HttpStatusCode StatusCode { get; set; }
         public string? RequestInfo { get; set; }
+        public string? RawContent { get; set; }
+
         public ApiException(string message) : base(message)
         {
         }
@@ -41,8 +44,8 @@ namespace AVS.CoreLib.REST
         /// </summary>
         public int? GetStatusCode()
         {
-            if (StatusCode.HasValue)
-                return (int)StatusCode.Value;
+            if (StatusCode > 0)
+                return (int)StatusCode;
 
             if (Message.Contains("401"))
                 return 401;
@@ -76,5 +79,27 @@ namespace AVS.CoreLib.REST
                 ? $"{nameof(ApiException)}:{Message} [source:{Source}]".TrimEnd()
                 : $"{nameof(ApiException)}:{Message} [source:{Source}; request: {RequestInfo}]".TrimEnd();
         }
+    }
+
+    [DebuggerDisplay("ForbiddenApiException [{Message}; Source={Source}]")]
+    public sealed class ForbiddenApiException : ApiException
+    {
+        public ForbiddenApiException(IResponse response) : base(FormatMessage(response.Error ?? "Forbidden"))
+        {
+            StatusCode = HttpStatusCode.Forbidden;
+            Source = response.Source;
+            RawContent = response.RawContent;
+            RequestInfo = response.Request?.ToJson();
+        }
+
+        public ForbiddenApiException(RestResponse response) : base(response.Error ?? "Forbidden")
+        {
+            StatusCode = response.StatusCode;
+            Source = response.Source;
+            RawContent = response.Content;
+            RequestInfo = response.Request?.ToJson();
+        }
+
+        private static string FormatMessage(string error) => error.StartsWith("ForbiddenApiException:") ? error.Substring("ForbiddenApiException:".Length) : error;
     }
 }

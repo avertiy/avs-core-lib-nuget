@@ -1,16 +1,12 @@
 ﻿#nullable enable
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
+using System.Net;
 using System.Text.Json.Serialization;
 using AVS.CoreLib.Abstractions.Responses;
-using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Dynamic;
 using AVS.CoreLib.Json;
-using AVS.CoreLib.REST.Projections;
 
 namespace AVS.CoreLib.REST.Responses
 {
@@ -30,7 +26,7 @@ namespace AVS.CoreLib.REST.Responses
         [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
         public string? RawContent { get; set; }
 
-        public Response(string source, string rawContent, T? data = default, string? error = null, object? request = null)
+        public Response(string source, string? rawContent, T? data = default, string? error = null, object? request = null)
         {
             Source = source;
             RawContent = rawContent;
@@ -71,24 +67,24 @@ namespace AVS.CoreLib.REST.Responses
     [DebuggerNonUserCode]
     public static class Response
     {
-        public static Response<T> Create<T>(string source, string? error = null, object? request = null)
-        {
-            return new Response<T>(source, string.Empty, error: error, request: request);
-        }
+        //public static Response<T> Create<T>(string source, string? error = null, object? request = null)
+        //{
+        //    return new Response<T>(source, string.Empty, error: error, request: request);
+        //}
 
-        public static Response<T> Create<T>(string source, string content, string? error, object? request = null)
+        public static Response<T> Create<T>(string source, string? content, string? error, object? request = null)
         {
             return new Response<T>(source, content, error: error, request: request);
         }
 
-        internal static Response<T> Create<T>(T? data, string source, string content, string? error, object? request = null)
+        internal static Response<T> Create<T>(T? data, string source, string? content, string? error, object? request = null)
         {
             return new Response<T>(source, content, data, error, request);
         }
 
         public static Response<T> Create<T>(string source, string? error, Func<T> getData)
         {
-            var response = new Response<T>(source, string.Empty, error: error);
+            var response = new Response<T>(source, null, error: error);
 
             if (error == null)
                 response.Data = getData.Invoke();
@@ -96,14 +92,15 @@ namespace AVS.CoreLib.REST.Responses
             return response;
         }
 
-        public static Response<T> OK<T>(T data, string source, string content, object? request = null)
+        public static Response<T> OK<T>(T data, string source, string? content, object? request = null)
         {
             return new Response<T>(source, content, data, request: request);
         }
 
-        public static Response<T> Failed<T>(Exception ex, string source, string content, object? request = null)
+
+        public static Response<T> Failed<T>(Exception ex, string source, string? content, object? request = null)
         {
-            return new Response<T>(source, content, error: ex.Message, request: request);
+            return new Response<T>(source, content, error: $"{ex.GetType().Name}:{ex.Message}", request: request);
         }
     }
 }

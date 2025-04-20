@@ -125,12 +125,12 @@ public class OutputBuilder
         return this;
     }
 
-    public virtual OutputBuilder WithMessage(string? message)
+    public OutputBuilder WithMessage(string? message, LogLevel logLevel)
     {
         if (message == null)
             return this;
 
-        if (message.StartsWith(Environment.NewLine))
+        if (logLevel < LogLevel.Error && message.StartsWith(Environment.NewLine))
         {
             Message = FormatMessage(message.TrimStart());
             NewLines = message.Substring(0, message.Length - Message.Length);
@@ -181,7 +181,8 @@ public class OutputBuilder
             text = $"{text.Replace(Environment.NewLine, newLineWithPadding)}{Environment.NewLine}";
         }
 
-        return text;
+        var colors = ColorProvider.GetColorsFor(LogPart.Message, LogLevel);
+        return colors.FormatWithTags(text);
     }
 
     private string? Format(LogPart part, string? text)

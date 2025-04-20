@@ -124,7 +124,7 @@ public readonly struct TimeRange
 
 public static class TimeRangeExtensions
 {
-    public static IEnumerable<TimeRange> Slice(this TimeRange range, int milliseconds)
+    public static IEnumerable<TimeRange> Slice(this TimeRange range, long milliseconds)
     {
         var interval = range.IsInMilliseconds ? milliseconds : milliseconds / 1000;
 

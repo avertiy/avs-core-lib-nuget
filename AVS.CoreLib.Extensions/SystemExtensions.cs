@@ -20,7 +20,7 @@ namespace AVS.CoreLib.Extensions
             if (ex.StackTrace == null)
                 return null;
 
-            var lines = ex.GetStackTraceLines(format);
+            var lines = ex.GetStackTraceLines(format, 2);
             return string.Join(Environment.NewLine, lines);
         }
 
@@ -31,7 +31,7 @@ namespace AVS.CoreLib.Extensions
 
             var lines = ex.StackTrace.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
 
-            if (lines.Length <= 4)
+            if (lines.Length <= 4 + extraLines)
                 return lines;
 
             lines = StackTraceHelper.Reduce(lines, format, extraLines);
@@ -88,8 +88,7 @@ namespace AVS.CoreLib.Extensions
         {
             var sb = new StringBuilder(ex.InnerException == null ? 500 : 1000);
 
-            sb.Append(padding + ex.GetType().Name);
-            sb.Append(": ");
+            sb.Append(padding + ex.GetType().Name + ": ");
             sb.AppendLine(ex.Message);
 
             if (ex.InnerException != null)

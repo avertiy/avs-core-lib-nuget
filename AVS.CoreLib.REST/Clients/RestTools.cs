@@ -173,7 +173,7 @@ namespace AVS.CoreLib.REST.Clients
             RateLimiter.Adjust(response.StatusCode);
         }
 
-        protected async ValueTask<(string content, string? error)> GetContentAndError(HttpResponseMessage responseMessage)
+        protected async ValueTask<(string? content, string? error)> GetContentAndError(HttpResponseMessage responseMessage)
         {
             var content = await responseMessage.Content.ReadAsStringAsync();
             string? error;

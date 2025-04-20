@@ -1,5 +1,4 @@
 ﻿#nullable enable
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Net;
 using System.Text.Json.Serialization;
@@ -17,7 +16,7 @@ namespace AVS.CoreLib.REST
     {
         public string Source { get; set; }
         public HttpStatusCode StatusCode { get; set; }
-        public string Content { get; set; }
+        public string? Content { get; set; }
         
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Error { get; set; }
@@ -58,11 +57,16 @@ namespace AVS.CoreLib.REST
                 if (Error != null)
                     return $"({(int)StatusCode}){reqId} with Error={Error}";
 
-                if (Content.Length <= 360)
-                    return $"({StatusCode}){reqId} Content={Content}";
+                if (Content != null)
+                {
+                    if (Content.Length <= 360)
+                        return $"({StatusCode}){reqId} Content={Content}";
 
-                var content = GetBriefContent(360);
-                return $"({StatusCode}){reqId} Content={content} (Length={content.Length})";
+                    var briefContent = Content.Truncate(360, TruncateOptions.CutOffTheMiddle);
+                    return $"({StatusCode}){reqId} Content={briefContent} (Length={Content.Length})";
+                }
+
+                return $"({StatusCode}){reqId} Content=(null)";
             }
 
             return $"Failed ({StatusCode}){reqId} Error={Error}";
@@ -70,12 +74,7 @@ namespace AVS.CoreLib.REST
 
         public T? Deserialize<T>()
         {
-            return JsonHelper.Deserialize<T>(Content);
-        }
-
-        public string GetBriefContent(int maxLength, TruncateOptions options = TruncateOptions.CutOffTheMiddle)
-        {
-            return Content.Truncate(maxLength, options);
+            return Content == null ? default : JsonHelper.Deserialize<T>(Content);
         }
 
         internal static RestResponse Timeout(string source)
@@ -92,16 +91,15 @@ namespace AVS.CoreLib.REST
                 return;
 
             if (response.StatusCode == HttpStatusCode.Unauthorized || response.Error.Contains("Unauthorized"))
-                throw new ApiException(response.Error) { StatusCode = HttpStatusCode.Unauthorized };
+                throw new ForbiddenApiException(response);
 
             if (response.StatusCode == HttpStatusCode.Forbidden)
-                throw new ApiException(response.Error) { StatusCode = HttpStatusCode.Forbidden };
-            
-            if (!response.Error.Contains("IP "))
-                return;
+                throw new ForbiddenApiException(response);
 
-            if (response.Error.Contains("IP address is not trusted") || response.Error.Contains("IP is not in white list"))
-                throw new ApiException(response.Error) { StatusCode = HttpStatusCode.Forbidden };
+            var errors = new[] { "api key has expired", "IP address is not trusted", "IP is not in white list" };
+
+            if (response.Error.ContainsAny(errors))
+                throw new ForbiddenApiException(response);
         }
 
         internal static bool IsSuccessful(this RestResponse response)

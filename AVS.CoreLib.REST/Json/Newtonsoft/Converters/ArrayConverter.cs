@@ -3,10 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
+using System.Runtime.Serialization;
+using AVS.CoreLib.Extensions.Linq;
 using AVS.CoreLib.REST.Attributes;
 using AVS.CoreLib.REST.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace AVS.CoreLib.REST.Json.Converters
 {
@@ -35,7 +38,12 @@ namespace AVS.CoreLib.REST.Json.Converters
 
             var obj = Activator.CreateInstance(objectType);
             var arr = JArray.Load(reader);
-            return obj.FillObject(objectType, arr);
+            obj = obj.FillObject(objectType, arr);
+
+            // Manually invoke [OnDeserialized] callbacks
+            var contract = serializer.ContractResolver.ResolveContract(objectType) as JsonObjectContract;
+            contract?.OnDeserializedCallbacks?.ForEach(callback => callback(obj, new StreamingContext()));
+            return obj;
         }
 
         public override void WriteJson(JsonWriter writer, object obj, JsonSerializer serializer)

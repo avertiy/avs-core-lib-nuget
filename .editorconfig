@@ -117,12 +117,14 @@ dotnet_naming_rule.interface_rule.symbols                          = interface_g
 dotnet_naming_rule.interface_rule.style                            = prefix_interface_with_i_style
 dotnet_naming_symbols.interface_group.applicable_kinds             = interface
 
-# Private fields must be camelCase and have an _ prefix
-dotnet_naming_rule.private_field_with_.severity                     = warning
-dotnet_naming_rule.private_field_with_.symbols                      = private_fields
-dotnet_naming_rule.private_field_with_.style                        = private_field_style
-dotnet_naming_symbols.private_fields.applicable_accessibilities     = private,protected
-dotnet_naming_symbols.private_fields.applicable_kinds               = field
+# Private fields must be camelCase
+dotnet_naming_style.private_fields_with_underscore_style.capitalization = camel_case
+dotnet_naming_style.private_fields_with_underscore_style.required_prefix = _
+dotnet_naming_symbols.private_fields_group.applicable_accessibilities = private
+dotnet_naming_symbols.private_fields_group.applicable_kinds = field
+dotnet_naming_rule.private_fields_must_have_underscore.symbols = private_fields_group
+dotnet_naming_rule.private_fields_must_have_underscore.style = private_fields_with_underscore_style
+dotnet_naming_rule.private_fields_must_have_underscore.severity = warning
 
 # Classes, structs, methods, enums, events, properties, namespaces, delegates must be PascalCase
 dotnet_naming_rule.general_naming.severity                         = warning
@@ -212,6 +214,12 @@ csharp_space_between_method_call_name_and_opening_parenthesis               = fa
 csharp_space_between_method_call_empty_parameter_list_parentheses           = false
 csharp_space_after_comma                                                    = true
 csharp_space_after_dot                                                      = false
+csharp_space_after_semicolon_in_for_statement = true
+csharp_space_before_semicolon_in_for_statement = false
+csharp_space_around_declaration_statements = false
+csharp_space_before_open_square_brackets = false
+csharp_space_between_empty_square_brackets = false
+csharp_space_between_square_brackets = false
 
 # Wrapping preferences
 csharp_preserve_single_line_statements  = false

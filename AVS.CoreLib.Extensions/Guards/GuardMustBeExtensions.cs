@@ -7,6 +7,18 @@ namespace AVS.CoreLib.Guards;
 
 public static class GuardMustBeExtensions
 {
+    public static void BeTrue(this IMustBeGuardClause guardClause, bool arg, string? message = null)
+    {
+        if (!arg)
+            throw new ArgumentException(message ?? $"'{arg}' must be True");
+    }
+
+    public static void BeFalse(this IMustBeGuardClause guardClause, bool arg, string? message = null)
+    {
+        if (arg)
+            throw new ArgumentException(message ?? $"'{arg}' must be False");
+    }
+
     #region Equal
 
     public static void Equal<T>(this IMustBeGuardClause guardClause, T arg1, T arg2, string? message = null)

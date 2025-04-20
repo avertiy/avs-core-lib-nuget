@@ -17,7 +17,7 @@ namespace AVS.CoreLib.Dates
 
         public static DateTime ParseUnixTimestamp(string value)
         {
-            var val = ulong.Parse(value);
+            var val = long.Parse(value);
             return FromUnixTimestamp(val);
         }
 

@@ -452,9 +452,9 @@ namespace AVS.CoreLib.Dates
         }
     }
 
-    public class DateRangeTypeConverter : TypeConverter
+    public sealed class DateRangeTypeConverter : TypeConverter
     {
-        protected virtual bool TryParse(string str, out DateRange range)
+        private bool TryParse(string str, out DateRange range)
         {
             return DateRange.TryParse(str, out range);
         }

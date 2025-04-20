@@ -39,7 +39,7 @@ public class ColorFormatter : ConsoleFormatter, IDisposable
             .WithScope(scopeProvider);
 
         builder
-            .WithMessage(message)
+            .WithMessage(message, logEntry.LogLevel)
             .WithError(logEntry.Exception);
 
         if (_options.ArgsColorFormat == ArgsColorFormat.Auto && State.TryParse(logEntry.State, out var state))

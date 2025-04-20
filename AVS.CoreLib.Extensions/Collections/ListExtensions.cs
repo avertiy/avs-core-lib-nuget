@@ -171,13 +171,30 @@ namespace AVS.CoreLib.Extensions.Collections
         #endregion
 
         #region FindIndex
-        [Obsolete("Use Array.FindIndex(arr, startIndex, predicate)")]
+
+        //public static int FindIndex<T>(this IList<T> source, Predicate<T> match)
+        //{
+        //    if (match == null)
+        //        throw new ArgumentNullException(nameof(match));
+
+        //    for (int i = 0; i < this.Count; i++)
+        //    {
+        //        if (match(this[i]))
+        //            return i;
+        //    }
+
+        //    return -1; // Return -1 if no match is found
+        //}
+
         public static int FindIndex<T>(this IList<T> source, int startIndex, Predicate<T> match)
         {
             return FindIndex<T>(source, startIndex, source.Count - startIndex, match);
         }
 
-        [Obsolete("Use Array.FindIndex(arr, startIndex, count, predicate)")]
+        /// <summary>
+        /// Same implementation as List{T}.FindIndex
+        /// </summary>
+        //[Obsolete("Use Array.FindIndex(arr, startIndex, count, predicate)")]
         public static int FindIndex<T>(this IList<T> source, int startIndex, int count, Predicate<T> match)
         {
             if ((uint)startIndex > (uint)source.Count)
