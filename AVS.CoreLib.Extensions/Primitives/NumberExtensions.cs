@@ -116,6 +116,28 @@ namespace AVS.CoreLib.Extensions
         }
 
         /// <summary>
+        /// +1 digit of precision comparing to <see cref="Round(decimal,int?,int,int)"/>
+        /// </summary>
+        public static decimal RoundPrice(this decimal value, int? roundDecimals = null, int extraPrecision = 0, int minPrecision = 0)
+        {
+            var dec = (roundDecimals ?? GetPriceRoundDecimals(value)) + extraPrecision;
+            if (minPrecision > 0 && dec < minPrecision)
+                dec = minPrecision;
+            return Math.Round(value, dec, MidpointRounding.AwayFromZero);
+        }
+
+        /// <summary>
+        /// +2 digits of precision comparing to <see cref="Round(decimal,int?,int,int)"/>
+        /// </summary>
+        public static decimal RoundPrecise(this decimal value, int? roundDecimals = null, int extraPrecision = 0, int minPrecision = 0)
+        {
+            var dec = (roundDecimals ?? GetRoundDecimals(value)) + 2 + extraPrecision;
+            if (minPrecision > 0 && dec < minPrecision)
+                dec = minPrecision;
+            return Math.Round(value, dec, MidpointRounding.AwayFromZero);
+        }
+        
+        /// <summary>
         /// determines number of meaningful digits based on price value
         /// </summary>
         public static int GetRoundDecimals(this decimal value)
@@ -128,6 +150,22 @@ namespace AVS.CoreLib.Extensions
                 > 0.01m => 5,
                 > 0.001m => 6,
                 _ => 8
+            };
+        }
+
+        public static int GetPriceRoundDecimals(this decimal price)
+        {
+            return price switch
+            {
+                >= 10_000 => 0,
+                >= 1_000 => 1,
+                >= 100 => 2,
+                >= 10 => 3,
+                >= 1 => 4,
+                >= 0.1M => 5,
+                >= 0.01m => 6,
+                >= 0.001m => 7,
+                _ => 8,
             };
         }
 
@@ -163,6 +201,13 @@ namespace AVS.CoreLib.Extensions
         public static bool IsEqual(this decimal value, decimal valueToCompare, decimal tolerance)
         {
             var equal = Math.Abs(value - valueToCompare) <= tolerance;
+            return equal;
+        }
+
+        public static bool IsEqual(this decimal value, decimal valueToCompare, decimal tolerance, out decimal diff)
+        {
+            diff = Math.Abs(value - valueToCompare);
+            var equal = diff <= tolerance;
             return equal;
         }
 

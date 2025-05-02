@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json.Serialization;
+using AVS.CoreLib.Extensions.Collections;
 
 [assembly: InternalsVisibleTo("AVS.CoreLib.Tests")]
 namespace AVS.CoreLib.Extensions
@@ -29,17 +30,39 @@ namespace AVS.CoreLib.Extensions
             if (ex.StackTrace == null)
                 return Array.Empty<string>();
 
+            var list = new List<string>(30);
+
+            if (ex.InnerException != null)
+            {
+                list.Add($"---> {ex.InnerException.GetType().Name}: {ex.InnerException.Message}");
+                list.AddRange(GetStackTraceLinesInternal(ex.InnerException, format, 0));
+                list.Add($"--- End of inner exception stack trace ---");
+            }
+
+            var lines = GetStackTraceLinesInternal(ex, format, extraLines);
+            list.AddRange(lines);
+
+            if (list.Count <= 4 + extraLines)
+                return list.ToArray();
+
+            list = StackTraceHelper.CutPaths(list);
+            list = StackTraceHelper.CutNamespaces(list);
+
+            return list.ToArray();
+        }
+
+        private static string[] GetStackTraceLinesInternal(Exception ex, ErrorFormat format, int extraLines)
+        {
+            if (string.IsNullOrEmpty(ex.StackTrace))
+                return Array.Empty<string>();
+
             var lines = ex.StackTrace.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
 
             if (lines.Length <= 4 + extraLines)
                 return lines;
 
-            lines = StackTraceHelper.Reduce(lines, format, extraLines);
-
-            var list = new List<string>(lines);
-            list = StackTraceHelper.CutPaths(list);
-            list = StackTraceHelper.CutNamespaces(list);
-            return list.ToArray();
+            lines = lines.Reduce(format, extraLines);
+            return lines;
         }
 
         public static ErrorDetails ToErrorDetails(this Exception ex, bool inclStackTrace = false)
@@ -228,11 +251,16 @@ namespace AVS.CoreLib.Extensions
                 lines[k] = line.Replace(ns, placeholder);
             }
 
-            for (var i = 0; i < refs.Count; i++)
-            {
-                lines.Add($"[{i}] = {@refs[i]}");
-            }
+            if (refs.Count == 0)
+                return lines;
 
+            lines.Add(string.Join(", ", refs.Select((x, i) => $"[{i}] = {x}")));
+
+            //for (var i = 0; i < refs.Count; i++)
+            //{
+            //    lines.Add($"[{i}] = {@refs[i]}");
+            //}
+            
             return lines;
         }
     }

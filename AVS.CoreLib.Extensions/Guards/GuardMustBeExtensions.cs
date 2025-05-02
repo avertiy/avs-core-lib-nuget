@@ -251,6 +251,12 @@ public static class GuardMustBeExtensions
             throw new ArgumentException(message ?? $"{arg} must be positive");
     }
 
+    public static void Positive(this IMustBeGuardClause guardClause, long arg, string? message = null)
+    {
+        if (arg <= 0)
+            throw new ArgumentException(message ?? $"{arg} must be positive");
+    }
+
     public static void Positive(this IMustBeGuardClause guardClause, decimal arg, string? message = null)
     {
         if (arg <= 0)
