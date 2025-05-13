@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using AVS.CoreLib.Guards;
 
 namespace AVS.CoreLib.Extensions
 {
@@ -102,6 +104,7 @@ namespace AVS.CoreLib.Extensions
             return (value / divider).Round(roundDecimals);
         }
 
+        #region Rounding
         public static decimal Round(this decimal value, int decimals)
         {
             return Math.Round(value, decimals, MidpointRounding.AwayFromZero);
@@ -136,7 +139,7 @@ namespace AVS.CoreLib.Extensions
                 dec = minPrecision;
             return Math.Round(value, dec, MidpointRounding.AwayFromZero);
         }
-        
+
         /// <summary>
         /// determines number of meaningful digits based on price value
         /// </summary>
@@ -191,7 +194,8 @@ namespace AVS.CoreLib.Extensions
         {
             var k = (decimal)Math.Pow(10, decimals);
             return Math.Floor((value * k)) / k;
-        }
+        } 
+        #endregion
 
         public static decimal Abs(this decimal value)
         {
@@ -214,6 +218,16 @@ namespace AVS.CoreLib.Extensions
         public static bool IsNotEqual(this decimal value, decimal valueToCompare, decimal tolerance)
         {
             return Math.Abs(value - valueToCompare) > tolerance;
+        }
+
+        public static bool IsLessThanOrEqual(this decimal value, decimal valueToCompare, decimal tolerance)
+        {
+            return value <= valueToCompare || Math.Abs(value - valueToCompare) <= tolerance;
+        }
+
+        public static bool IsGreaterThanOrEqual(this decimal value, decimal valueToCompare, decimal tolerance)
+        {
+            return value >= valueToCompare || Math.Abs(value - valueToCompare) <= tolerance;
         }
 
         public static decimal Sqrt(this decimal value)
@@ -240,6 +254,14 @@ namespace AVS.CoreLib.Extensions
         {
             return value <= value2 ? value : value2;
         }
+
+        public static bool WithinRange(this decimal value, (decimal from, decimal to) range, bool inclusiveRange = true)
+        {
+            return inclusiveRange
+                ? value >= range.from && value <= range.to
+                : value > range.from && value < range.to;
+        }
+
         /// <summary>
         /// returns fraction of the value e.g. Fraction(500, 0.5%) => 2.5
         /// </summary>

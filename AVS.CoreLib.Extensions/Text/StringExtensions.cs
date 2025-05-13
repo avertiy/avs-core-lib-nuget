@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using AVS.CoreLib.Guards;
 
 namespace AVS.CoreLib.Extensions
 {
@@ -313,10 +314,21 @@ namespace AVS.CoreLib.Extensions
             return result.ToArray();
         }
 
-        /// <summary>
-        /// Truncates string
-        /// </summary>
         public static string Truncate(this string str, int maxLength = 1000, TruncateOptions options = TruncateOptions.None)
+        {
+            if (string.IsNullOrEmpty(str) || str.Length <= maxLength)
+                return str;
+
+            return options switch
+            {
+                TruncateOptions.None => str.Substring(0, maxLength),
+                TruncateOptions.Json => TruncateJson(str, maxLength),
+                TruncateOptions.Text => TruncateText(str, maxLength),
+                _ => TruncateText(str, maxLength, options)
+            };
+        }
+
+        public static string TruncateText(this string str, int maxLength = 1000, TruncateOptions options = TruncateOptions.Text)
         {
             if (string.IsNullOrEmpty(str) || str.Length <= maxLength)
                 return str;
@@ -349,12 +361,16 @@ namespace AVS.CoreLib.Extensions
                 endStr ??= str.Substring(ind2 + 1);
                 truncatedStr = $"{startStr} ... {endStr}";
             }
+            else if (options.HasFlag(TruncateOptions.Text))
+            {
+                truncatedStr = str.Substring(0, maxLength - 3) + ".." + str[^1];
+            }
             else
             {
-                truncatedStr = str.Substring(0, maxLength-3) + ".." + str[^1];
+                truncatedStr = str.Substring(0, maxLength);
             }
 
-            if (options.HasFlag(TruncateOptions.AppendLength))
+            if (str.Length > 20 && options.HasFlag(TruncateOptions.AppendLength))
             {
                 truncatedStr += $"(Length={str.Length})";
             }
@@ -381,6 +397,23 @@ namespace AVS.CoreLib.Extensions
             var rest = maxLength - startStr.Length - 6;
             var endStr = str.Substring(str.Length - rest);
             return $"{startStr}, ... {endStr}";
+        }
+
+        /// <summary>
+        /// retrieves a substring from the end of the initial string
+        /// <code>
+        /// "abcdef".SubstringFromEnd(2) => "ef";
+        /// </code>
+        /// </summary>
+        public static string SubstringFromEnd(this string str, int length)
+        {
+            Guard.MustBe.LessThanOrEqual(length, str.Length);
+            return str.Substring(str.Length - length);
+        }
+
+        public static string TrimEnd(this string str, string end)
+        {
+            return str.EndsWith(end) ? str.Substring(0, str.Length - end.Length) : str;
         }
 
         public static string ReplaceAll(this string input, char[] oldChars, char newChar)
@@ -481,13 +514,28 @@ namespace AVS.CoreLib.Extensions
     public enum TruncateOptions
     {
         /// <summary>
-        /// by default cuts off the end
+        /// truncates string from the end e.g. "abcdefghijklmnoprstuvwxyz".Truncate(6) => "abcdef"
         /// </summary>
         None = 0,
         /// <summary>
-        /// cuts off the middle
+        /// truncates text, putting at the end a truncation mark `...` and the last symbol, e.g. "abcdefghijklmnoprstuvwxyz".Truncate(6, TruncateOptions.Text) => "abc..z"
         /// </summary>
-        CutOffTheMiddle = 1,
-        AppendLength = 2,
+        Text = 1,
+        /// <summary>
+        /// cuts off the middle "abcdefghijklmn".Truncate(8) => "abc..lmn"
+        /// </summary>
+        CutOffTheMiddle = 2,
+        /// <summary>
+        /// truncates text  appending length e.g. "abcdefghijklmnoprstuvwxyz".Truncate(6, TruncateOptions.AppendLength) => "abcdef(Length=25)"
+        /// </summary>
+        AppendLength = 4,
+        /// <summary>
+        /// truncates json
+        /// </summary>
+        Json = 8,
+        /// <summary>
+        /// truncates text  appending length e.g. "abcdefghijklmnoprstuvwxyz".Truncate(6, TruncateOptions.AppendLength) => "abc..z(Length=25)"
+        /// </summary>
+        TextWithLength = Text | AppendLength,
     }
 }

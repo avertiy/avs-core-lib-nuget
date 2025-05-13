@@ -177,10 +177,8 @@ namespace AVS.CoreLib.Dates
         ///       <term>P - period</term>
         ///       <description> - general long e.g. 04/18/2023 06:00:00 AM - 31/12/2024 9:00:00 PM</description>
         ///     </item>
-        ///     <item>
         ///   </list>
         /// </param>
-        /// <returns></returns>
         public string ToString(string format)
         {
             return format == "P" 

@@ -52,7 +52,7 @@ namespace AVS.CoreLib.REST.RequestBuilders
                 if (UseTonce)
                     request.Data["tonce"] = NonceHelper.GetTonce();
                 else
-                    request.Data["nonce"] = NonceHelper.GetNonce();
+                    request.Data["nonce"] = NonceHelper.GetNonce().ToString();
         }
 
         protected virtual HttpRequestMessage CreateHttpRequestMessage(IRequest request)

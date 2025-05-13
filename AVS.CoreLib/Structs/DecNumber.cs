@@ -24,7 +24,7 @@ public struct DecNumber : IComparable<decimal>, IComparable<DecNumber>, IFormatt
 
     public decimal Value
     {
-        get => _value.Round(extraPrecision: 1);
+        get => _value.RoundPrice();
         set => _value = value;
     }
 
@@ -45,10 +45,12 @@ public struct DecNumber : IComparable<decimal>, IComparable<DecNumber>, IFormatt
 
     public string ToString(string? format, IFormatProvider? formatProvider)
     {
-        return _value.ToString(format, formatProvider);
+        return Value.ToString(format, formatProvider);
     }
 
-    public string ToString(string format) => _value.ToString(format);
+    public string ToString(string format) => Value.ToString(format);
+
+    public string ToStringExactValue(string format) => _value.ToString(format);
 
     public static DecNumber operator *(DecNumber a, DecNumber b) => new(a._value * b._value);
     public static DecNumber operator *(DecNumber a, decimal b) => new(a._value * b);

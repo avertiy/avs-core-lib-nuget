@@ -139,7 +139,7 @@ namespace AVS.CoreLib.REST.RequestBuilders
                 if (UseTonce)
                     data.Add("tonce", NonceHelper.GetTonce());
                 else
-                    data.Add("nonce", NonceHelper.GetNonce());
+                    data.Add("nonce", NonceHelper.GetNonce().ToString());
             }
         }
 
