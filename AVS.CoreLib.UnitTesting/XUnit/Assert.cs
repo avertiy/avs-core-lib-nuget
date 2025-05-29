@@ -59,6 +59,7 @@ namespace AVS.CoreLib.UnitTesting.xUnit
         }
 
         #region Equal overloads
+
         public static void Equal(string expected, string actual, string userMessage,
             bool ignoreCase = true,
             bool ignoreLineEndingDifferences = true,
@@ -68,47 +69,46 @@ namespace AVS.CoreLib.UnitTesting.xUnit
             int index2 = -1;
             int num1 = 0;
             int num2 = 0;
-            if (expected == null && actual == null)
+
+            if (string.IsNullOrEmpty(expected) && string.IsNullOrEmpty(actual))
                 return;
 
             if (expected == actual)
                 return;
 
-            if (actual != null && expected != null)
+            index1 = 0;
+            index2 = 0;
+            num1 = expected.Length;
+            num2 = actual.Length;
+            while (index1 < num1 && index2 < num2)
             {
-                index1 = 0;
-                index2 = 0;
-                num1 = expected.Length;
-                num2 = actual.Length;
-                while (index1 < num1 && index2 < num2)
+                char upperInvariant1 = expected[index1];
+                char upperInvariant2 = actual[index2];
+                if (ignoreLineEndingDifferences && IsLineEnding(upperInvariant1) && IsLineEnding(upperInvariant2))
                 {
-                    char upperInvariant1 = expected[index1];
-                    char upperInvariant2 = actual[index2];
-                    if (ignoreLineEndingDifferences && IsLineEnding(upperInvariant1) && IsLineEnding(upperInvariant2))
+                    index1 = SkipLineEnding(expected, index1);
+                    index2 = SkipLineEnding(actual, index2);
+                }
+                else if (ignoreWhiteSpaceDifferences && IsWhiteSpace(upperInvariant1) && IsWhiteSpace(upperInvariant2))
+                {
+                    index1 = SkipWhitespace(expected, index1);
+                    index2 = SkipWhitespace(actual, index2);
+                }
+                else
+                {
+                    if (ignoreCase)
                     {
-                        index1 = SkipLineEnding(expected, index1);
-                        index2 = SkipLineEnding(actual, index2);
+                        upperInvariant1 = char.ToUpperInvariant(upperInvariant1);
+                        upperInvariant2 = char.ToUpperInvariant(upperInvariant2);
                     }
-                    else if (ignoreWhiteSpaceDifferences && IsWhiteSpace(upperInvariant1) && IsWhiteSpace(upperInvariant2))
+
+                    if ((int)upperInvariant1 == (int)upperInvariant2)
                     {
-                        index1 = SkipWhitespace(expected, index1);
-                        index2 = SkipWhitespace(actual, index2);
+                        ++index1;
+                        ++index2;
                     }
                     else
-                    {
-                        if (ignoreCase)
-                        {
-                            upperInvariant1 = char.ToUpperInvariant(upperInvariant1);
-                            upperInvariant2 = char.ToUpperInvariant(upperInvariant2);
-                        }
-                        if ((int)upperInvariant1 == (int)upperInvariant2)
-                        {
-                            ++index1;
-                            ++index2;
-                        }
-                        else
-                            break;
-                    }
+                        break;
                 }
             }
 
@@ -189,7 +189,7 @@ namespace AVS.CoreLib.UnitTesting.xUnit
         public static new void Same(object? expected, object? actual)
         {
             if (!object.ReferenceEquals(expected, actual))
-                throw new SameException(expected, actual);
+                throw SameException.ForFailure(expected?.ToString() ?? string.Empty, actual?.ToString() ?? string.Empty);
         }
 
         private static bool IsLineEnding(char c)

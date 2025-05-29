@@ -106,9 +106,27 @@ public static class GuardMustBeExtensions
 
     #endregion
 
-    #region WithinRange
-    public static void WithinRange(this IMustBeGuardClause guardClause, int arg, int from, int to, bool inclusiveRange = true,
-    string? message = null)
+    #region Range
+
+    public static void ValidRange(this IMustBeGuardClause guardClause, (int from, int to) range, int from, int to)
+    {
+        if (range.from > range.to)
+            throw new ArgumentException($"Range [{range.from};{range.to}] is invalid, from must be less than to");
+
+        if (range.from < from)
+            throw new ArgumentException($"Range from {range.from} must be greater than {from}");
+
+        if (range.to > to)
+            throw new ArgumentException($"Range from {range.to} must be less than {to}");
+    }
+
+    public static void WithinRange(this IMustBeGuardClause guardClause, int arg, int from, int to, string argName, string? message = null)
+    {
+        if (arg < from || arg > to)
+            throw new ArgumentOutOfRangeException(message ?? $"{argName} must be within range [{from};{to}]");
+    }
+
+    public static void WithinRange(this IMustBeGuardClause guardClause, int arg, int from, int to, bool inclusiveRange = true, string? message = null)
     {
         if (inclusiveRange)
         {

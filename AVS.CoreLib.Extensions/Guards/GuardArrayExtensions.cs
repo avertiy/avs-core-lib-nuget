@@ -166,7 +166,7 @@ public static class GuardArrayExtensions
 
     public static void All<T>(this IArrayGuardClause guardClause, IList<T> source, Func<T,bool> predicate, string? message = null)
     {
-        var index = source.FindIndex(0, x => !predicate(x));
+        var index = source.FindIndex(x => !predicate(x), 0);
         if (index == -1)
             return;
 

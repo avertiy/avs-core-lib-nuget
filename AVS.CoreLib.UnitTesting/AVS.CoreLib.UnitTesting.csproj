@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>AVS.CoreLib.UnitTesting</RootNamespace>
@@ -11,7 +11,7 @@
     <Authors>Artem Vertii</Authors>    
     <Product>CoreLib</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>7.0.0.0</AssemblyVersion>
+    <AssemblyVersion>9.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
     <Description>CoreLib XAssert and fluent assertion extensions</Description>
     <Copyright>Artem Vertii</Copyright>
@@ -19,7 +19,7 @@
     <PackageTags>avs corelib xassert</PackageTags>
     <RepositoryUrl>https://github.com/avertiy/avs-core-lib-nuget</RepositoryUrl>
     <RepositoryType>public</RepositoryType>
-    <Version>7.0.0.0</Version>    
+    <Version>9.0.0</Version>    
   </PropertyGroup>
 
   <ItemGroup>
@@ -36,16 +36,18 @@
   </ItemGroup>
 
   <ItemGroup>    
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />    
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />    
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />    
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />    
-    <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.3.0" />    
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.3.0" />    
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.5" />    
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.5" />    
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.5" />    
+    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.5" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="FluentAssertions" Version="6.12.0" />
-    <PackageReference Include="Moq" Version="4.20.70" />
+    <PackageReference Include="FluentAssertions" Version="8.3.0" />
+    <PackageReference Include="Moq" Version="4.20.72" />
+    <PackageReference Include="System.Text.Json" Version="9.0.5" />
     <PackageReference Include="xunit.abstractions" Version="2.0.3" />
-    <PackageReference Include="xunit.assert" Version="2.4.2" />
+    <PackageReference Include="xunit.assert" Version="2.9.3" />
   </ItemGroup>
 
   <ItemGroup>

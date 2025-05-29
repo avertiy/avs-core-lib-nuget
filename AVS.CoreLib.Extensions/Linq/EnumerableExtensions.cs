@@ -139,5 +139,30 @@ namespace AVS.CoreLib.Extensions.Linq
             var otherKeys = new HashSet<TKey>(other.Select(keySelector));
             return source.Where(x => !otherKeys.Contains(keySelector(x)));
         }
+
+        /// <summary>
+        /// The method returns overlapping windows, which is perfect for analysis, moving averages, etc.
+        /// <code>
+        ///  [1, 2, 3, 4, 5].SlidingWindow(3); => [1,2,3], [2, 3, 4], [3, 4, 5]
+        /// </code>
+        /// </summary>
+        public static IEnumerable<T[]> SlidingWindow<T>(this IEnumerable<T> source, int windowSize)
+        {
+            if (windowSize <= 0)
+                throw new ArgumentOutOfRangeException(nameof(windowSize));
+
+            var queue = new Queue<T>(windowSize);
+
+            foreach (var item in source)
+            {
+                queue.Enqueue(item);
+
+                if (queue.Count == windowSize)
+                {
+                    yield return queue.ToArray();
+                    queue.Dequeue();
+                }
+            }
+        }
     }
 }

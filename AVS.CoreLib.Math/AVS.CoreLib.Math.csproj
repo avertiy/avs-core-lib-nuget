@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>AVS.CoreLib.Math</RootNamespace>
@@ -10,7 +10,7 @@
     <Authors>Artem Vertii</Authors>    
     <Product>CoreLib.Math</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>7.0.0.0</AssemblyVersion>
+    <AssemblyVersion>9.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
     <Description>contains useful math utilities, types and extensions to do calculations, conversions etc.</Description>
     <Copyright>Artem Vertii</Copyright>
@@ -18,7 +18,7 @@
     <PackageTags>Text FormatProvider avs</PackageTags>
     <RepositoryUrl>https://github.com/avertiy/avs-core-lib-nuget</RepositoryUrl>
     <RepositoryType>public</RepositoryType>
-    <Version>7.0.0.0</Version>    
+    <Version>9.0.0</Version>    
   </PropertyGroup>
 
   <ItemGroup>

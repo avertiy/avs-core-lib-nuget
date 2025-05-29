@@ -37,6 +37,10 @@ public struct DecNumber : IComparable<decimal>, IComparable<DecNumber>, IFormatt
 
     public decimal Round(int? roundDecimals = null, int extraPrecision= 0, int minPrecision = 0) => _value.Round(roundDecimals, extraPrecision, minPrecision);
 
+    public decimal Pow(double pow) => _value.Pow(pow);
+
+    public decimal Sqrt() => _value.Sqrt();
+
     public decimal Abs() => _value.Abs();
 
     public override int GetHashCode() => _value.GetHashCode();

@@ -9,7 +9,7 @@ namespace AVS.CoreLib.UnitTesting.XUnit.Exceptions
     /// <summary>
     /// Exception thrown when two values are unexpectedly not equal.
     /// </summary>
-    public class StringEqualException : AssertActualExpectedException
+    public class StringEqualException : XunitException
     {
         private static readonly Dictionary<char, string> Encodings = new Dictionary<char, string>()
         {
@@ -31,17 +31,24 @@ namespace AVS.CoreLib.UnitTesting.XUnit.Exceptions
             }
         };
         private string? _message = null;
+        public  string Expected { get; set; }
+        public  string Actual { get; set; }
+        public  string UserMessage { get; set; }
 
         /// <summary>
         /// Creates a new instance of the <see cref="T:Xunit.Sdk.EqualException" /> class for string comparisons.
         /// </summary>
         /// <param name="expected">The expected string value</param>
         /// <param name="actual">The actual string value</param>
+        /// <param name="userMessage">user message</param>
         /// <param name="expectedIndex">The first index in the expected string where the strings differ</param>
         /// <param name="actualIndex">The first index in the actual string where the strings differ</param>
-        public StringEqualException(string? expected, string? actual, string userMessage, int expectedIndex = -1, int actualIndex = -1)
-            : base(expected, actual, $"Assert.Equal() Failure\r\n{userMessage}")
+        public StringEqualException(string expected, string actual, string userMessage, int expectedIndex = -1, int actualIndex = -1)
+            : base($"Assert.Equal() Failure: `{expected}` != `{actual}` \r\n{userMessage}")
         {
+            Actual = actual;
+            Expected = expected;
+            UserMessage = userMessage;
             this.ActualIndex = actualIndex;
             this.ExpectedIndex = expectedIndex;
         }
@@ -75,7 +82,8 @@ namespace AVS.CoreLib.UnitTesting.XUnit.Exceptions
                 return base.Message;
             Tuple<string, string> tuple1 = StringEqualException.ShortenAndEncode(this.Expected, this.ExpectedIndex, '↓');
             Tuple<string, string> tuple2 = StringEqualException.ShortenAndEncode(this.Actual, this.ActualIndex, '↑');
-            return string.Format((IFormatProvider)CultureInfo.CurrentCulture, "{1}{0}          {2}{0}Expected: {3}{0}Actual:   {4}{0}          {5}", (object)Environment.NewLine, (object)this.UserMessage, (object)tuple1.Item2, (object)(tuple1.Item1 ?? "(null)"), (object)(tuple2.Item1 ?? "(null)"), (object)tuple2.Item2);
+            return string.Format((IFormatProvider)CultureInfo.CurrentCulture, "{1}{0}          {2}{0}Expected: {3}{0}Actual:   {4}{0}          {5}", (object)Environment.NewLine,
+                (object)this.UserMessage, (object)tuple1.Item2, (object)(tuple1.Item1 ?? "(null)"), (object)(tuple2.Item1 ?? "(null)"), (object)tuple2.Item2);
         }
 
         private static Tuple<string, string> ShortenAndEncode(

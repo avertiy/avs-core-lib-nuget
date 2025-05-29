@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using AVS.CoreLib.Extensions.Enums;
 using AVS.CoreLib.Guards;
 
 namespace AVS.CoreLib.Extensions.Collections
@@ -40,6 +41,47 @@ namespace AVS.CoreLib.Extensions.Collections
 
             return counter;
         }
+
+        
+        /// <summary>
+        /// Adds unique by key items of the given collection to the end of the source list.        
+        /// </summary>
+        public static int AddRange<T, TKey>(this IList<T> source, IEnumerable<T> items, Func<T, TKey> keySelector)
+        {
+            var knownKeys = new HashSet<TKey>(source.Select(keySelector));
+            var counter = 0;
+            foreach (var item in items)
+            {
+                var itemKey = keySelector(item);
+                if (knownKeys.Add(itemKey))
+                {
+                    source.Add(item);
+                    counter++;
+                }
+            }
+            return counter;
+        }
+
+        /// <summary>
+        /// Adds unique by key items of the given collection to the end of the source list.
+        /// if they are satisfying a predicate condition
+        /// </summary>
+        public static int AddRange<T, TKey>(this IList<T> target, IEnumerable<T> second, Func<T, TKey> keySelector, Func<T, bool> predicate)
+        {
+            var knownKeys = new HashSet<TKey>(target.Select(keySelector));
+            var counter = 0;
+            foreach (var item in second)
+            {
+                if (predicate(item) && knownKeys.Add(keySelector(item)))
+                {
+                    target.Add(item);
+                    counter++;
+                }
+            }
+            return counter;
+        }
+
+        #region AddDistinct
 
         /// <summary>
         /// Adds distinct elements one-by-one to the end of this list.
@@ -81,43 +123,8 @@ namespace AVS.CoreLib.Extensions.Collections
             return counter;
         }
 
-        /// <summary>
-        /// Adds unique by key items of the given collection to the end of the source list.        
-        /// </summary>
-        public static int AddRange<T, TKey>(this IList<T> source, IEnumerable<T> items, Func<T, TKey> keySelector)
-        {
-            var knownKeys = new HashSet<TKey>(source.Select(keySelector));
-            var counter = 0;
-            foreach (var item in items)
-            {
-                var itemKey = keySelector(item);
-                if (knownKeys.Add(itemKey))
-                {
-                    source.Add(item);
-                    counter++;
-                }
-            }
-            return counter;
-        }
+        #endregion
 
-        /// <summary>
-        /// Adds unique by key items of the given collection to the end of the source list.
-        /// if they are satisfying a predicate condition
-        /// </summary>
-        public static int AddRange<T, TKey>(this IList<T> target, IEnumerable<T> second, Func<T, TKey> keySelector, Func<T, bool> predicate)
-        {
-            var knownKeys = new HashSet<TKey>(target.Select(keySelector));
-            var counter = 0;
-            foreach (var item in second)
-            {
-                if (predicate(item) && knownKeys.Add(keySelector(item)))
-                {
-                    target.Add(item);
-                    counter++;
-                }
-            }
-            return counter;
-        } 
         #endregion
 
         #region Remove extensions
@@ -172,38 +179,16 @@ namespace AVS.CoreLib.Extensions.Collections
 
         #region FindIndex
 
-        //public static int FindIndex<T>(this IList<T> source, Predicate<T> match)
-        //{
-        //    if (match == null)
-        //        throw new ArgumentNullException(nameof(match));
-
-        //    for (int i = 0; i < this.Count; i++)
-        //    {
-        //        if (match(this[i]))
-        //            return i;
-        //    }
-
-        //    return -1; // Return -1 if no match is found
-        //}
-
-        public static int FindIndex<T>(this IList<T> source, int startIndex, Predicate<T> match)
-        {
-            return FindIndex<T>(source, startIndex, source.Count - startIndex, match);
-        }
-
         /// <summary>
-        /// Same implementation as List{T}.FindIndex
+        /// Helps to find index
+        /// (same implementation as in List{T}.FindIndex)
         /// </summary>
-        //[Obsolete("Use Array.FindIndex(arr, startIndex, count, predicate)")]
-        public static int FindIndex<T>(this IList<T> source, int startIndex, int count, Predicate<T> match)
+        public static int FindIndex<T>(this IList<T> source, Predicate<T> match, int startIndex = 0, int count = 0)
         {
-            if ((uint)startIndex > (uint)source.Count)
-                throw new ArgumentOutOfRangeException($"{nameof(startIndex)} must be less than {source.Count}");
-
-            if (count < 0 || startIndex > source.Count - count)
-                throw new ArgumentOutOfRangeException(nameof(count));
-
-            var endIndex = startIndex + count;
+            Guard.MustBe.WithinRange(startIndex, 0, source.Count, nameof(startIndex));
+            Guard.MustBe.WithinRange(count, 0, source.Count-startIndex, nameof(count));
+            
+            var endIndex = count > 0 ? startIndex + count : source.Count;
 
             for (var i = startIndex; i < endIndex; i++)
             {
@@ -214,44 +199,26 @@ namespace AVS.CoreLib.Extensions.Collections
             return -1;
         }
 
-        public static int[] FindIndexes1(this IList<decimal> source, decimal qty, int startIndex = 0, int limitRecursion = 0)
+        /// <summary>
+        /// Helps to find index 
+        /// </summary>
+        /// <remarks>FindIndex2 to avoid collisions with FindIndex</remarks>
+        public static int FindIndex2<T>(this IList<T> source, Predicate<(int index, T item)> match, int startIndex, int count)
         {
-            for (var i = startIndex; i < source.Count; i++)
-            {
-                if (source[i] > qty)
-                    continue;
+            Guard.MustBe.WithinRange(startIndex, 0, source.Count, nameof(startIndex));
+            Guard.MustBe.WithinRange(count, 0, source.Count - startIndex, nameof(count));
 
-                if (source[i] == qty)
-                    return new[] { i };
+            var endIndex = count > 0 ? startIndex + count : source.Count;
 
-                if (limitRecursion > 0 && limitRecursion <= 1)
-                    continue;
-
-                var rest = qty - source[i];
-
-                var arr = FindIndexes1(source, rest, i + 1, limitRecursion - 1);
-
-                if (arr.Any())
-                    return arr.Insert(i);
-            }
-
-            return Array.Empty<int>();
-        }
-
-        public static int FindIndex2<T>(this IList<T> source, int startIndex, int count, Predicate<(int index, T item)> match)
-        {
-            Guard.MustBe.GreaterThanOrEqual(startIndex, 0);
-            Guard.MustBe.LessThan(startIndex, source.Count, $"{nameof(startIndex)} exceeds number of elements");
-
-            var endIndex = startIndex + count;
-            endIndex = source.Count < endIndex ? source.Count : endIndex;
             for (var i = startIndex; i < endIndex; i++)
             {
                 if (match((i, source[i])))
                     return i;
             }
+
             return -1;
         }
+        
         #endregion
 
         public static bool ContainsAll<T>(this IList<T> source, params T[] items)
@@ -271,14 +238,6 @@ namespace AVS.CoreLib.Extensions.Collections
             }
 
             return result;
-        }
-        
-        public static IList<T> Shrink<T>(this IList<T> items, Func<T, double> selector, double threshold = 0.0)
-        {
-            var avg = items.Average(selector);
-            if (threshold <= 0)
-                threshold = avg;
-            return items.Where(i => selector(i) >= threshold).ToList();
         }
 
         /// <summary>
@@ -315,40 +274,31 @@ namespace AVS.CoreLib.Extensions.Collections
             source.Clear();
             source.AddRange(arr);
         }
-
-        /// <summary>
-        /// Merge source with another collection into a new list of items, dropping duplicates
-        /// </summary>
-        public static List<T> Merge<T, TKey>(this IEnumerable<T> source, IEnumerable<T> other, Func<T, TKey> key, Func<(T source, T other), T>? resolve = null) where TKey : notnull
+        
+        public static bool Any<T>(this IEnumerable<T> source, Func<T, bool> predicate, Direction direction = Direction.Forward)
         {
-            var dict = new Dictionary<TKey, T>();
+            Guard.Against.Null(source, nameof(source));
+            Guard.Against.Null(predicate, nameof(predicate));
+
+            if (direction == Direction.Reverse)
+            {
+                var list = source as IList<T> ?? new List<T>(source);
+                for (var i = list.Count - 1; i >= 0; i--)
+                {
+                    if (predicate(list[i]))
+                        return true;
+                }
+                return false;
+            }
+
+            // Forward (standard) case
             foreach (var item in source)
             {
-                var itemKey = key(item);
-                if (dict.ContainsKey(itemKey))
-                {
-                    dict[itemKey] = resolve != null ? resolve.Invoke((dict[itemKey], item)) : dict[itemKey];
-                }
-                else
-                {
-                    dict[itemKey] = item;
-                }
+                if (predicate(item))
+                    return true;
             }
 
-            foreach (var item in other)
-            {
-                var itemKey = key(item);
-                if (dict.ContainsKey(itemKey))
-                {
-                    dict[itemKey] = resolve != null ? resolve.Invoke((dict[itemKey], item)) : dict[itemKey];
-                }
-                else
-                {
-                    dict[itemKey] = item;
-                }
-            }
-
-            return dict.Values.ToList();
+            return false;
         }
     }
 }

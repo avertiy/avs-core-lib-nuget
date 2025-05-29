@@ -1,12 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>    
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <AssemblyVersion>7.0.0.0</AssemblyVersion>
-    <Version>7.0.0.0</Version>
+    <AssemblyVersion>9.0.0</AssemblyVersion>
+    <Version>9.0.0</Version>
     <PackageReleaseNotes></PackageReleaseNotes>
     <PackageTags>avs;corelib;mapper;slim-mapper</PackageTags>
     <Copyright>Artem Vertii</Copyright>
@@ -14,5 +13,4 @@
     <Description>Simple, light &amp; easy to use type mapper</Description>
     <RepositoryUrl>https://github.com/avertiy/avs-core-lib-nuget/tree/main/AVS.CoreLib.Mapper</RepositoryUrl>
   </PropertyGroup>
-
 </Project>
