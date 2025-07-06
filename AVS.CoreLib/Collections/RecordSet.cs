@@ -10,7 +10,8 @@ using AVS.CoreLib.Guards;
 namespace AVS.CoreLib.Collections
 {
     /// <summary>
-    /// Represents a wrapper over <see cref="List{T}"/> collection, helps to merge items, preserving their uniqueness and ascending/descending sort order
+    /// Represents a wrapper over <see cref="List{T}"/> collection,
+    /// helps to merge items, preserving their uniqueness and ascending/descending sort order
     /// </summary>
     public class RecordSet<T> : IRecordSet<T>
     {

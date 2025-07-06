@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AVS.CoreLib.Extensions.Enums;
+using AVS.CoreLib.Extensions.Linq;
 using AVS.CoreLib.Guards;
 
 namespace AVS.CoreLib.Extensions.Collections
@@ -202,7 +203,7 @@ namespace AVS.CoreLib.Extensions.Collections
         /// <summary>
         /// Helps to find index 
         /// </summary>
-        /// <remarks>FindIndex2 to avoid collisions with FindIndex</remarks>
+        /// <remarks>FindIndex2 helps to resolve collisions with .net FindIndex</remarks>
         public static int FindIndex2<T>(this IList<T> source, Predicate<(int index, T item)> match, int startIndex, int count)
         {
             Guard.MustBe.WithinRange(startIndex, 0, source.Count, nameof(startIndex));
@@ -218,7 +219,9 @@ namespace AVS.CoreLib.Extensions.Collections
 
             return -1;
         }
-        
+
+        //public static int FindIndex2<T>(this IList<T> source, Predicate<(int index, T item)> match, int startIndex, int count)
+
         #endregion
 
         public static bool ContainsAll<T>(this IList<T> source, params T[] items)

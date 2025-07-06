@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 namespace AVS.CoreLib.Extensions;
 
@@ -80,7 +81,16 @@ public static class DecimalExtensions
             throw new OverflowException("Result is not a valid decimal value.");
 
         return (decimal)result;
-    } 
+    }
+
+    /// <summary>
+    /// Calculates value in percentage
+    /// </summary>
+    public static decimal Pct(this decimal value, decimal mean)
+    {
+        return (value / mean * 100).Round();
+    }
+
     #endregion
 
     #region Round extensions
@@ -102,6 +112,20 @@ public static class DecimalExtensions
             dec = minPrecision;
 
         return Round(value / step, dec) * step;
+    }
+
+    /// <summary>
+    /// returns the nearest number from a given grid
+    /// </summary>
+    public static decimal Round(this decimal value, decimal[] grid)
+    {
+        // Optional: if qty is already in the grid, return it
+        if (grid.Contains(value))
+            return value;
+
+        // Round to nearest value in the grid
+        var closest = grid.MinBy(q => Math.Abs(q - value));
+        return closest;
     }
 
     public static decimal RoundUp(this decimal value, int decimals, decimal step =1m)

@@ -6,10 +6,10 @@ namespace AVS.CoreLib.Guards;
 public static class GuardAgainstExtensions
 {
     #region Null
-    public static void Null(this IAgainstGuardClause guardClause, object? arg, string? message = null)
+    public static void Null(this IAgainstGuardClause guardClause, object? arg, string? message = null, string name = "argument")
     {
         if (arg == null)
-            throw new ArgumentNullException(message ?? $"must be not null");
+            throw new ArgumentNullException(message ?? $"{name} must be not null");
     }
 
     public static void Null(this IAgainstGuardClause guardClause, object? param, bool allowNull, string name = "argument")

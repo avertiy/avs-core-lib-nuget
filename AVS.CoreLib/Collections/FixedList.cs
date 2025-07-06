@@ -43,20 +43,11 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
         Items = arr;
     }
 
-    public T this[int index]
-    {
-        get
-        {
-            Guard.MustBe.WithinRange(index, 0, Capacity - 1);
-            return Items[(Head + index) % Capacity];
-        }
-        set => Items[(Head + index) % Capacity] = value;
-    }
-
+    #region Add / Insert / Put
     public void Add(T item)
     {
         if (Count >= Capacity)
-            throw new ExceedCapacityException($"List reached a max number of elements ({Capacity})");
+            throw new ExceedCapacityException($"FixedList reached a max number of elements ({Capacity})");
 
         Items[(Head + Count) % Capacity] = item;
         Count++;
@@ -72,7 +63,7 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
         }
 
         if (!force)
-            throw new ExceedCapacityException($"List reached a max number of elements ({Capacity})");
+            throw new ExceedCapacityException($"FixedList reached a max number of elements ({Capacity})");
 
         Items[Head] = item;
         Head = (Head + 1) % Capacity;
@@ -91,7 +82,7 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
     }
 
     /// <summary>
-    /// Put item on top of the list (if item already exists, removes it and add to the end)
+    /// Put item on top of the list (if item already exists, removes it and adds to the end)
     /// </summary>
     public void Put(T item)
     {
@@ -125,73 +116,11 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
         Add(item, true);
     }
 
-
-    public IEnumerator<T> GetEnumerator()
-    {
-        for (var i = 0; i < Count; i++)
-        {
-            yield return Items[(Head + i) % Capacity];
-        }
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
-
-    public void Clear()
-    {
-        Array.Clear(Items, 0, Items.Length);
-        Count = 0;
-        Head = 0;
-    }
-
-    public bool Contains(T item)
-    {
-        if (Count == 0)
-            return false;
-
-        if (Head == 0)
-            return Array.IndexOf(Items, item, Head, Count) >= 0;
-
-        return
-            Array.IndexOf(Items, item, Head, Items.Length - Head) >= 0 ||
-            Array.IndexOf(Items, item, 0, Capacity - Count) >= 0;
-    }
-
-    public void CopyTo(T[] array, int arrayIndex)
-    {
-        if (array == null)
-        {
-            throw new ArgumentNullException(nameof(array));
-        }
-
-        if (arrayIndex < 0 || arrayIndex + Count > array.Length)
-        {
-            throw new ArgumentOutOfRangeException(nameof(arrayIndex));
-        }
-
-        for (var i = 0; i < Count; i++)
-        {
-            array[arrayIndex + i] = this[i];
-        }
-    }
-
-    public int IndexOf(T item)
-    {
-        for (var i = 0; i < Count; i++)
-        {
-            var currentItem = Items[(Head + i) % Capacity];
-            if (EqualityComparer<T>.Default.Equals(currentItem, item))
-            {
-                return i;
-            }
-        }
-        return -1;
-    }
-
     public void Insert(int index, T item)
     {
+        if (Count >= Capacity)
+            throw new ExceedCapacityException($"FixedList reached a max number of elements ({Capacity})");
+
         if (Count < Capacity && Head == 0)
         {
             Array.Copy(Items, index, Items, index + 1, Count - index);
@@ -216,7 +145,145 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
             Head = 0;
         }
     }
+    #endregion
 
+    #region IndexOf / Contains
+    public int IndexOf(T item)
+    {
+        for (var i = 0; i < Count; i++)
+        {
+            var currentItem = Items[(Head + i) % Capacity];
+            if (EqualityComparer<T>.Default.Equals(currentItem, item))
+            {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public bool Contains(T item)
+    {
+        if (Count == 0)
+            return false;
+
+        if (Head == 0)
+            return Array.IndexOf(Items, item, Head, Count) >= 0;
+
+        return
+            Array.IndexOf(Items, item, Head, Items.Length - Head) >= 0 ||
+            Array.IndexOf(Items, item, 0, Capacity - Count) >= 0;
+    } 
+    #endregion
+
+    #region Push/Pop
+    public void Push(T item)
+    {
+        if (Count >= Capacity)
+            throw new ExceedCapacityException($"FixedList reached a max number of elements ({Capacity})");
+
+        Items[Head] = item;
+        Head = (Head + 1) % Capacity;
+        Count++;
+    }
+
+    public T Pop()
+    {
+        if (Count == 0)
+            throw new InvalidOperationException("List has no items");
+
+        //stack Add: 1,2,3 => [1,2,3]; Pop()=> 3,2,1
+        //queue Add: 1,2,3 => [1,2,3]; Dequeue() =>1,2,3
+        Count--;
+        var index = (Head + Count - 1) % Capacity;
+        var result = Items[index];
+        Items[index] = default!;
+        return result;
+    }
+
+    public bool TryPop(out T? result)
+    {
+        if (Count == 0)
+        {
+            result = default!;
+            return false;
+        }
+
+        result = Pop();
+        return true;
+    } 
+    #endregion
+
+    #region Enqueue/Dequeue
+    public void Enqueue(T item)
+    {
+        Add(item);
+    }
+
+    public T Dequeue()
+    {
+        if (Count == 0)
+            throw new InvalidOperationException("List has no items");
+
+        var result = Items[Head];
+        Items[Head] = default!;
+
+        if (Head + 1 < Capacity)
+            Head++;
+        else
+            Head = 0;
+
+        Count--;
+
+        return result;
+    }
+
+    public bool TryDequeue(out T? item)
+    {
+        if (Count == 0)
+        {
+            item = default;
+            return false;
+        }
+
+        item = Dequeue();
+        return true;
+    }
+    #endregion
+
+    #region Peek
+    public T Peek()
+    {
+        if (Count == 0)
+            throw new InvalidOperationException("Queue has no items");
+
+        return Items[Head];
+    }
+
+    public T Peek(int index)
+    {
+        return this[index];
+    }
+
+    //Stack behaviour
+    public T PeekLast()
+    {
+        var lastIndex = (Head + Count - 1) % Capacity;
+        return Items[lastIndex];
+    }
+
+    #endregion
+
+    public T this[int index]
+    {
+        get
+        {
+            Guard.MustBe.WithinRange(index, 0, Capacity - 1);
+            return Items[(Head + index) % Capacity];
+        }
+        set => Items[(Head + index) % Capacity] = value;
+    }
+
+    #region Remove / Clear
     public bool Remove(T item)
     {
         var index = IndexOf(item);
@@ -261,80 +328,64 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
         }
     }
 
-    public T Pop()
+    public void Clear()
     {
-        if (Count == 0)
-            throw new InvalidOperationException("List has no items");
+        Array.Clear(Items, 0, Items.Length);
+        Count = 0;
+        Head = 0;
+    }
+    #endregion
 
-        //stack Add: 1,2,3 => [1,2,3]; Pop()=> 3,2,1
-        //queue Add: 1,2,3 => [1,2,3]; Dequeue() =>1,2,3
-        Count--;
-        var index = (Head + Count - 1) % Capacity;
-        var result = Items[index];
-        Items[index] = default!;
-        return result;
+    #region GetEnumerator
+    public IEnumerator<T> GetEnumerator()
+    {
+        for (var i = 0; i < Count; i++)
+        {
+            yield return Items[(Head + i) % Capacity];
+        }
     }
 
-    public bool TryPop(out T? result)
+    IEnumerator IEnumerable.GetEnumerator()
     {
+        return GetEnumerator();
+    }
+    #endregion
+
+    public T[] ToArray()
+    {
+        var arr = new T[Count];
+
         if (Count == 0)
+            return arr;
+
+        //if (Head < _tail)
+        //{
+        //    Array.Copy(_array, _head, arr, 0, _size);
+        //}
+
+        //[1,2,*3,4,5,6]  6-2=3, Head=2
+        //[3,4,5,6,..] // copy [1,2]
+        Array.Copy(Items, Head, arr, 0, Items.Length - Head);
+        Array.Copy(Items, 0, arr, Items.Length - Head, Head);
+        return arr;
+    }
+
+    public void CopyTo(T[] array, int arrayIndex)
+    {
+        if (array == null)
         {
-            result = default!;
-            return false;
+            throw new ArgumentNullException(nameof(array));
         }
 
-        result = Pop();
-        return true;
-    }
-
-    public T Dequeue()
-    {
-        if (Count == 0)
-            throw new InvalidOperationException("List has no items");
-
-        var result = Items[Head];
-        Items[Head] = default!;
-
-        if (Head + 1 < Capacity)
-            Head++;
-        else
-            Head = 0;
-
-        Count--;
-
-        return result;
-    }
-
-    public bool TryDequeue(out T? item)
-    {
-        if (Count == 0)
+        if (arrayIndex < 0 || arrayIndex + Count > array.Length)
         {
-            item = default;
-            return false;
+            throw new ArgumentOutOfRangeException(nameof(arrayIndex));
         }
 
-        item = Dequeue();
-        return true;
-    }
-
-    public T Peek()
-    {
-        if (Count == 0)
-            throw new InvalidOperationException("Queue has no items");
-
-        return Items[Head];
-    }
-
-    public T Peek(int index)
-    {
-        return this[index];
-    }
-
-    //Stack behaviour
-    public T PeekLast()
-    {
-        var lastIndex = (Head + Count - 1) % Capacity;
-        return Items[lastIndex];
+        for (var i = 0; i < Count; i++)
+        {
+            array[arrayIndex + i] = this[i];
+        }
     }
 }
 
