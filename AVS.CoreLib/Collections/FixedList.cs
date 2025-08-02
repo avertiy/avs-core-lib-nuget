@@ -53,7 +53,7 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
         Count++;
     }
 
-    public void Add(T item, bool force)
+    private void Add(T item, bool force)
     {
         if (Count < Capacity)
         {
@@ -82,29 +82,33 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
     }
 
     /// <summary>
-    /// Put item on top of the list (if item already exists, removes it and adds to the end)
+    /// Put an item on top of the list (if item already exists, moves it to the end of the list (queue))
     /// </summary>
     public void Put(T item)
     {
         var ind = IndexOf(item);
 
-        if (ind == -1)
+        if (ind == -1 || !IsFull)
         {
             Add(item, force: true);
             return;
         }
 
-        if (ind == Count - 1)
-            return;
-
-        if (ind == 0 && IsFull)
+        if (IsFull)
         {
-            //e.g. head = 1, item=2 [1,*2,3,4,5,6] => [1,2,*3,4,5,6];
-            Head++;
-            return;
+            // if item is already at the end of the list (queue) do nothing
+            if (ind == Count - 1)
+                return;
+
+            if (ind == 0)
+            {
+                //e.g. head = 1, item=2 [1,*2,3,4,5,6] => [1,2,*3,4,5,6];
+                Head = (Head + 1) % Capacity;
+                return;
+            }
         }
 
-        //head = 0 [*1,2,(3),4,5,6] item=3 (ind:2) => [*1,2,(4,5,6)];
+        //head = 0 [*1,2,(3),4,5,6] item=3 (ind:2) => [*1,2,|4,5,6|,(3)];
         if (Head == 0)
         {
             Array.Copy(Items, ind + 1, Items, ind, Count - ind - 1);
@@ -148,6 +152,7 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
     #endregion
 
     #region IndexOf / Contains
+
     public int IndexOf(T item)
     {
         for (var i = 0; i < Count; i++)
@@ -214,11 +219,18 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
     #endregion
 
     #region Enqueue/Dequeue
+
+    /// <summary>
+    /// Adds item to the end of the list (queue)
+    /// </summary>
     public void Enqueue(T item)
     {
         Add(item);
     }
 
+    /// <summary>
+    /// Removes and returns object from the beginning of the list (queue)
+    /// </summary>
     public T Dequeue()
     {
         if (Count == 0)

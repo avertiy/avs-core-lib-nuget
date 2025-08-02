@@ -49,7 +49,7 @@ public class FixedListTests
         var list = new FixedList<int>(3) { 1, 2, 3 };
 
         // act
-        list.Add(4, force: true);
+        list.Put(4);
 
         //assert
         list.Count.Should().Be(3);
@@ -85,7 +85,7 @@ public class FixedListTests
         var list = new FixedList<int>(5) { 1, 2, 3, 4, 5 };
 
         // act
-        list.Add(6, true);
+        list.Put(6);
         list.Put(2);
 
         // assert
@@ -93,7 +93,7 @@ public class FixedListTests
         arr1.Should().BeEquivalentTo(new[] { 3, 4, 5, 6, 2 });
 
         // act
-        list.Add(7, true);
+        list.Put(7);
         list.Put(2);
 
         //assert

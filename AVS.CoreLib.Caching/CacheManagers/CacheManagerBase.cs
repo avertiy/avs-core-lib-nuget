@@ -109,7 +109,7 @@ namespace AVS.CoreLib.Caching
 
             var options = PrepareCacheEntryOptions(key, cacheDuration);
             CreateCacheEntry(key, item, options);
-            _keys.Add(key, true);
+            _keys.Put(key);
             return true;
         }
 
