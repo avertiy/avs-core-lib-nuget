@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using AVS.CoreLib.Guards;
 
 namespace AVS.CoreLib.Collections;
@@ -13,8 +14,8 @@ namespace AVS.CoreLib.Collections;
 /// <typeparam name="T"></typeparam>
 public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
 {
-    protected T[] Items;
-    protected int Head { get; set; }
+    private T[] _items;
+    private int Head { get; set; }
     public int Capacity { get; protected set; }
     public int Count { get; protected set; }
     public bool IsFull => Count == Capacity;
@@ -24,7 +25,7 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
     {
         Guard.MustBe.GreaterThanOrEqual(capacity, 0);
         Capacity = capacity;
-        Items = new T[capacity];
+        _items = new T[capacity];
         Count = 0;
         Head = 0;
     }
@@ -37,10 +38,10 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
         Capacity = capacity;
         var arr = new T[capacity];
 
-        for (var i = 0; i < Items.Length; i++)
-            arr[i] = Items[i];
+        for (var i = 0; i < _items.Length; i++)
+            arr[i] = _items[i];
             
-        Items = arr;
+        _items = arr;
     }
 
     #region Add / Insert / Put
@@ -49,7 +50,7 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
         if (Count >= Capacity)
             throw new ExceedCapacityException($"FixedList reached a max number of elements ({Capacity})");
 
-        Items[(Head + Count) % Capacity] = item;
+        _items[(Head + Count) % Capacity] = item;
         Count++;
     }
 
@@ -57,7 +58,7 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
     {
         if (Count < Capacity)
         {
-            Items[(Head + Count) % Capacity] = item;
+            _items[(Head + Count) % Capacity] = item;
             Count++;
             return;
         }
@@ -65,7 +66,7 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
         if (!force)
             throw new ExceedCapacityException($"FixedList reached a max number of elements ({Capacity})");
 
-        Items[Head] = item;
+        _items[Head] = item;
         Head = (Head + 1) % Capacity;
     }
 
@@ -73,7 +74,7 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
     {
         if (Count < Capacity)
         {
-            Items[(Head + Count) % Capacity] = item;
+            _items[(Head + Count) % Capacity] = item;
             Count++;
             return true;
         }
@@ -111,8 +112,8 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
         //head = 0 [*1,2,(3),4,5,6] item=3 (ind:2) => [*1,2,|4,5,6|,(3)];
         if (Head == 0)
         {
-            Array.Copy(Items, ind + 1, Items, ind, Count - ind - 1);
-            Items[^1] = item;
+            Array.Copy(_items, ind + 1, _items, ind, Count - ind - 1);
+            _items[^1] = item;
             return;
         }
 
@@ -127,12 +128,12 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
 
         if (Count < Capacity && Head == 0)
         {
-            Array.Copy(Items, index, Items, index + 1, Count - index);
+            Array.Copy(_items, index, _items, index + 1, Count - index);
             Count++;
         }
         else if (index == 0)
         {
-            Items[Head] = item;
+            _items[Head] = item;
             Head = (Head + 1) % Capacity;
         }
         else
@@ -143,9 +144,9 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
             {
                 var ii = (Head + i + 1) % Capacity;
                 var shift = i < index ? 0 : 1;
-                items[i + shift] = Items[ii];
+                items[i + shift] = _items[ii];
             }
-            Array.Copy(items, 0, Items, 0, Count);
+            Array.Copy(items, 0, _items, 0, Count);
             Head = 0;
         }
     }
@@ -157,7 +158,7 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
     {
         for (var i = 0; i < Count; i++)
         {
-            var currentItem = Items[(Head + i) % Capacity];
+            var currentItem = _items[(Head + i) % Capacity];
             if (EqualityComparer<T>.Default.Equals(currentItem, item))
             {
                 return i;
@@ -172,11 +173,11 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
             return false;
 
         if (Head == 0)
-            return Array.IndexOf(Items, item, Head, Count) >= 0;
+            return Array.IndexOf(_items, item, Head, Count) >= 0;
 
         return
-            Array.IndexOf(Items, item, Head, Items.Length - Head) >= 0 ||
-            Array.IndexOf(Items, item, 0, Capacity - Count) >= 0;
+            Array.IndexOf(_items, item, Head, _items.Length - Head) >= 0 ||
+            Array.IndexOf(_items, item, 0, Capacity - Count) >= 0;
     } 
     #endregion
 
@@ -186,7 +187,7 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
         if (Count >= Capacity)
             throw new ExceedCapacityException($"FixedList reached a max number of elements ({Capacity})");
 
-        Items[Head] = item;
+        _items[Head] = item;
         Head = (Head + 1) % Capacity;
         Count++;
     }
@@ -200,8 +201,8 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
         //queue Add: 1,2,3 => [1,2,3]; Dequeue() =>1,2,3
         Count--;
         var index = (Head + Count - 1) % Capacity;
-        var result = Items[index];
-        Items[index] = default!;
+        var result = _items[index];
+        _items[index] = default!;
         return result;
     }
 
@@ -236,8 +237,8 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
         if (Count == 0)
             throw new InvalidOperationException("List has no items");
 
-        var result = Items[Head];
-        Items[Head] = default!;
+        var result = _items[Head];
+        _items[Head] = default!;
 
         if (Head + 1 < Capacity)
             Head++;
@@ -268,11 +269,19 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
         if (Count == 0)
             throw new InvalidOperationException("Queue has no items");
 
-        return Items[Head];
+        return _items[Head];
     }
 
     public T Peek(int index)
     {
+        Guard.MustBe.LessThanOrEqual(index, Count);
+        return this[index];
+    }
+
+    public T PeekFromEnd(int offset)
+    {
+        Guard.MustBe.LessThanOrEqual(offset, Count);
+        var index = Count - offset;
         return this[index];
     }
 
@@ -280,7 +289,7 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
     public T PeekLast()
     {
         var lastIndex = (Head + Count - 1) % Capacity;
-        return Items[lastIndex];
+        return _items[lastIndex];
     }
 
     #endregion
@@ -290,9 +299,9 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
         get
         {
             Guard.MustBe.WithinRange(index, 0, Capacity - 1);
-            return Items[(Head + index) % Capacity];
+            return _items[(Head + index) % Capacity];
         }
-        set => Items[(Head + index) % Capacity] = value;
+        set => _items[(Head + index) % Capacity] = value;
     }
 
     #region Remove / Clear
@@ -314,7 +323,7 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
         if (Head == 0)
         {
             Count--;
-            Array.Copy(Items, index + 1, Items, index, Count - index);
+            Array.Copy(_items, index + 1, _items, index, Count - index);
         }
         else
         {
@@ -325,24 +334,24 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
                 if (i < index)
                 {
                     var ind = (Head + i) % Capacity;
-                    items[i] = Items[ind];
+                    items[i] = _items[ind];
                 }
                 else
                 {
                     var ind = (Head + i + 1) % Capacity;
-                    items[i] = Items[ind];
+                    items[i] = _items[ind];
                 }
             }
 
             Count--;
-            Array.Copy(items, 0, Items, 0, Count);
+            Array.Copy(items, 0, _items, 0, Count);
             Head = 0;
         }
     }
 
     public void Clear()
     {
-        Array.Clear(Items, 0, Items.Length);
+        Array.Clear(_items, 0, _items.Length);
         Count = 0;
         Head = 0;
     }
@@ -353,7 +362,7 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
     {
         for (var i = 0; i < Count; i++)
         {
-            yield return Items[(Head + i) % Capacity];
+            yield return _items[(Head + i) % Capacity];
         }
     }
 
@@ -377,8 +386,8 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
 
         //[1,2,*3,4,5,6]  6-2=3, Head=2
         //[3,4,5,6,..] // copy [1,2]
-        Array.Copy(Items, Head, arr, 0, Items.Length - Head);
-        Array.Copy(Items, 0, arr, Items.Length - Head, Head);
+        Array.Copy(_items, Head, arr, 0, _items.Length - Head);
+        Array.Copy(_items, 0, arr, _items.Length - Head, Head);
         return arr;
     }
 

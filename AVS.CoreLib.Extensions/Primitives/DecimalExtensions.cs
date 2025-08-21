@@ -91,6 +91,15 @@ public static class DecimalExtensions
         return (value / mean * 100).Round();
     }
 
+    /// <summary>
+    /// Safely divides value / divider
+    /// </summary>
+    /// <returns> 0 - in case divider = 0, otherwise the result of division value/divider </returns>
+    public static decimal Ratio(this decimal value, decimal divider, int? roundDecimals = null)
+    {
+        return divider == 0 ? 0 : (value / divider).Round(roundDecimals);
+    }
+
     #endregion
 
     #region Round extensions
