@@ -2,7 +2,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using AVS.CoreLib.Guards;
 
 namespace AVS.CoreLib.Collections;
@@ -83,7 +82,7 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
     }
 
     /// <summary>
-    /// Put an item on top of the list (if item already exists, moves it to the end of the list (queue))
+    /// Put an item on top of the list (if item already exists, moves it to the end of the list (queue behaviour))
     /// </summary>
     public void Put(T item)
     {
@@ -274,14 +273,14 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
 
     public T Peek(int index)
     {
-        Guard.MustBe.LessThanOrEqual(index, Count);
+        Guard.MustBe.LessThan(index, Count);
         return this[index];
     }
 
     public T PeekFromEnd(int offset)
     {
-        Guard.MustBe.LessThanOrEqual(offset, Count);
-        var index = Count - offset;
+        Guard.MustBe.LessThan(offset, Count);
+        var index = Count - (offset+1);
         return this[index];
     }
 
@@ -294,6 +293,23 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
 
     #endregion
 
+
+    /// <summary>
+    /// <code>
+    ///  var fixedList = new FixedList(3);
+    ///  fixedList.Add(1); // [*1]       Head=0
+    ///  fixedList.Add(2); // [*1,2]     Head=0
+    ///  fixedList.Add(3); // [*1,2,3]   Head=0
+    ///
+    ///  fixedList[0] => 1
+    ///  fixedList[2] => 3
+    /// 
+    ///  fixedList.Put(4); // [4,*2,3]   Head=1
+    ///  
+    ///  fixedList[0] => 2
+    ///  fixedList[2] => 4
+    /// </code>
+    /// </summary>
     public T this[int index]
     {
         get
@@ -409,4 +425,3 @@ public class FixedList<T> : IList<T>, IEnumerable<T>, IEnumerable
         }
     }
 }
-

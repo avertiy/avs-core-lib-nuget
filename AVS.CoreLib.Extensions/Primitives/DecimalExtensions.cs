@@ -86,9 +86,9 @@ public static class DecimalExtensions
     /// <summary>
     /// Calculates value in percentage
     /// </summary>
-    public static decimal Pct(this decimal value, decimal mean)
+    public static decimal Pct(this decimal value, decimal mean, int? roundDecimals = null)
     {
-        return (value / mean * 100).Round();
+        return mean == 0 ? 0 : (value / mean * 100).Round(roundDecimals);
     }
 
     /// <summary>
