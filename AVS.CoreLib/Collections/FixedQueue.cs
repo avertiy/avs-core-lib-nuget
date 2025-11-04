@@ -23,7 +23,7 @@ public class FixedQueue<T> : Queue<T>
             return;
         }
 
-        throw new ExceedCapacityException($"Queue reached a max number of elements ({Capacity})");
+        throw new InvalidOperationException($"Queue reached a max number of elements ({Capacity})");
     }
 
     public bool TryEnqueue(T item)
@@ -50,57 +50,7 @@ public class FixedQueue<T> : Queue<T>
         }
         else
         {
-            throw new ExceedCapacityException($"Queue reached a max number of elements ({Capacity})");
+            throw new InvalidOperationException($"Queue reached a max number of elements ({Capacity})");
         }
     }
-
 }
-
-public class ExceedCapacityException : Exception
-{
-    public ExceedCapacityException(string message) : base(message)
-    {
-    }
-}
-
-//public class FixedQueueWrapper<T>
-//{
-//    private readonly Queue<T> _queue;
-
-//    public int Capacity { get; }
-//    public int Count => _queue.Count;
-
-//    public FixedQueueWrapper(int capacity)
-//    {
-//        _queue = new(capacity);
-//        Capacity = capacity;
-//    }
-
-//    public T? Enqueue(T item)
-//    {
-//        if (_queue.Count < Capacity)
-//        {
-//            _queue.Enqueue(item);
-//            return default;
-//        }
-
-//        var dequeItem = _queue.Dequeue();
-//        _queue.Enqueue(item);
-//        return dequeItem;
-//    }
-
-//    public T Dequeue()
-//    {
-//        return _queue.Dequeue();
-//    }
-
-//    public bool TryDequeue(out T item)
-//    {
-//        return _queue.TryDequeue(out item);
-//    }
-
-//    public T Peek()
-//    {
-//        return _queue.Peek();
-//    }
-//}

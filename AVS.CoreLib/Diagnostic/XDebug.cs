@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Text;
 
-namespace AVS.CoreLib.Debugging
+namespace AVS.CoreLib.Diagnostic
 {
     public static class XDebug
     {

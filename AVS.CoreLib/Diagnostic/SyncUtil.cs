@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AVS.CoreLib.Debugging
+namespace AVS.CoreLib.Diagnostic
 {
     public static class SyncUtil
     {
@@ -8,17 +8,13 @@ namespace AVS.CoreLib.Debugging
         public static void RunSync(Action action)
         {
             lock (_lock)
-            {
                 action();
-            }
         }
 
         public static T RunSync<T>(Func<T> fn)
         {
             lock (_lock)
-            {
                 return fn();
-            }
         }
     }
 }

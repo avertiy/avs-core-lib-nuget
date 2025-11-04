@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace AVS.CoreLib.Debugging
+namespace AVS.CoreLib.Diagnostic
 {
     public static class TryCatchExtensions
     {

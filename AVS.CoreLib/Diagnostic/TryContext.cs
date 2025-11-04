@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace AVS.CoreLib.Debugging
+namespace AVS.CoreLib.Diagnostic
 {
     [DebuggerStepThrough]
     public class TryContext<T, TResult>
@@ -65,9 +65,7 @@ namespace AVS.CoreLib.Debugging
         public TryContext<T, TResult> OnError(Action<Exception> action)
         {
             if (Error != null)
-            {
                 action?.Invoke(Error);
-            }
 
             _onError = action;
             return this;
@@ -83,18 +81,14 @@ namespace AVS.CoreLib.Debugging
         private void SetResult(TResult result)
         {
             if (Result == null || Result.Equals(default))
-            {
                 Result = result;
-            }
         }
 
         [DebuggerStepThrough]
         public TryContext<T, TResult> OnSuccess(Action<TResult> action)
         {
             if (Error == null && _success && Result != null)
-            {
                 action?.Invoke(Result);
-            }
 
             _onSuccess = action;
             return this;
@@ -104,12 +98,8 @@ namespace AVS.CoreLib.Debugging
         public TryContext<T, TResult> OnSuccess(Func<TResult, bool> condition, Action<TResult> callback)
         {
             if (Error == null && _success && Result != null)
-            {
                 if (condition?.Invoke(Result) ?? false)
-                {
                     callback?.Invoke(Result);
-                }
-            }
 
             return this;
         }

@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using AVS.CoreLib.Extensions.Reflection;
 
-namespace AVS.CoreLib.Debugging
+namespace AVS.CoreLib.Diagnostic
 {
     public class ObjectDumper
     {
@@ -38,13 +38,9 @@ namespace AVS.CoreLib.Debugging
             {
                 var str = FormatValue(element);
                 if (str.Length < 12)
-                {
                     WriteInline(str + ",");
-                }
                 else
-                {
                     Write(str + ",");
-                }
             }
             else
             {
@@ -61,8 +57,7 @@ namespace AVS.CoreLib.Debugging
                 {
                     Write("[");
                     _level++;
-                    foreach (object item in enumerableElement)
-                    {
+                    foreach (var item in enumerableElement)
                         if (item is IEnumerable && !(item is string))
                         {
                             _level++;
@@ -70,13 +65,10 @@ namespace AVS.CoreLib.Debugging
                             _level--;
                         }
                         else
-                        {
                             if (!AlreadyTouched(item))
                                 DumpElement(item);
                             else
                                 Write("{{{0}}} <-- bidirectional reference found", item.GetType().FullName!);
-                        }
-                    }
                     _level--;
                     if (_stringBuilder[^1] == ',')
                     {
@@ -85,9 +77,7 @@ namespace AVS.CoreLib.Debugging
                         _stringBuilder.AppendLine();
                     }
                     else
-                    {
                         Write("],");
-                    }
                 }
                 else
                 {
@@ -108,9 +98,7 @@ namespace AVS.CoreLib.Debugging
                                            : propertyInfo!.GetValue(element, null);
 
                         if (type.IsValueType || type == typeof(string))
-                        {
                             Write("{0}: {1},", memberInfo.Name, FormatValue(value));
-                        }
                         else
                         {
                             var isEnumerable = typeof(IEnumerable).IsAssignableFrom(type);
@@ -119,9 +107,7 @@ namespace AVS.CoreLib.Debugging
                             var alreadyTouched = !isEnumerable && AlreadyTouched(value);
                             _level++;
                             if (!alreadyTouched)
-                            {
                                 DumpElement(value);
-                            }
                             else
                                 Write("`{0}` <-- bidirectional reference found", value.GetType().GetReadableName());
                             _level--;
@@ -132,9 +118,7 @@ namespace AVS.CoreLib.Debugging
                 }
 
                 if (!typeof(IEnumerable).IsAssignableFrom(objectType))
-                {
                     _level--;
-                }
 
                 if (_stringBuilder[^1] == ',')
                     _stringBuilder.Length--;
@@ -150,19 +134,15 @@ namespace AVS.CoreLib.Debugging
 
             var hash = value.GetHashCode();
             for (var i = 0; i < _hashListOfFoundElements.Count; i++)
-            {
                 if (_hashListOfFoundElements[i] == hash)
                     return true;
-            }
             return false;
         }
 
         private void WriteInline(string value, params object[]? args)
         {
             if (_stringBuilder.Length > 3 && (_stringBuilder[^3] == '[' || _stringBuilder[^3] == '{'))
-            {
                 _stringBuilder.Length -= 2;
-            }
 
             if (args is { Length: > 0 })
                 value = string.Format(value, args);
@@ -184,13 +164,13 @@ namespace AVS.CoreLib.Debugging
         {
             return o switch
             {
-                null => ("null"),
-                DateTime time => (time.ToShortDateString()),
+                null => "null",
+                DateTime time => time.ToShortDateString(),
                 string => string.Format("\"{0}\"", o),
                 char c when c == '\0' => string.Empty,
-                ValueType => (o.ToString()!),
-                IEnumerable => ("..."),
-                _ => ("{ }")
+                ValueType => o.ToString()!,
+                IEnumerable => "...",
+                _ => "{ }"
             };
         }
     }

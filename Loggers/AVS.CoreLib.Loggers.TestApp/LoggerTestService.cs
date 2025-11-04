@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AVS.CoreLib.BootstrapTools;
-using AVS.CoreLib.Debugging;
+using AVS.CoreLib.Diagnostic;
 using AVS.CoreLib.Extensions.Stringify;
 using AVS.CoreLib.Logging.ColorFormatter.Extensions;
 using AVS.CoreLib.Logging.ColorFormatter.Utils;

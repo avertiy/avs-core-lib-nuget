@@ -11,71 +11,81 @@ namespace AVS.CoreLib.Types
     /// <typeparam name="T"></typeparam>
     public record Box<T> where T : struct
     {
-        protected Dictionary<string, object> Bag { get; }
-        protected Dictionary<string, T> TypedBag { get; }
+        private readonly Dictionary<string, object> _bag;
+        private readonly Dictionary<string, T> _tBag;
 
         public Box()
         {
-            Bag = new();
-            TypedBag = new();
+            _bag = new();
+            _tBag = new();
         }
 
         public Box(int capacity, int typedCapacity)
         {
-            Bag = new(capacity);
-            TypedBag = new(typedCapacity);
+            _bag = new(capacity);
+            _tBag = new(typedCapacity);
+        }
+
+        protected IDictionary<string, object> GetBag()
+        {
+            return _bag;
+        }
+
+        protected IDictionary<string, T> GetTypedBag()
+        {
+            return _tBag;
         }
 
         public void InitFrom(Box<T> box)
         {
-            foreach (var kp in box.TypedBag)
+            foreach (var kp in box._tBag)
             {
-                TypedBag[kp.Key] = kp.Value;
+                _tBag[kp.Key] = kp.Value;
             }
 
-            foreach (var kp in box.Bag)
+            foreach (var kp in box._bag)
             {
-                Bag[kp.Key] = kp.Value;
+                _bag[kp.Key] = kp.Value;
             }
         }
 
         public void EnsureCapacity(int capacity)
         {
-            Bag.EnsureCapacity(capacity);
+            _bag.EnsureCapacity(capacity);
         }
 
         public void EnsureTypedCapacity(int capacity)
         {
-            Bag.EnsureCapacity(capacity);
+            _bag.EnsureCapacity(capacity);
         }
 
         
         public bool ContainsKey(string key)
         {
-            return Bag.ContainsKey(key);
+            return _bag.ContainsKey(key);
         }
 
         public bool ContainsTypedKey(string key)
         {
-            return TypedBag.ContainsKey(key);
+            return _tBag.ContainsKey(key);
         }
 
         public T Get(string key)
         {
-            return TypedBag[key];
+            return _tBag[key];
         }
 
         public T Get(string key, Func<T> acquire)
         {
-            if (TypedBag.TryGetValue(key, out var val))
+            if (_tBag.TryGetValue(key, out var val))
                 return val;
 
-            return TypedBag[key] = acquire();
+            return _tBag[key] = acquire();
         }
 
         public bool TryGetValue(string key, out T value)
         {
-            if (TypedBag.TryGetValue(key, out value))
+            if (_tBag.TryGetValue(key, out value))
             {
                 return true;
             }
@@ -86,17 +96,17 @@ namespace AVS.CoreLib.Types
 
         public TValue Get<TValue>(string key)
         {
-            return (TValue)Bag[key];
+            return (TValue)_bag[key];
         }
 
         public TValue? GetOrDefault<TValue>(string key)
         {
-            return Bag.ContainsKey(key) ? (TValue)Bag[key] : default;
+            return _bag.ContainsKey(key) ? (TValue)_bag[key] : default;
         }
 
         public bool TryGetValue<TValue>(string key, out TValue? value)
         {
-            if (Bag.TryGetValue(key, out var obj))
+            if (_bag.TryGetValue(key, out var obj))
             {
                 value = (TValue?)obj;
                 return true;
@@ -108,19 +118,19 @@ namespace AVS.CoreLib.Types
 
         public void Set(string key, T value)
         {
-            TypedBag[key] = value;
+            _tBag[key] = value;
         }
 
         public void Set(string key, object value)
         {
-            Bag[key] = value;
+            _bag[key] = value;
         }
 
         public override string ToString()
         {
-            var keys = string.Join(',', Bag.Keys.Take(10)).Truncate(30, TruncateOptions.CutOffTheMiddle);
-            var typedKeys = string.Join(',', TypedBag.Keys.Take(10)).Truncate(30, TruncateOptions.CutOffTheMiddle);
-            return $"Box ({TypedBag.Count}/{Bag.Count}) [{typedKeys};{keys}]";
+            var keys = string.Join(',', _bag.Keys.Take(10)).Truncate(30, TruncateOptions.CutOffTheMiddle);
+            var typedKeys = string.Join(',', _tBag.Keys.Take(10)).Truncate(30, TruncateOptions.CutOffTheMiddle);
+            return $"Box ({_tBag.Count}/{_bag.Count}) [{typedKeys};{keys}]";
         }
     }
 }
