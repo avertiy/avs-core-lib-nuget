@@ -58,10 +58,12 @@ public struct DecNumber : IComparable<decimal>, IComparable<DecNumber>, IFormatt
 
     public static DecNumber operator *(DecNumber a, DecNumber b) => new(a._value * b._value);
     public static DecNumber operator *(DecNumber a, decimal b) => new(a._value * b);
+    public static DecNumber operator *(DecNumber a, int b) => new(a._value / b);
     public static decimal operator *(decimal a, DecNumber b) => a * b._value;
 
     public static DecNumber operator /(DecNumber a, DecNumber b) => new(a._value / b._value);
     public static DecNumber operator / (DecNumber a, decimal b) => new(a._value / b);
+    public static DecNumber operator / (DecNumber a, int b) => new(a._value / b);
     public static decimal operator / (decimal a, DecNumber b) => a / b._value;
 
     public static DecNumber operator + (DecNumber a, DecNumber b) => new(a._value + b._value);

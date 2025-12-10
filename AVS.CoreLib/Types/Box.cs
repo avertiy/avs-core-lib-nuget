@@ -56,9 +56,8 @@ namespace AVS.CoreLib.Types
 
         public void EnsureTypedCapacity(int capacity)
         {
-            _bag.EnsureCapacity(capacity);
+            _tBag.EnsureCapacity(capacity);
         }
-
         
         public bool ContainsKey(string key)
         {

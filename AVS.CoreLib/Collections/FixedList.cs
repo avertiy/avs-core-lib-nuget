@@ -404,6 +404,9 @@ public class FixedList<T> : IList<T>, IQueue<T>, IStack<T>, IEnumerable<T>, IEnu
     //Stack behaviour
     public T PeekLast()
     {
+        if (Count == 0)
+            throw new InvalidOperationException("FixedList has no items");
+
         var lastIndex = (Head + Count - 1) % Capacity;
         return _items[lastIndex];
     }

@@ -92,12 +92,25 @@ public static class DecimalExtensions
     }
 
     /// <summary>
-    /// Safely divides value / divider
+    /// Computes ratio, which compares quantities showing their relative size e.g. 1/20 = 0.05
+    /// <code>
+    /// ratio = a / b
+    /// </code>
     /// </summary>
-    /// <returns> 0 - in case divider = 0, otherwise the result of division value/divider </returns>
     public static decimal Ratio(this decimal value, decimal divider, int? roundDecimals = null)
     {
         return divider == 0 ? 0 : (value / divider).Round(roundDecimals);
+    }
+
+    /// <summary>
+    /// Computes growth factor or multiplicative ratio, e.g. 1+ 1/20 = 1.05 
+    /// <code>
+    ///  factor = 1 + a / b
+    /// </code>
+    /// </summary>
+    public static decimal Factor(this decimal value, decimal divider, int? roundDecimals = null)
+    {
+        return divider == 0 ? 0 : (1 + value / divider).Round(roundDecimals);
     }
 
     #endregion

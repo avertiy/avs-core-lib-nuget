@@ -10,7 +10,6 @@
         /// </summary>
         public static IAgainstGuardClause Against { get; set; } = _guard;
 
-        //public static IMustGuardClause Must { get; set; } = _guard;
         public static IMustBeGuardClause MustBe { get; set; } = _guard;
         public static IArrayGuardClause Array { get; set; } = _guard;
         /// <summary>
