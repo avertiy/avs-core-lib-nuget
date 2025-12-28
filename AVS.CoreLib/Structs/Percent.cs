@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AVS.CoreLib.Extensions;
+using AVS.CoreLib.Guards;
 
 namespace AVS.CoreLib.Structs;
 
@@ -41,14 +42,19 @@ public struct Percent : IComparable<decimal>, IComparable<Percent>, IFormattable
     /// <returns></returns>
     public decimal GetExactValue() => _value;
 
-
     public Percent(decimal value)
     {
-        _value = value;
+        _value =  value;
     }
-    
+
+
     public static implicit operator decimal(Percent number) => number._value;
-    public static implicit operator Percent(decimal value) => new(value);
+    public static implicit operator Percent(decimal value)
+    {
+        if (value.Abs() > 1m)
+            throw new ArgumentException("Implicit conversion expects fraction % value from [-1m;1m] e.g. 0.25m meaning 25%");
+        return new Percent(value);
+    }
 
     public bool IsEqual(decimal value, decimal tolerance) => _value.IsEqual(value, tolerance);
 
@@ -117,6 +123,11 @@ public struct Percent : IComparable<decimal>, IComparable<Percent>, IFormattable
     {
         return _value.CompareTo(other._value);
     }
+
+    public static Percent FromPct(decimal value)
+    {
+        return new Percent(value / 100m);
+    }
 }
 
 public class PercentJsonConverter : JsonConverter<Percent>
@@ -141,6 +152,19 @@ public class PercentJsonConverter : JsonConverter<Percent>
     public override void Write(Utf8JsonWriter writer, Percent number, JsonSerializerOptions options)
     {
         writer.WriteNumberValue(number.Value);
+    }
+}
+
+public static class DecimalPctExtensions
+{
+    public static Percent ToPercent(this decimal value, bool isFraction = true)
+    {
+        return isFraction ? new Percent(value) : new Percent(value/100);
+    }
+
+    public static Percent PctToPercent(this decimal value)
+    {
+        return new Percent(value / 100);
     }
 }
 

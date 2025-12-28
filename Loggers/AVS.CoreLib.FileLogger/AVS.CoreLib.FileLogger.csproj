@@ -12,6 +12,7 @@
     <Company>AV Stuido</Company>
     <Product>File Logger</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

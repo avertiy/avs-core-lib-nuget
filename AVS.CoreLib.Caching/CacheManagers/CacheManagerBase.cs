@@ -20,6 +20,11 @@ namespace AVS.CoreLib.Caching
         /// </summary>
         public IList<string> Keys => _keys;
 
+        public string? GetLastKeyOrDefault()
+        {
+            return _keys.Count > 0 ? _keys.PeekLast() : null;
+        } 
+
         /// <summary>
         /// Raised when item is removed from cache explicitly via <see cref="Remove"/>
         /// </summary>
@@ -39,6 +44,7 @@ namespace AVS.CoreLib.Caching
         {
             _memoryCache = memoryCache;
             _keys = new FixedList<string>(fixedListKeysCapacity);
+            //_keys.PeekLast()
         }
 
         /// <summary>
@@ -59,7 +65,7 @@ namespace AVS.CoreLib.Caching
         {
             _memoryCache.Remove(key);
             ItemRemoved?.Invoke(key);
-            Keys.Remove(key);
+            _keys.Remove(key);
         }
 
         /// <summary>
@@ -173,7 +179,7 @@ namespace AVS.CoreLib.Caching
             var regex = new Regex(pattern, options);
             
             //Orders 
-            var keys = Keys.Where(x => regex.IsMatch(x)).ToArray();
+            var keys = _keys.Where(x => regex.IsMatch(x)).ToArray();
 
             if (keys.Length == 0)
                 return 0;

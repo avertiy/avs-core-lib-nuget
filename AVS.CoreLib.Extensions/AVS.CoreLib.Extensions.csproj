@@ -20,6 +20,7 @@
     <FileVersion>1.0.0.0</FileVersion>
     <Version>9.0.0</Version>
     <LangVersion>latest</LangVersion>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

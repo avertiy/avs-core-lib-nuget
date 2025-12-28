@@ -12,6 +12,8 @@ namespace AVS.CoreLib.Caching
         /// </summary>
         IList<string> Keys { get; }
 
+        string? GetLastKeyOrDefault();
+
         void EnsureKeysCapacity(int capacity);
 
         /// <summary>

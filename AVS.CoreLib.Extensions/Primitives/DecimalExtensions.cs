@@ -83,13 +83,7 @@ public static class DecimalExtensions
         return (decimal)result;
     }
 
-    /// <summary>
-    /// Calculates value in percentage
-    /// </summary>
-    public static decimal Pct(this decimal value, decimal mean, int? roundDecimals = null)
-    {
-        return mean == 0 ? 0 : (value / mean * 100).Round(roundDecimals);
-    }
+    
 
     /// <summary>
     /// Computes ratio, which compares quantities showing their relative size e.g. 1/20 = 0.05

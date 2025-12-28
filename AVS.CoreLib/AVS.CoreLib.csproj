@@ -19,6 +19,7 @@
     <RepositoryType>public</RepositoryType>
     <Version>9.0.0</Version>
     <Nullable>enable</Nullable>    
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

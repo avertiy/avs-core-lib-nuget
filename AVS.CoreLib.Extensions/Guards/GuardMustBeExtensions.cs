@@ -337,4 +337,37 @@ public static class GuardMustBeExtensions
     }
 
     #endregion
+
+    #region Pct
+
+    /// <summary>
+    /// Pct value means whole % value e.g. 2 meaning 2%, 25 meaning 25%
+    /// Helps to guard from ambiguity between fraction and pct representation of the %.
+    /// <code>
+    ///  5% => 5 (in pct representation)
+    ///  5% => 0.05m (in fraction-pct representation) 
+    /// </code>
+    /// </summary>
+    public static void Pct(this IMustBeGuardClause guardClause, decimal arg, decimal lowerThreshold = 1m, string? message = null)
+    {
+        if (arg < lowerThreshold)
+            throw new ArgumentException(message ?? $"{arg} must be pct representation e.g. 25 not 0.25m");
+    }
+
+    /// <summary>
+    /// Pct value means whole % value e.g. 2 meaning 2%, 25 meaning 25%
+    /// Helps to guard from ambiguity between fraction and pct representation of the %.
+    /// <code>
+    ///  5% => 5 (in pct representation)
+    ///  5% => 0.05m (in fraction representation) 
+    /// </code>
+    /// </summary>
+    public static void Fraction(this IMustBeGuardClause guardClause, decimal arg, decimal upperThreshold = 1m, string? message = null)
+    {
+        if (arg > upperThreshold)
+            throw new ArgumentException(message ?? $"{arg} must be fraction representation e.g. 0.25m not 25");
+    }
+
+    #endregion
+
 }
