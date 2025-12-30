@@ -73,6 +73,20 @@ public static class DecimalExtensions
     /// Raises a decimal number to a decimal power using double precision internally.
     /// Note: Precision may be lost due to conversion to and from double.
     /// </summary>
+    public static decimal Pow(this decimal value, int pow)
+    {
+        var result = Math.Pow((double)value, pow);
+
+        if (double.IsInfinity(result) || double.IsNaN(result))
+            throw new OverflowException("Result is not a valid decimal value.");
+
+        return (decimal)result;
+    }
+
+    /// <summary>
+    /// Raises a decimal number to a decimal power using double precision internally.
+    /// Note: Precision may be lost due to conversion to and from double.
+    /// </summary>
     public static decimal Pow(this decimal value, double pow)
     {
         var result = Math.Pow((double)value, pow);

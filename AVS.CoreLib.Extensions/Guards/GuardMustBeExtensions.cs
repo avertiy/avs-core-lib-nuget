@@ -351,7 +351,7 @@ public static class GuardMustBeExtensions
     public static void Pct(this IMustBeGuardClause guardClause, decimal arg, decimal lowerThreshold = 1m, string? message = null)
     {
         if (arg < lowerThreshold)
-            throw new ArgumentException(message ?? $"{arg} must be pct representation e.g. 25 not 0.25m");
+            throw new ArgumentException(message ?? $"{arg} must have pct representation e.g. 25 not 0.25m");
     }
 
     /// <summary>
@@ -365,7 +365,7 @@ public static class GuardMustBeExtensions
     public static void Fraction(this IMustBeGuardClause guardClause, decimal arg, decimal upperThreshold = 1m, string? message = null)
     {
         if (arg > upperThreshold)
-            throw new ArgumentException(message ?? $"{arg} must be fraction representation e.g. 0.25m not 25");
+            throw new ArgumentException(message ?? $"{arg} must have fraction representation e.g. 0.25m not 25");
     }
 
     #endregion

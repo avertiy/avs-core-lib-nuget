@@ -39,6 +39,18 @@ public struct DecNumber : IComparable<decimal>, IComparable<DecNumber>, IFormatt
 
     public decimal Pct(decimal mean) => _value.Pct(mean);
 
+    /// <summary>
+    /// Adjusts the value by the specified percentage in pct (whole) representation
+    /// <code>
+    /// formula: value * (1 + pct / 100)
+    /// e.g. 100 * (1 + 5%/100%) => 105
+    /// </code>
+    /// </summary>
+    public decimal AdjustByPct(decimal pct, int? roundDecimals = null)
+    {
+        return (_value * (1 + pct / 100m)).Round(roundDecimals);
+    }
+
     public decimal Pow(double pow) => _value.Pow(pow);
 
     public decimal Sqrt() => _value.Sqrt();

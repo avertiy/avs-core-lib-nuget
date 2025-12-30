@@ -53,9 +53,9 @@ public static class DecimalPctExtensions
     /// e.g. 100 * (1 + 5%/100%) => 105
     /// </code>
     /// </summary>
-    public static decimal AdjustByPct(this decimal value, decimal pct)
+    public static decimal AdjustByPct(this decimal value, decimal pct, int? roundDecimals = null)
     {
-        return value * (1 + pct / 100m);
+        return (value * (1 + pct / 100m)).Round(roundDecimals);
     }
 
     /// <summary>
@@ -65,8 +65,8 @@ public static class DecimalPctExtensions
     /// e.g. 100 * (1 + 0.05m) => 105
     /// </code>
     /// </summary>
-    public static decimal AdjustByFraction(this decimal value, decimal fraction)
+    public static decimal AdjustByFraction(this decimal value, decimal fraction, int? roundDecimals = null)
     {
-        return value * (1 + fraction);
+        return (value * (1 + fraction)).Round(roundDecimals);
     }
 }

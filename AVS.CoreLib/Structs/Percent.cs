@@ -51,8 +51,7 @@ public struct Percent : IComparable<decimal>, IComparable<Percent>, IFormattable
     public static implicit operator decimal(Percent number) => number._value;
     public static implicit operator Percent(decimal value)
     {
-        if (value.Abs() > 1m)
-            throw new ArgumentException("Implicit conversion expects fraction % value from [-1m;1m] e.g. 0.25m meaning 25%");
+        Guard.MustBe.Fraction(value);
         return new Percent(value);
     }
 
