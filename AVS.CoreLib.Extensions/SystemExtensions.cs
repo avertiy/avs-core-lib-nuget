@@ -1,16 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json.Serialization;
-using AVS.CoreLib.Extensions.Collections;
 
 [assembly: InternalsVisibleTo("AVS.CoreLib.Tests")]
 namespace AVS.CoreLib.Extensions
 {
     public static class SystemExtensions
     {
+        /// <summary>
+        /// Retrieves the description associated with enum value, if defined; otherwise, returns the default value.ToString()
+        /// name as a string.
+        /// </summary>
+        public static object GetDescription(this Enum value)
+        {
+            var fieldName = value.ToString();
+            var field = value.GetType().GetField(fieldName);
+
+            if (field != null && Attribute.GetCustomAttribute(field, typeof(DescriptionAttribute)) is DescriptionAttribute attribute)
+                return attribute.Description;
+
+            return value;
+        }
+
+
         /// <summary>
         /// get stack trace in human-friendly format
         /// </summary>

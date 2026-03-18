@@ -5,6 +5,14 @@ using AVS.CoreLib.Guards;
 namespace AVS.CoreLib.Collections;
 
 /// <summary>
+/// Provides series-like behavior i.e. defines an indexer to access elements by offset
+/// </summary>
+public interface ISeriesLike<out T>
+{
+    T this[int offset] { get; }
+}
+
+/// <summary>
 /// Series provide reverse enumerator to enumerate in direct order (0,1,2,...) use Items property
 /// </summary>
 /// <typeparam name="T"></typeparam>
