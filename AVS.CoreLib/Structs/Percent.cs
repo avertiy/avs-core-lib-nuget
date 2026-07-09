@@ -83,11 +83,11 @@ public struct Percent : IComparable<decimal>, IComparable<Percent>, IFormattable
 
     public static Percent operator *(Percent a, Percent b) => new(a._value * b._value);
     public static Percent operator *(Percent a, decimal b) => new(a._value * b);
-    public static Percent operator *(Percent a, int b) => new(a._value / b);
+    public static Percent operator *(Percent a, int b) => new(a._value * b);
     public static decimal operator *(decimal a, Percent b) => a * b._value;
     public static decimal operator *(int a, Percent b) => a * b._value;
 
-    public static Percent operator /(Percent a, Percent b) => new(a._value / b._value);
+    public static decimal operator /(Percent a, Percent b) => a._value / b._value;
     public static Percent operator /(Percent a, decimal b) => new(a._value / b);
     public static Percent operator /(Percent a, int b) => new(a._value / b);
     public static decimal operator /(decimal a, Percent b) => a / b._value;
