@@ -42,18 +42,26 @@ public struct Percent : IComparable<decimal>, IComparable<Percent>, IFormattable
     /// <returns></returns>
     public decimal GetExactValue() => _value;
 
-    public Percent(decimal value)
+    /// <summary>
+    /// initializes a new instance of the <see cref="Percent"/> struct with the specified fraction value.
+    /// e.g. 0.2525 => new Percent(0.2525) which is 25.25%
+    /// </summary>
+    public Percent(decimal fractionValue)
     {
-        _value =  value;
+        _value =  fractionValue;
     }
 
 
+    /// <summary>
+    /// implicit conversion from fraction decimal to Percent e.g. 0.2525 => new Percent(0.2525) which is 25.25%
+    /// </summary>
+    public static implicit operator Percent(decimal fractionValue)
+    {
+        Guard.MustBe.Fraction(fractionValue);
+        return new Percent(fractionValue);
+    }
+    
     public static implicit operator decimal(Percent number) => number._value;
-    public static implicit operator Percent(decimal value)
-    {
-        Guard.MustBe.Fraction(value);
-        return new Percent(value);
-    }
 
     public bool IsEqual(decimal value, decimal tolerance) => _value.IsEqual(value, tolerance);
 
@@ -123,9 +131,20 @@ public struct Percent : IComparable<decimal>, IComparable<Percent>, IFormattable
         return _value.CompareTo(other._value);
     }
 
+    [Obsolete("Use FromPercent instead. FromPct is ambiguous and can be confusing.")]
     public static Percent FromPct(decimal value)
     {
         return new Percent(value / 100m);
+    }
+
+    public static Percent FromPercent(decimal percentValue)
+    {
+        return new Percent(percentValue / 100m);
+    }
+
+    public static Percent FromFraction(decimal fractionValue)
+    {
+        return new Percent(fractionValue);
     }
 }
 
