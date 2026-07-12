@@ -11,7 +11,7 @@ namespace AVS.CoreLib.Structs;
 /// Allows to deal with a rounded to 2-3 digits value, preserving an exact value for precise calculations
 /// </summary>
 [JsonConverter(typeof(MoneyJsonConverter))]
-[DebuggerDisplay("Money {Value}")]
+[DebuggerDisplay("{Value}")]
 public struct Money : IComparable<decimal>, IComparable<Money>, IComparable<DecNumber>, IFormattable
 {
     private decimal _value;
@@ -37,16 +37,15 @@ public struct Money : IComparable<decimal>, IComparable<Money>, IComparable<DecN
 
     public decimal Round(int? roundDecimals = null, int extraPrecision = 0, int minPrecision = 0) => _value.Round(roundDecimals, extraPrecision, minPrecision);
 
-    //public decimal Pct(decimal mean) => _value.Pct(mean);
-
     /// <summary>
-    /// Adjusts the value by the specified percentage in pct (whole) representation
+    /// Applies percentage to the price values
     /// <code>
-    /// formula: value * (1 + pct / 100)
-    /// e.g. 100 * (1 + 5%/100%) => 105
+    /// price = 100;
+    /// price.ApplyPercent(+5.Percent());   // 105
+    /// price.ApplyPercent(-5.Percent());   // 95
     /// </code>
     /// </summary>
-    public decimal AdjustByPct(decimal pct)
+    public decimal ApplyPercent(decimal pct)
     {
         return (_value * (1 + pct / 100m)).RoundMoney();
     }
@@ -76,7 +75,7 @@ public struct Money : IComparable<decimal>, IComparable<Money>, IComparable<DecN
     public static Money operator *(Money a, int b) => new(a._value * b);
     public static Money operator *(decimal a, Money b) => a * b._value;
 
-    public static decimal operator /(Money a, Money b) => (a._value / b._value);
+    public static decimal operator /(Money a, Money b) => (a._value / b._value);    
     public static Money operator /(Money a, decimal b) => new(a._value / b);
     public static Money operator /(Money a, int b) => new(a._value / b);
     public static decimal operator /(decimal a, Money b) => a / b._value;

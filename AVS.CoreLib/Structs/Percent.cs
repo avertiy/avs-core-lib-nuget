@@ -13,7 +13,7 @@ namespace AVS.CoreLib.Structs;
 /// Helps to eliminate ambiguity whether it is fraction decimal or % decimal?
 /// </summary>
 [JsonConverter(typeof(PercentJsonConverter))]
-[DebuggerDisplay("Percent {ToString()}")]
+[DebuggerDisplay("{ToString()}")]
 public struct Percent : IComparable<decimal>, IComparable<Percent>, IFormattable
 {
     private decimal _value; // stored as 0.2525218 internally
@@ -60,7 +60,12 @@ public struct Percent : IComparable<decimal>, IComparable<Percent>, IFormattable
         Guard.MustBe.Fraction(fractionValue);
         return new Percent(fractionValue);
     }
-    
+
+    public static implicit operator Percent(int percentage)
+    {
+        return new Percent(percentage / 100m);
+    }
+
     public static implicit operator decimal(Percent number) => number._value;
 
     public bool IsEqual(decimal value, decimal tolerance) => _value.IsEqual(value, tolerance);
@@ -175,14 +180,11 @@ public class PercentJsonConverter : JsonConverter<Percent>
 
 public static class DecimalPctExtensions
 {
-    public static Percent ToPercent(this decimal value, bool isFraction = true)
+    public static Percent Percent(this decimal value, bool isFraction = true)
     {
         return isFraction ? new Percent(value) : new Percent(value/100);
     }
 
-    public static Percent PctToPercent(this decimal value)
-    {
-        return new Percent(value / 100);
-    }
+    public static Percent Percent(this int percentage) => new Percent(percentage / 100m);
 }
 

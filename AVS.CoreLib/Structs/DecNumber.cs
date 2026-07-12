@@ -12,7 +12,7 @@ namespace AVS.CoreLib.Structs;
 /// Allows to deal with a rounded decimal value, at the same time preserving an exact value for calculations
 /// </summary>
 [JsonConverter(typeof(DecNumberJsonConverter))]
-[DebuggerDisplay("DecNumber {Value}")]
+[DebuggerDisplay("{Value}")]
 public struct DecNumber : IComparable<decimal>, IComparable<DecNumber>, IFormattable
 {
     private decimal _value;
@@ -40,13 +40,14 @@ public struct DecNumber : IComparable<decimal>, IComparable<DecNumber>, IFormatt
     public decimal Pct(decimal mean) => _value.Pct(mean);
 
     /// <summary>
-    /// Adjusts the value by the specified percentage in pct (whole) representation
+    /// Applies percentage to the price values
     /// <code>
-    /// formula: value * (1 + pct / 100)
-    /// e.g. 100 * (1 + 5%/100%) => 105
+    /// price = 100;
+    /// price.ApplyPercent(+5.Percent());   // 105
+    /// price.ApplyPercent(-5.Percent());   // 95
     /// </code>
     /// </summary>
-    public decimal AdjustByPct(decimal pct, int? roundDecimals = null)
+    public decimal ApplyPercent(decimal pct, int? roundDecimals = null)
     {
         return (_value * (1 + pct / 100m)).Round(roundDecimals);
     }
