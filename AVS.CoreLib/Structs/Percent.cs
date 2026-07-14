@@ -70,13 +70,14 @@ public struct Percent : IComparable<decimal>, IComparable<Percent>, IFormattable
 
     public bool IsEqual(decimal value, decimal tolerance) => _value.IsEqual(value, tolerance);
 
-    public decimal Round(int? roundDecimals = null, int extraPrecision = 0, int minPrecision = 0) => _value.Round(roundDecimals, extraPrecision, minPrecision);
+    public Percent Round(int? roundDecimals = null, int extraPrecision = 0, int minPrecision = 0) => new(_value.Round(roundDecimals, extraPrecision, minPrecision));
+    public Percent RoundUp(int roundDecimals, decimal step = 1) => new(_value.RoundUp(roundDecimals, step));
 
-    public decimal Pow(double pow) => _value.Pow(pow);
+    public Percent Pow(double pow) => new (_value.Pow(pow));
 
     public decimal Sqrt() => _value.Sqrt();
 
-    public decimal Abs() => _value.Abs();
+    public Percent Abs() => new(_value.Abs());
 
     public override int GetHashCode() => _value.GetHashCode();
 
@@ -122,6 +123,10 @@ public struct Percent : IComparable<decimal>, IComparable<Percent>, IFormattable
     public static bool operator < (Percent a, decimal b) => a._value < b;
     public static bool operator >= (Percent a, decimal b) => a._value >= b;
     public static bool operator <= (Percent a, decimal b) => a._value <= b;
+    public static bool operator > (Percent a, int b) => a > b / 100m;
+    public static bool operator < (Percent a, int b) => a._value < b/100m;
+    public static bool operator >= (Percent a, int b) => a._value >= b /100m;
+    public static bool operator <= (Percent a, int b) => a._value <= b /100m;
 
     public decimal SafeDivide(decimal divider) => _value.SafeDivide(divider);
     public Percent SafeDivide(Percent divider) => new(_value.SafeDivide(divider._value));

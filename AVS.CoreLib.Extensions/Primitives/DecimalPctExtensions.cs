@@ -15,7 +15,7 @@ public static class DecimalPctExtensions
     {
         return mean == 0 ? 0 : (value / mean * 100m).Round(roundDecimals);
     }
-
+    
     /// <summary>
     /// Calculates the percentage in the fraction representation
     /// <code>
@@ -54,9 +54,9 @@ public static class DecimalPctExtensions
     /// price.ApplyPercent(-5.Percent());   // 95
     /// </code>
     /// </summary>
-    public static decimal ApplyPercent(this decimal value, decimal pct, int? roundDecimals = null)
+    public static decimal ApplyPercent(this decimal value, decimal percent, int? roundDecimals = null)
     {
-        return (value * (1 + pct / 100m)).Round(roundDecimals);
+        return (value * (1 + percent / 100m)).Round(roundDecimals);
     }
 
     /// <summary>
