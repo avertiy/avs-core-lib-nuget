@@ -10,9 +10,9 @@ namespace AVS.CoreLib.Structs;
 /// Represents a decimal wrapper to eliminate ambiguity when dealing with percentage values.
 /// Percent representation is straight: 10 means 10%, 2.5 means 2.5% 
 /// </summary>
-[JsonConverter(typeof(PercentageJsonConverter))]
-[DebuggerDisplay("Percentage {ToString()}")]
-public struct Percentage : IComparable<decimal>, IComparable<Percentage>, IFormattable, IEquatable<Percentage>
+[JsonConverter(typeof(PercentJsonConverter))]
+[DebuggerDisplay("{ToString()}")]
+public struct Percent : IComparable<decimal>, IComparable<Percent>, IFormattable
 {
     private decimal _value; // stored internally as percentage i.e. 10 means 10%
 
@@ -41,9 +41,13 @@ public struct Percentage : IComparable<decimal>, IComparable<Percentage>, IForma
     /// </summary>
     public decimal AsFraction() => _value / 100;
 
-    public Pct ToPct()
+    /// <summary>
+    /// initializes a new instance of the <see cref="Percent"/> struct with the specified fraction value.
+    /// e.g. 0.2525 => new Percent(0.2525) which is 25.25%
+    /// </summary>
+    public Percent(decimal fractionValue)
     {
-        return new Pct(AsFraction());
+        _value =  fractionValue;
     }
 
     public static explicit operator Percentage(decimal value)
@@ -51,10 +55,21 @@ public struct Percentage : IComparable<decimal>, IComparable<Percentage>, IForma
         return new Percentage(value);
     }
 
-    public static implicit operator decimal(Percentage percentage)
+    /// <summary>
+    /// implicit conversion from fraction decimal to Percent e.g. 0.2525 => new Percent(0.2525) which is 25.25%
+    /// </summary>
+    public static implicit operator Percent(decimal fractionValue)
     {
-        return percentage.Value;
+        Guard.MustBe.Fraction(fractionValue);
+        return new Percent(fractionValue);
     }
+
+    public static implicit operator Percent(int percentage)
+    {
+        return new Percent(percentage / 100m);
+    }
+
+    public static implicit operator decimal(Percent number) => number._value;
 
     public bool IsEqual(decimal value, decimal tolerance) => _value.IsEqual(value, tolerance);
 
@@ -107,20 +122,17 @@ public struct Percentage : IComparable<decimal>, IComparable<Percentage>, IForma
     public static bool operator <(Percentage a, Percentage b) => a._value < b._value;
     public static bool operator <=(Percentage a, Percentage b) => a._value <= b._value;
 
-    public static bool operator ==(Percentage a, Percentage b)
-    {
-        return a._value == b._value;
-    }
+    public static Percent operator *(Percent a, Percent b) => new(a._value * b._value);
+    public static Percent operator *(Percent a, decimal b) => new(a._value * b);
+    public static Percent operator *(Percent a, int b) => new(a._value * b);
+    public static decimal operator *(decimal a, Percent b) => a * b._value;
+    public static decimal operator *(int a, Percent b) => a * b._value;
 
-    public static bool operator !=(Percentage a, Percentage b)
-    {
-        return !(a == b);
-    }
-    
-    public static bool operator >(DecPct a, Percentage b) => a.Pct > b.AsFraction();
-    public static bool operator >=(DecPct a, Percentage b) => a.Pct >= b.AsFraction();
-    public static bool operator <(DecPct a, Percentage b) => a.Pct < b.AsFraction();
-    public static bool operator <=(DecPct a, Percentage b) => a.Pct <= b.AsFraction();
+    public static decimal operator /(Percent a, Percent b) => a._value / b._value;
+    public static Percent operator /(Percent a, decimal b) => new(a._value / b);
+    public static Percent operator /(Percent a, int b) => new(a._value / b);
+    public static decimal operator /(decimal a, Percent b) => a / b._value;
+    public static decimal operator /(int a, Percent b) => a / b._value;
 
     public static bool operator >(Percentage a, DecPct b) => a.AsFraction() > b.Pct;
     public static bool operator >=(Percentage a, DecPct b) => a.AsFraction() >= b.Pct;
@@ -218,9 +230,20 @@ public struct Percentage : IComparable<decimal>, IComparable<Percentage>, IForma
         return _value == other._value;
     }
 
-    public override bool Equals(object? obj)
+    [Obsolete("Use FromPercent instead. FromPct is ambiguous and can be confusing.")]
+    public static Percent FromPct(decimal value)
     {
         return obj is Percentage other && Equals(other);
+    }
+
+    public static Percent FromPercent(decimal percentValue)
+    {
+        return new Percent(percentValue / 100m);
+    }
+
+    public static Percent FromFraction(decimal fractionValue)
+    {
+        return new Percent(fractionValue);
     }
 }
 
@@ -249,4 +272,13 @@ public class PercentageJsonConverter : JsonConverter<Percentage>
     }
 }
 
+public static class DecimalPctExtensions
+{
+    public static Percent Percent(this decimal value, bool isFraction = true)
+    {
+        return isFraction ? new Percent(value) : new Percent(value/100);
+    }
+
+    public static Percent Percent(this int percentage) => new Percent(percentage / 100m);
+}
 

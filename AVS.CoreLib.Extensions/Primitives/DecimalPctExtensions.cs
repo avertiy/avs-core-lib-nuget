@@ -46,13 +46,14 @@ public static class DecimalPctExtensions
     //}
 
     /// <summary>
-    /// Adjusts the value by the specified percentage in pct (whole) representation
+    /// Applies percentage to the price values
     /// <code>
-    /// formula: value * (1 + pct / 100)
-    /// e.g. 100 * (1 + 5%/100%) => 105
+    /// price = 100;
+    /// price.ApplyPercent(+5.Percent());   // 105
+    /// price.ApplyPercent(-5.Percent());   // 95
     /// </code>
     /// </summary>
-    public static decimal AdjustByPct(this decimal value, decimal pct, int? roundDecimals = null)
+    public static decimal ApplyPercent(this decimal value, decimal pct, int? roundDecimals = null)
     {
         return (value * (1 + pct / 100m)).Round(roundDecimals);
     }

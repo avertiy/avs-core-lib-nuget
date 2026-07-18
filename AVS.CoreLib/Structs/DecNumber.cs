@@ -11,8 +11,8 @@ namespace AVS.CoreLib.Structs;
 /// Represents a decimal wrapper
 /// Allows to deal with a rounded decimal value, at the same time preserving an exact value for calculations
 /// </summary>
-[JsonConverter(typeof(NumberJsonConverter))]
-[DebuggerDisplay("DecNumber {Value}")]
+[JsonConverter(typeof(DecNumberJsonConverter))]
+[DebuggerDisplay("{Value}")]
 public struct DecNumber : IComparable<decimal>, IComparable<DecNumber>, IFormattable
 {
     private decimal _value;
@@ -42,11 +42,12 @@ public struct DecNumber : IComparable<decimal>, IComparable<DecNumber>, IFormatt
     /// <summary>
     /// Adjusts the value by the specified percentage (whole) representation
     /// <code>
-    /// formula: value * (1 + pct / 100)
-    /// e.g. 100 * (1 + 5%/100%) => 105
+    /// price = 100;
+    /// price.ApplyPercent(+5.Percent());   // 105
+    /// price.ApplyPercent(-5.Percent());   // 95
     /// </code>
     /// </summary>
-    public decimal AdjustByPercentage(decimal percent, int? roundDecimals = null)
+    public decimal ApplyPercent(decimal pct, int? roundDecimals = null)
     {
         return (_value * (1 + percent / 100m)).Round(roundDecimals);
     }
@@ -107,7 +108,7 @@ public struct DecNumber : IComparable<decimal>, IComparable<DecNumber>, IFormatt
     }
 }
 
-public class NumberJsonConverter : JsonConverter<DecNumber>
+public class DecNumberJsonConverter : JsonConverter<DecNumber>
 {
     public override DecNumber Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

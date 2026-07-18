@@ -122,6 +122,30 @@ public static class DecimalExtensions
 
     #region Round extensions
 
+    /// <summary>
+    /// Converts a decimal to an integer by rounding to the nearest integer.
+    /// <see cref="Convert.ToInt32(decimal)"/>"/>
+    /// </summary>
+    public static int ToInt32(this decimal value)
+    {
+        return Convert.ToInt32(value);
+    }
+
+    /// <summary>
+    /// Rounds a specified System.Decimal number to the closest integer toward negative infinity.
+    /// </summary>
+    public static decimal Floor(this decimal value, int decimals, decimal step = 1m)
+    {
+        if (decimals >= 0)
+            return decimal.Floor(value / step * (decimal)Math.Pow(10, decimals)) / (decimal)Math.Pow(10, decimals) * step;
+        // Handle negative decimals by scaling the number
+        var factor = (decimal)Math.Pow(10, -decimals) * step;
+        return decimal.Floor(value / factor) * factor;
+    }
+
+    /// <summary>
+    /// Rounds a decimal value to a given number of decimal places.
+    /// </summary>
     public static decimal Round(this decimal value, int decimals, decimal step = 1m)
     {
         if (decimals >= 0)
@@ -132,6 +156,9 @@ public static class DecimalExtensions
         return decimal.Round(value / factor, 0, MidpointRounding.AwayFromZero) * factor;
     }
 
+    /// <summary>
+    /// Rounds a decimal value to a given number of decimal places, with additional precision and minimum precision parameters.
+    /// </summary>
     public static decimal Round(this decimal value, int? roundDecimals = null, int extraPrecision = 0, int minPrecision = 0, decimal step =1m)
     {
         var dec = (roundDecimals ?? value.GetRoundDecimals()) + extraPrecision;
@@ -236,6 +263,17 @@ public static class DecimalAdditionalExtensions
     }
 
     /// <summary>
+    /// rounds money values with 2 digits of precision for values >= 100 otherwise 3 digits
+    /// </summary>
+    public static decimal RoundMoney(this decimal value, int extraPrecision = 0, int minPrecision = 2)
+    {
+        var dec = (value.GetMoneyRoundDecimals()) + extraPrecision;
+        if (minPrecision > 0 && dec < minPrecision)
+            dec = minPrecision;
+        return decimal.Round(value, dec, MidpointRounding.AwayFromZero);
+    }
+
+    /// <summary>
     /// +2 digits of precision comparing to <see cref="DecimalExtensions.Round(decimal,int?,int,int, decimal)"/>
     /// </summary>
     public static decimal RoundPrecise(this decimal value, int? roundDecimals = null, int extraPrecision = 0, int minPrecision = 0)
@@ -259,6 +297,15 @@ public static class DecimalAdditionalExtensions
             >= 0.01m => 6,
             >= 0.001m => 7,
             _ => 8,
+        };
+    }
+
+    public static int GetMoneyRoundDecimals(this decimal money)
+    {
+        return money switch
+        {
+            >= 100 => 2,
+            _ => 3,
         };
     }
 
