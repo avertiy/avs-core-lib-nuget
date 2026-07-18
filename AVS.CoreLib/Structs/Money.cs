@@ -59,7 +59,7 @@ public struct Money : IComparable<decimal>, IComparable<Money>, IComparable<DecN
     public decimal Pct(decimal mean) => _value.Pct(mean);
     public override int GetHashCode() => _value.GetHashCode();
 
-    public override string ToString() => Value.ToString(CultureInfo.InvariantCulture);
+    public override string ToString() => Value.ToString("C2",CultureInfo.InvariantCulture);
 
     public string ToString(string? format, IFormatProvider? formatProvider)
     {
@@ -117,6 +117,6 @@ public class MoneyJsonConverter : JsonConverter<Money>
 
     public override void Write(Utf8JsonWriter writer, Money number, JsonSerializerOptions options)
     {
-        writer.WriteNumberValue(number.GetExactValue());
+        writer.WriteNumberValue(number.Value);
     }
 }

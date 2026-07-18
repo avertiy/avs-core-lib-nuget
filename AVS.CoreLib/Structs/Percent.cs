@@ -88,7 +88,7 @@ public struct Percent : IComparable<decimal>, IComparable<Percent>, IFormattable
 
     public string ToString(string? format, IFormatProvider? formatProvider)
     {
-        return Value.ToString(format, formatProvider);
+        return Value.ToString(format ?? "P2", formatProvider);
     }
 
     public string ToString(string format) => $"{Value.ToString(format)}";
