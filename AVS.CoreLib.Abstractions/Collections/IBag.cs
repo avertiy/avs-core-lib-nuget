@@ -17,8 +17,8 @@ public interface IBag : IEnumerable<KeyValuePair<string, object>>
     TValue Get<TValue>(string key);
     bool TryGetValue<TValue>(string key, out TValue? value);
     void Set(string key, object value);
+    void Clear();
     void CopyTo(IBag bag);
-
     IDictionary<string, object> GetDictionary();
 }
 

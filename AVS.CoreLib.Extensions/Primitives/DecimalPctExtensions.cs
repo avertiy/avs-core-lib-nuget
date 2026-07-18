@@ -11,40 +11,39 @@ public static class DecimalPctExtensions
     /// e.g. 1 / 20 *100% => 5 (in pct representation means 5%)
     /// </code>
     /// </summary>
-    public static decimal Pct(this decimal value, decimal mean, int? roundDecimals = null)
+    public static decimal Percentage(this decimal value, decimal mean, int? roundDecimals = null)
     {
         return mean == 0 ? 0 : (value / mean * 100m).Round(roundDecimals);
     }
 
     /// <summary>
-    /// Calculates the percentage in the fraction representation
+    /// Calculates fraction
     /// <code>
-    /// formula: value / mean
-    /// e.g. 1 / 20 => 0.05m (in fraction representation means 5%)
+    /// 1 / 20 => 0.05m 
     /// </code>
     /// </summary>
-    public static decimal PctAsFraction(this decimal value, decimal mean, int? roundDecimals = null)
+    public static decimal Fraction(this decimal value, decimal divider, int? roundDecimals = null)
     {
-        return mean == 0 ? 0 : (value / mean).Round(roundDecimals);
+        return value == 0 || divider == 0 ? 0 : (value / divider).Round(roundDecimals);
     }
 
-    /// <summary>
-    /// Converts a pct representation (5%) to its fractional equivalent (0.05m).
-    /// </summary>
-    public static decimal ToFraction(this decimal value, decimal lowerThreshold = 1m)
-    {
-        Guard.MustBe.Pct(value, lowerThreshold);
-        return value / 100m;
-    }
+    ///// <summary>
+    ///// Converts a pct representation (5%) to its fractional equivalent (0.05m).
+    ///// </summary>
+    //public static decimal ToFraction(this decimal value, decimal lowerThreshold = 1m)
+    //{
+    //    Guard.MustBe.Pct(value, lowerThreshold);
+    //    return value / 100m;
+    //}
 
-    /// <summary>
-    /// Converts a fractional representation (0.05m) to pct (whole) representation (5%).
-    /// </summary>
-    public static decimal ToPct(this decimal value, decimal upperThreshold = 1m)
-    {
-        Guard.MustBe.Fraction(value, upperThreshold);
-        return value * 100m;
-    }
+    ///// <summary>
+    ///// Converts a fractional representation (0.05m) to pct (whole) representation (5%).
+    ///// </summary>
+    //public static decimal ToPct(this decimal value, decimal upperThreshold = 1m)
+    //{
+    //    Guard.MustBe.Fraction(value, upperThreshold);
+    //    return value * 100m;
+    //}
 
     /// <summary>
     /// Adjusts the value by the specified percentage in pct (whole) representation

@@ -37,18 +37,23 @@ public struct DecNumber : IComparable<decimal>, IComparable<DecNumber>, IFormatt
 
     public decimal Round(int? roundDecimals = null, int extraPrecision= 0, int minPrecision = 0) => _value.Round(roundDecimals, extraPrecision, minPrecision);
 
-    public decimal Pct(decimal mean) => _value.Pct(mean);
+    public decimal Percentage(decimal mean) => _value.Percentage(mean);
 
     /// <summary>
-    /// Adjusts the value by the specified percentage in pct (whole) representation
+    /// Adjusts the value by the specified percentage (whole) representation
     /// <code>
     /// formula: value * (1 + pct / 100)
     /// e.g. 100 * (1 + 5%/100%) => 105
     /// </code>
     /// </summary>
-    public decimal AdjustByPct(decimal pct, int? roundDecimals = null)
+    public decimal AdjustByPercentage(decimal percent, int? roundDecimals = null)
     {
-        return (_value * (1 + pct / 100m)).Round(roundDecimals);
+        return (_value * (1 + percent / 100m)).Round(roundDecimals);
+    }
+
+    public decimal AdjustByPercentage(Percentage percent, int? roundDecimals = null)
+    {
+        return (_value * (1 + percent.Value / 100m)).Round(roundDecimals);
     }
 
     public decimal Pow(double pow) => _value.Pow(pow);
