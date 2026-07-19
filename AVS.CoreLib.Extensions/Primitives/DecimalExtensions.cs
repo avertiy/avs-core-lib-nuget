@@ -16,9 +16,6 @@ public static class DecimalExtensions
 
     public static decimal Divide(this decimal value, decimal divider, decimal @default = 0, int? roundDecimals = null)
     {
-        if (divider == 0)
-            return @default;
-
         return (value / divider).Round(roundDecimals);
     }
 
@@ -353,5 +350,10 @@ public static class DecimalAdditionalExtensions
     public static decimal GetSmallerValue(this decimal value, decimal value2)
     {
         return value <= value2 ? value : value2;
+    }
+
+    public static decimal GetValueOrDefault(this decimal value, decimal @default)
+    {
+        return value == 0 ? @default : value;
     }
 }

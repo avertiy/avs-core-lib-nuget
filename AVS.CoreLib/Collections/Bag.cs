@@ -83,9 +83,26 @@ public record Bag : IBag
     public void CopyTo(IBag bag)
     {
         foreach (var kp in _dict)
-        {
+        { 
             bag.Set(kp.Key, kp.Value);
         }
+    }
+
+    public void CopyTo(IBag bag, params string[] keys)
+    {
+        if (keys.IsNullOrEmpty())
+            CopyTo(bag);
+        else
+            foreach (var kp in _dict)
+            {
+                if (keys.Contains(kp.Key))
+                    bag.Set(kp.Key, kp.Value);
+            }
+    }
+
+    public void Clear()
+    {
+        _dict.Clear();
     }
 
     public override string ToString()

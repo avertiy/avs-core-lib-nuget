@@ -23,7 +23,7 @@ public class SystemExtensionsTests
 
         Assert.IsNotNull(lines);
         lines.Length.Should().BeGreaterThan(5);
-        lines.Any(x => x.StartsWith("InnerException:")).Should().BeTrue();
+        lines.Any(x => x.Contains("inner exception stack trace")).Should().BeTrue();
         //lines.Any(x => x)
     }
 

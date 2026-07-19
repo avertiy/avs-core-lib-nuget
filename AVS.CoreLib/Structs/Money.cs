@@ -56,7 +56,7 @@ public struct Money : IComparable<decimal>, IComparable<Money>, IComparable<DecN
 
     public decimal Abs() => _value.Abs();
 
-    public decimal Pct(decimal mean) => _value.Pct(mean);
+    //public decimal Pct(decimal mean) => _value.Pct(mean);
     public override int GetHashCode() => _value.GetHashCode();
 
     public override string ToString() => Value.ToString("C2",CultureInfo.InvariantCulture);
