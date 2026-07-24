@@ -2,7 +2,7 @@
 using System;
 using System.Collections.ObjectModel;
 using AVS.CoreLib.Abstractions.Responses;
-using AVS.CoreLib.REST.Attributes;
+using AVS.CoreLib.Attributes;
 
 namespace AVS.CoreLib.REST.Responses
 {

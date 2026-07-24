@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AVS.CoreLib.REST.Attributes
+namespace AVS.CoreLib.Attributes
 {
     /// <summary>
     /// Instructs <see cref="T:AVS.CoreLib.Json.ArrayConverter" /> how to serialize/deserialize json array

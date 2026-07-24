@@ -9,8 +9,8 @@ using AVS.CoreLib.Guards;
 namespace AVS.CoreLib.Structs;
 
 /// <summary>
-/// Represents a decimal wrapper to deal with percent type
-/// Helps to eliminate ambiguity whether it is fraction decimal or % decimal?
+/// Represents a percentage value stored as pct (fraction) value, i.e. 0.25 pct is 25%
+/// Helps to eliminate ambiguity btw fraction and the whole value
 /// </summary>
 [JsonConverter(typeof(PercentJsonConverter))]
 [DebuggerDisplay("{ToString()}")]
@@ -34,12 +34,10 @@ public struct Percent : IComparable<decimal>, IComparable<Percent>, IFormattable
     /// <summary>
     /// returns rounded fraction value e.g. 0.2525218 (stored internally) => 0.2525
     /// </summary>
-    /// <returns></returns>
     public decimal AsFraction() => Value;
     /// <summary>
     /// returns an exact fraction value e.g. 0.2525218 (stored internally) => 0.2525218
     /// </summary>
-    /// <returns></returns>
     public decimal GetExactValue() => _value;
 
     /// <summary>
@@ -172,6 +170,28 @@ public class PercentJsonConverter : JsonConverter<Percent>
 
             // otherwise treat as a normal fraction representation where 1 => 100% 
             return new Percent(decimal.Parse(str));
+        }
+        else if (reader.TokenType == JsonTokenType.StartObject)
+        {
+            while (reader.Read())
+            {
+                if (reader.TokenType == JsonTokenType.EndObject)
+                {
+                    break;
+                }
+
+                // Get the property name and read its value
+                var propertyName = reader.GetString();
+                reader.Read();
+
+                // Example assignment
+                if (propertyName == "value")
+                {
+                    var pct = reader.GetDecimal();
+                   return new Percent(pct);
+                }
+            }
+
         }
 
         return new Percent(reader.GetDecimal());

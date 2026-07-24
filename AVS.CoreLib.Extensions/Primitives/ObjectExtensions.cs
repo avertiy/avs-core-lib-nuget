@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace AVS.CoreLib.Extensions;
 
+/// <summary>
+/// Contains various useful object extensions
+/// </summary>
 public static class ObjectExtensions
 {
     public static bool IsEmpty(this object? obj)
@@ -30,6 +34,25 @@ public static class ObjectExtensions
         };
     }
 
+    public static bool IsDefault(this object? obj)
+    {
+        // Null is the default value for reference types and nullable value types
+        if (obj is null)
+            return true;
+
+        // Get the actual runtime type
+        Type type = obj.GetType();
+
+        // Create a default instance of that type and compare
+        return obj.Equals(Activator.CreateInstance(type));
+    }
+
+
+    public static bool IsDefault<T>(this T value)
+    {
+        return EqualityComparer<T>.Default.Equals(value, default);
+    }
+
     public static bool IsInteger(this object obj)
     {
         return obj is int or long or short;
@@ -45,6 +68,11 @@ public static class ObjectExtensions
         return obj is int or long or short or double or decimal or float or byte;
     }
 
+    public static bool IsBoolean(this object obj)
+    {
+        return obj is bool;
+    }
+
     public static bool IsPrimitive<T>(this T obj)
     {
         return obj switch
@@ -56,9 +84,12 @@ public static class ObjectExtensions
             decimal dec => true,
             short s => true,
             float f => true,
+            bool f => true,
             _ => false
         };
     }
+
+
 
     public static bool IsPositive(this object obj)
     {

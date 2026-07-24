@@ -1,9 +1,12 @@
 ﻿#nullable enable
 using System;
 using System.Net.Http;
+using System.Text;
+using System.Text.Json;
 using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.Extensions.Web;
 using AVS.CoreLib.REST.Extensions;
+using AVS.CoreLib.REST.Utilities;
 
 namespace AVS.CoreLib.REST.RequestBuilders
 {
@@ -14,7 +17,7 @@ namespace AVS.CoreLib.REST.RequestBuilders
     public sealed class PublicRequestMessageBuilder : IPublicRequestMessageBuilder
     {
         public bool OrderQueryStringParameters { get; set; } = true;
-        public bool UseMediaTypeApplicationJson { get; set; } = true;
+        public bool UseApplicationJson { get; set; } = true;
         public HttpRequestMessage Build(IRequest request)
         {
             if (request.AuthType == AuthType.ApiKey)
@@ -25,10 +28,21 @@ namespace AVS.CoreLib.REST.RequestBuilders
                 var url = request.GetFullUrl(OrderQueryStringParameters);
                 var httpMethod = new HttpMethod(request.HttpMethod);
                 var requestMessage = new HttpRequestMessage(httpMethod, url);
-                var queryString = request.Data.ToHttpQueryString(orderBy: OrderQueryStringParameters);
 
                 if (httpMethod != HttpMethod.Get)
-                    requestMessage.Content = new StringContent(queryString);
+                {
+                    if (UseApplicationJson)
+                    {
+                        string jsonString = JsonSerializer.Serialize(request.Data);
+                        requestMessage.Content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+                    }
+                    else
+                    {
+                        var queryString = request.Data.ToHttpQueryString(orderBy: OrderQueryStringParameters);
+                        requestMessage.Content = new StringContent(queryString);
+                    }
+                }
+                    
 
                 AddHeaders(requestMessage, request);
 
@@ -42,7 +56,7 @@ namespace AVS.CoreLib.REST.RequestBuilders
 
         private void AddHeaders(HttpRequestMessage requestMessage, IRequest request)
         {
-            if (UseMediaTypeApplicationJson)
+            if (UseApplicationJson)
                 requestMessage.Headers.AcceptApplicationJsonContent();
 
             if (request.Headers == null || request.Headers.Count == 0)

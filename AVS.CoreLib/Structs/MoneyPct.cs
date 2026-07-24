@@ -35,6 +35,7 @@ public readonly struct MoneyPct
     /// </summary>
     /// <returns></returns>
     public decimal GetExactValue() => _money;
+    public decimal GetExactPctValue() => _percent;
 
     // mutable structs are classic gotchas in .NET, if you need it mutable, most likely you need a class not struct!
     //public void Update(Money money, Percent percent)

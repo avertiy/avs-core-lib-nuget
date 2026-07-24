@@ -7,37 +7,40 @@ using AVS.CoreLib.Extensions;
 namespace AVS.CoreLib.Structs;
 
 /// <summary>
-/// Represents a pair of the decimal value and decimal pct (percentage) value  
-/// e.g. pnl: { value:100$, pct: 0.01 } or price change: { value:10$, pct: 0.02 }
+/// Represents a pair of the decimal value and percentage
+/// The percentage part is optional in this case pct value is 0 so you operate only decimal value.
+/// <code>
+///  var pnl = new DecPct(100m, 0.02m); //  PNL=100$ (2%)
+///  var change = new new DecPct(20m);// change=20$ we don't care about percentage
+/// </code>
 /// </summary>
-[DebuggerDisplay("DecPct {ToString()}")]
+[DebuggerDisplay("{ToString()}")]
 [JsonConverter(typeof(DecPctJsonConverter))]
 public readonly struct DecPct : IComparable<decimal>, IComparable<DecPct>, IEquatable<DecPct> //, IFormattable
 {
     private readonly decimal _value;
     private readonly decimal _pctValue;
 
-    public DecPct(decimal value, decimal pct)
+    public DecPct(decimal value, decimal pct = 0)
     {
         _value = value;
         _pctValue = pct;
     }
 
+    /// <summary>
+    /// returns rounded decimal value
+    /// </summary>
     public decimal Value => _value.Round();
 
     /// <summary>
-    /// represents a value in pct format, where 0.01 means 1%
+    /// returns rounded to 4 digitcs pct value e.g. 0.005 means 0.5%
     /// </summary>
     public decimal Pct => _pctValue.Round(4);
 
-    /// <summary>
-    /// represents value in percentage format, where 10 means 10%
-    /// </summary>
     [JsonIgnore]
-    public decimal Percent => Pct * 100;
-
+    public bool HasValue => _value != 0;
     [JsonIgnore]
-    public bool HasValue => _value != 0 && _pctValue !=0;
+    public bool HasPctValue => _pctValue != 0;
     /// <summary>
     /// returns an exact fraction value e.g. 0.2525218 (stored internally) => 0.2525218
     /// </summary>
@@ -45,19 +48,30 @@ public readonly struct DecPct : IComparable<decimal>, IComparable<DecPct>, IEqua
     public decimal GetExactValue() => _value;
     public decimal GetExactPctValue() => _pctValue;
 
+    /// <summary>
+    /// returns rounded pct value as percentage e.g. 10.5 means 10.5% 
+    /// </summary>
+    public Percent GetPercent() => new Percent(Pct);
+
     public override string ToString()
     {
-        return _value == 0 ? "0" : $"{Value} ({Percent}%)";
+        return _pctValue == 0 ? Value.ToString() : $"{Value} ({Pct:P2})";
     }
     public string ToString(string currency)
     {
-        return _value == 0 ? $"0 {currency}" : $"{Value} {currency} ({Percent}%)";
+        return _pctValue == 0 ? $"{Value} {currency}" : $"{Value} {currency} ({Pct:P2})";
     }
 
-    //public string ToString(string? format, IFormatProvider? formatProvider)
-    //{
-    //    return _value == 0 ? $"0 {format}" : $"{Value} {format} ({Percent}%)";
-    //}
+    public string ToString(string? format, IFormatProvider? formatProvider)
+    {
+        if (format != null && format.StartsWith("P"))
+            return Pct.ToString(format, formatProvider);
+
+        if (format != null && (format.StartsWith("C") || _pctValue == 0))
+            return Value.ToString(format, formatProvider);
+
+        return _pctValue == 0 ? Value.ToString() : $"{Value} ({Pct:P2})";
+    }
 
     public int CompareTo(decimal other)
     {
@@ -72,6 +86,7 @@ public readonly struct DecPct : IComparable<decimal>, IComparable<DecPct>, IEqua
     public decimal Abs() => _value.Abs();
 
     public static implicit operator decimal(DecPct prop) => prop._value;
+    public static implicit operator DecPct(decimal d) => new DecPct(d, 0);
 
     public static bool operator ==(DecPct a, DecPct b)
     {
@@ -112,7 +127,7 @@ public readonly struct DecPct : IComparable<decimal>, IComparable<DecPct>, IEqua
 public class DecPctJsonConverter : JsonConverter<DecPct>
 {
     public DecPctFormat Format { get; set; } = DecPctFormat.Array;
-    
+
     public override DecPct Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         throw new NotImplementedException();
@@ -129,48 +144,52 @@ public class DecPctJsonConverter : JsonConverter<DecPct>
                 writer.WriteNumberValue(obj.Pct);
                 break;
             case DecPctFormat.Percent:
-                writer.WriteNumberValue(obj.Percent);
+                writer.WriteNumberValue(obj.Pct * 100);
                 break;
             case DecPctFormat.String:
                 writer.WriteStringValue(obj.ToString());
                 break;
             case DecPctFormat.Array:
-                writer.WriteStartArray();
-                writer.WriteNumberValue(obj.Value);
-                writer.WriteNumberValue(obj.Pct);
-                writer.WriteEndArray();
+                if (obj.HasPctValue)
+                {
+                    writer.WriteStartArray();
+                    writer.WriteNumberValue(obj.Value);
+                    writer.WriteNumberValue(obj.Pct);
+                    writer.WriteEndArray();
+                }
+                else
+                {
+                    writer.WriteNumberValue(obj.Value);
+                }
                 break;
+
             default:
-                JsonSerializer.Serialize(writer, obj, options);
+                if (obj.HasPctValue)
+                {
+                    // seialize as object e.g. "{value:100, pct: 0.02}";
+                    writer.WriteStartObject();
+                    writer.WritePropertyName("value");
+                    writer.WriteNumberValue(obj.Value);
+                    writer.WritePropertyName("pct");
+                    writer.WriteNumberValue(obj.Pct);
+                    writer.WriteEndObject();
+                }
+                else
+                    // seialize as simple decimal e.g. "10.50"
+                    writer.WriteNumberValue(obj.Value);
                 break;
         }
     }
 }
 
-//[AttributeUsage(AttributeTargets.Property | AttributeTargets.Class)]
-//public class DecPctConverterAttribute : JsonConverterAttribute
-//{
-//    private readonly DecPctFormat _format;
-
-//    public DecPctConverterAttribute(DecPctFormat format)
-//    {
-//        _format = format;
-//    }
-
-//    public override JsonConverter CreateConverter(Type typeToConvert)
-//    {
-//        return new DecPctJsonConverter(_format);
-//    }
-//}
-
 public enum DecPctFormat
 {
     /// <summary>
-    /// serialize as object e.g. { "value": 0.0056, "pct": 0.061 }
+    /// default serialization as object { "value": 0.0056, "pct": 0.061 }
     /// </summary>
     Default = 0,
     /// <summary>
-    /// serialize as array: [0.0056, 0.061] i.e. compact
+    /// compact serializaion as array: [0.0056, 0.061]
     /// </summary>
     Array = 1,
     /// <summary>
@@ -189,7 +208,26 @@ public enum DecPctFormat
     /// serialize as ToString() e.g. "0.0056 (6.1%)"
     /// </summary>
     String = 5,
-    
+
+}
+
+/// <summary>
+/// uasge: [DecPctFormat(DecPctFormat.Default)]
+/// </summary>
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Class)]
+public class DecPctFormatAttribute : JsonConverterAttribute
+{
+    public DecPctFormat Format { get; set; }
+
+    public DecPctFormatAttribute(DecPctFormat format)
+    {
+        Format = format;
+    }
+
+    public override JsonConverter CreateConverter(Type typeToConvert)
+    {
+        return new DecPctJsonConverter() { Format = Format };
+    }
 }
 
 public static class DecPctExtensions

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using AVS.CoreLib.Abstractions.Responses;
+using AVS.CoreLib.Attributes;
 using AVS.CoreLib.Collections;
-using AVS.CoreLib.REST.Attributes;
 
 namespace AVS.CoreLib.REST.Responses
 {

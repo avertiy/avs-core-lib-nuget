@@ -2,8 +2,8 @@
 using System;
 using System.Diagnostics;
 using AVS.CoreLib.Abstractions.Responses;
+using AVS.CoreLib.Attributes;
 using AVS.CoreLib.Extensions;
-using AVS.CoreLib.REST.Attributes;
 
 namespace AVS.CoreLib.REST.Responses
 {
@@ -14,7 +14,6 @@ namespace AVS.CoreLib.REST.Responses
         /// the source that produced the response
         /// </summary>
         public string Source { get; set; } = null!;
-
 
         [ArrayProperty(-10, true)]
         public string? Error { get; set; }

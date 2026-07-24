@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -45,16 +44,7 @@ namespace AVS.CoreLib.Extensions.Reflection
             return dict;
         }
 
-        public static string GetDisplayName(this PropertyInfo propertyInfo)
-        {
-            var attr = propertyInfo.GetCustomAttribute<DisplayNameAttribute>();
-            if (attr != null)
-            {
-                return attr.DisplayName;
-            }
-
-            return propertyInfo.Name;
-        }
+        
 
         /// <summary>
         /// reflect object properties and its type names to dictionary
@@ -311,5 +301,7 @@ namespace AVS.CoreLib.Extensions.Reflection
                    || type == typeof(string)
                    || type == typeof(decimal);
         }
+
+
     }
 }

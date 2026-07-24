@@ -35,19 +35,6 @@ namespace AVS.CoreLib.REST.Extensions
             return prop.GetCustomAttribute<JsonIgnoreAttribute>() != null;
         }
 
-        public static bool ShouldSerialize(this PropertyInfo prop, Type type, object value)
-        {
-            const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy | BindingFlags.Instance;
-            var shouldSerializeName = "ShouldSerialize" + prop.Name;
-            var mi = type.GetMethod(shouldSerializeName, flags);
-            if (mi != null && mi.ReturnType == typeof(bool))
-            {
-                var shouldSerialize = (bool)mi.Invoke(value, new object[] { });
-                return shouldSerialize;
-            }
-            return true;
-        }
-
         public static string ToJson(this object obj)
         {
             return JsonHelper.Serialize(obj);

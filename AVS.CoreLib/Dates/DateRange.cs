@@ -25,13 +25,22 @@ namespace AVS.CoreLib.Dates
         public DateTime From { get; }
         public DateTime To { get; }
 
+        public DateRange(DateTimeOffset from, DateTimeOffset to)
+        {
+            if (from > to)
+                throw new ArgumentOutOfRangeException($"From date ({from:g}) must be less than To date ({to:g})");
+
+            From = from.DateTime;
+            To = to.DateTime;
+        }
+
         public DateRange(DateTime from, DateTime to)
         {
             if (from > to)
                 throw new ArgumentOutOfRangeException($"From date ({from:g}) must be less than To date ({to:g})");
 
             From = from;
-            To = to;
+            To = to;            
         }
 
         #region Auto calc. props

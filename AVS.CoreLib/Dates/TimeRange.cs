@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace AVS.CoreLib.Dates;
 
@@ -9,14 +10,23 @@ public readonly struct TimeRange
     public long EndTime { get; }
 
     #region Auxilary (auto-calc) props
-    public bool IsInMilliseconds => DateTimeHelper.IsInMilliseconds(StartTime);
+    [JsonIgnore]
+    public TimeUnit Unit => DateTimeHelper.GetTimeUnit(StartTime);
+    [JsonIgnore]
     public DateTime StartDateTime => DateTimeHelper.FromUnixTimestamp(StartTime);
+    [JsonIgnore]
     public DateTime EndDateTime => DateTimeHelper.FromUnixTimestamp(EndTime);
+    [JsonIgnore]
     public double TotalDays => (EndDateTime - StartDateTime).TotalDays;
+    [JsonIgnore]
     public double TotalSeconds => (EndDateTime - StartDateTime).TotalSeconds;
+    [JsonIgnore]
     public double TotalMilliseconds => (EndDateTime - StartDateTime).TotalMilliseconds;
+    [JsonIgnore]
     public int Days => Convert.ToInt32((EndTime - StartTime) / (DateTimeHelper.SECONDS_IN_DAY * 1000));
+    [JsonIgnore]
     public long Seconds => (EndTime - StartTime) / 1000;
+    [JsonIgnore]
     public long Milliseconds => EndTime - StartTime; 
     #endregion
 
@@ -126,7 +136,7 @@ public static class TimeRangeExtensions
 {
     public static IEnumerable<TimeRange> Slice(this TimeRange range, long milliseconds)
     {
-        var interval = range.IsInMilliseconds ? milliseconds : milliseconds / 1000;
+        var interval = range.Unit == TimeUnit.Milliseconds ? milliseconds : milliseconds / 1000;
 
         for (var i = range.StartTime; i < range.EndTime;)
         {
@@ -160,3 +170,4 @@ public static class TimeRangeExtensions
         return new TimeRange(startTime, endTime);
     }
 }
+
