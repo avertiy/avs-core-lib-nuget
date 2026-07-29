@@ -7,7 +7,7 @@ using AVS.CoreLib.Structs;
 
 namespace AVS.CoreLib.Dates;
 
-[DebuggerDisplay("{Timestamp} ({Units}, {LocalDateTime})")]
+[DebuggerDisplay("{Timestamp} ({Unit}, {LocalDateTime})")]
 [JsonConverter(typeof(UnixTimeJsonConverter))]
 public readonly record struct UnixTime(long Timestamp) : IComparable<UnixTime>
 {
@@ -54,6 +54,18 @@ public readonly record struct UnixTime(long Timestamp) : IComparable<UnixTime>
     public static bool operator <(UnixTime a, UnixTime b) => a.Timestamp < b.Timestamp;
     public static bool operator >=(UnixTime a, UnixTime b) => a.Timestamp >= b.Timestamp;
     public static bool operator <=(UnixTime a, UnixTime b) => a.Timestamp <= b.Timestamp;
+
+    public static bool TryParse(string str, out UnixTime time)
+    {
+        if(long.TryParse(str, out var timestamp))
+        {
+            time = new UnixTime(timestamp);
+            return true;
+        }
+
+        time = default;
+        return false;
+    }
 
 }
 

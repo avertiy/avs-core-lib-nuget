@@ -75,6 +75,7 @@ public struct Money : IComparable<decimal>, IComparable<Money>, IComparable<DecN
     public static Money operator *(Money a, int b) => new(a._value * b);
     public static Money operator *(decimal a, Money b) => a * b._value;
 
+
     public static decimal operator /(Money a, Money b) => (a._value / b._value);    
     public static Money operator /(Money a, decimal b) => new(a._value / b);
     public static Money operator /(Money a, int b) => new(a._value / b);

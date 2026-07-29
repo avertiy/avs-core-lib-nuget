@@ -11,8 +11,8 @@ namespace AVS.CoreLib.Structs;
 /// Represents a decimal wrapper
 /// Allows to deal with a rounded decimal value, at the same time preserving an exact value for calculations
 /// </summary>
+[DebuggerDisplay("{Value} ({_value})")]
 [JsonConverter(typeof(DecNumberJsonConverter))]
-[DebuggerDisplay("{Value}")]
 public struct DecNumber : IComparable<decimal>, IComparable<DecNumber>, IFormattable
 {
     private decimal _value;
@@ -24,7 +24,7 @@ public struct DecNumber : IComparable<decimal>, IComparable<DecNumber>, IFormatt
 
     public decimal Value
     {
-        get => _value.RoundPrice();
+        get => _value.Round(extraPrecision: 1);
         set => _value = value;
     }
 
@@ -112,6 +112,6 @@ public class DecNumberJsonConverter : JsonConverter<DecNumber>
 
     public override void Write(Utf8JsonWriter writer, DecNumber number, JsonSerializerOptions options)
     {
-        writer.WriteNumberValue(number.GetExactValue());
+        writer.WriteNumberValue(number.Value);
     }
 }

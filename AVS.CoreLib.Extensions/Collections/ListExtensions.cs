@@ -224,6 +224,14 @@ namespace AVS.CoreLib.Extensions.Collections
 
         #endregion
 
+        public static IList<T> Combine<T>(this IList<T> source, IList<T> other)
+        {
+            var result = new List<T>(source.Count + other.Count);
+            result.AddRange(source);
+            result.AddRange(other);
+            return result;
+        }
+                
         public static bool ContainsAll<T>(this IList<T> source, params T[] items)
         {
             if (source.Count < items.Length)

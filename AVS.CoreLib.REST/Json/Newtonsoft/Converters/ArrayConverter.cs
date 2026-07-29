@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.Serialization;
 using AVS.CoreLib.Attributes;
+using AVS.CoreLib.Dates;
 using AVS.CoreLib.Extensions.Linq;
 using AVS.CoreLib.Extensions.Reflection;
 using AVS.CoreLib.REST.Extensions;
@@ -151,25 +152,44 @@ namespace AVS.CoreLib.REST.Json.Converters
 
         private static void SetValueInternal(this PropertyInfo property, object obj, object value)
         {
-            if (value != null && property.PropertyType.IsInstanceOfType(value))
-                property.SetValue(obj, value);
-            else
+            var rethrow = true;
+            try
             {
-                if (value is JToken token)
-                    if (token.Type == JTokenType.Null)
-                        value = null;
-
-                if ((property.PropertyType == typeof(decimal)
-                     || property.PropertyType == typeof(decimal?))
-                    && (value != null && value.ToString().Contains("e")))
-                {
-                    if (decimal.TryParse(value.ToString(), NumberStyles.Float, CultureInfo.InvariantCulture, out var dec))
-                        property.SetValue(obj, dec);
-                }
+                if (value != null && property.PropertyType.IsInstanceOfType(value))
+                    property.SetValue(obj, value);
                 else
                 {
-                    property.SetValue(obj, value == null ? null : Convert.ChangeType(value, property.PropertyType));
+                    if (value is JToken token && token.Type == JTokenType.Null)
+                        value = null;
+
+                    if (value == null)
+                    {
+                        property.SetValue(obj, null);
+                        return;
+                    }
+
+                    if (property.PropertyType == typeof(decimal) || property.PropertyType == typeof(decimal?))
+                    {
+                        if (decimal.TryParse(value.ToString(), NumberStyles.Float, CultureInfo.InvariantCulture, out var dec))
+                            property.SetValue(obj, dec);
+                    }
+                    else if(property.PropertyType == typeof(UnixTime))
+                    {
+                        if (UnixTime.TryParse(value.ToString(), out var time))
+                            property.SetValue(obj, time);
+                    }
+                    else
+                    {
+                        var convertedValue = Convert.ChangeType(value, property.PropertyType);
+                        property.SetValue(obj, convertedValue);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                var err = ex.ToString();
+                if (rethrow)
+                    throw;
             }
         }
 

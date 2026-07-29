@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using AVS.CoreLib.Extensions;
 
 namespace AVS.CoreLib.Json;
 
 public class DecimalConverter : JsonConverter<decimal>
 {
-    private readonly int _roundDecimals;
+    private readonly int? _roundDecimals;
 
-    public DecimalConverter(int roundDecimals)
+    public DecimalConverter(int? roundDecimals = null)
     {
         _roundDecimals = roundDecimals;
     }
@@ -20,14 +21,20 @@ public class DecimalConverter : JsonConverter<decimal>
 
     public override void Write(Utf8JsonWriter writer, decimal value, JsonSerializerOptions options)
     {
-        writer.WriteNumberValue(Math.Round(value, _roundDecimals));
+        var roundedValue = value.Round(_roundDecimals);
+        writer.WriteNumberValue(roundedValue);
     }
 }
 
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Class)]
 public class DecimalConverterAttribute : JsonConverterAttribute
 {
-    private readonly int _roundDecimals;
+    private readonly int? _roundDecimals;
+
+    public DecimalConverterAttribute()
+    {
+        _roundDecimals = null;
+    }
 
     public DecimalConverterAttribute(int roundDecimals)
     {
