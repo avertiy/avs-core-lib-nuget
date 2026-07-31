@@ -3,12 +3,11 @@
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>disable</ImplicitUsings>
+	<Nullable>enable</Nullable>
     <RootNamespace>AVS.CoreLib.REST</RootNamespace>
-    <AssemblyName>AVS.CoreLib.REST</AssemblyName>
-    <AssemblyName>AVS.CoreLib.REST</AssemblyName>
+    <AssemblyName>AVS.CoreLib.REST</AssemblyName>    
     <RootNamespace>AVS.CoreLib.REST</RootNamespace>
-    <Authors>Artem Vertii</Authors>
-    <Company>AV Stuido</Company>
+    <Authors>Artem Vertii</Authors>    
     <Product>CoreLib</Product>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AssemblyVersion>9.0.0</AssemblyVersion>
@@ -16,7 +15,7 @@
     <Description>CoreLib REST tools, RestClient </Description>
     <Copyright>Artem Vertii</Copyright>
     <PackageProjectUrl>https://github.com/avertiy/avs-core-lib-nuget</PackageProjectUrl>
-    <PackageTags>RestClient avs</PackageTags>
+    <PackageTags>avs rest</PackageTags>
     <RepositoryUrl>https://github.com/avertiy/avs-core-lib-nuget</RepositoryUrl>
     <RepositoryType>public</RepositoryType>
     <Version>9.0.0</Version>

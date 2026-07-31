@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using AVS.CoreLib.Guards;
-using AVS.CoreLib.REST.Json;
-using Newtonsoft.Json.Linq;
 
 namespace AVS.CoreLib.REST.Extensions;
 
@@ -132,4 +130,10 @@ public static class RestResponseExtensions
         result.Error = errorText ?? result.Error ?? $"Invalid format [json text must match a regex pattern: {regexPattern}]";
         return result;
     }
+}
+
+public enum JsonType
+{
+    Object = 0,
+    Array
 }

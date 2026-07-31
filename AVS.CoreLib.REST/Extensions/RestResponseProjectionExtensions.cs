@@ -5,8 +5,14 @@ using AVS.CoreLib.REST.Responses;
 
 namespace AVS.CoreLib.REST.Extensions;
 
+/// <summary>
+/// 
+/// </summary>
 public static class RestResponseProjectionExtensions
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static Response<T> ToResponse<T>(this RestResponse restResponse)
     {
         var isSuccess = restResponse.IsSuccessful();
@@ -19,17 +25,17 @@ public static class RestResponseProjectionExtensions
         return response;
     }
     
-    public static Response<T> ToResponse<T>(this RestResponse restResponse, T? data)
-    {
-        var isSuccess = restResponse.IsSuccessful();
-        var response = Response.Create<T>(restResponse.Source, content: restResponse.Content, restResponse.Error, restResponse.Request);
+    //public static Response<T> ToResponse<T>(this RestResponse restResponse, T? data)
+    //{
+    //    var isSuccess = restResponse.IsSuccessful();
+    //    var response = Response.Create<T>(restResponse.Source, content: restResponse.Content, restResponse.Error, restResponse.Request);
 
-        if (!isSuccess)
-            return response;
+    //    if (!isSuccess)
+    //        return response;
 
-        response.Data = data;
-        return response;
-    }
+    //    response.Data = data;
+    //    return response;
+    //}
     
     /// <summary>
     /// Creates <see cref="Response{T}"/>
@@ -56,25 +62,42 @@ public static class RestResponseProjectionExtensions
     }
 
     /// <summary>
-    /// Creates <see cref="Response{T}"/>
-    /// when response is successful content (json) will be deserialized by means of <see cref="Proj{T}"/> and one of map functions.
+    /// Deserializes the REST response json content into <typeparamref name="T"/> and 
+    /// produces the specified destination type <typeparamref name="TResult"/> using the provided proxy.
     /// </summary>
-    /// <typeparam name="T">T data</typeparam>
-    /// <typeparam name="TType">Concrete type for deserialization</typeparam>
+    /// <typeparam name="TResult">T data</typeparam>
+    /// <typeparam name="T">Concrete type for deserialization</typeparam>
     /// <param name="restResponse">rest response</param>
     /// <param name="proxy">proxy or builder to produce T data</param>
     /// <param name="map">gives control to the caller's code over projection (Map / MapArray / MapDictionary)</param>
     /// <returns><see cref="Response{T}"/></returns>
-    public static Response<T> ToResponse<T, TType>(this RestResponse restResponse, IProxy<TType, T> proxy, Func<ProxyProj<T>, T?> map)
+    public static Response<TResult> ToResponse<TResult, T>(this RestResponse restResponse, IProxy<T, TResult> proxy, Func<ProxyProj<TResult>, TResult?> map)
     {
         var isSuccess = restResponse.IsSuccessful();
-        var response = Response.Create<T>(restResponse.Source, content: restResponse.Content, restResponse.Error, restResponse.Request);
+        var response = Response.Create<TResult>(restResponse.Source, content: restResponse.Content, restResponse.Error, restResponse.Request);
 
         if (!isSuccess)
             return response;
 
-        var proj = new ProxyProj<T>(restResponse.Content, proxy);
+        var proj = new ProxyProj<TResult>(restResponse.Content, proxy);
         response.Data = map(proj);
+        return response;
+    }
+
+    /// <summary>
+    /// Deserializes the REST response json content into <typeparamref name="T"/> and maps it
+    /// to the specified destination type <typeparamref name="TResult"/> using the provided mapper.
+    /// </summary>
+    public static Response<TResult> ToResponse<TResult, T>(this RestResponse restResponse, IMapper<T, TResult> mapper)
+    {
+        var isSuccess = restResponse.IsSuccessful();
+        var response = Response.Create<TResult>(restResponse.Source, content: restResponse.Content, restResponse.Error, restResponse.Request);
+
+        if (!isSuccess)
+            return response;
+
+        var proj = new Proj<TResult>(restResponse.Content);
+        response.Data = proj.MapWithMapper(mapper);
         return response;
     }
 

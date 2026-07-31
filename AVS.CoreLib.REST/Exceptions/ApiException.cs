@@ -3,8 +3,8 @@ using System;
 using System.Diagnostics;
 using System.Net;
 using AVS.CoreLib.Abstractions.Responses;
+using AVS.CoreLib.Json;
 using AVS.CoreLib.REST.Extensions;
-using AVS.CoreLib.REST.Responses;
 
 namespace AVS.CoreLib.REST
 {

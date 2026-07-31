@@ -3,27 +3,43 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using AVS.CoreLib.Extensions;
-using AVS.CoreLib.Extensions.Reflection;
 using AVS.CoreLib.REST.Json;
 
 namespace AVS.CoreLib.REST.Projections;
 
+/// <summary>
+/// Proj implements Projection functionallity without a dependency on Newtonsoft
+/// </summary>
+/// <typeparam name="TResult"></typeparam>
 [DebuggerDisplay("{ToString()}")]
-public sealed class Proj<T>
+public sealed class Proj<TResult>
 {
-    public string Content { get; }
+    /// <summary>
+    /// response content
+    /// </summary>
+    public string? JsonText { get; }
 
+    /// <summary>
+    /// Initializes new projection instance
+    /// </summary>
     [DebuggerStepThrough]
-    public Proj(string json)
+    public Proj(string? jsonText)
     {
-        Content = json;
+        JsonText = jsonText;
     }
 
-    
-
-    public T? Map(Action<T>? action = null)
+    #region Map
+    /// <summary>
+    /// Deserializes json text into <typeparamref name="TResult"/> value
+    /// (straight deserialization)
+    /// <code>
+    ///  var projection = new Proj{BinancePosition}(json);
+    ///  var position = projection.Map();
+    /// </code>
+    /// </summary>
+    public TResult? Map(Action<TResult>? action = null)
     {
-        var obj = JsonHelper.Deserialize<T>(Content);
+        var obj = JsonHelper.Deserialize<TResult>(JsonText);
 
         if (action != null && obj != null)
             action(obj);
@@ -31,9 +47,16 @@ public sealed class Proj<T>
         return obj;
     }
 
-    public T? Map<TType>(Action<TType>? action = null) where TType : class, T
+    /// <summary>
+    /// Deserializes json text into <typeparamref name="TConcrete"/> in case <typeparamref name="TResult"/> is an abtraction/interface
+    /// <code>
+    ///  var projection = new Proj{ITrade}(json);
+    ///  var trade = projection.Map{BinanceTrade}();
+    /// </code>
+    /// </summary>
+    public TResult? Map<TConcrete>(Action<TConcrete>? action = null) where TConcrete : class, TResult
     {
-        var obj = JsonHelper.Deserialize<TType>(Content);
+        var obj = JsonHelper.Deserialize<TConcrete>(JsonText);
 
         if (obj == null)
             return default;
@@ -42,57 +65,14 @@ public sealed class Proj<T>
         return obj;
     }
 
-    public IList<T> MapArray<TType>(Action<TType>? action = null) where TType : class, T
-    {
-        if (Content.StartsWith('{'))
-        {
-            var obj = JsonHelper.Deserialize<TType>(Content);
-            if (obj == null)
-                return Array.Empty<T>();
-
-            action?.Invoke(obj);
-            return new List<T>() { obj };
-        }
-
-        var arr = JsonHelper.Deserialize<TType[]>(Content);
-
-        if (arr == null)
-            return Array.Empty<T>();
-
-        var list = new List<T>();
-
-        foreach (var item in arr)
-        {
-            action?.Invoke(item);
-            list.Add(item);
-        }
-
-        return list;
-    }
-
-    public IDictionary<string, T> MapDictionary<TType>(Action<string, TType>? action = null) where TType : class, T
-    {
-        var dict = JsonHelper.Deserialize<Dictionary<string, TType>>(Content);
-
-        if (dict == null)
-            return new Dictionary<string, T>();
-
-        var res = new Dictionary<string, T>(dict.Count);
-
-        foreach (var kp in dict)
-        {
-            action?.Invoke(kp.Key, kp.Value);
-            res.Add(kp.Key, kp.Value);
-        }
-
-        return res;
-    }
-
-    public T? Map<TType, TProxy>(Action<TType>? action = null) where TProxy : IProxy<TType, T>, new()
+    /// <summary>
+    /// 
+    /// </summary>
+    public TResult? Map<TType, TProxy>(Action<TType>? action = null) where TProxy : IProxy<TType, TResult>, new()
     {
         var proxy = new TProxy();
 
-        var obj = JsonHelper.Deserialize<TType>(Content);
+        var obj = JsonHelper.Deserialize<TType>(JsonText);
 
         if (obj != null)
         {
@@ -103,22 +83,123 @@ public sealed class Proj<T>
         return proxy.Create();
     }
 
-    public T? MapArray<TType, TProxy>(Action<TType>? action = null) where TProxy : IProxy<TType, T>, new()
+    /// <summary>
+    /// Deserilize json text into <typeparamref name="T"/> then mapper will map it to <typeparamref name="TResult"/>
+    /// </summary>
+    public TResult? MapWithMapper<T>(IMapper<T, TResult> mapper)
+    {
+        var obj = JsonHelper.Deserialize<T>(JsonText);
+
+        if (obj == null)
+            return default;
+
+        var result = mapper.Map(obj);
+        return result;
+    }
+
+    #endregion
+
+    #region MapArray
+
+    /// <summary>
+    /// Deserializes json array into <typeparamref name="T[]"/> than fills in the list of <see cref="IList{TResult}"/>
+    /// In case json text is an object { ... } it projects it as <see cref="IList{TResult}"/> with only one item
+    /// </summary>
+    public IList<TResult> MapArray<T>(Action<T>? action = null) where T : class, TResult
+    {
+        if (JsonText == null)
+            return Array.Empty<TResult>();
+
+        if (JsonText.StartsWith('{'))
+        {
+            var obj = JsonHelper.Deserialize<T>(JsonText);
+            if (obj == null)
+                return Array.Empty<TResult>();
+
+            action?.Invoke(obj);
+            return new List<TResult>() { obj };
+        }
+
+        var arr = JsonHelper.Deserialize<T[]>(JsonText);
+
+        if (arr == null)
+            return Array.Empty<TResult>();
+
+        var list = new List<TResult>();
+
+        foreach (var item in arr)
+        {
+            action?.Invoke(item);
+            list.Add(item);
+        }
+
+        return list;
+    }
+
+    /// <summary>
+    /// Deserializes json array into <typeparamref name="T[]"/>, than builds <typeparamref name="TResult"/> by means of a proxy builder
+    /// </summary>
+    public TResult? MapArray<T>(IProxy<T, TResult> proxy)
+    {
+        if (JsonText == null)
+            return proxy.Create();
+
+        if (JsonText.StartsWith('{'))
+        {
+            var obj = JsonHelper.Deserialize<T>(JsonText);
+
+            if (obj == null)
+                return proxy.Create();
+
+            proxy.Add(obj);
+
+            return proxy.Create();
+        }
+
+        var arr = JsonHelper.Deserialize<T[]>(JsonText);
+
+        if (arr == null || arr.Length == 0)
+            return proxy.Create();
+
+        foreach (var item in arr)
+        {
+            proxy.Add(item);
+        }
+
+        var res = proxy.Create();
+        return res;
+    }
+
+    /// <summary>
+    /// Map json array of objects 
+    /// <code>
+    ///  // use cases
+    ///  // map json array of ByBitPositions into proxy object UserPositions by means of a proxy class (PositionsBuilder)
+    ///  var proj = new Proj{UserPositions}(json);
+    ///  proj.MapArray{ByBitPosition, PositionsBuilder}(x => { x.Symbol = NormalizeSymbol(x.Symbol); });
+    /// </code>
+    /// </summary>
+    public TResult? MapArray<T, TProxy>(Action<T>? action = null) where TProxy : IProxy<T, TResult>, new()
     {
         var proxy = new TProxy();
 
-        if (Content.StartsWith('{'))
+        if (JsonText == null)
+            return proxy.Create();
+
+        if (JsonText.StartsWith('{'))
         {
-            var obj = JsonHelper.Deserialize<TType>(Content);
+            var obj = JsonHelper.Deserialize<T>(JsonText);
+
             if (obj == null)
                 return proxy.Create();
 
             action?.Invoke(obj);
             proxy.Add(obj);
+
             return proxy.Create();
         }
 
-        var arr = JsonHelper.Deserialize<TType[]>(Content);
+        var arr = JsonHelper.Deserialize<T[]>(JsonText);
 
         if (arr == null || arr.Length == 0)
             return proxy.Create();
@@ -128,7 +209,7 @@ public sealed class Proj<T>
             {
                 proxy.Add(item);
             }
-        else 
+        else
             foreach (var item in arr)
             {
                 action.Invoke(item);
@@ -139,11 +220,38 @@ public sealed class Proj<T>
         return res;
     }
 
-    public T? MapDictionary<TType, TProxy>(Action<string, TType>? action = null) where TProxy : IKeyedCollectionProxy<T, TType>, new()
+    #endregion
+
+    #region MapDictionary
+    /// <summary>
+    /// 
+    /// </summary>
+    public IDictionary<string, TResult> MapDictionary<TType>(Action<string, TType>? action = null) where TType : class, TResult
+    {
+        var dict = JsonHelper.Deserialize<Dictionary<string, TType>>(JsonText);
+
+        if (dict == null)
+            return new Dictionary<string, TResult>();
+
+        var res = new Dictionary<string, TResult>(dict.Count);
+
+        foreach (var kp in dict)
+        {
+            action?.Invoke(kp.Key, kp.Value);
+            res.Add(kp.Key, kp.Value);
+        }
+
+        return res;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public TResult? MapDictionary<TType, TProxy>(Action<string, TType>? action = null) where TProxy : IKeyedCollectionProxy<TResult, TType>, new()
     {
         var proxy = new TProxy();
 
-        var dict = JsonHelper.Deserialize<IDictionary<string, TType>>(Content);
+        var dict = JsonHelper.Deserialize<IDictionary<string, TType>>(JsonText);
 
         if (dict != null)
         {
@@ -156,103 +264,15 @@ public sealed class Proj<T>
 
         var res = proxy.Create();
         return res;
-    }
-    
+    } 
+    #endregion
+
+    /// <summary>
+    /// 
+    /// </summary>
     public override string ToString()
     {
-        return $"Proj<{typeof(T).Name}> Content={Content.Truncate(maxLength: 255, TruncateOptions.CutOffTheMiddle)}";
-    }
-}
-
-[DebuggerDisplay("{ToString()}")]
-public class ProxyProj<T>
-{
-    public string Content { get; }
-    public IProxy<T> Proxy { get; }
-
-    [DebuggerStepThrough]
-    public ProxyProj(string json, IProxy<T> proxy)
-    {
-        Content = json;
-        Proxy = proxy;
-    }
-
-    public T? Map<TType>(Action<TType>? action = null)
-    {
-        var proxy = (IProxy<TType, T>)Proxy;
-
-        var obj = JsonHelper.Deserialize<TType>(Content);
-
-        if (obj != null)
-        {
-            action?.Invoke(obj);
-            proxy.Add(obj);
-        }
-
-        var builder = (IProxy<T>)proxy;
-        // explicit interface call due to builder might implement few IProxy<T> interfaces 
-        return builder.Create();
-    }
-    public T? MapArray<TType>(Action<TType>? action = null)
-    {
-        var proxy = (IProxy<TType, T>)Proxy;
-
-        var arr = JsonHelper.Deserialize<TType[]>(Content);
-
-        if (arr != null)
-        {
-            foreach (var item in arr)
-            {
-                action?.Invoke(item);
-                proxy.Add(item);
-            }
-        }
-
-        var builder = (IProxy<T>)proxy;
-        // explicit interface call due to builder might implement few IProxy<T> interfaces 
-        return builder.Create();
-    }
-
-    public override string ToString()
-    {
-        return $"ProxyProj<{typeof(T).Name}> Proxy={Proxy.GetTypeName()} Content={Content.Truncate(maxLength: 255, TruncateOptions.CutOffTheMiddle)}";
-    }
-}
-
-[DebuggerDisplay("{ToString()}")]
-public class KeyedProxyProj<T>
-{
-    public string Content { get; }
-    public IProxy<T> Proxy { get; }
-
-    [DebuggerStepThrough]
-    public KeyedProxyProj(string json, IProxy<T> proxy)
-    {
-        Content = json;
-        Proxy = proxy;
-    }
-
-    public T? MapDictionary<TType>(Action<string, TType>? action = null)
-    {
-        var proxy = (IKeyedCollectionProxy<T, TType>)Proxy;
-
-        var dict = JsonHelper.Deserialize<IDictionary<string, TType>>(Content);
-
-        if (dict != null)
-        {
-            foreach (var kp in dict)
-            {
-                action?.Invoke(kp.Key, kp.Value);
-                proxy.Add(kp.Key, kp.Value);
-            }
-        }
-
-        var builder = (IProxy<T>)proxy;
-        return builder.Create();
-    }
-
-    public override string ToString()
-    {
-        return $"KeyedProxyProj<{typeof(T).Name}> Proxy={Proxy.GetTypeName()} Content={Content.Truncate(maxLength: 255, TruncateOptions.CutOffTheMiddle)}";
+        var jsonText = JsonText?.Truncate(maxLength: 255, TruncateOptions.CutOffTheMiddle) ?? string.Empty;
+        return $"Proj<{typeof(TResult).Name}> Content={jsonText}";
     }
 }

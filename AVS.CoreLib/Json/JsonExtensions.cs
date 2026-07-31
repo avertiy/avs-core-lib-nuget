@@ -49,6 +49,12 @@ namespace AVS.CoreLib.Json
             return json;
         }
 
+        public static string ToJson(this object obj, Type inputType, JsonSerializerOptions? options = null)
+        {
+            var json = JsonSerializer.Serialize(obj, inputType, options ?? DefaultOptions.Value);
+            return json;
+        }
+
         private static Lazy<JsonSerializerOptions> BriefJsonOptions { get; } = new(() =>
         {
             var options = CreateJsonSerializerOptions();
@@ -98,7 +104,8 @@ namespace AVS.CoreLib.Json
         }
 
         #region Deserialize extensions
-        public static T? Deserialize<T>(this string json, JsonSerializerOptions? options = null) where T : new()
+
+        public static T? Deserialize<T>(this string json, JsonSerializerOptions? options = null)
         {
             return JsonSerializer.Deserialize<T>(json, options ?? DefaultOptions.Value);
         }

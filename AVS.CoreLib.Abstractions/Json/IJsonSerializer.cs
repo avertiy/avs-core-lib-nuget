@@ -10,16 +10,9 @@ namespace AVS.CoreLib.Abstractions.Json
     public interface IJsonSerializer
     {
         string SerializeObject(object obj, Type? type = null);
-        string SerializeObject(object obj, Type? type = null, params Type[] converters);
-        object? DeserializeObject(string? json, Type type);
-        void Populate(object target, string json);
-    }
-
-    public static class JsonSerializerExtensions
-    {
-        public static T? DeserializeObject<T>(this IJsonSerializer jsonSerializer, string json)
-        {
-            return (T?)jsonSerializer.DeserializeObject(json, typeof(T));
-        }
+        /// <summary>
+        /// 
+        /// </summary>
+        T? Deserialize<T>(string? json);
     }
 }

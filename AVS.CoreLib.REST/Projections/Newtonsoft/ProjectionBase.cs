@@ -13,12 +13,39 @@ namespace AVS.CoreLib.REST.Projections
     {
         private string? _selectTokenPath;
 
-        public string JsonText { get; set; }
-        public string Source { get; set; }
+        /// <summary>
+        /// 
+        /// </summary>
         public IRequest? Request { get; set; }
-        public string? Error { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string Source { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
         public HttpStatusCode StatusCode { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public string JsonText { get; init; } = null!;
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        public string? Error { get; set; }
+        
+        /// <summary>
+        /// 
+        /// </summary>
         public bool IsEmpty => (string.IsNullOrEmpty(JsonText) || JsonText == "{}" || JsonText == "[]") && Error == null;
+
+        /// <summary>
+        /// 
+        /// </summary>
         public bool HasError => Error != null;
 
         protected ProjectionBase(RestResponse response)

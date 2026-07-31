@@ -15,13 +15,9 @@ namespace AVS.CoreLib.REST.Json
 
         public static IJsonSerializer Serializer
         {
-            get => _serializer ??= new NewtonsoftJsonSerializer();
+            //get => _serializer ??= new NewtonsoftJsonSerializer();
+            get => _serializer ??= new SystemTextJsonSerializer();
             set => _serializer = value;
-        }
-
-        public static string Serialize(object obj, Type? type = null, params Type[] converters)
-        {
-            return Serializer.SerializeObject(obj, type, converters);
         }
 
         public static string Serialize(object obj, Type? type = null)
@@ -29,25 +25,12 @@ namespace AVS.CoreLib.REST.Json
             return Serializer.SerializeObject(obj, type);
         }
 
-        public static object? Deserialize(string json, Type type)
-        {
-            return Serializer.DeserializeObject(json, type);
-        }
-
+        /// <summary>
+        /// Parses json text into <typeparamref name="T"/> value
+        /// </summary>
         public static T? Deserialize<T>(string? json)
         {
-            return (T?)Serializer.DeserializeObject(json, typeof(T));
-        }
-
-        public static void Populate(object target, string json)
-        {
-            Serializer.Populate(target, json);
-        }
-    }
-
-    public enum JsonType
-    {
-        Object = 0,
-        Array
+            return Serializer.Deserialize<T>(json);
+        }        
     }
 }

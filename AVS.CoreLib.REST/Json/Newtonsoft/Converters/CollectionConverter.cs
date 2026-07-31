@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Reflection;
-using AVS.CoreLib.REST.Extensions;
+using AVS.CoreLib.REST.Json.Newtonsoft;
 using Newtonsoft.Json;
 
 namespace AVS.CoreLib.REST.Json.Converters

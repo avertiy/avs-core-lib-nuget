@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AVS.CoreLib.Enums;
-using AVS.CoreLib.Structs;
 
 namespace AVS.CoreLib.Dates;
 
@@ -47,6 +46,7 @@ public readonly record struct UnixTime(long Timestamp) : IComparable<UnixTime>
     }
 
     public static implicit operator long(UnixTime time) => time.Timestamp;
+    public static implicit operator UnixTime(long timestamp) => new (timestamp);
     public static implicit operator DateTimeOffset(UnixTime time) => time.Utc;
     public static implicit operator DateTime(UnixTime time) => DateTimeHelper.FromUnixTimestamp(time.Timestamp);
 

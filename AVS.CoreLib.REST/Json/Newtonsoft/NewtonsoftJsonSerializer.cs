@@ -23,7 +23,7 @@ namespace AVS.CoreLib.REST.Json.Newtonsoft
             return SerializeObjectInternal(obj, type, Serializer);
         }
 
-        public string SerializeObject(object obj, Type? type = null, params Type[] converters)
+        public static string SerializeObject(object obj, Type? type = null, params Type[] converters)
         {
             if (converters == null || converters.Length == 0)
                 return SerializeObject(obj);
@@ -55,6 +55,15 @@ namespace AVS.CoreLib.REST.Json.Newtonsoft
 
             using var reader = new JsonTextReader(new StringReader(json));
             return Serializer.Deserialize(reader, type);
+        }
+
+        public T? Deserialize<T>(string? json)
+        {
+            if (json == null)
+                return default;
+
+            using var reader = new JsonTextReader(new StringReader(json));
+            return Serializer.Deserialize<T>(reader);
         }
 
         public void Populate(object target, string json)

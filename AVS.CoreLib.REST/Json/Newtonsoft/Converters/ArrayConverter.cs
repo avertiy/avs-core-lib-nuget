@@ -8,7 +8,7 @@ using AVS.CoreLib.Attributes;
 using AVS.CoreLib.Dates;
 using AVS.CoreLib.Extensions.Linq;
 using AVS.CoreLib.Extensions.Reflection;
-using AVS.CoreLib.REST.Extensions;
+using AVS.CoreLib.REST.Json.Newtonsoft;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;

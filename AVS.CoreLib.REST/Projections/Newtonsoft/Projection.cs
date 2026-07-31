@@ -1,8 +1,7 @@
 ﻿#nullable enable
 using System;
 using System.Diagnostics;
-using AVS.CoreLib.Extensions;
-using AVS.CoreLib.REST.Json;
+using AVS.CoreLib.REST.Exceptions;
 using AVS.CoreLib.REST.Json.Newtonsoft;
 using AVS.CoreLib.REST.Responses;
 using Newtonsoft.Json.Linq;
@@ -10,9 +9,9 @@ using Newtonsoft.Json.Linq;
 namespace AVS.CoreLib.REST.Projections
 {
     /// <summary>
-    /// Represent a simple type projection to deserialize json into T type 
-    /// takes <see cref="RestResponse"/> as an input and produces <see cref="Response{T}"/> result
+    /// Projection{T} helps to map json into <see cref="Response{T}"/>
     /// <code>
+    ///   // use cases:
     ///   // 1. T is a concrete type (direct projection)
     ///   var projection = restResponse.Projection{Order}();
     ///   Response{Order} response = projection.Map();
@@ -26,6 +25,7 @@ namespace AVS.CoreLib.REST.Projections
     ///   Response{IOrderBook} response = projection.MapWith{OrderBookBuilder}();
     /// </code>
     /// </summary>
+    [Obsolete("Use Proj<T> impl.")]
     public class Projection<T> : ProjectionBase
     {
         protected Action<T>? _preProcess;
@@ -77,6 +77,7 @@ namespace AVS.CoreLib.REST.Projections
             try
             {
                 var response = Response.Create<T>(Source, content: JsonText, Error, Request);
+
                 if (HasError)
                     return response;
 
@@ -166,40 +167,40 @@ namespace AVS.CoreLib.REST.Projections
     }
 
     /// <summary>
-    /// Represent json projection when T is an abstraction, TImpl is an implementation of T
+    /// Projection{TAbstraction, TImplementation} helps to map json into  <see cref="Response{TAbstraction}"/>
     /// <code>
-    ///   // simple direct projection
+    ///   // use cases:
     ///   var projection = restResponse.Projection{IOrder, Order}(); // where Order : IOrder
     ///   Response{IOrder} response = projection.Map();
     /// </code>
     /// </summary>
-    public class Projection<T, TImpl> : ProjectionBase where TImpl : T
+    public class Projection<TAbstraction, TImplementation> : ProjectionBase where TImplementation : TAbstraction
     {
-        protected Action<TImpl>? _postProcess;
-        protected Action<TImpl>? _preProcess;
+        protected Action<TImplementation>? _postProcess;
+        protected Action<TImplementation>? _preProcess;
 
         [DebuggerStepThrough]
         public Projection(RestResponse response) : base(response)
         {
         }
 
-        public Projection<T, TImpl> PreProcess(Action<TImpl> action)
+        public Projection<TAbstraction, TImplementation> PreProcess(Action<TImplementation> action)
         {
             _preProcess = action;
             return this;
         }
 
-        public Projection<T, TImpl> PostProcess(Action<TImpl> action)
+        public Projection<TAbstraction, TImplementation> PostProcess(Action<TImplementation> action)
         {
             _postProcess = action;
             return this;
         }
 
-        public T? InspectDeserialization(Action<JToken, TImpl> inspect, out Exception? err)
+        public TAbstraction? InspectDeserialization(Action<JToken, TImplementation> inspect, out Exception? err)
         {
             try
             {
-                var obj = Activator.CreateInstance<TImpl>();
+                var obj = Activator.CreateInstance<TImplementation>();
                 var jToken = LoadToken<JToken>(JsonText);
                 inspect(jToken, obj);
                 NewtonsoftJsonHelper.Populate(jToken, obj);
@@ -213,15 +214,18 @@ namespace AVS.CoreLib.REST.Projections
             }
         }
 
-        public Response<T> Map()
+        /// <summary>
+        /// Deserializes json text to into <typeparamref name="TImplementation"/> and returns result as <see cref="Response{T}"/>
+        /// </summary>
+        public Response<TAbstraction> Map()
         {
             try
             {
-                var response = Response.Create<T>(Source, content: JsonText, Error, Request);
+                var response = Response.Create<TAbstraction>(Source, content: JsonText, Error, Request);
                 if (HasError)
                     return response;
 
-                var obj = Activator.CreateInstance<TImpl>();
+                var obj = Activator.CreateInstance<TImplementation>();
                 _preProcess?.Invoke(obj);
 
                 if (!IsEmpty)

@@ -1,4 +1,5 @@
-﻿using AVS.CoreLib.Abstractions.Json;
+﻿using System;
+using AVS.CoreLib.Abstractions.Json;
 using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.REST.Clients;
 using AVS.CoreLib.REST.Json;
@@ -10,11 +11,27 @@ namespace AVS.CoreLib.REST
     public static class DIExtensions
     {
         /// <summary>
+        /// Adds <see cref="PublicRestTools"/> and related services, also adds HttpClient <see cref="System.Net.Http.IHttpClientFactory "/> 
+        /// </summary>
+        public static void AddRESTTools(this IServiceCollection services, IJsonSerializer serializer = null)
+        {
+            services.AddHttpClient();
+            services.AddTransient<IPublicRequestMessageBuilder, PublicRequestMessageBuilder>();
+            services.AddTransient<IRateLimiter, RateLimiter>();
+            services.AddTransient<PublicRestTools>();
+            services.AddSingleton<IJsonSerializer, SystemTextJsonSerializer>();
+
+            if (serializer != null)
+                JsonHelper.Serializer = serializer;
+        }
+
+        /// <summary>
         /// Register:
         ///  1. HttpClient (<see cref="System.Net.Http.IHttpClientFactory"/>)
         ///  2. JsonSerializer <see cref="IJsonSerializer"/>
         ///  3. <see cref="PublicRestTools"/>
         /// </summary>
+        [Obsolete("Use AddRESTTools")]
         public static void AddREST<TSerializer>(this IServiceCollection services) where TSerializer : class, IJsonSerializer, new()
         {
             services.AddHttpClient();
@@ -24,6 +41,7 @@ namespace AVS.CoreLib.REST
             services.AddSingleton<IJsonSerializer, TSerializer>();
             JsonHelper.Serializer = new TSerializer();
         }
+               
 
         public static void AddHMACSHA512Authenticator(this IServiceCollection services, string publicKey, string privateKey)
         {

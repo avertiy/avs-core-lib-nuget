@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using AVS.CoreLib.Extensions.Reflection;
+using AVS.CoreLib.REST.Exceptions;
 using AVS.CoreLib.REST.Json.Newtonsoft;
 using AVS.CoreLib.REST.Responses;
 using Newtonsoft.Json.Linq;
@@ -9,8 +10,7 @@ using Newtonsoft.Json.Linq;
 namespace AVS.CoreLib.REST.Projections
 {
     /// <summary>
-    /// ListProjection{T} represent json mapper 
-    /// when json array [..] needs to be deserialized into <see cref="List{T}"/>.
+    /// ListProjection{T} helps to map json array into <see cref="List{T}"/>.
     /// <code>
     ///    // 1. T is a concrete type
     ///    var projection = response.ListProjection{Order}();

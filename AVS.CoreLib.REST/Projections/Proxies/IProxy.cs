@@ -46,14 +46,19 @@ namespace AVS.CoreLib.REST.Projections
     }
 
     /// <summary>
-    /// Use mapper to convert deserialized object to another object
+    /// Maps an object of one type to another
     /// <code>
-    ///     FuturesTrade trade = mapper.Map(BinanceTrade trade)
+    ///     // use case: deserialize and convert deserialized concrete type to generic DTO
+    ///     var binanceTrade = json.Deserialize&lt;BinanceTrade&gt;();
+    ///     var futuresTrade = mapper.Map(binanceTrade); // mapper converts BinanceTrade to FuturesTrade
     /// </code>
     /// </summary>
-    public interface IMapper<in T, out TResult>
+    public interface IMapper<in TSource, out TResult>
     {
-        TResult Map(T obj);
+        /// <summary>
+        /// Maps the specified source object to the result type.
+        /// </summary>
+        TResult Map(TSource obj);
     }
 
 }
