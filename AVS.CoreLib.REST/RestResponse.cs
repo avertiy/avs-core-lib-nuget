@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using System;
 using System.Diagnostics;
 using System.Net;
 using System.Text.Json.Serialization;
@@ -77,7 +78,18 @@ namespace AVS.CoreLib.REST
 
         public T? Deserialize<T>()
         {
-            return Content == null ? default : JsonHelper.Deserialize<T>(Content);
+            if (Content == null)
+                return default;
+
+            try
+            {
+                return JsonHelper.Deserialize<T>(Content);
+            }
+            catch(Exception ex)
+            {
+                Error = ex.ToString();
+                throw;
+            }
         }
 
         internal static RestResponse Timeout(string source)

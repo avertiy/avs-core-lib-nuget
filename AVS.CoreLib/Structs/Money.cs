@@ -113,6 +113,16 @@ public class MoneyJsonConverter : JsonConverter<Money>
 {
     public override Money Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
+        if (reader.TokenType == JsonTokenType.String)
+        {
+            var str = reader.GetString();
+
+            if (string.IsNullOrEmpty(str))
+                return 0;
+
+            return new Money(decimal.Parse(str!, NumberStyles.Number | NumberStyles.AllowExponent));
+        }
+
         return new Money(reader.GetDecimal());
     }
 

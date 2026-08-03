@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.REST.Json;
+using static System.Collections.Specialized.BitVector32;
 
 namespace AVS.CoreLib.REST.Projections;
 
@@ -26,6 +27,14 @@ public sealed class Proj<TResult>
     public Proj(string? jsonText)
     {
         JsonText = jsonText;
+    }
+
+    /// <summary>
+    /// Straight deserialization without any mapping or proxying tricks
+    /// </summary>
+    public T? Deserialize<T>()
+    {
+        return JsonHelper.Deserialize<T>(JsonText);
     }
 
     #region Map

@@ -1,7 +1,7 @@
 ﻿#nullable enable
 using System;
 using System.Diagnostics;
-using AVS.CoreLib.REST.Exceptions;
+using AVS.CoreLib.Exceptions;
 using AVS.CoreLib.REST.Json.Newtonsoft;
 using AVS.CoreLib.REST.Responses;
 using Newtonsoft.Json.Linq;
@@ -99,7 +99,7 @@ namespace AVS.CoreLib.REST.Projections
             }
             catch (Exception ex)
             {
-                throw new MapException(ex, this);
+                throw new MapJsonException(ex.Message, ex) { JsonText = JsonText };
             }
         }
 
@@ -132,7 +132,7 @@ namespace AVS.CoreLib.REST.Projections
             }
             catch (Exception ex)
             {
-                throw new MapException(ex, this);
+                throw new MapJsonException(ex.Message, ex) { JsonText = JsonText };
             }
         }
 
@@ -163,20 +163,8 @@ namespace AVS.CoreLib.REST.Projections
             }
             catch (Exception ex)
             {
-                throw new MapException(ex, this);
+                throw new MapJsonException(ex.Message, ex) { JsonText = JsonText };
             }
         }
     }
-
-    //public class IndirectProjection2<TContainer, T> : ProjectionBase
-    //{
-    //    protected Action<T>? _preProcess;
-    //    protected Action<T>? _postProcess;
-    //    protected Action<TContainer>? _postProcess2;
-
-    //    [DebuggerStepThrough]
-    //    public IndirectProjection2(RestResponse response) : base(response)
-    //    {
-    //    }
-    //}
 }

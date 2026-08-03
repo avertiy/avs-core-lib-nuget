@@ -26,6 +26,69 @@ public readonly record struct UnixTime(long Timestamp) : IComparable<UnixTime>
     {
     }
 
+    public UnixTime AddDays(int days)
+    {
+        
+        checked
+        {
+            return Unit switch
+            {
+                TimeUnit.Seconds =>
+                    new UnixTime(Timestamp + days * TimeSpan.SecondsPerDay),
+
+                TimeUnit.Milliseconds =>
+                    new UnixTime(Timestamp + days * TimeSpan.MillisecondsPerDay),
+
+                TimeUnit.Microseconds =>
+                    new UnixTime(Timestamp + days * TimeSpan.MicrosecondsPerDay),
+
+                _ => throw new NotSupportedException($"Unsupported time unit: {Unit}")
+            };
+        }
+    }
+
+    public UnixTime AddSeconds(int seconds)
+    {
+
+        checked
+        {
+            return Unit switch
+            {
+                TimeUnit.Seconds =>
+                    new UnixTime(Timestamp + seconds),
+
+                TimeUnit.Milliseconds =>
+                    new UnixTime(Timestamp + seconds * TimeSpan.MillisecondsPerSecond),
+
+                TimeUnit.Microseconds =>
+                    new UnixTime(Timestamp + seconds * TimeSpan.MicrosecondsPerSecond),
+
+                _ => throw new NotSupportedException($"Unsupported time unit: {Unit}")
+            };
+        }
+    }
+
+    public UnixTime AddMilliSeconds(int millieseconds)
+    {
+
+        checked
+        {
+            return Unit switch
+            {
+                TimeUnit.Seconds =>
+                    new UnixTime(Timestamp + millieseconds / 1000),
+
+                TimeUnit.Milliseconds =>
+                    new UnixTime(Timestamp + millieseconds),
+
+                TimeUnit.Microseconds =>
+                    new UnixTime(Timestamp + millieseconds * TimeSpan.MicrosecondsPerMillisecond),
+
+                _ => throw new NotSupportedException($"Unsupported time unit: {Unit}")
+            };
+        }
+    }
+
     public override string ToString()
         => LocalDateTime.ToString(DateTimeFormat);
 
@@ -75,8 +138,29 @@ public class UnixTimeJsonConverter : JsonConverter<UnixTime>
 
     public override UnixTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        var timestamp = reader.GetInt64();
-        return new UnixTime(timestamp);
+        if (reader.TokenType == JsonTokenType.Number)
+        {
+            if (reader.TryGetInt64(out var timestamp))
+                return new UnixTime(timestamp);
+
+            var seconds = reader.GetDecimal();
+
+            return new UnixTime((long)(seconds * 1000m));
+        }
+        else
+        {
+            var str = reader.GetString();
+            if (long.TryParse(str, out var timestamp))
+                return new UnixTime(timestamp);
+
+            if (decimal.TryParse(str, out var dec))
+                return new UnixTime((long)(dec * 1000m));
+
+            if (DateTime.TryParse(str, out var dateTime))
+                return new UnixTime(dateTime);
+
+            throw new JsonException($"Invalid UnixTime value: {str}");
+        }
     }
 
     public override void Write(Utf8JsonWriter writer, UnixTime obj, JsonSerializerOptions options)

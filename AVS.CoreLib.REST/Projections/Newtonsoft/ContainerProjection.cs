@@ -1,7 +1,7 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
-using AVS.CoreLib.REST.Exceptions;
+using AVS.CoreLib.Exceptions;
 using AVS.CoreLib.REST.Json.Newtonsoft;
 using AVS.CoreLib.REST.Responses;
 using Newtonsoft.Json.Linq;
@@ -164,7 +164,7 @@ namespace AVS.CoreLib.REST.Projections
             }
             catch (Exception ex)
             {
-                throw new MapException($"Mapping failed - {ex.Message}", ex);
+                throw new MapJsonException($"Mapping failed - {ex.Message}", ex);
             }
         }
 
@@ -221,7 +221,7 @@ namespace AVS.CoreLib.REST.Projections
             }
             catch (Exception ex)
             {
-                throw new MapException($"Mapping failed - {ex.Message}", ex);
+                throw new MapJsonException($"Mapping failed - {ex.Message}", ex);
             }
         }
 
@@ -277,7 +277,7 @@ namespace AVS.CoreLib.REST.Projections
             }
             catch (Exception ex)
             {
-                throw new MapException($"Mapping failed - {ex.Message}", ex);
+                throw new MapJsonException($"Mapping failed - {ex.Message}", ex);
             }
         }
 
@@ -330,7 +330,7 @@ namespace AVS.CoreLib.REST.Projections
             }
             catch (Exception ex)
             {
-                throw new MapException($"Mapping failed - {ex.Message}", ex);
+                throw new MapJsonException($"Mapping failed - {ex.Message}", ex);
             }
         }
 
@@ -369,7 +369,7 @@ namespace AVS.CoreLib.REST.Projections
             }
             catch (Exception ex)
             {
-                throw new MapException($"Mapping failed - {ex.Message}", ex);
+                throw new MapJsonException($"Mapping failed - {ex.Message}", ex);
             }
         }
 
@@ -407,7 +407,7 @@ namespace AVS.CoreLib.REST.Projections
             }
             catch (Exception ex)
             {
-                throw new MapException($"Mapping failed - {ex.Message}", ex);
+                throw new MapJsonException($"Mapping failed - {ex.Message}", ex);
             }
         }
 

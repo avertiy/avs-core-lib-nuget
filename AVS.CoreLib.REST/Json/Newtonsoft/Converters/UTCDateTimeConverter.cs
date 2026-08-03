@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace AVS.CoreLib.REST.Json.Converters
+namespace AVS.CoreLib.REST.Json.Newtonsoft.Converters
 {
     public class UtcDateTimeConverter : JsonConverter
     {

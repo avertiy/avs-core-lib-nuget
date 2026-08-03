@@ -1,8 +1,8 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
+using AVS.CoreLib.Exceptions;
 using AVS.CoreLib.Extensions.Reflection;
-using AVS.CoreLib.REST.Exceptions;
 using AVS.CoreLib.REST.Json.Newtonsoft;
 using AVS.CoreLib.REST.Responses;
 using Newtonsoft.Json.Linq;
@@ -106,13 +106,13 @@ namespace AVS.CoreLib.REST.Projections
 
                 return response;
             }
-            catch (MapException)
+            catch (MapJsonException)
             {
                 throw;
             }
             catch (Exception ex)
             {
-                throw new MapException(ex, this);
+                throw new MapJsonException(ex.Message, ex) { JsonText = JsonText };
             }
         }
 
@@ -168,7 +168,7 @@ namespace AVS.CoreLib.REST.Projections
             }
             catch (Exception ex)
             {
-                throw new MapException($"{this.GetTypeName()}.{nameof(MapWith)} failed - {ex.Message}", ex);
+                throw new MapJsonException($"{this.GetTypeName()}.{nameof(MapWith)} failed - {ex.Message}", ex);
             }
         }
 
@@ -232,7 +232,7 @@ namespace AVS.CoreLib.REST.Projections
             }
             catch (Exception ex)
             {
-                throw new MapException($"{this.GetTypeName()}.{nameof(MapWith)} failed - {ex.Message}", ex);
+                throw new MapJsonException($"{this.GetTypeName()}.{nameof(MapWith)} failed - {ex.Message}", ex);
             }
         }
     }

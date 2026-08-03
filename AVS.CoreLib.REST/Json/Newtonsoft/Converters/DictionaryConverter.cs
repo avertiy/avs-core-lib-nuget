@@ -7,7 +7,7 @@ using AVS.CoreLib.Extensions.Reflection;
 using AVS.CoreLib.REST.Json.Newtonsoft;
 using Newtonsoft.Json;
 
-namespace AVS.CoreLib.REST.Json.Converters
+namespace AVS.CoreLib.REST.Json.Newtonsoft.Converters
 {
     /// <summary>
     /// Converts an object to JSON

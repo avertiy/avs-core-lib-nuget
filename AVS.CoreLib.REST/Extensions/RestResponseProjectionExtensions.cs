@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System;
+using AVS.CoreLib.Exceptions;
 using AVS.CoreLib.REST.Projections;
 using AVS.CoreLib.REST.Responses;
 
@@ -57,7 +58,15 @@ public static class RestResponseProjectionExtensions
 
         var proj = new Proj<T>(json);
 
-        response.Data = map(proj);
+        try
+        {
+            response.Data = map(proj);
+        }
+        catch(Exception ex)
+        {
+            throw new MapJsonException($"Map {typeof(T).Name} from json failed", ex) { JsonText = json };
+        }
+
         return response;
     }
 

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.PortableExecutable;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AVS.CoreLib.Dates;
@@ -38,7 +39,8 @@ namespace AVS.CoreLib.Json
                 AllowTrailingCommas = true,
                 WriteIndented = false
             };
-            options.Converters.Add(new JsonStringEnumConverter());
+
+            //options.Converters.Add(new JsonStringEnumConverter());
             options.Converters.Add(new DateRangeJsonConverter());
             return options;
         }
@@ -108,6 +110,11 @@ namespace AVS.CoreLib.Json
         public static T? Deserialize<T>(this string json, JsonSerializerOptions? options = null)
         {
             return JsonSerializer.Deserialize<T>(json, options ?? DefaultOptions.Value);
+        }
+
+        public static object? Deserialize(ref Utf8JsonReader reader, Type type, JsonSerializerOptions? options = null)
+        {
+            return JsonSerializer.Deserialize(ref reader, type, options ?? DefaultOptions.Value);
         }
 
         public static T? Deserialize<T, TType>(this string json, JsonSerializerOptions? options = null) where TType : class, T

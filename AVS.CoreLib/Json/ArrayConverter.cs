@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using AVS.CoreLib.Attributes;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Reflection;
+using AVS.CoreLib.Guards;
 
 namespace AVS.CoreLib.Json;
 
@@ -28,8 +29,6 @@ namespace AVS.CoreLib.Json;
 /// </summary>
 public class ArrayConverter : JsonConverter<object>
 {
-    //protected bool SkipNullValues = false;
-
     public override bool CanConvert(Type objectType)
     {
         return true;
@@ -37,14 +36,60 @@ public class ArrayConverter : JsonConverter<object>
 
     public override object? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        throw new NotImplementedException();
+        try
+        {
+            Guard.MustBe.BeTrue(reader.TokenType == JsonTokenType.StartArray, "Expected start array token");
+
+            var obj = Activator.CreateInstance(typeToConvert);
+
+            var sortedProps = GetProperties(typeToConvert);
+            var index = 0;
+
+            while (reader.TokenType != JsonTokenType.EndArray)
+            {
+                reader.Read();
+
+                if (!sortedProps.TryGetValue(index, out var property))
+                {
+                    index++;
+                    continue;
+                }
+
+                var value = JsonSerializer.Deserialize(ref reader, property.PropertyType, options);
+                property.SetValue(obj, value);
+
+                index++;
+            }
+
+            return obj;
+        }
+        catch (Exception ex)
+        {
+            throw new JsonException($"Error deserializing {typeToConvert.FullName}", ex);
+        }        
     }
 
+    private SortedList<int, PropertyInfo> GetProperties(Type typeToConvert)
+    {
+        var props = typeToConvert.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+        var sortedProps = new SortedList<int, PropertyInfo>();
+
+        foreach (var property in props)
+        {
+            var attribute = property.GetCustomAttribute<ArrayPropertyAttribute>();
+            var index = attribute?.Index ?? -1;
+
+            if (index == -1)
+                continue;
+
+            sortedProps.Add(index, property);
+        }
+
+        return sortedProps;
+    }
 
     public override void Write(Utf8JsonWriter writer, object obj, JsonSerializerOptions options)
     {
-        //JsonIgnoreCondition.        
-        
         writer.WriteStartArray();
         var type = obj.GetType();
         var props = type.GetProperties();
@@ -112,43 +157,18 @@ public class ArrayConverter : JsonConverter<object>
             {
                 if (options.DefaultIgnoreCondition != JsonIgnoreCondition.WhenWritingNull && options.DefaultIgnoreCondition != JsonIgnoreCondition.WhenWritingDefault)
                     writer.WriteNullValue();
+                continue;
             }
-            else
-            {
-                WriteValue(writer, value, options);
-            }
+
+            if (options.DefaultIgnoreCondition == JsonIgnoreCondition.WhenWritingDefault && obj.IsDefault())
+                continue;
+
+            JsonSerializer.Serialize(writer, value, prop.PropertyType, options);            
 
             if (kp.Value.Exclusive)
                 break;
         }
 
         writer.WriteEndArray();
-    }
-
-    private static void WriteValue(Utf8JsonWriter writer, object obj, JsonSerializerOptions options)
-    {
-        if (options.DefaultIgnoreCondition == JsonIgnoreCondition.WhenWritingDefault && obj.IsDefault())
-            return;
-
-        var json = obj.ToJson(options);
-        writer.WriteRawValue(json);
-
-        //var converterAttribute = prop.GetJsonConverterAttribute();
-
-        //if (converterAttribute != null)
-        //{
-        //    var json = obj.ToJson(options);
-        //    writer.WriteRawValue(json);
-        //}
-
-        //if (obj is bool b)
-        //    writer.WriteBooleanValue(b);
-
-        //if (obj.IsNumeric())
-        //    writer.WriteNumberValue((decimal)obj);
-        //else if (prop.PropertyType.IsSimpleType())
-        //    //writer.WriteRawValue()
-        //else
-        //    serializer.Serialize(writer, obj);
-    }
+    }   
 }

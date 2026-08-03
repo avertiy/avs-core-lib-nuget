@@ -4,10 +4,9 @@ using System.Linq;
 using System.Reflection;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Reflection;
-using AVS.CoreLib.REST.Json.Newtonsoft;
 using Newtonsoft.Json;
 
-namespace AVS.CoreLib.REST.Json.Converters
+namespace AVS.CoreLib.REST.Json.Newtonsoft.Converters
 {
     /// <summary>
     /// Converts an object that implements ICollection to JSON with properties and data items
