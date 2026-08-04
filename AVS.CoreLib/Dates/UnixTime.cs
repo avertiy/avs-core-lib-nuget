@@ -12,8 +12,7 @@ public readonly record struct UnixTime(long Timestamp) : IComparable<UnixTime>
 {
     public static string DateTimeFormat { get; set; } = "u";// u - universal date-time: 2009-06-15 13:45:00Z 
 
-    public DateTimeOffset Utc =>
-        DateTimeOffset.FromUnixTimeMilliseconds(Timestamp);
+    public DateTimeOffset Utc => DateTimeHelper.GetDateTimeOffset(Timestamp);
     public DateTimeOffset LocalDateTime => Utc.ToLocalTime();
 
     public TimeUnit Unit => DateTimeHelper.GetTimeUnit(Timestamp);

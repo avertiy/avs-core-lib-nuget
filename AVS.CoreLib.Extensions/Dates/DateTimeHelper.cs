@@ -28,6 +28,13 @@ namespace AVS.CoreLib.Dates
                 : UnixEpoch.Start.AddMilliseconds(timestamp);
         }
 
+        public static DateTimeOffset GetDateTimeOffset(long timestamp)
+        {
+            return timestamp < MILI_SECONDS_THRESHOLD
+                ? DateTimeOffset.FromUnixTimeSeconds(timestamp)
+                : DateTimeOffset.FromUnixTimeMilliseconds(timestamp);
+        }
+
         public static DateTime FromUnixTimestamp(double value)
         {
             return value > MILI_SECONDS_THRESHOLD
