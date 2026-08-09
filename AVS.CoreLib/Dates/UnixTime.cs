@@ -15,6 +15,8 @@ public readonly record struct UnixTime(long Timestamp) : IComparable<UnixTime>
     public DateTimeOffset Utc => DateTimeHelper.GetDateTimeOffset(Timestamp);
     public DateTimeOffset LocalDateTime => Utc.ToLocalTime();
 
+    public long TimestampInSeconds => DateTimeHelper.NormalizeToSeconds(Timestamp);
+
     public TimeUnit Unit => DateTimeHelper.GetTimeUnit(Timestamp);
 
     public DayOfWeek DayOfWeek => Utc.Date.DayOfWeek;
@@ -168,7 +170,7 @@ public class UnixTimeJsonConverter : JsonConverter<UnixTime>
         {
             case JsonFormat.Array:
                     writer.WriteStartArray();
-                    writer.WriteNumberValue(obj.Timestamp);
+                    writer.WriteNumberValue(obj.TimestampInSeconds);
                     writer.WriteStringValue(obj.LocalDateTime.ToString(UnixTime.DateTimeFormat));
                     writer.WriteEndArray();
                 break;
@@ -177,7 +179,7 @@ public class UnixTimeJsonConverter : JsonConverter<UnixTime>
                 break;
             case JsonFormat.Value:
             default:
-                writer.WriteNumberValue(obj.Timestamp);
+                writer.WriteNumberValue(obj.TimestampInSeconds);
                 break;                
         }
     }

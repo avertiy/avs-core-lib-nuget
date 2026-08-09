@@ -103,6 +103,11 @@ public readonly struct DecPct : IComparable<decimal>, IComparable<DecPct>, IEqua
     public static bool operator >=(DecPct a, decimal b) => a._value >= b;
     public static bool operator <=(DecPct a, decimal b) => a._value <= b;
 
+    public static bool operator >(DecPct a, int b) => a._value > b;
+    public static bool operator <(DecPct a, int b) => a._value < b;
+    public static bool operator >=(DecPct a, int b) => a._value >= b;
+    public static bool operator <=(DecPct a, int b) => a._value <= b;
+
     public static bool operator >(DecPct a, DecPct b) => a._value > b._value;
     public static bool operator <(DecPct a, DecPct b) => a._value < b._value;
     public static bool operator >=(DecPct a, DecPct b) => a._value >= b._value;

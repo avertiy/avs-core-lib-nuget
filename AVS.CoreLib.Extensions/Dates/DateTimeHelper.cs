@@ -64,6 +64,17 @@ namespace AVS.CoreLib.Dates
 
             return TimeUnit.Seconds;
         }
+
+        public static long NormalizeToSeconds(long timestamp)
+        {
+            if (timestamp > MICRO_SECONDS_THRESHOLD)
+                return timestamp / 1_000_000;
+
+            if (timestamp > MILI_SECONDS_THRESHOLD)
+                return timestamp / 1000;
+
+            return timestamp;
+        }
     }
 
     /// <summary>
