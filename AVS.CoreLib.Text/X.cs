@@ -93,10 +93,5 @@ namespace AVS.CoreLib.Text
             var result = str2.ToString(FormatProvider, preprocessor, textProcessor);
             return TextProcessor.Process(result);
         }
-
-        //public static string FormatByKey(string key, object obj)
-        //{
-
-        //}
     }
 }

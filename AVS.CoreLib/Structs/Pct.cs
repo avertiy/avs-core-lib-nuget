@@ -154,11 +154,3 @@ public class PctJsonConverter : JsonConverter<Pct>
         writer.WriteNumberValue(number.Value);
     }
 }
-
-//public static class DecimalPctExtensions
-//{
-//    public static Pct ToPct(this decimal value, bool isFraction = true)
-//    {
-//        return isFraction ? new Pct(value) : new Pct(value / 100);
-//    }
-//}

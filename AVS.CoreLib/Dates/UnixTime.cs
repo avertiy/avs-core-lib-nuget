@@ -98,7 +98,7 @@ public readonly record struct UnixTime(long Timestamp) : IComparable<UnixTime>
 
     public string ToString(string? format, IFormatProvider? formatProvider)
     {
-        if (string.IsNullOrEmpty(format))
+        if (!string.IsNullOrEmpty(format))
             return LocalDateTime.ToString(format, formatProvider);
 
         return LocalDateTime.ToString(DateTimeFormat);

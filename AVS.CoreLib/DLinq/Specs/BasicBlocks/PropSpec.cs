@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using AVS.CoreLib.Extensions.Reflection;
 
 namespace AVS.CoreLib.DLinq.Specs.BasicBlocks;
 
@@ -28,7 +30,7 @@ public class PropSpec : SpecBase, ILambdaSpec
             prop = LookupProperty(type, Name);
             expr = Expression.Convert(expr, type);
         }
-
+        
         if (prop == null)
             throw new SpecException($"Property `{Name}` not found in {type.Name} type definition (property must be public).", this);
 
@@ -38,7 +40,7 @@ public class PropSpec : SpecBase, ILambdaSpec
 
     protected static PropertyInfo? LookupProperty(Type type, string name)
     {
-        return type.GetProperty(name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+        return type.GetProperty(name, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase) ?? type.LookupProperties(name).FirstOrDefault();
     }
 
     public override string GetCacheKey()

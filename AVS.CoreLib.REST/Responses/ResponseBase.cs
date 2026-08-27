@@ -41,7 +41,8 @@ namespace AVS.CoreLib.REST.Responses
 
         public override string ToString()
         {
-            return (Success ? "Response - OK " : $"Response - Fail [{Error}]").Append(Source, "[Source: {0}]");
+            var str = Success ? "Response - OK" : $"Response - Fail [{Error}]";
+            return str.AppendIf(Source != null, $" [Source: {Source}]");
         }
 
         /// <summary>

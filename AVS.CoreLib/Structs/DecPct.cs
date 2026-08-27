@@ -38,6 +38,9 @@ public readonly struct DecPct : IComparable<decimal>, IComparable<DecPct>, IEqua
     public decimal Pct => _pctValue.Round(4);
 
     [JsonIgnore]
+    public Percent Percent => new Percent(_pctValue);
+
+    [JsonIgnore]
     public bool HasValue => _value != 0;
     [JsonIgnore]
     public bool HasPctValue => _pctValue != 0;
@@ -48,9 +51,7 @@ public readonly struct DecPct : IComparable<decimal>, IComparable<DecPct>, IEqua
     public decimal GetExactValue() => _value;
     public decimal GetExactPctValue() => _pctValue;
 
-    /// <summary>
-    /// returns rounded pct value as percentage e.g. 10.5 means 10.5% 
-    /// </summary>
+    [Obsolete("Use Percent property")]
     public Percent GetPercent() => new Percent(Pct);
 
     public override string ToString()
@@ -59,7 +60,7 @@ public readonly struct DecPct : IComparable<decimal>, IComparable<DecPct>, IEqua
     }
     public string ToString(string currency)
     {
-        return _pctValue == 0 ? $"{Value} {currency}" : $"{Value} {currency} ({Pct:P2})";
+        return _pctValue == 0 ? $"{Value:G29} {currency}" : $"{Value:G29} {currency} ({Pct:P2})";
     }
 
     public string ToString(string? format, IFormatProvider? formatProvider)
@@ -70,7 +71,7 @@ public readonly struct DecPct : IComparable<decimal>, IComparable<DecPct>, IEqua
         if (format != null && (format.StartsWith("C") || _pctValue == 0))
             return Value.ToString(format, formatProvider);
 
-        return _pctValue == 0 ? Value.ToString() : $"{Value} ({Pct:P2})";
+        return _pctValue == 0 ? Value.ToString("G29") : $"{Value:G29} ({Pct:P2})";
     }
 
     public int CompareTo(decimal other)

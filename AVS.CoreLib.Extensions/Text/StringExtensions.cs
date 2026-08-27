@@ -19,6 +19,17 @@ namespace AVS.CoreLib.Extensions
             return str + string.Format(format, value);
         }
 
+        /// <summary>
+        /// Appends text to the string if condition is true
+        /// <code>
+        /// var str = $"Position size {Size}".AppendIf(ReaplizedPNL > 0, $"ReaplizedPNL: {ReaplizedPNL}");
+        /// </code>
+        /// </summary>
+        public static string AppendIf(this string str, bool condition, string text)
+        {
+            return condition ? str + text : str;
+        }
+
         public static string Append<T>(this string str, T value, string format)
         {
             if (Object.Equals(value, default(T)))

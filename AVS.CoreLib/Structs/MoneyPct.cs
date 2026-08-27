@@ -62,12 +62,18 @@ public readonly struct MoneyPct
 
     public static implicit operator Money(MoneyPct obj) => obj.Money;
     public static implicit operator Percent(MoneyPct obj) => obj.Percent;
-
-
+    public static bool operator ==(MoneyPct a, decimal b) => a._money == b;
+    public static bool operator !=(MoneyPct a, decimal b) => a._money != b;
     public static bool operator >(MoneyPct a, decimal b) => a._money > b;
     public static bool operator <(MoneyPct a, decimal b) => a._money < b;
     public static bool operator >=(MoneyPct a, decimal b) => a._money >= b;
     public static bool operator <=(MoneyPct a, decimal b) => a._money <= b;
+
+    public static bool operator ==(MoneyPct a, int b) => a._money == b;
+    public static bool operator !=(MoneyPct a, int b) => a._money != b;
+
+    public static bool operator >(MoneyPct a, int b) => a._money > b;
+    public static bool operator <(MoneyPct a, int b) => a._money < b;
 
     public static bool operator >(MoneyPct a, MoneyPct b) => a._money > b._money;
     public static bool operator <(MoneyPct a, MoneyPct b) => a._money < b._money;

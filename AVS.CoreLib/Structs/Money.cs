@@ -11,7 +11,7 @@ namespace AVS.CoreLib.Structs;
 /// Allows to deal with a rounded to 2-3 digits value, preserving an exact value for precise calculations
 /// </summary>
 [JsonConverter(typeof(MoneyJsonConverter))]
-[DebuggerDisplay("{Value}")]
+[DebuggerDisplay("{ToString()}")]
 public struct Money : IComparable<decimal>, IComparable<Money>, IComparable<DecNumber>, IFormattable
 {
     private decimal _value;
@@ -59,11 +59,11 @@ public struct Money : IComparable<decimal>, IComparable<Money>, IComparable<DecN
     //public decimal Pct(decimal mean) => _value.Pct(mean);
     public override int GetHashCode() => _value.GetHashCode();
 
-    public override string ToString() => Value.ToString("C2",CultureInfo.InvariantCulture);
+    public override string ToString() => Value.ToString("C2");
 
     public string ToString(string? format, IFormatProvider? formatProvider)
     {
-        return Value.ToString(format, formatProvider);
+        return Value.ToString(format ?? "C2", formatProvider);
     }
 
     public string ToString(string format) => Value.ToString(format);

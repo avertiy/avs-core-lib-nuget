@@ -154,6 +154,19 @@ public struct Percent : IComparable<decimal>, IComparable<Percent>, IFormattable
     {
         return new Percent(fractionValue);
     }
+
+    /// <summary>
+    /// Computes change percentage value 
+    /// <code>
+    ///  Percent.FromDiff(100m, 105m) => 0.05m // +5%
+    ///  Percent.FromDiff(100m, 95m) => -0.05m // -5%
+    /// </code>
+    /// 
+    /// </summary>
+    public static Percent FromChange(decimal from, decimal to)
+    {
+        return new((to - from) / from);
+    }
 }
 
 public class PercentJsonConverter : JsonConverter<Percent>
