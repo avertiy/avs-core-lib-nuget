@@ -10,7 +10,15 @@ namespace AVS.CoreLib.REST.Responses
 
         public static implicit operator Response<bool>(BoolResponse r)
         {
-            return Response.Create<bool>(r.Result,r.RawContent, r.Source, r.Error, r.Request);
+            return new Response<bool>()
+            {
+
+                Source = r.Source,
+                RawContent = r.RawContent,
+                Error = r.Error,
+                Request = r.Request,
+                Data = r.Result
+            };
         }
     }
 }

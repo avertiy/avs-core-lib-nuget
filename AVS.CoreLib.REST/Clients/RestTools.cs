@@ -195,11 +195,24 @@ namespace AVS.CoreLib.REST.Clients
                 return (string.Empty, error);
             }
 
+            var errorDetails = content.Trim();
+
+            if (errorDetails.StartsWith("<!DOCTYPE HTML"))
+                errorDetails = ExtractTextFromHtml(errorDetails);
+
             error = string.IsNullOrEmpty(responseMessage.ReasonPhrase)
-                ? $"{responseMessage.StatusCode} - {content}"
-                : $"{responseMessage.ReasonPhrase} - {content}";
+                ? $"{responseMessage.StatusCode} - {errorDetails}"
+                : $"{responseMessage.ReasonPhrase} - {errorDetails}";
 
             return (content, error);
+        }
+
+        private static string ExtractTextFromHtml(string html)
+        {
+            var text = Regex.Replace(html, "<[^>]+>", " ");
+            //text = WebUtility.HtmlDecode(text);
+
+            return Regex.Replace(text, @"\s+", " ").Trim();
         }
 
         protected virtual void OnResponseReady(RestResponse response)

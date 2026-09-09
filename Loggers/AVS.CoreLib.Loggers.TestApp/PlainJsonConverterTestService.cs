@@ -62,12 +62,14 @@ public class PlainJsonConverterTestService : TestService
                 plainJson = arr.ToBriefJson();
                 _logger.LogInformation("{@@source} => {result}", arr, plainJson);
 
-                var response = new Response<string[]>("Binance", new[]
-                {
-                    "1) ``&&`` \"item1\" ",
-                    "6) @\r\n@ 12333123123123123123123123 213123123123123 ================================ ---------------------------------",
-                    "7) \"\r\n\" 12333123123123123123123123 213123123123123 ================================ ---------------------------------",
-                });
+
+                var response = new Response<string[]>() { Source = "Binance", Data = new[]
+                    {
+                        "1) ``&&`` \"item1\" ",
+                        "6) @\r\n@ 12333123123123123123123123 213123123123123 ================================ ---------------------------------",
+                        "7) \"\r\n\" 12333123123123123123123123 213123123123123 ================================ ---------------------------------",
+                    }
+                };
 
                 json = response.ToJson();
                 plainJson = response.ToBriefJson();

@@ -22,7 +22,7 @@ namespace AVS.CoreLib.REST
         {
         }
 
-        public ApiException(string message, string source, object? requestData = null) : base(message)
+        public ApiException(string message, string? source, object? requestData = null) : base(message)
         {
             Source = source;
             RequestInfo = requestData?.ToJson();

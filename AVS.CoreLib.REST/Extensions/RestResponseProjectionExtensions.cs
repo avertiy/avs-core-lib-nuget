@@ -25,19 +25,7 @@ public static class RestResponseProjectionExtensions
         response.Data = restResponse.Deserialize<T>();
         return response;
     }
-    
-    //public static Response<T> ToResponse<T>(this RestResponse restResponse, T? data)
-    //{
-    //    var isSuccess = restResponse.IsSuccessful();
-    //    var response = Response.Create<T>(restResponse.Source, content: restResponse.Content, restResponse.Error, restResponse.Request);
 
-    //    if (!isSuccess)
-    //        return response;
-
-    //    response.Data = data;
-    //    return response;
-    //}
-    
     /// <summary>
     /// Creates <see cref="Response{T}"/>
     /// when response is successful content (json) will be deserialized by means of <see cref="Proj{T}"/> and one of map functions.

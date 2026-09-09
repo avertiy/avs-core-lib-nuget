@@ -29,32 +29,5 @@ public readonly record struct EV<T>(T Value, string Reason)
         => new(tupple.Value, tupple.Reason);
 
     public override string ToString()
-        => string.IsNullOrEmpty(Reason) ? $"{Value}" : $"{Value} - {Reason}";
+        => string.IsNullOrEmpty(Reason) ? $"{Value}" : $"{Value}: {Reason}";
 }
-
-
-//[JsonConverter(typeof(ArrayConverter))]
-//[DebuggerDisplay("{Value} - {Reason}")]
-//public readonly struct E<T>
-//{
-//    public T Value { get; init; }
-//    public string Reason { get; init; }
-
-//    public E(T value, string comment)
-//    {
-//        Value = value;
-//        Reason = comment;
-//    }
-
-//    public static implicit operator T(E<T> obj) => obj.Value;
-
-//    public static implicit operator E<T>(Explained<T> obj) => new(obj.Value, obj.Reason);
-//    public static implicit operator Explained<T>(E<T> obj) => new(obj.Value, obj.Reason);
-//    public static implicit operator E<T>((T, string) tupple) => new E<T>(tupple.Item1, tupple.Item2);
-
-//    public override string ToString()
-//    {
-//        return $"{Value} - {Reason}";
-//    }
-//}
-
