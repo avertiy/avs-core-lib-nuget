@@ -43,25 +43,25 @@ public static class GuardAgainstExtensions
     public static void Zero(this IAgainstGuardClause guardClause, int param, string? message = null)
     {
         if (param == 0)
-            throw new ArgumentNullException(message ?? "must be not 0");
+            throw new ArgumentException(message ?? "must be not 0");
     }
 
     public static void Zero(this IAgainstGuardClause guardClause, long param, string? message = null)
     {
         if (param == 0)
-            throw new ArgumentNullException(message ?? "must be not 0");
+            throw new ArgumentException(message ?? "must be not 0");
     }
 
     public static void Zero(this IAgainstGuardClause guardClause, decimal param, string? message = null)
     {
         if (param == 0)
-            throw new ArgumentNullException(message ?? "must be not 0");
+            throw new ArgumentException(message ?? "must be not 0");
     }
 
     public static void Zero(this IAgainstGuardClause guardClause, double param, string? message = null)
     {
         if (param == 0)
-            throw new ArgumentNullException(message ?? "must be not 0");
+            throw new ArgumentException(message ?? "must be not 0");
     }
 
     #endregion
@@ -96,31 +96,40 @@ public static class GuardAgainstExtensions
     public static void Empty<T>(this IAgainstGuardClause guardClause, T[] arr, string? message = null)
     {
         if (arr.Length == 0)
-            throw new ArgumentNullException(message ?? $"Arg {typeof(T).Name}[] must be not empty");
+            throw new ArgumentException(message ?? $"Arg {typeof(T).Name}[] must be not empty");
     }
 
     public static void Empty<T>(this IAgainstGuardClause guardClause, IList<T> list, string? message = null)
     {
         if (list.Count == 0)
-            throw new ArgumentNullException(message ?? $"Arg IList<{typeof(T).Name}> must be not empty");
+            throw new ArgumentException(message ?? $"Arg IList<{typeof(T).Name}> must be not empty");
     }
 
     public static void Empty<TKey, T>(this IAgainstGuardClause guardClause, IDictionary<TKey, T> dict, string? message = null)
     {
         if (dict.Count == 0)
-            throw new ArgumentNullException(message ?? $"Arg IDictionary<{typeof(TKey).Name},{typeof(T).Name}> must be not empty");
+            throw new ArgumentException(message ?? $"Arg IDictionary<{typeof(TKey).Name},{typeof(T).Name}> must be not empty");
     }
     #endregion
+
+    /// <summary>
+    /// Guards against a default value, it's usefull mostly for structs and enums
+    /// </summary>
+    public static void Default<T>(this IAgainstGuardClause guardClause, T param, string? message = null) where T : struct
+    {
+        if (param.Equals(default(T)))
+            throw new ArgumentException(message ?? $"Value cannot be the default value of {typeof(T).Name}.");
+    }
 
     public static void MinValue(this IAgainstGuardClause guardClause, DateTime param, string? message = null)
     {
         if (param == DateTime.MinValue)
-            throw new ArgumentNullException(message ?? $"must be not min value {DateTime.MinValue:g}");
+            throw new ArgumentException(message ?? $"must be not min value {DateTime.MinValue:g}");
     }
 
     public static void MinValue(this IAgainstGuardClause guardClause, int param, string? message = null)
     {
         if (param == int.MinValue)
-            throw new ArgumentNullException(message ?? $"must be not min value {int.MinValue}");
+            throw new ArgumentException(message ?? $"must be not min value {int.MinValue}");
     }
 }

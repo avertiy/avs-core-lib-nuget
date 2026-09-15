@@ -184,6 +184,15 @@ namespace AVS.CoreLib.Extensions.Collections
         /// Helps to find index
         /// (same implementation as in List{T}.FindIndex)
         /// </summary>
+        /// <summary>
+        /// Finds the index of the first element that matches the specified predicate.
+        /// </summary>
+        /// <remarks>
+        /// Same implementation as in List{T}.FindIndex.
+        /// Differences from standard FindIndex extension: 
+        ///     - predicate contains an index
+        ///     - returns -1 if no matching element is found.
+        /// </remarks>
         public static int FindIndex<T>(this IList<T> source, Predicate<T> match, int startIndex = 0, int count = 0)
         {
             Guard.MustBe.WithinRange(startIndex, 0, source.Count, nameof(startIndex));
@@ -201,9 +210,39 @@ namespace AVS.CoreLib.Extensions.Collections
         }
 
         /// <summary>
-        /// Helps to find index 
+        /// Finds the index of the first element that matches the specified predicate.
         /// </summary>
-        /// <remarks>FindIndex2 helps to resolve collisions with .net FindIndex</remarks>
+        /// <remarks>
+        /// FindIndex2 is an alias to <see cref="FindIndex"/> to resolve name collision with a standard FindIndex extension for collections
+        /// Differences from standard FindIndex extension:
+        ///     - predicate contains an index
+        ///     - returns -1 if no matching element is found.
+        /// </remarks>
+        public static int FindIndex2<T>(this IList<T> source, Predicate<T> match, int startIndex, int count)
+        {
+            Guard.MustBe.WithinRange(startIndex, 0, source.Count, nameof(startIndex));
+            Guard.MustBe.WithinRange(count, 0, source.Count - startIndex, nameof(count));
+
+            var endIndex = count > 0 ? startIndex + count : source.Count;
+
+            for (var i = startIndex; i < endIndex; i++)
+            {
+                if (match(source[i]))
+                    return i;
+            }
+
+            return -1;
+        }
+
+        /// <summary>
+        /// Finds the index of the first element that matches the specified predicate.
+        /// </summary>
+        /// <remarks>
+        /// FindIndex2 is an alias to <see cref="FindIndex"/> to resolve name collision with a standard FindIndex extension for collections
+        /// Differences from standard FindIndex extension:
+        ///     - predicate contains an index
+        ///     - returns -1 if no matching element is found.
+        /// </remarks>
         public static int FindIndex2<T>(this IList<T> source, Predicate<(int index, T item)> match, int startIndex, int count)
         {
             Guard.MustBe.WithinRange(startIndex, 0, source.Count, nameof(startIndex));
@@ -220,7 +259,55 @@ namespace AVS.CoreLib.Extensions.Collections
             return -1;
         }
 
-        //public static int FindIndex2<T>(this IList<T> source, Predicate<(int index, T item)> match, int startIndex, int count)
+        /// <summary>
+        /// Finds the first element matching the best-match predicate.
+        /// If no best match is found, returns the first element matching the fallback predicate.
+        /// </summary>
+        public static int FindIndex2<T>(this IList<T> source, Predicate<T> bestMatch, Predicate<T> fallbackMatch, int startIndex, int count)
+        {
+            Guard.MustBe.WithinRange(startIndex, 0, source.Count, nameof(startIndex));
+            Guard.MustBe.WithinRange(count, 0, source.Count - startIndex, nameof(count));
+
+            var endIndex = count > 0 ? startIndex + count : source.Count;
+
+            var fallbackMatchIndex = -1;
+
+            for (var i = startIndex; i < endIndex; i++)
+            {
+                if (bestMatch(source[i]))
+                    return i;
+
+                if (fallbackMatchIndex == -1 && fallbackMatch(source[i]))
+                    fallbackMatchIndex = i;
+            }
+
+            return fallbackMatchIndex;
+        }
+
+        /// <summary>
+        /// Finds the first element matching the best-match predicate.
+        /// If no best match is found, returns the first element matching the fallback predicate.
+        /// </summary>
+        public static int FindIndex2<T>(this IList<T> source, Predicate<(int index, T item)> bestMatch, Predicate<(int index, T item)> fallbackMatch, int startIndex, int count)
+        {
+            Guard.MustBe.WithinRange(startIndex, 0, source.Count, nameof(startIndex));
+            Guard.MustBe.WithinRange(count, 0, source.Count - startIndex, nameof(count));
+
+            var endIndex = count > 0 ? startIndex + count : source.Count;
+
+            var fallbackMatchIndex = -1;
+
+            for (var i = startIndex; i < endIndex; i++)
+            {
+                if (bestMatch((i, source[i])))
+                    return i;
+
+                if (fallbackMatchIndex == -1 && fallbackMatch((i, source[i])))
+                    fallbackMatchIndex = i;
+            }
+
+            return fallbackMatchIndex;
+        }
 
         #endregion
 
