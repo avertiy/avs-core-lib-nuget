@@ -12,7 +12,7 @@ namespace AVS.CoreLib.Structs;
 /// </summary>
 [JsonConverter(typeof(MoneyPctJsonConverter))]
 [DebuggerDisplay("{ToString()}")]
-public readonly struct MoneyPct
+public readonly struct MoneyPct : IFormattable
 {
     private readonly decimal _money; //holds $ value
     private readonly decimal _percent; // holds fraction i.e. 0.25 => 25%
@@ -52,38 +52,41 @@ public readonly struct MoneyPct
     public string ToString(string? format, IFormatProvider? formatProvider)
     {
         if (format != null && format.StartsWith("P"))
-            return Percent.ToString(format, formatProvider);
+            return _percent >= 0
+                ? _percent.ToString(format, formatProvider)
+                : $"({_percent.ToString(format, formatProvider)})";
 
         if (format != null && format.StartsWith("C"))
-            return Money.ToString(format, formatProvider);
+            return _money.ToString(format, formatProvider);
 
         return _money == 0 ? "0" : $"{_money:C2} ({_percent:P2})";
     }
 
     public static implicit operator Money(MoneyPct obj) => obj.Money;
     public static implicit operator Percent(MoneyPct obj) => obj.Percent;
+
+    public static bool operator ==(MoneyPct a, MoneyPct b) => a._money == b._money;
+    public static bool operator !=(MoneyPct a, MoneyPct b) => a._money != b._money;
+
     public static bool operator ==(MoneyPct a, decimal b) => a._money == b;
     public static bool operator !=(MoneyPct a, decimal b) => a._money != b;
     public static bool operator >(MoneyPct a, decimal b) => a._money > b;
     public static bool operator <(MoneyPct a, decimal b) => a._money < b;
     public static bool operator >=(MoneyPct a, decimal b) => a._money >= b;
     public static bool operator <=(MoneyPct a, decimal b) => a._money <= b;
-
-    public static bool operator ==(MoneyPct a, int b) => a._money == b;
-    public static bool operator !=(MoneyPct a, int b) => a._money != b;
-
-    public static bool operator >(MoneyPct a, int b) => a._money > b;
-    public static bool operator <(MoneyPct a, int b) => a._money < b;
-
     public static bool operator >(MoneyPct a, MoneyPct b) => a._money > b._money;
     public static bool operator <(MoneyPct a, MoneyPct b) => a._money < b._money;
     public static bool operator >=(MoneyPct a, MoneyPct b) => a._money >= b._money;
     public static bool operator <=(MoneyPct a, MoneyPct b) => a._money <= b._money;
 
-    //public static bool operator >(MoneyPct a, int b) => a.Percent > b;
-    //public static bool operator <(MoneyPct a, int b) => a.Percent < b;
-    //public static bool operator >=(MoneyPct a, int b) => a.Percent >= b;
-    //public static bool operator <=(MoneyPct a, int b) => a.Percent <= b;
+    //public static bool operator >(MoneyPct a, int b) => a._money > b;
+    //public static bool operator <(MoneyPct a, int b) => a._money < b;
+    public static bool operator ==(MoneyPct a, int b) => a._percent == b;
+    public static bool operator !=(MoneyPct a, int b) => a._percent != b;
+    public static bool operator >(MoneyPct a, int b) => a._percent > b;
+    public static bool operator <(MoneyPct a, int b) => a._percent < b;
+    public static bool operator >=(MoneyPct a, int b) => a._percent >= b;
+    public static bool operator <=(MoneyPct a, int b) => a._percent <= b;
 }
 
 public class MoneyPctJsonConverter : JsonConverter<MoneyPct>

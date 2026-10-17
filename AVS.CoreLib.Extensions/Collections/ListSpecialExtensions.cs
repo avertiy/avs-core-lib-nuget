@@ -260,33 +260,32 @@ public static class ListSpecialExtensions
         return dict.Values.ToList();
     }
 
-    /// <summary>
-    /// Recursive search for the elements whose sum will give the required qty
-    /// </summary>
-    //[Obsolete("Not sure it has usages")]
-    public static int[] FindIndexes(this IList<decimal> source, decimal qty, int startIndex = 0, int limitRecursion = 0)
-    {
-        for (var i = startIndex; i < source.Count; i++)
-        {
-            if (source[i] > qty)
-                continue;
+    ///// <summary>
+    ///// Recursive search for the elements whose sum will give the required qty
+    ///// </summary>
+    //public static int[] FindIndexes(this IList<decimal> source, decimal qty, int startIndex = 0, int limitRecursion = 0)
+    //{
+    //    for (var i = startIndex; i < source.Count; i++)
+    //    {
+    //        if (source[i] > qty)
+    //            continue;
 
-            if (source[i] == qty)
-                return new[] { i };
+    //        if (source[i] == qty)
+    //            return [i];
 
-            if (limitRecursion > 0 && limitRecursion <= 1)
-                continue;
+    //        if (limitRecursion > 0 && limitRecursion <= 1)
+    //            continue;
 
-            var rest = qty - source[i];
+    //        var rest = qty - source[i];
 
-            var arr = FindIndexes(source, rest, i + 1, limitRecursion - 1);
+    //        var arr = FindIndexes(source, rest, i + 1, limitRecursion - 1);
 
-            if (arr.Any())
-                return arr.Insert(i);
-        }
+    //        if (arr.Any())
+    //            return arr.Insert(i);
+    //    }
 
-        return Array.Empty<int>();
-    }
+    //    return Array.Empty<int>();
+    //}
 
     public static IList<T> Shrink<T>(this IList<T> items, Func<T, double> selector, double threshold = 0.0)
     {

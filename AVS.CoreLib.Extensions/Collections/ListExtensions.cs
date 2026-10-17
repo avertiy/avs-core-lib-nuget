@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using AVS.CoreLib.Extensions.Enums;
-using AVS.CoreLib.Extensions.Linq;
 using AVS.CoreLib.Guards;
 
 namespace AVS.CoreLib.Extensions.Collections
 {
+    /// <summary>
+    /// Provides various extension methods for IList{T} to enhance its functionality
+    /// </summary>
     public static class ListExtensions
     {
         #region AddRange extensions
@@ -26,6 +28,15 @@ namespace AVS.CoreLib.Extensions.Collections
             }
 
             return counter;
+        }
+
+        /// <summary>
+        /// Adds elements of the given source one-by-one to the list.
+        /// </summary>        
+        public static void AddRange<T>(this IList<T> list, IList<T> source, int startIndex, int count)
+        {
+            for (var i = startIndex; i < startIndex+ count; i++)
+                list.Add(source[i]);
         }
 
         /// <summary>
@@ -129,6 +140,15 @@ namespace AVS.CoreLib.Extensions.Collections
         #endregion
 
         #region Remove extensions
+
+        /// <summary>
+        /// Removes the last element from the list.
+        /// </summary>
+        public static void RemoveLast<T>(this IList<T> source)
+        {
+            source.RemoveAt(source.Count - 1);
+        }
+
         /// <summary>
         /// Removes elements from the list. 
         /// </summary>
@@ -143,6 +163,23 @@ namespace AVS.CoreLib.Extensions.Collections
             return counter;
         }
 
+        /// <summary>
+        /// Removes elements from the list. 
+        /// </summary>
+        public static int RemoveMany<T>(this IList<T> source, IList<T> elements)
+        {
+            var counter = 0;
+            foreach (var element in elements)
+            {
+                if (source.Remove(element))
+                    counter++;
+            }
+            return counter;
+        }
+
+        /// <summary>
+        /// Removes multiple elements from the list. 
+        /// </summary>
         public static T[] RemoveMany<T>(this IList<T> source, int count, int fromIndex = 0)
         {
             if (fromIndex + count > source.Count)
@@ -169,12 +206,32 @@ namespace AVS.CoreLib.Extensions.Collections
             }
         }
 
+        /// <summary>
+        /// Removes elements at respective indexes from the source list
+        /// </summary>
         public static void RemoveByIndexes<T>(this IList<T> source, int[] indexes)
         {
             foreach (var ind in indexes.OrderByDescending(x => x))
             {
                 source.RemoveAt(ind);
             }
+        }
+
+        /// <summary>
+        /// Removes 2 elements at respective indexes  from the source list
+        /// </summary>
+        public static void RemoveByIndexes<T>(this IList<T> source, int index1, int index2)
+        {
+            if (index2 > index1)
+            {
+                source.RemoveAt(index2);
+                source.RemoveAt(index1);
+            }
+            else
+            {
+                source.RemoveAt(index1);
+                source.RemoveAt(index2);
+            }   
         }
         #endregion
 
@@ -210,35 +267,101 @@ namespace AVS.CoreLib.Extensions.Collections
         }
 
         /// <summary>
-        /// Finds the index of the first element that matches the specified predicate.
+        /// Finds an element matching the <paramref name="match"/> predicate,
+        /// preferring an element that also matches the <paramref name="preferredMatch"/> predicate.
+        /// If no matching element is found, returns -1.
         /// </summary>
-        /// <remarks>
-        /// FindIndex2 is an alias to <see cref="FindIndex"/> to resolve name collision with a standard FindIndex extension for collections
-        /// Differences from standard FindIndex extension:
-        ///     - predicate contains an index
-        ///     - returns -1 if no matching element is found.
-        /// </remarks>
-        public static int FindIndex2<T>(this IList<T> source, Predicate<T> match, int startIndex, int count)
+        public static int FindIndex<T>(this IList<T> source, Predicate<T> match, Predicate<T> preferredMatch, int startIndex = 0, int count = 0)
         {
             Guard.MustBe.WithinRange(startIndex, 0, source.Count, nameof(startIndex));
             Guard.MustBe.WithinRange(count, 0, source.Count - startIndex, nameof(count));
 
             var endIndex = count > 0 ? startIndex + count : source.Count;
 
+            var index = -1;
+
             for (var i = startIndex; i < endIndex; i++)
             {
-                if (match(source[i]))
-                    return i;
+                var item = source[i];
+
+                if (!match(item))
+                    continue;
+
+                index = i;
+
+                if (preferredMatch(item))
+                    break;
             }
 
-            return -1;
+            return index;
         }
+
+        /// <summary>
+        /// Finds last element matching the <paramref name="match"/> predicate,
+        /// preferring an element that also matches the <paramref name="preferredMatch"/> predicate.
+        /// If no matching element is found, returns -1.
+        /// </summary>
+        public static int FindLastIndex<T>(this IList<T> source, Predicate<T> match, Predicate<T> preferredMatch, int offset = 0, int count = 0)
+        {
+            Guard.MustBe.WithinRange(offset, 0, source.Count, nameof(offset));
+            Guard.MustBe.WithinRange(count, 0, source.Count - offset, nameof(count));
+
+            var index = -1;
+            var startIndex = source.Count - offset -1;
+            var endIndex = startIndex - count;
+            
+            for (var i = startIndex; i > endIndex; i--)
+            {
+                var item = source[i];
+
+                if (!match(item))
+                    continue;
+
+                index = i;
+
+                if (preferredMatch(item))
+                    break;
+            }
+
+            return index;
+        }
+
+        /// <summary>
+        /// Finds last element matching the <paramref name="match"/> predicate,
+        /// If no matching element is found, returns -1.
+        /// </summary>
+        public static int FindLastIndex<T>(this IList<T> source, Predicate<T> match, int offset = 0, int count = 0)
+        {
+            Guard.MustBe.WithinRange(offset, 0, source.Count, nameof(offset));
+            Guard.MustBe.GreaterThanOrEqual(count, 0);
+
+            var index = -1;
+            var startIndex = source.Count - offset - 1;
+            var endIndex = startIndex - count;
+
+            if (endIndex < 0)
+                endIndex = 0;
+
+            for (var i = startIndex; i > endIndex; i--)
+            {
+                var item = source[i];
+
+                if (!match(item))
+                    continue;
+
+                index = i;
+                break;
+            }
+
+            return index;
+        }
+
 
         /// <summary>
         /// Finds the index of the first element that matches the specified predicate.
         /// </summary>
         /// <remarks>
-        /// FindIndex2 is an alias to <see cref="FindIndex"/> to resolve name collision with a standard FindIndex extension for collections
+        /// FindIndex2 to resolve name collision with <see cref="FindIndex"/>
         /// Differences from standard FindIndex extension:
         ///     - predicate contains an index
         ///     - returns -1 if no matching element is found.
@@ -260,56 +383,159 @@ namespace AVS.CoreLib.Extensions.Collections
         }
 
         /// <summary>
-        /// Finds the first element matching the best-match predicate.
-        /// If no best match is found, returns the first element matching the fallback predicate.
+        /// Finds an element matching the <paramref name="match"/> predicate,
+        /// preferring an element that also matches the <paramref name="preferredMatch"/> predicate.
+        /// If no matching element is found, returns -1.
         /// </summary>
-        public static int FindIndex2<T>(this IList<T> source, Predicate<T> bestMatch, Predicate<T> fallbackMatch, int startIndex, int count)
+        public static int FindIndex2<T>(this IList<T> source, Predicate<(int index, T item)> match, Predicate<(int index, T item)> preferredMatch, int startIndex = 0, int count = 0)
         {
             Guard.MustBe.WithinRange(startIndex, 0, source.Count, nameof(startIndex));
             Guard.MustBe.WithinRange(count, 0, source.Count - startIndex, nameof(count));
 
             var endIndex = count > 0 ? startIndex + count : source.Count;
 
-            var fallbackMatchIndex = -1;
+            var index = -1;
 
             for (var i = startIndex; i < endIndex; i++)
             {
-                if (bestMatch(source[i]))
-                    return i;
+                var item = source[i];
 
-                if (fallbackMatchIndex == -1 && fallbackMatch(source[i]))
-                    fallbackMatchIndex = i;
+                if (!match((i,item)))
+                    continue;
+
+                index = i;
+
+                if (preferredMatch((i,item)))
+                    break;
             }
 
-            return fallbackMatchIndex;
+            return index;
+        }
+
+
+        /// <summary>
+        /// Finds few (2-4) elements mathing the <paramref name="match"/> predicate. 
+        /// <code>
+        /// usage:
+        /// var arr = [1,2,3,4]
+        /// var indexes = arr.FindIndexes(x => x.Sum() == 6);// => [1,3] i.e. 2+4
+        /// </code>
+        /// </summary>
+        public static int[] FindIndexes<T>(this IList<T> source, Func<T[], bool> match, int startIndex = 0, int count = 0)
+        {
+            Guard.MustBe.WithinRange(startIndex, 0, source.Count, nameof(startIndex));
+            Guard.MustBe.GreaterThanOrEqual(count, 0);
+
+            var n = count > 0 && count < source.Count ? count : source.Count;
+            var arr2 = new T[2];
+            var arr3 = new T[3];
+            var arr4 = new T[4];
+
+            for (var i = startIndex; i < n - 1; i++)
+            {
+                arr2[0] = arr3[0] = arr4[0] = source[i];
+
+                for (var j = i + 1; j < n; j++)
+                {
+                    arr2[1] = arr3[1] = arr4[1] = source[j];
+
+                    if (match(arr2))
+                        return [i,j];
+
+                    for (var k = j + 1; k < n; k++)
+                    {
+                        arr3[2] = arr4[2] = source[k];
+
+                        if (match(arr3))
+                            return [i,j,k];
+
+                        for (var l = k + 1; l < n; l++)
+                        {
+                            arr4[3] = source[l];
+                            if (match(arr4))
+                                return [i,j,k,l];
+                        }
+                    }
+
+                }
+            }
+
+            return [];
         }
 
         /// <summary>
-        /// Finds the first element matching the best-match predicate.
-        /// If no best match is found, returns the first element matching the fallback predicate.
+        /// Finds few (2-4) elements mathing the <paramref name="match"/> predicate. 
+        /// <code>
+        /// usage:
+        /// var arr = [1,2,3,4]
+        /// var indexes = arr.FindLastIndexes(x => x.Sum() == 5);// => [3,0]  i.e. 4+1
+        /// </code>
         /// </summary>
-        public static int FindIndex2<T>(this IList<T> source, Predicate<(int index, T item)> bestMatch, Predicate<(int index, T item)> fallbackMatch, int startIndex, int count)
+        public static int[] FindLastIndexes<T>(this IList<T> source, Func<T[], bool> match, int offset = 0, int count = 0)
         {
-            Guard.MustBe.WithinRange(startIndex, 0, source.Count, nameof(startIndex));
-            Guard.MustBe.WithinRange(count, 0, source.Count - startIndex, nameof(count));
+            Guard.MustBe.WithinRange(offset, 0, source.Count, nameof(offset));
 
-            var endIndex = count > 0 ? startIndex + count : source.Count;
+            var startIndex = source.Count - offset - 1;
+            var endIndex = count > 0 && count < startIndex ? startIndex - count : 0;
 
-            var fallbackMatchIndex = -1;
+            var arr2 = new T[2];
+            var arr3 = new T[3];
+            var arr4 = new T[4];
 
-            for (var i = startIndex; i < endIndex; i++)
+            for (var i = startIndex; i >= endIndex; i--)
             {
-                if (bestMatch((i, source[i])))
-                    return i;
+                arr2[0] = arr3[0] = arr4[0] = source[i];
 
-                if (fallbackMatchIndex == -1 && fallbackMatch((i, source[i])))
-                    fallbackMatchIndex = i;
+                for (var j = i - 1; j >= endIndex; j--)
+                {
+                    arr2[1] = arr3[1] = arr4[1] = source[j];
+
+                    if (match(arr2))
+                        return [i, j];
+
+                    for (var k = j - 1; k >= endIndex; k--)
+                    {
+                        arr3[2] = arr4[2] = source[k];
+
+                        if (match(arr3))
+                            return [i, j, k];
+
+                        for (var l = k - 1; l >= endIndex; l--)
+                        {
+                            arr4[3] = source[l];
+                            if (match(arr4))
+                                return [i, j, k, l];
+                        }
+                    }
+
+                }
             }
 
-            return fallbackMatchIndex;
+            return [];
         }
 
         #endregion
+
+        public static T? FirstOrDefault<T>(this IList<T> source, Predicate<T> predicate, Predicate<T> preferredMatch, int startIndex = 0)
+        {
+            var endIndex = source.Count;
+            var index = -1;
+
+            for (var i = startIndex; i < endIndex; i++)
+            {
+                var item = source[i];
+
+                if (!predicate(item))
+                    continue;
+
+                index = i;
+
+                if (preferredMatch(item))
+                    break;
+            }
+
+            return index != -1 ? source[index] : default;
+        }
 
         public static IList<T> Combine<T>(this IList<T> source, IList<T> other)
         {
@@ -338,12 +564,66 @@ namespace AVS.CoreLib.Extensions.Collections
             return result;
         }
 
+
         /// <summary>
         /// Select element(s) by their respective indices
         /// </summary>
         public static T[] ElementsAt<T>(this IList<T> source, params int[] indices)
         {
             return indices.Select(i => source[i]).ToArray();
+        }
+        
+        public static bool Any<T>(this IEnumerable<T> source, Func<T, bool> predicate, Direction direction = Direction.Forward)
+        {
+            Guard.Against.Null(source, nameof(source));
+            Guard.Against.Null(predicate, nameof(predicate));
+
+            if (direction == Direction.Reverse)
+            {
+                var list = source as IList<T> ?? new List<T>(source);
+                for (var i = list.Count - 1; i >= 0; i--)
+                {
+                    if (predicate(list[i]))
+                        return true;
+                }
+                return false;
+            }
+
+            // Forward (standard) case
+            foreach (var item in source)
+            {
+                if (predicate(item))
+                    return true;
+            }
+
+            return false;
+        }
+
+
+        /// <summary>
+        /// Inserts an element while maintaining the sorted order. If the element already exists, it will be omitted.
+        /// </summary>
+        /// <returns>returns true if the element was inserted, false otherwise</returns>
+        public static bool InsertSorted<T>(this IList<T> elements, T element) where T : IComparable<T>
+        {
+            for (int i = 0; i < elements.Count; i++)
+            {
+                var compareResult = elements[i].CompareTo(element);
+
+                // 1. Duplicate found
+                if (compareResult == 0) // elements[i] == item
+                    return false;
+
+                // 2. We found where the new element fits
+                if (compareResult > 0) // elements[i] > item
+                {
+                    elements.Insert(i, element);
+                    return true;
+                }
+            }
+
+            elements.Add(element);
+            return true;
         }
 
         /// <summary>
@@ -371,32 +651,6 @@ namespace AVS.CoreLib.Extensions.Collections
             source.CopyTo(arr, other.Count);
             source.Clear();
             source.AddRange(arr);
-        }
-        
-        public static bool Any<T>(this IEnumerable<T> source, Func<T, bool> predicate, Direction direction = Direction.Forward)
-        {
-            Guard.Against.Null(source, nameof(source));
-            Guard.Against.Null(predicate, nameof(predicate));
-
-            if (direction == Direction.Reverse)
-            {
-                var list = source as IList<T> ?? new List<T>(source);
-                for (var i = list.Count - 1; i >= 0; i--)
-                {
-                    if (predicate(list[i]))
-                        return true;
-                }
-                return false;
-            }
-
-            // Forward (standard) case
-            foreach (var item in source)
-            {
-                if (predicate(item))
-                    return true;
-            }
-
-            return false;
         }
     }
 }

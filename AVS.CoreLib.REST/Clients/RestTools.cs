@@ -126,7 +126,7 @@ namespace AVS.CoreLib.REST.Clients
 
         protected async Task<RestResponse> SendRequestInternal(IRequest request, CancellationToken ct)
         {
-            var client = _httpClientFactory.CreateClient(HttpClientName);
+            var client = _httpClientFactory.CreateClient(HttpClientName); // no need to dispose HttpClient, it is managed by IHttpClientFactory
 
             // 1. rate limit
             await RateLimiter.Execute(HttpClientName, request.RateLimit, ct);

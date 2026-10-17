@@ -16,7 +16,7 @@ namespace AVS.CoreLib.Structs;
 /// </summary>
 [DebuggerDisplay("{ToString()}")]
 [JsonConverter(typeof(DecPctJsonConverter))]
-public readonly struct DecPct : IComparable<decimal>, IComparable<DecPct>, IEquatable<DecPct> //, IFormattable
+public readonly struct DecPct : IComparable<decimal>, IComparable<DecPct>, IEquatable<DecPct>, IFormattable
 {
     private readonly decimal _value;
     private readonly decimal _pctValue;

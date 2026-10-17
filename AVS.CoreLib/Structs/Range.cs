@@ -4,11 +4,11 @@ using System.Globalization;
 
 namespace AVS.CoreLib.Structs
 {
-    [DebuggerDisplay("Range [{Min};{Max}]")]
-    public readonly struct Range<T> where T : IComparable<T>
+    [DebuggerDisplay("[{Min};{Max}]")]
+    public struct Range<T> where T : IComparable<T>
     {
-        public T Min { get; }
-        public T Max { get; }
+        public T Min;
+        public T Max;
 
         public decimal Avg => (Convert.ToDecimal(Max) + Convert.ToDecimal(Min)) / 2;
 

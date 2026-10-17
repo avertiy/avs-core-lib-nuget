@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using AVS.CoreLib.Abstractions.Collections;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Reflection;
@@ -20,6 +21,9 @@ namespace AVS.CoreLib.Collections;
 public class FixedList<T> : IList<T>, IQueue<T>, IStack<T>, IEnumerable<T>, IEnumerable
 {
     private T[] _items;
+    /// <summary>
+    /// when non-zero indicates queue / stack behavior has been applied, that shifted Head pointer
+    /// </summary>
     public int Head { get; private set; }
     public int Capacity { get; protected set; }
     public int Count { get; protected set; }
@@ -204,16 +208,28 @@ public class FixedList<T> : IList<T>, IQueue<T>, IStack<T>, IEnumerable<T>, IEnu
 
     #region IndexOf / Contains
 
-    public int IndexOf(T item)
+    public int IndexOf(T item) 
     {
-        for (var i = 0; i < Count; i++)
+        var ind = Array.IndexOf(_items, item, Head, Count - Head);
+
+        if (ind == -1 && Count > Capacity - Head) // check second range if applicable
+            ind = Array.IndexOf(_items, item, 0, Count - (Capacity - Head)); 
+
+        if (ind >= 0)
         {
-            var currentItem = _items[(Head + i) % Capacity];
-            if (EqualityComparer<T>.Default.Equals(currentItem, item))
-            {
-                return i;
-            }
+            var index = (Head + ind) % Capacity;
+            return index;
         }
+
+        //    for (var i = 0; i < Count; i++)
+        //    {
+        //        var currentItem = _items[(Head + i) % Capacity];
+        //        if (EqualityComparer<T>.Default.Equals(currentItem, item))
+        //        {
+        //            return i;
+        //        }
+        //    }
+
         return -1;
     }
 
@@ -229,6 +245,32 @@ public class FixedList<T> : IList<T>, IQueue<T>, IStack<T>, IEnumerable<T>, IEnu
             Array.IndexOf(_items, item, Head, _items.Length - Head) >= 0 ||
             Array.IndexOf(_items, item, 0, Capacity - Count) >= 0;
     }
+
+    public bool ContainsAny(params T[] items)
+    {
+        if (Count == 0)
+            return false;
+
+        if (Head == 0)
+        {
+            foreach (var item in items)
+                if (Array.IndexOf(_items, item, Head, Count) >= 0)
+                    return true;
+        }
+        else
+        {
+            foreach (var item in items)
+            {
+                if (Array.IndexOf(_items, item, Head, _items.Length - Head) >= 0)
+                    return true;
+                if (Array.IndexOf(_items, item, 0, Capacity - Count) >= 0)
+                    return true;
+            }
+        }
+
+        return false;
+    }
+
     #endregion
 
     #region IStack<T>
@@ -269,16 +311,22 @@ public class FixedList<T> : IList<T>, IQueue<T>, IStack<T>, IEnumerable<T>, IEnu
         if (Count == 0)
             throw new InvalidOperationException("FixedList has no items");
 
-        // stack: Push([4,3,2,1]) => _items[1,2,3,4]; Pop()=> 4,3,2,1
-        // queue: Enqueue([1,2,3,4]); _items[1,2,3,4]; Dequeue() => 1,2,3,4
+        // stack (LIFO): Push([4,3,2,1]) => _items[1,2,3,4];  output => 4,3,2,1
+        // queue (FIFO): Enqueue([1,2,3,4]); _items[1,2,3,4]; output => 1,2,3,4
 
-        // NOTE! Head points to the top element in the stack i.e. 1 was pushed the last and H=0 points to 1;
+        // NOTE! Head points to the top element in the stack: 1 was pushed the latest to the stack, Head=0, _items[0] => 1;
 
-        //_items[1,2,3,4];  _items[_,2,3,4];   _items[_,_,3,4]; 
-        // H:0 C=4             H=1: C=3             H=2 C=2
+        //1) C=4/4
+        // H=0:_items[1,2,3,4];  H=1: _items[4,1,2,3]
+        // stack output => 4,3,2,1; queue output: 1,2,3,4
 
-        //_items[4,1,2,3];  [4,_,2,3];   [4,_,_,3]; 
-        //       H:1 C=4      H=2: C=3     H=3 C=2
+        //2) C=3/4
+        // H=1:_items[_,2,3,4];  H=2: _items[4,_,2,3]   
+        // stack output => 4,3,2; queue output: 2,3,4
+
+        //3) C=2/4
+        // H=2:_items[_,_,3,4];  H=3: _items[4,_,_,3]   
+        // stack output => 4,3; queue output: 3,4
 
         //i = 4-4+1 = 1; 4-3+1=2
         var ind = Head;
@@ -484,6 +532,46 @@ public class FixedList<T> : IList<T>, IQueue<T>, IStack<T>, IEnumerable<T>, IEnu
         }
     }
 
+    /// <summary>
+    /// sorts in ascending order (from smallest to largest)
+    /// </summary>
+    public void Sort()
+    {
+        if (Count < 2)
+            return;
+
+        if (Head == 0)
+        {
+            Array.Sort(_items, 0, Count);
+            return;
+        }
+
+        var arr = ToArray();
+        Array.Sort(arr, 0, arr.Length);
+        Head = 0;
+        Array.Copy(arr, 0, _items, 0, arr.Length);
+    }
+
+    /// <summary>
+    /// sorts in descending order (from largest to smallest)
+    /// </summary>
+    public void Reverse()
+    {
+        if (Count < 2)
+            return;
+
+        if (Head == 0)
+        {
+            Array.Reverse(_items, 0, Count);
+            return;
+        }
+
+        var arr = ToArray();
+        Array.Reverse(arr, 0, arr.Length);
+        Head = 0;
+        Array.Copy(arr, 0, _items, 0, arr.Length);
+    }
+
     public void Clear()
     {
         Array.Clear(_items, 0, _items.Length);
@@ -521,12 +609,23 @@ public class FixedList<T> : IList<T>, IQueue<T>, IStack<T>, IEnumerable<T>, IEnu
             return arr;
         }
 
-        //[1,2,*3,4,5,6]  6-2=3, Head=2
-        //[3,4,5,6,..] // copy [1,2]
-        Array.Copy(_items, Head, arr, 0, _items.Length - Head);
+        //regardles stack / queue behaviour ToArray() output will copy the internal representation 
 
-        if (Count == Capacity)
-            Array.Copy(_items, 0, arr, _items.Length - Head, Head);
+        //1) H=0
+        // _items[1,2,3,4,5,6];  => [1,2,3,4,5,6]
+
+        //2a) H=2, Count=4
+        // _items[1,2,*3,4,5,6] => [3,4,5,6,_,_] // because Count =4
+
+        //2b) H=2, Count=5
+        // _items[1,2,*3,4,5,6] => [3,4,5,6,1,_] // because Count =5
+
+        // copy the first part 3,4,5,6 => [3,4,5,6,_,_] 
+        Array.Copy(_items, Head, arr, 0, length: _items.Length - Head);
+
+        // copy the rest 1,2 if applicable
+        if (Count > Capacity - Head)
+            Array.Copy(_items, 0, arr, _items.Length - Head, Count - (Capacity - Head));
 
         return arr;
     }
@@ -549,15 +648,16 @@ public class FixedList<T> : IList<T>, IQueue<T>, IStack<T>, IEnumerable<T>, IEnu
         }
     }
 
-    public string AsString()
-    {
-        var arr = ToArray();
-        return arr.Stringify();
-    }
 
     public override string ToString()
     {
         var str = AsString().Truncate();
         return $"FixedList<{typeof(T).GetReadableName()}> #{Count} of {Capacity} {str}";
+    }
+
+    public string AsString()
+    {
+        var arr = ToArray();
+        return arr.Stringify();
     }
 }
