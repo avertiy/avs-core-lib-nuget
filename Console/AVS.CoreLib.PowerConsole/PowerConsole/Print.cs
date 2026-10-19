@@ -49,9 +49,19 @@ namespace AVS.CoreLib.PowerConsole
             Printer2.SwitchMode(mode);
         }
 
-        public static void Print(string str, PrintOptions2 options = PrintOptions2.Default, Colors? colors = null)
+        /// <summary>
+        /// Writes message to console 
+        /// </summary>
+        public static void Print(string message, PrintOptions2 options = PrintOptions2.Default, Colors? colors = null)
         {
-            Printer2.Print(str, options, colors);
+            Printer2.Print(message, options, colors);
+        }
+        /// <summary>
+        /// Writes message to console
+        /// </summary>
+        public static void Print(string message, Colors? colors, PrintOptions2 options = PrintOptions2.Default)
+        {
+            Printer2.Print(message, options, colors);
         }
     }
 }

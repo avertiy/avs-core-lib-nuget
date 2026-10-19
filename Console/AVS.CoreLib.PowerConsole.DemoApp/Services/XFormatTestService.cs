@@ -48,7 +48,7 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
                 0.000000069m,
             };
 
-            PowerConsole.Print($"a|amount format:", colors: ConsoleColor.DarkYellow);
+            PowerConsole.Print($"a|amount format:", ConsoleColor.DarkYellow);
 
             foreach (var d in arr)
             {
@@ -56,14 +56,14 @@ namespace AVS.CoreLib.PowerConsole.DemoApp.Services
                 PowerConsole.Print($"{d:G} => {formatted}");
             }
 
-            PowerConsole.Print($"\r\nt|total format:", colors: ConsoleColor.Green);
+            PowerConsole.Print($"\r\nt|total format:", ConsoleColor.Green);
             foreach (var d in arr)
             {
                 var formatted = X.Format($"{d:total}");
                 PowerConsole.Print($"{d:G} => {formatted}");
             }
 
-            PowerConsole.Print($"\r\np|price format:", colors: ConsoleColor.Cyan);
+            PowerConsole.Print($"\r\np|price format:", ConsoleColor.Cyan);
             foreach (var d in arr)
             {
                 var formatted = X.Format($"{d:price}");
