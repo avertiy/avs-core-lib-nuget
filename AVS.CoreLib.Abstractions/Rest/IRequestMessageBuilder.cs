@@ -7,9 +7,17 @@ namespace AVS.CoreLib.Abstractions.Rest
     /// </summary>
     public interface IRequestMessageBuilder
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
         HttpRequestMessage Build(IRequest request);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public interface IPublicRequestMessageBuilder : IRequestMessageBuilder
     {
     }

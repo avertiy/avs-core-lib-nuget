@@ -9,6 +9,12 @@ namespace AVS.CoreLib.Abstractions.Json
     /// </summary>
     public interface IJsonSerializer
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
         string SerializeObject(object obj, Type? type = null);
         /// <summary>
         /// 

@@ -8,10 +8,13 @@ namespace AVS.CoreLib.Abstractions.Rest
     /// </summary>
     public interface IHttpRequestBuilder
     {
+        /// <summary>
+        /// 
+        /// </summary>
         HttpWebRequest Build(IRequest request);
-        void SwitchKeys(string publicKey, string privateKey);
-
-        //[Obsolete("Use Build(IRequest request)")]
-        //HttpWebRequest Build(IEndpoint endpoint, IPayload data = null);
+        /// <summary>
+        /// 
+        /// </summary>
+        void SwitchKeys(string publicKey, string privateKey, string? password = null);
     }
 }

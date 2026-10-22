@@ -9,6 +9,7 @@ using AVS.CoreLib.Utilities;
 
 namespace AVS.CoreLib.REST.Utilities
 {
+    /*
     public class Payload : IPayload
     {
         public string RelativeUrl { get; set; }
@@ -250,4 +251,5 @@ namespace AVS.CoreLib.REST.Utilities
             return data;
         }
     }
+    */
 }

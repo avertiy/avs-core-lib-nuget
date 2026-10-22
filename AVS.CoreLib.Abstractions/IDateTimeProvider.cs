@@ -8,17 +8,32 @@ namespace AVS.CoreLib.Abstractions
     /// </summary>
     public interface IDateTimeProvider
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         DateTime GetSystemTime();
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class DateTimeProvider : IDateTimeProvider
     {
         private Func<DateTime>? _getTime = null;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public DateTime GetSystemTime()
         {
             return _getTime?.Invoke() ?? DateTime.UtcNow;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="getTime"></param>
         public void UseCustomTime(Func<DateTime> getTime)
         {
             _getTime = getTime;
@@ -27,6 +42,9 @@ namespace AVS.CoreLib.Abstractions
         #region static
         private static IDateTimeProvider? _instance;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public static IDateTimeProvider Instance
         {
             get => _instance ??= new DateTimeProvider();

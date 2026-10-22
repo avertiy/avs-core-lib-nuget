@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-
+#pragma warning disable CS1591 
 namespace AVS.CoreLib.Abstractions.Rest
 {
     public interface IRequest
@@ -38,3 +38,5 @@ namespace AVS.CoreLib.Abstractions.Rest
         int GetRetryDelay();
     }
 }
+
+#pragma warning restore CS1591

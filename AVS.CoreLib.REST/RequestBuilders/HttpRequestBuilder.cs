@@ -6,7 +6,7 @@ using AVS.CoreLib.Extensions.Web;
 using AVS.CoreLib.REST.Extensions;
 using AVS.CoreLib.REST.Helpers;
 using AVS.CoreLib.Utilities;
-
+#pragma warning disable CS1591
 namespace AVS.CoreLib.REST.RequestBuilders
 {
     /// <summary>
@@ -41,9 +41,9 @@ namespace AVS.CoreLib.REST.RequestBuilders
             }
         }
 
-        public void SwitchKeys(string publicKey, string privateKey)
+        public void SwitchKeys(string publicKey, string privateKey, string? password = null)
         {
-            Authenticator.SetKeys(publicKey, privateKey);
+            Authenticator.SetKeys(publicKey, privateKey, password);
         }
 
         protected virtual HttpWebRequest CreateHttpRequest(IRequest request)
@@ -93,88 +93,59 @@ namespace AVS.CoreLib.REST.RequestBuilders
             }
         }
 
-        /*
-        [Obsolete("Use Build(IRequest request)")]
-        public virtual HttpWebRequest Build(IEndpoint endpoint, IPayload data = null)
-        {
-            try
-            {
-                OnRequestCreating(endpoint, data);
+        ///// <summary>
+        ///// use OnRequestCreating to add something to each payload
+        ///// for example private endpoints require tonce/nonce to be provided in payload  
+        ///// </summary>
+        //[Obsolete("Use Build(IRequest request)")]
+        //protected virtual void OnRequestCreating(IEndpoint endpoint, IPayload data)
+        //{
+        //    if (endpoint.AuthType == AuthType.ApiKey)
+        //    {
+        //        // some endpoints require command to be added into payload
+        //        if (AddCommandToRequestData)
+        //            data.Add("command", endpoint.Command);
 
-                var url = GetUrl(endpoint, data);
-                var request = WebRequestHelper.ConstructHttpWebRequest(endpoint.Method, url, Proxy);
+        //        // some endpoints use tonce, which is slight ly different from nonce
+        //        if (UseTonce)
+        //            data.Add("tonce", NonceHelper.GetTonce());
+        //        else
+        //            data.Add("nonce", NonceHelper.GetNonce().ToString());
+        //    }
+        //}
 
-                OnRequestCreated(request, endpoint, data);
-                return request;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Constructing HttpWebRequest failed", ex);
-            }
-        }
+        ///// <summary>
+        ///// private endpoints require request headers to be provided
+        ///// by default sets Headers["Key"] = public_key; Headers["Sign"] = signature
+        ///// </summary>
+        //[Obsolete("Use Build(IRequest request)")]
+        //protected virtual void OnRequestCreated(HttpWebRequest httpRequest, IEndpoint endpoint, IPayload data)
+        //{
+        //    switch (endpoint.AuthType)
+        //    {
+        //        case AuthType.ApiKey:
+        //            {
+        //                if (Authenticator == null)
+        //                    throw new Exception("Authenticator must be initialized");
 
-        protected string GetUrl(IEndpoint endpoint, IPayload data)
-        {
-            var url = endpoint.Url + data?.RelativeUrl;
-            if (endpoint.Method == "GET" && data != null)
-                url = UrlHelper.Combine(url, data.ToHttpQueryString());
-
-            return url;
-        }*/
-
-        /// <summary>
-        /// use OnRequestCreating to add something to each payload
-        /// for example private endpoints require tonce/nonce to be provided in payload  
-        /// </summary>
-        [Obsolete("Use Build(IRequest request)")]
-        protected virtual void OnRequestCreating(IEndpoint endpoint, IPayload data)
-        {
-            if (endpoint.AuthType == AuthType.ApiKey)
-            {
-                // some endpoints require command to be added into payload
-                if (AddCommandToRequestData)
-                    data.Add("command", endpoint.Command);
-
-                // some endpoints use tonce, which is slight ly different from nonce
-                if (UseTonce)
-                    data.Add("tonce", NonceHelper.GetTonce());
-                else
-                    data.Add("nonce", NonceHelper.GetNonce().ToString());
-            }
-        }
-
-        /// <summary>
-        /// private endpoints require request headers to be provided
-        /// by default sets Headers["Key"] = public_key; Headers["Sign"] = signature
-        /// </summary>
-        [Obsolete("Use Build(IRequest request)")]
-        protected virtual void OnRequestCreated(HttpWebRequest httpRequest, IEndpoint endpoint, IPayload data)
-        {
-            switch (endpoint.AuthType)
-            {
-                case AuthType.ApiKey:
-                    {
-                        if (Authenticator == null)
-                            throw new Exception("Authenticator must be initialized");
-
-                        var signature = Authenticator.Sign(data.ToHttpQueryString(), out var bytes);
-                        httpRequest.Headers["Key"] = Authenticator.PublicKey;
-                        httpRequest.Headers["Sign"] = signature.ToBase64String();
-                        //work around for stupid .net protocol violation check
-                        httpRequest.Method = "POST";
-                        httpRequest.WriteBytes(bytes);
-                        httpRequest.Method = endpoint.Method;
-                        break;
-                    }
-                default:
-                    if (httpRequest.Method != "GET")
-                    {
-                        var bytes = Authenticator.Encoding.GetBytes(data.ToHttpQueryString());
-                        httpRequest.WriteBytes(bytes);
-                    }
-                    break;
-            }
-        }
+        //                var signature = Authenticator.Sign(data.ToHttpQueryString(), out var bytes);
+        //                httpRequest.Headers["Key"] = Authenticator.PublicKey;
+        //                httpRequest.Headers["Sign"] = signature.ToBase64String();
+        //                //work around for stupid .net protocol violation check
+        //                httpRequest.Method = "POST";
+        //                httpRequest.WriteBytes(bytes);
+        //                httpRequest.Method = endpoint.Method;
+        //                break;
+        //            }
+        //        default:
+        //            if (httpRequest.Method != "GET")
+        //            {
+        //                var bytes = Authenticator.Encoding.GetBytes(data.ToHttpQueryString());
+        //                httpRequest.WriteBytes(bytes);
+        //            }
+        //            break;
+        //    }
+        //}
     }
 
     public class HttpRequestBuilder<TAuthenticator> : IHttpRequestBuilder
@@ -207,16 +178,17 @@ namespace AVS.CoreLib.REST.RequestBuilders
 
         }
 
-        public void SwitchKeys(string publicKey, string privateKey)
+        /// <summary>
+        /// 
+        /// </summary>
+        public void SwitchKeys(string publicKey, string privateKey, string? password = null)
         {
-            Authenticator.SetKeys(publicKey, privateKey);
+            Authenticator.SetKeys(publicKey, privateKey, password);
         }
 
-        public HttpWebRequest Build(IEndpoint endpoint, IPayload data = null)
-        {
-            throw new NotImplementedException();
-        }
-
+        /// <summary>
+        /// 
+        /// </summary>
         protected virtual HttpWebRequest CreateRequest(IRequest input)
         {
             OnRequestCreating(input);
@@ -257,3 +229,5 @@ namespace AVS.CoreLib.REST.RequestBuilders
         }
     }
 }
+
+#pragma warning restore CS1591

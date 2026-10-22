@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 using AVS.CoreLib.Abstractions.Rest;
-
+#pragma warning disable CS1591
 namespace AVS.CoreLib.REST
 {
     public class Authenticator<TAlgorithm> : IAuthenticator
@@ -10,6 +10,7 @@ namespace AVS.CoreLib.REST
         private object _lock = new();
         public string PublicKey { get; private set; }
         public string PrivateKey { get; private set; }
+        public string? Password { get; private set; }
 
         public Encoding Encoding { get; set; } = Encoding.ASCII;
         protected TAlgorithm Encryptor { get; }
@@ -17,15 +18,21 @@ namespace AVS.CoreLib.REST
         public Authenticator()
         {
             Encryptor = new TAlgorithm();
+            PublicKey = string.Empty;
+            PrivateKey = string.Empty;
+            Password = null;
         }
 
-        public Authenticator(string publicKey, string privateKey)
+        public Authenticator(string publicKey, string privateKey, string? password = null)
         {
             Encryptor = new TAlgorithm();
-            SetKeys(publicKey, privateKey);
+            PublicKey = publicKey;
+            PrivateKey = privateKey;
+            Password = password;
+            Encryptor.Key = Encoding.GetBytes(privateKey);
         }
 
-        public void SetKeys(string publicKey, string privateKey)
+        public void SetKeys(string publicKey, string privateKey, string? password)
         {
             if (string.IsNullOrEmpty(privateKey))
                 return;
@@ -35,6 +42,7 @@ namespace AVS.CoreLib.REST
 
             PublicKey = publicKey;
             PrivateKey = privateKey;
+            Password = password;
             Encryptor.Key = Encoding.GetBytes(privateKey);
         }
 
@@ -73,3 +81,5 @@ namespace AVS.CoreLib.REST
         }
     }
 }
+
+#pragma warning restore CS1591

@@ -1,4 +1,5 @@
-﻿namespace AVS.CoreLib.Abstractions.Rest
+﻿#pragma warning disable CS1591
+namespace AVS.CoreLib.Abstractions.Rest
 {
     public interface IEndpoint
     {
@@ -20,3 +21,5 @@
         ApiKey
     }
 }
+
+#pragma warning restore CS1591
