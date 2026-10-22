@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using AVS.CoreLib.Guards;
 
 namespace AVS.CoreLib.Dates
 {
@@ -51,7 +52,7 @@ namespace AVS.CoreLib.Dates
 
         public static bool IsInMilliseconds(long time)
         {
-            return time > MILI_SECONDS_THRESHOLD;
+            return time > MILI_SECONDS_THRESHOLD && time < MICRO_SECONDS_THRESHOLD;
         }
 
         public static TimeUnit GetTimeUnit(long time)
@@ -74,6 +75,23 @@ namespace AVS.CoreLib.Dates
                 return timestamp / 1000;
 
             return timestamp;
+        }
+
+        /// <summary>
+        /// returns date string in yyyy-MM-ddTHH:mm:ss.fffZ format
+        /// </summary>
+        public static string ToISO8601(long timestamp)
+        {
+            var date = UnixEpoch.Start;
+            if (timestamp > MICRO_SECONDS_THRESHOLD)
+                date = date.AddMicroseconds(timestamp);
+            else if (timestamp > MILI_SECONDS_THRESHOLD)
+                date = date.AddMilliseconds(timestamp);
+            else
+                date = date.AddSeconds(timestamp);
+
+            var iso8601 = date.ToString("yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture);
+            return iso8601;
         }
     }
 

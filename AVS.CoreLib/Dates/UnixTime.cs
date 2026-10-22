@@ -8,7 +8,7 @@ namespace AVS.CoreLib.Dates;
 
 [DebuggerDisplay("{Timestamp} ({Unit}, {LocalDateTime})")]
 [JsonConverter(typeof(UnixTimeJsonConverter))]
-public readonly record struct UnixTime(long Timestamp) : IComparable<UnixTime>
+public readonly record struct UnixTime(long Timestamp) : IComparable<UnixTime> //Timestamp in milliseconds
 {
     public static string DateTimeFormat { get; set; } = "u";// u - universal date-time: 2009-06-15 13:45:00Z 
 
@@ -16,6 +16,7 @@ public readonly record struct UnixTime(long Timestamp) : IComparable<UnixTime>
     public DateTimeOffset LocalDateTime => Utc.ToLocalTime();
 
     public long TimestampInSeconds => DateTimeHelper.NormalizeToSeconds(Timestamp);
+    //public long TimestampInMilliseconds => DateTimeHelper.NormalizeToSeconds(Timestamp);
 
     public TimeUnit Unit => DateTimeHelper.GetTimeUnit(Timestamp);
 
@@ -102,6 +103,14 @@ public readonly record struct UnixTime(long Timestamp) : IComparable<UnixTime>
             return LocalDateTime.ToString(format, formatProvider);
 
         return LocalDateTime.ToString(DateTimeFormat);
+    }
+
+    /// <summary>
+    /// returns date string in yyyy-MM-ddTHH:mm:ss.fffZ format
+    /// </summary>
+    public string ToISO8601()
+    {
+        return DateTimeHelper.ToISO8601(Timestamp);
     }
 
     public int CompareTo(UnixTime other)

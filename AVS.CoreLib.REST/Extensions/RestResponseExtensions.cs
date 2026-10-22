@@ -1,7 +1,11 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text.RegularExpressions;
+using AVS.CoreLib.Abstractions.Rest;
+using AVS.CoreLib.Collections;
+using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Guards;
 
 namespace AVS.CoreLib.REST.Extensions;
@@ -63,7 +67,7 @@ public static class RestResponseExtensions
 
         var regex = tokenType == JsonType.Object
             ? $"\"{name}\":(?<data>{{.*?}})"
-            : $"\"{name}\":(?<data>\\[.*?\\])";
+            : $"\"{name}\":(?<data>\\[.*?\\])";//\\s?
 
         var re = new Regex(regex);
         var match = re.Match(result.Content);
@@ -128,6 +132,52 @@ public static class RestResponseExtensions
         }
 
         result.Error = errorText ?? result.Error ?? $"Invalid format [json text must match a regex pattern: {regexPattern}]";
+        return result;
+    }
+
+    public static void ThrowIfUnauthorizedOrIpAddressForbidden(this RestResponse response)
+    {
+        if (string.IsNullOrEmpty(response.Error))
+            return;
+
+        if (response.StatusCode == HttpStatusCode.Unauthorized || response.Error.Contains("Unauthorized"))
+            throw new ForbiddenApiException(response);
+
+        if (response.StatusCode == HttpStatusCode.Forbidden)
+            throw new ForbiddenApiException(response);
+
+        var errors = new[] { "api key has expired", "IP address is not trusted", "IP is not in white list" };
+
+        if (response.Error.ContainsAny(errors))
+            throw new ForbiddenApiException(response);
+    }
+
+
+
+    internal static RestResponse ToRestResponse(this HttpWebResponse response, IRequest request, string source)
+    {
+        var result = new RestResponse(response.StatusCode, source) { Request = request };
+
+        if (response.Headers.Count > 0)
+        {
+            result.Headers = new MultiDictionary<string, string>();
+
+            foreach (string key in response.Headers)
+            {
+                var values = response.Headers.GetValues(key);
+
+                if (values == null)
+                    continue;
+
+                result.Headers.Add(key, values);
+            }
+        }
+
+        if (response.StatusCode == HttpStatusCode.OK)
+            result.Content = response.GetContent();
+        else
+            result.Error = response.StatusDescription;
+
         return result;
     }
 }

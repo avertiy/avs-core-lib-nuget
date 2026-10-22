@@ -6,10 +6,9 @@ using System.Text.Json.Serialization;
 using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.Collections;
 using AVS.CoreLib.Extensions;
-using AVS.CoreLib.REST.Extensions;
 using AVS.CoreLib.REST.Helpers;
 using AVS.CoreLib.REST.Json;
-
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace AVS.CoreLib.REST
 {
     /// <summary>
@@ -19,9 +18,12 @@ namespace AVS.CoreLib.REST
     public class RestResponse
     {
         public string Source { get; set; } = null!;
-        public HttpStatusCode StatusCode { get; set; }
-        public string? Content { get; set; }
         
+        public HttpStatusCode StatusCode { get; set; }
+
+        public string? Content { get; set; }
+
+
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? Error { get; set; }
 
@@ -96,66 +98,20 @@ namespace AVS.CoreLib.REST
         {
             return new RestResponse(HttpStatusCode.RequestTimeout, source) { Error = "The request timed out." };
         }
-    }
 
-    public static class RestResponseExtensions
-    {
-        public static void ThrowIfUnauthorizedOrIpAddressForbidden(this RestResponse response)
+        internal bool IsSuccessful()
         {
-            if (string.IsNullOrEmpty(response.Error))
-                return;
-
-            if (response.StatusCode == HttpStatusCode.Unauthorized || response.Error.Contains("Unauthorized"))
-                throw new ForbiddenApiException(response);
-
-            if (response.StatusCode == HttpStatusCode.Forbidden)
-                throw new ForbiddenApiException(response);
-
-            var errors = new[] { "api key has expired", "IP address is not trusted", "IP is not in white list" };
-
-            if (response.Error.ContainsAny(errors))
-                throw new ForbiddenApiException(response);
-        }
-
-        internal static bool IsSuccessful(this RestResponse response)
-        {
-            if (!response.IsSuccess)
+            if (!IsSuccess)
                 return false;
 
-            if (ResponseHelper.ContainsError(response.Content, out var error))
+            if (ResponseHelper.ContainsError(Content, out var error))
             {
-                response.Error = error;
+                Error = error;
                 return false;
             }
 
             return true;
         }
-
-        internal static RestResponse ToRestResponse(this HttpWebResponse response, IRequest request, string source)
-        {
-            var result = new RestResponse(response.StatusCode, source) { Request = request };
-
-            if (response.Headers.Count > 0)
-            {
-                result.Headers = new MultiDictionary<string, string>();
-
-                foreach (string key in response.Headers)
-                {
-                    var values = response.Headers.GetValues(key);
-
-                    if (values == null)
-                        continue;
-
-                    result.Headers.Add(key, values);
-                }
-            }
-
-            if (response.StatusCode == HttpStatusCode.OK)
-                result.Content = response.GetContent();
-            else
-                result.Error = response.StatusDescription;
-
-            return result;
-        }
     }
 }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
