@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace AVS.CoreLib.REST.Projections
 {
@@ -8,6 +9,27 @@ namespace AVS.CoreLib.REST.Projections
     public interface IProxy<in T, out TResult> : IContainer<T>, IProxy<TResult>
     {
     }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public interface IWrapper<T>
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        T[] Data { get; set; }
+    }
+
+    //public interface IDataContainer<T> : IEnumerable<T>
+    //{
+    //    /// <summary>
+    //    /// 
+    //    /// </summary>
+    //    T[] Data { get; set; }
+    //}
+
+
     // TO-DO swap Iproxty generic args
     //public interface IProxy2<out TResult, in T> : IContainer<T>, IProxy<TResult>
     //{

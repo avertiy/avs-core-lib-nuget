@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.REST.Json;
+using AVS.CoreLib.REST.Json.Newtonsoft.Converters;
 using static System.Collections.Specialized.BitVector32;
 
 namespace AVS.CoreLib.REST.Projections;
@@ -36,7 +37,7 @@ public sealed class Proj<TResult>
     {
         return JsonHelper.Deserialize<T>(JsonText);
     }
-
+    
     #region Map
     /// <summary>
     /// Deserializes json text into <typeparamref name="TResult"/> value
@@ -75,13 +76,14 @@ public sealed class Proj<TResult>
     }
 
     /// <summary>
-    /// 
+    /// Map with proxy. 
+    /// Deserilizes json text into <typeparamref name="T"/> then calls proxy to add the deserialized object and produce the result
     /// </summary>
-    public TResult? Map<TType, TProxy>(Action<TType>? action = null) where TProxy : IProxy<TType, TResult>, new()
+    public TResult? Map<T, TProxy>(Action<T>? action = null) where TProxy : IProxy<T, TResult>, new()
     {
         var proxy = new TProxy();
 
-        var obj = JsonHelper.Deserialize<TType>(JsonText);
+        var obj = JsonHelper.Deserialize<T>(JsonText);
 
         if (obj != null)
         {
@@ -105,7 +107,51 @@ public sealed class Proj<TResult>
         var result = mapper.Map(obj);
         return result;
     }
+    /// <summary>
+    /// Deserilize json text into <typeparamref name="T"/> then map with mapper to <typeparamref name="TResult"/>
+    /// </summary>
+    public TResult? MapWithMapper<T>(Func<T, TResult> mapper)
+    {
+        var obj = JsonHelper.Deserialize<T>(JsonText);
 
+        if (obj == null)
+            return default;
+
+        var result = mapper(obj);
+        return result;
+    }
+
+    #endregion
+
+    #region MapData
+
+    // map data for use cases when the actual data is wrapped into some response shape e.g. OKXResponse<T> 
+
+    /// <summary>
+    /// Map data via proxy. 
+    /// Deserializes json into <typeparamref name="TResponse"/>, than builds <typeparamref name="TResult"/> by means of a proxy builder
+    /// <code>
+    /// IProxy{OKXPosition,UserPositions} builder = new PositionsBuilder&lt;OKXPosition&gt;() {...};
+    /// Response{UserPositions} response = restResponse.ToResponse&lt;UserPositions&gt;(
+    ///     proj =&gt; proj.MapData(builder));
+    /// </code>
+    /// </summary>
+    public TResult? MapData<TResponse, T>(Func<TResponse, T[]> selector, IProxy<T, TResult> proxy, Action<T>? action = null)
+    {
+        var obj = JsonHelper.Deserialize<TResponse>(JsonText);
+
+        if (obj != null)
+        {
+            var data = selector(obj);
+            foreach (var item in data)
+            {
+                action?.Invoke(item);
+                proxy.Add(item);
+            }
+        }
+
+        return proxy.Create();
+    } 
     #endregion
 
     #region MapArray

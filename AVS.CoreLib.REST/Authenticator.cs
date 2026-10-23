@@ -32,7 +32,7 @@ namespace AVS.CoreLib.REST
             Encryptor.Key = Encoding.GetBytes(privateKey);
         }
 
-        public void SetKeys(string publicKey, string privateKey, string? password)
+        public void SetKeys(string publicKey, string privateKey, string? password = null)
         {
             if (string.IsNullOrEmpty(privateKey))
                 return;

@@ -114,7 +114,7 @@ public class DLinqEngine
     private string[] SplitQuery(string query)
     {
         var keywords = new[] { WHERE, SORT, SKIP, TAKE };
-        var startIndex = query.IndexOfAny(0, keywords, StringComparison.InvariantCultureIgnoreCase);
+        var startIndex = query.IndexOfAny(keywords, 0, StringComparison.InvariantCultureIgnoreCase);
 
         // just a select statement
         if (startIndex == -1)
@@ -143,7 +143,7 @@ public class DLinqEngine
             if (index == startIndex)
             {
                 index += keyword.Length;
-                var nextInd = i + 1 < keywords.Length ? query.IndexOfAny(index, keywords.Skip(1)) : -1;
+                var nextInd = i + 1 < keywords.Length ? query.IndexOfAny(keywords.Skip(1), index) : -1;
 
 
                 var str = nextInd == -1 ? query.Substring(index) : query.Substring(index, nextInd - index);

@@ -220,12 +220,26 @@ namespace AVS.CoreLib.Extensions
 
         #region IndexOfAny / IndexOfEndOfWord / IndexesOfKeywords
 
+        /// <summary>
+        /// Returns the index of the first occurrence of any specified character in the current instance.
+        /// </summary>
         public static int IndexOfAny(this string str, params char[] anyOf)
         {
             return str.IndexOfAny(anyOf);
         }
 
-        public static int IndexOfAny(this string? str, int startIndex, IEnumerable<string> values, StringComparison comparison = StringComparison.InvariantCulture)
+        /// <summary>
+        /// Returns the index of the first occurrence of any specified string value
+        /// </summary>
+        public static int IndexOfAny(this string? str, StringComparison comparison, params string[] values)
+        {
+            return str.IndexOfAny(values, 0, comparison);
+        }
+
+        /// <summary>
+        /// Returns the index of the first occurrence of any specified string value
+        /// </summary>
+        public static int IndexOfAny(this string? str, IEnumerable<string> values, int startIndex = 0, StringComparison comparison = StringComparison.InvariantCulture)
         {
             if (str == null)
             {
