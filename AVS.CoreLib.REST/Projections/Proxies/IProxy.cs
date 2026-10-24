@@ -11,33 +11,7 @@ namespace AVS.CoreLib.REST.Projections
     }
 
     /// <summary>
-    /// 
-    /// </summary>
-    public interface IWrapper<T>
-    {
-        /// <summary>
-        /// 
-        /// </summary>
-        T[] Data { get; set; }
-    }
-
-    //public interface IDataContainer<T> : IEnumerable<T>
-    //{
-    //    /// <summary>
-    //    /// 
-    //    /// </summary>
-    //    T[] Data { get; set; }
-    //}
-
-
-    // TO-DO swap Iproxty generic args
-    //public interface IProxy2<out TResult, in T> : IContainer<T>, IProxy<TResult>
-    //{
-    //}
-
-
-    /// <summary>
-    /// Proxy{T} is used with  <see cref="Projection{T}.MapWith{TProxy}"/>
+    /// Proxy{T} is used with  <see cref="ProxyProj{T}"/>
     /// In cases when json can't be deserialized into a certain object model directly, 
     /// a proxy (or builder) object is used for deserialization, the proxy then creates target type (TResult)
     /// </summary>

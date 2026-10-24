@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.REST.Json;
-using AVS.CoreLib.REST.Json.Newtonsoft.Converters;
-using static System.Collections.Specialized.BitVector32;
 
 namespace AVS.CoreLib.REST.Projections;
 
@@ -125,17 +123,16 @@ public sealed class Proj<TResult>
 
     #region MapData
 
-    // map data for use cases when the actual data is wrapped into some response shape e.g. OKXResponse<T> 
-
     /// <summary>
-    /// Map data via proxy. 
-    /// Deserializes json into <typeparamref name="TResponse"/>, than builds <typeparamref name="TResult"/> by means of a proxy builder
+    /// Map data using proxy.
+    /// Deserializes json into <typeparamref name="TResponse"/>, than builds <typeparamref name="TResult"/> by means of proxy
     /// <code>
     /// IProxy{OKXPosition,UserPositions} builder = new PositionsBuilder&lt;OKXPosition&gt;() {...};
     /// Response{UserPositions} response = restResponse.ToResponse&lt;UserPositions&gt;(
     ///     proj =&gt; proj.MapData(builder));
     /// </code>
     /// </summary>
+    [Obsolete("Use ProxyProj{T,TResult}.MapData(..) instead")]
     public TResult? MapData<TResponse, T>(Func<TResponse, T[]> selector, IProxy<T, TResult> proxy, Action<T>? action = null)
     {
         var obj = JsonHelper.Deserialize<TResponse>(JsonText);

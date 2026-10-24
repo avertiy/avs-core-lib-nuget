@@ -60,15 +60,15 @@ public static class RestResponseProjectionExtensions
 
     /// <summary>
     /// Deserializes the REST response json content into <typeparamref name="T"/> and 
-    /// produces the specified destination type <typeparamref name="TResult"/> using the provided proxy.
+    /// produces <typeparamref name="TResult"/> by means of a given proxy.
     /// </summary>
     /// <typeparam name="TResult">T data</typeparam>
     /// <typeparam name="T">Concrete type for deserialization</typeparam>
     /// <param name="restResponse">rest response</param>
-    /// <param name="proxy">proxy or builder to produce T data</param>
-    /// <param name="map">gives control to the caller's code over projection (Map / MapArray / MapDictionary)</param>
-    /// <returns><see cref="Response{T}"/></returns>
-    public static Response<TResult> ToResponse<TResult, T>(this RestResponse restResponse, IProxy<T, TResult> proxy, Func<ProxyProj<TResult>, TResult?> map)
+    /// <param name="proxy">proxy or builder to produce TResult</param>
+    /// <param name="map">gives control to the caller's code over projection (Map / MapArray)</param>
+    /// <returns><see cref="Response{TResult}"/></returns>
+    public static Response<TResult> ToResponse<TResult, T>(this RestResponse restResponse, IProxy<T, TResult> proxy, Func<ProxyProj<T, TResult>, TResult?> map)
     {
         var isSuccess = restResponse.IsSuccessful();
         var response = Response.Create<TResult>(restResponse.Source, content: restResponse.Content, restResponse.Error, restResponse.Request);
@@ -76,7 +76,7 @@ public static class RestResponseProjectionExtensions
         if (!isSuccess)
             return response;
 
-        var proj = new ProxyProj<TResult>(restResponse.Content, proxy);
+        var proj = new ProxyProj<T, TResult>(restResponse.Content, proxy);
         response.Data = map(proj);
         return response;
     }
