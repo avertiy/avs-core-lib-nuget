@@ -9,7 +9,7 @@ using AVS.CoreLib.Extensions;
 using AVS.CoreLib.REST.Helpers;
 using AVS.CoreLib.REST.Json;
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-namespace AVS.CoreLib.REST
+namespace AVS.CoreLib.REST.Models
 {
     /// <summary>
     /// Represents REST response object

@@ -38,7 +38,7 @@ namespace AVS.CoreLib.REST.RequestBuilders
                     }
                     else
                     {
-                        var queryString = request.Data.ToHttpQueryString(orderBy: OrderQueryStringParameters);
+                        var queryString = request.Data.ToHttpQueryString(orderByKey: OrderQueryStringParameters);
                         requestMessage.Content = new StringContent(queryString);
                     }
                 }

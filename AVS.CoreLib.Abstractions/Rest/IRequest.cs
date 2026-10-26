@@ -12,7 +12,7 @@ namespace AVS.CoreLib.Abstractions.Rest
         string BaseUrl { get; set; }
         string Path { get; set; }
         Dictionary<string, string>? Headers { get; set; }
-        Dictionary<string, object> Data { get; set; }
+        IParametersCollection Data { get; set; }
 
         /// <summary>
         /// Timeout in milliseconds
@@ -36,6 +36,18 @@ namespace AVS.CoreLib.Abstractions.Rest
         Action<HttpRequestMessage>? OnRequestMessageReady { get; set; }
 
         int GetRetryDelay();
+    }
+
+    public interface IParametersCollection : IDictionary<string, object>
+    {
+        bool AddOptional<T>(string key, T? value);
+        bool AddOptional(string key, string? value);
+        bool AddOptionalEnum<T>(string key, T? value, Func<T, string> converter) where T : Enum;
+
+        void AddRequired(string key, string? value);
+        void AddRequired(string key, int value);
+        
+        void AddRequired<T>(string key, T value) where T : struct;
     }
 }
 

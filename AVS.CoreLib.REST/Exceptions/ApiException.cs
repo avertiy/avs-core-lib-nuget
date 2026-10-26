@@ -5,6 +5,7 @@ using System.Net;
 using AVS.CoreLib.Abstractions.Responses;
 using AVS.CoreLib.Json;
 using AVS.CoreLib.REST.Extensions;
+using AVS.CoreLib.REST.Models;
 
 namespace AVS.CoreLib.REST
 {

@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System;
 using System.Diagnostics;
+using AVS.CoreLib.REST.Models;
 using AVS.CoreLib.REST.Projections;
 
 namespace AVS.CoreLib.REST.Extensions

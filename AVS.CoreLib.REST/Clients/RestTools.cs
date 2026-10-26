@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.Collections;
 using AVS.CoreLib.REST.Helpers;
+using AVS.CoreLib.REST.Models;
 using AVS.CoreLib.Utilities;
 using Microsoft.Extensions.Logging;
 

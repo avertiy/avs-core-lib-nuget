@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using AVS.CoreLib.Json;
-using AVS.CoreLib.REST;
+using AVS.CoreLib.REST.Models;
 using FluentAssertions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RestResponseProjectionExtensions = AVS.CoreLib.REST.Extensions.RestResponseProjectionExtensions;

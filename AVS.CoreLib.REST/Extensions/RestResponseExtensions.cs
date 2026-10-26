@@ -7,6 +7,7 @@ using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.Collections;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Guards;
+using AVS.CoreLib.REST.Models;
 
 namespace AVS.CoreLib.REST.Extensions;
 

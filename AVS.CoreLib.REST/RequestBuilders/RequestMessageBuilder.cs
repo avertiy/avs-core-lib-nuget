@@ -60,7 +60,7 @@ namespace AVS.CoreLib.REST.RequestBuilders
             var url = request.GetFullUrl(OrderQueryStringParameters);
             var httpMethod = new HttpMethod(request.HttpMethod);
             var requestMessage = new HttpRequestMessage(httpMethod, url);
-            var queryString = request.Data.ToHttpQueryString(orderBy: OrderQueryStringParameters);
+            var queryString = request.Data.ToHttpQueryString(orderByKey: OrderQueryStringParameters);
 
             if (httpMethod != HttpMethod.Get)
                 requestMessage.Content = new StringContent(queryString);

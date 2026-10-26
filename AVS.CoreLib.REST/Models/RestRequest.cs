@@ -7,8 +7,8 @@ using System.Text.Json.Serialization;
 using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.Extensions.Collections;
 using AVS.CoreLib.Utilities;
-
-namespace AVS.CoreLib.REST.Clients
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+namespace AVS.CoreLib.REST.Models
 {
     [DebuggerDisplay("RestRequest {ToString()}")]
     public class RestRequest : IRequest
@@ -20,7 +20,10 @@ namespace AVS.CoreLib.REST.Clients
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Dictionary<string, string>? Headers { get; set; }
-        public Dictionary<string, object> Data { get; set; } = new();
+        //public Dictionary<string, object> Data { get; set; } = new();
+
+        public IParametersCollection Data { get; set; } = new ParametersCollection();
+
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public int Timeout { get; set; }
@@ -64,3 +67,5 @@ namespace AVS.CoreLib.REST.Clients
         }
     }
 }
+
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member

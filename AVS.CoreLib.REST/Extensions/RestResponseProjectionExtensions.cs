@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System;
 using AVS.CoreLib.Exceptions;
+using AVS.CoreLib.REST.Models;
 using AVS.CoreLib.REST.Projections;
 using AVS.CoreLib.REST.Responses;
 

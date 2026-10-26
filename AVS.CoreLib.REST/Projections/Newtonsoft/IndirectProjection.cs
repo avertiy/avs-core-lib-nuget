@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using AVS.CoreLib.Exceptions;
 using AVS.CoreLib.REST.Json.Newtonsoft;
+using AVS.CoreLib.REST.Models;
 using AVS.CoreLib.REST.Responses;
 using Newtonsoft.Json.Linq;
 

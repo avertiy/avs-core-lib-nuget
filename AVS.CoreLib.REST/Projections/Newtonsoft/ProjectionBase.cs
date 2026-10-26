@@ -4,6 +4,7 @@ using System.Net;
 using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.REST.Helpers;
+using AVS.CoreLib.REST.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

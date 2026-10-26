@@ -8,7 +8,7 @@ namespace AVS.CoreLib.Extensions.Web
 {
     public static class QueryStringExtensions
     {
-        public static string ToHttpQueryString(this IDictionary<string, object> data, bool orderBy = true)
+        public static string ToHttpQueryString(this IDictionary<string, object> data, bool orderByKey = true)
         {
             if (data.Count == 0)
                 return string.Empty;
@@ -17,7 +17,7 @@ namespace AVS.CoreLib.Extensions.Web
 
             var entries = data.AsEnumerable();
 
-            if (orderBy)
+            if (orderByKey)
                 entries = entries.OrderBy(x => x.Key);
 
             foreach (var entry in entries)

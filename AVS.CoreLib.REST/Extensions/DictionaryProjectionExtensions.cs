@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using AVS.CoreLib.REST.Extensions;
+using AVS.CoreLib.REST.Models;
 using AVS.CoreLib.REST.Responses;
 
 namespace AVS.CoreLib.REST.Extensions
