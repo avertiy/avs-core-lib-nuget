@@ -160,6 +160,10 @@ public class UnixTimeJsonConverter : JsonConverter<UnixTime>
         else
         {
             var str = reader.GetString();
+
+            if (string.IsNullOrEmpty(str))
+                return new UnixTime(0);
+            
             if (long.TryParse(str, out var timestamp))
                 return new UnixTime(timestamp);
 

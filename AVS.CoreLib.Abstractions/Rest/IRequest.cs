@@ -37,18 +37,6 @@ namespace AVS.CoreLib.Abstractions.Rest
 
         int GetRetryDelay();
     }
-
-    public interface IParametersCollection : IDictionary<string, object>
-    {
-        bool AddOptional<T>(string key, T? value);
-        bool AddOptional(string key, string? value);
-        bool AddOptionalEnum<T>(string key, T? value, Func<T, string> converter) where T : Enum;
-
-        void AddRequired(string key, string? value);
-        void AddRequired(string key, int value);
-        
-        void AddRequired<T>(string key, T value) where T : struct;
-    }
 }
 
 #pragma warning restore CS1591
