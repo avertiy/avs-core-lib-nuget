@@ -19,6 +19,9 @@ public interface IStartup
 /// </summary>
 public class Startup<TStartupService> : IStartup where TStartupService : class, IStartupService
 {
+    protected string SecretsFolder { get; set; } = ".secrets";
+    protected string SecretsFile { get; set; } = "secrets.json";
+
     protected virtual string ContentRootPath => AppContext.BaseDirectory;
     protected virtual string? AppName => Assembly.GetEntryAssembly()?.GetName().Name;
     protected virtual string ENVIRONMENT { get; set; } = "dev";
@@ -61,13 +64,16 @@ public class Startup<TStartupService> : IStartup where TStartupService : class, 
     {
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     protected virtual IConfigurationRoot SetupConfiguration(IConfigurationBuilder builder)
     {
         builder.AddInMemoryCollection();
         builder.AddEnvironmentVariables();
         builder.AddAppSettings(ENVIRONMENT);
         if (CustomUserSecretsEnabled)
-            builder.AddCustomUserSecrets(AppName);
+            builder.AddCustomUserSecrets(AppName, SecretsFolder, SecretsFile);
         return builder.Build();
     }
 

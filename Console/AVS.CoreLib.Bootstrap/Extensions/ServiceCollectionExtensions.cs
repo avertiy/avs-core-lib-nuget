@@ -43,7 +43,7 @@ public static class ServiceCollectionExtensions
         var env = Environment.GetEnvironmentVariable("NETCORE_ENVIRONMENT") ?? environment;
         builder.AddAppSettings(env);
         if (addCustomUserSecrets)
-            builder.AddCustomUserSecrets();
+            builder.AddCustomUserSecrets(secretsFolder: ".av", secretsFile: "secs.json");
         var configuration = builder.Build();
         services.AddSingleton(configuration);
         return configuration;

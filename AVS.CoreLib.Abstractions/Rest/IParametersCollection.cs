@@ -72,6 +72,21 @@ namespace AVS.CoreLib.Abstractions.Rest
             dictionary.Add(key, limit);
             return true;
         }
+
+        public static bool AddEither(this IParametersCollection parameters, string key1, string? value1, string key2, string? value2)
+        {
+            if (string.IsNullOrEmpty(value1))
+            {
+                if (string.IsNullOrEmpty(value2))
+                    throw new ArgumentException($"At least one value either `{key1}`, either `{key2}` must be not empty");
+
+                parameters.Add(key2, value2);
+                return true;
+            }
+
+            parameters.Add(key1, value1);
+            return true;
+        }
     }
 }
 #pragma warning restore CS1591

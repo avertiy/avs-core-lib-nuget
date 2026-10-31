@@ -20,6 +20,19 @@ namespace AVS.CoreLib.Abstractions.Rest
         /// </summary>
         ApiKey
     }
+
+    public enum QueryMode
+    {
+        Default = 0,
+        /// <summary>
+        /// query "hot" live data
+        /// </summary>
+        Live = 1,
+        /// <summary>
+        /// query "cold" historical data
+        /// </summary>
+        Historical =2
+    }
 }
 
 #pragma warning restore CS1591

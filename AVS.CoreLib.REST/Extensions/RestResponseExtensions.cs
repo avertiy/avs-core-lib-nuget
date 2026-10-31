@@ -153,8 +153,6 @@ public static class RestResponseExtensions
             throw new ForbiddenApiException(response);
     }
 
-
-
     internal static RestResponse ToRestResponse(this HttpWebResponse response, IRequest request, string source)
     {
         var result = new RestResponse(response.StatusCode, source) { Request = request };
@@ -181,6 +179,7 @@ public static class RestResponseExtensions
 
         return result;
     }
+
 }
 
 public enum JsonType

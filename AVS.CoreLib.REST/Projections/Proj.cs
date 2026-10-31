@@ -56,21 +56,39 @@ public sealed class Proj<TResult>
     }
 
     /// <summary>
-    /// Deserializes json text into <typeparamref name="TConcrete"/> in case <typeparamref name="TResult"/> is an abtraction/interface
+    /// Deserializes json text into <typeparamref name="T"/> in case <typeparamref name="TResult"/> is an abtraction/interface
     /// <code>
     ///  var projection = new Proj{ITrade}(json);
     ///  var trade = projection.Map{BinanceTrade}();
     /// </code>
     /// </summary>
-    public TResult? Map<TConcrete>(Action<TConcrete>? action = null) where TConcrete : class, TResult
+    public TResult? Map<T>(Action<T>? action = null) where T : class, TResult
     {
-        var obj = JsonHelper.Deserialize<TConcrete>(JsonText);
+        var obj = JsonHelper.Deserialize<T>(JsonText);
 
         if (obj == null)
             return default;
 
         action?.Invoke(obj);
         return obj;
+    }
+
+    /// <summary>
+    /// Deserilize json text into <typeparamref name="T"/>, <paramref name="convert"/> converts <typeparamref name="T"/> object into <typeparamref name="TResult"/>
+    /// <code>
+    /// Response{IFuturesOrder} response = restResponse.ToResponse{IFuturesOrder}(proj => 
+    ///     proj.Map{OKXOrder}(x => new FuturesOrder(){...}));
+    /// </code>
+    /// </summary>
+    public TResult? Map<T>(Func<T, TResult> convert)
+    {
+        var obj = JsonHelper.Deserialize<T>(JsonText);
+
+        if (obj == null)
+            return default;
+
+        var result = convert(obj);
+        return result;
     }
 
     /// <summary>
@@ -108,14 +126,15 @@ public sealed class Proj<TResult>
     /// <summary>
     /// Deserilize json text into <typeparamref name="T"/> then map with mapper to <typeparamref name="TResult"/>
     /// </summary>
-    public TResult? MapWithMapper<T>(Func<T, TResult> mapper)
+    [Obsolete("Use proj.Map<T>(Func<T,TResult>)")]
+    public TResult? MapWithMapper<T>(Func<T, TResult> convert)
     {
         var obj = JsonHelper.Deserialize<T>(JsonText);
 
         if (obj == null)
             return default;
 
-        var result = mapper(obj);
+        var result = convert(obj);
         return result;
     }
 

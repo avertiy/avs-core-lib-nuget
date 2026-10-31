@@ -17,16 +17,21 @@ public static class CustomUserSecrets
         set => _userSecretsPath = value;
     }
 
-    public static string GetUserSecretsPath(string? applicationName = null, bool createPathIfNotExists = true, bool createEmptySecretsFileIfNotExists = false)
+    /// <summary>
+    /// gets path to user secrets 
+    /// </summary>
+    public static string GetUserSecretsPath(string? applicationName = null,
+            string secretsFolder = ".secrets",
+            string secretsFileName = "secrets.json",
+            bool createPathIfNotExists = true, bool createEmptySecretsFileIfNotExists = false)
     {
         if (_userSecretsPath == null)
         {
             var appName = applicationName ?? Assembly.GetEntryAssembly()?.GetName().Name ??
                 Assembly.GetCallingAssembly().GetName().Name;
             var userFolder = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            _userSecretsPath = Path.Combine(userFolder, ".secrets", appName!, "secrets.json");
+            _userSecretsPath = Path.Combine(userFolder, secretsFolder, appName!, secretsFileName);
         }
-
 
         if (Enabled && createPathIfNotExists)
         {

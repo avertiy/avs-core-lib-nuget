@@ -5,9 +5,12 @@ namespace AVS.CoreLib.BootstrapTools.Extensions;
 
 public static class ConfigurationBuilderExtensions
 {
-    public static void AddCustomUserSecrets(this IConfigurationBuilder builder, string? appName = null, bool reloadOnChange = false)
+    /// <summary>
+    /// Add custom user secrets configuration
+    /// </summary>
+    public static void AddCustomUserSecrets(this IConfigurationBuilder builder, string? appName = null, string secretsFolder =".secrets", string secretsFile ="secrets.json", bool reloadOnChange = false)
     {
-        var path = CustomUserSecrets.GetUserSecretsPath(appName);
+        var path = CustomUserSecrets.GetUserSecretsPath(appName, secretsFolder, secretsFile);
         builder.AddJsonFile(path, optional: true, reloadOnChange);
     }
 
