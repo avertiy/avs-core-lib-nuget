@@ -61,32 +61,4 @@ namespace AVS.CoreLib.Collections
             this.Add(key, new DualObject<TValue1, TValue2>(value1, value2));
         }
     }
-
-
-    /*
-    public class MultiKeyDictionary<TKey1, TKey2, TValue> : BaseDictionary<(TKey1 key1, TKey2 key2), TValue>
-    {
-        public MultiKeyDictionary()
-        {
-        }
-
-        public MultiKeyDictionary(int capacity) : base(capacity)
-        {
-        }
-
-        public MultiKeyDictionary(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
-
-        public TValue this[TKey1 key1, TKey2 key2]
-        {
-            get => this[(key1, key2)];
-            set => this[(key1, key2)] = value;
-        }
-
-        public void Add(TKey1 key1, TKey2 key2, TValue value)
-        {
-            this.Add((key1,key2), value);
-        }
-    }*/
 }

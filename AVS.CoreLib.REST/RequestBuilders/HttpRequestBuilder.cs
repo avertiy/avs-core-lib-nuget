@@ -5,7 +5,6 @@ using AVS.CoreLib.Extensions.Collections;
 using AVS.CoreLib.Extensions.Web;
 using AVS.CoreLib.REST.Extensions;
 using AVS.CoreLib.REST.Helpers;
-using AVS.CoreLib.Utilities;
 #pragma warning disable CS1591
 namespace AVS.CoreLib.REST.RequestBuilders
 {
@@ -72,7 +71,7 @@ namespace AVS.CoreLib.REST.RequestBuilders
                         if (Authenticator == null)
                             throw new Exception("Authenticator must be initialized");
 
-                        var qs = request.Data?.ToHttpQueryString() ?? string.Empty;
+                        var qs = request.Query.ToHttpQueryString() ?? string.Empty;
                         var signature = Authenticator.Sign(qs, out var bytes);
                         httpRequest.Headers["Key"] = Authenticator.PublicKey;
                         httpRequest.Headers["Sign"] = signature.ToBase64String();
@@ -85,67 +84,13 @@ namespace AVS.CoreLib.REST.RequestBuilders
                 default:
                     if (httpRequest.Method != "GET")
                     {
-                        var qs = request.Data?.ToHttpQueryString() ?? string.Empty;
+                        var qs = request.Body.ToHttpQueryString() ?? string.Empty;
                         var bytes = Authenticator.Encoding.GetBytes(qs);
                         httpRequest.WriteBytes(bytes);
                     }
                     break;
             }
         }
-
-        ///// <summary>
-        ///// use OnRequestCreating to add something to each payload
-        ///// for example private endpoints require tonce/nonce to be provided in payload  
-        ///// </summary>
-        //[Obsolete("Use Build(IRequest request)")]
-        //protected virtual void OnRequestCreating(IEndpoint endpoint, IPayload data)
-        //{
-        //    if (endpoint.AuthType == AuthType.ApiKey)
-        //    {
-        //        // some endpoints require command to be added into payload
-        //        if (AddCommandToRequestData)
-        //            data.Add("command", endpoint.Command);
-
-        //        // some endpoints use tonce, which is slight ly different from nonce
-        //        if (UseTonce)
-        //            data.Add("tonce", NonceHelper.GetTonce());
-        //        else
-        //            data.Add("nonce", NonceHelper.GetNonce().ToString());
-        //    }
-        //}
-
-        ///// <summary>
-        ///// private endpoints require request headers to be provided
-        ///// by default sets Headers["Key"] = public_key; Headers["Sign"] = signature
-        ///// </summary>
-        //[Obsolete("Use Build(IRequest request)")]
-        //protected virtual void OnRequestCreated(HttpWebRequest httpRequest, IEndpoint endpoint, IPayload data)
-        //{
-        //    switch (endpoint.AuthType)
-        //    {
-        //        case AuthType.ApiKey:
-        //            {
-        //                if (Authenticator == null)
-        //                    throw new Exception("Authenticator must be initialized");
-
-        //                var signature = Authenticator.Sign(data.ToHttpQueryString(), out var bytes);
-        //                httpRequest.Headers["Key"] = Authenticator.PublicKey;
-        //                httpRequest.Headers["Sign"] = signature.ToBase64String();
-        //                //work around for stupid .net protocol violation check
-        //                httpRequest.Method = "POST";
-        //                httpRequest.WriteBytes(bytes);
-        //                httpRequest.Method = endpoint.Method;
-        //                break;
-        //            }
-        //        default:
-        //            if (httpRequest.Method != "GET")
-        //            {
-        //                var bytes = Authenticator.Encoding.GetBytes(data.ToHttpQueryString());
-        //                httpRequest.WriteBytes(bytes);
-        //            }
-        //            break;
-        //    }
-        //}
     }
 
     public class HttpRequestBuilder<TAuthenticator> : IHttpRequestBuilder
@@ -215,7 +160,7 @@ namespace AVS.CoreLib.REST.RequestBuilders
                     }
                 default:
                     {
-                        var bytes = Authenticator.Encoding.GetBytes(input.Data.ToHttpQueryString());
+                        var bytes = Authenticator.Encoding.GetBytes(input.Body.ToHttpQueryString());
                         httpRequest.WriteBytes(bytes);
                         break;
                     }

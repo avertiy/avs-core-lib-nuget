@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Text.Json;
@@ -20,6 +21,7 @@ namespace AVS.CoreLib.Dates
     [TypeConverter(typeof(DateRangeTypeConverter))]
     [JsonConverter(typeof(DateRangeJsonConverter))]
     [Description("Represent a date range [from;to] where from and to are DateTime values. For a convenience DateRange can be parsed from a string literals, short literals like 3h - 3 hours, 999D - 999 days etc. and text literals like : recent, today, yesterday, past-week, etc.")]
+    [DebuggerDisplay("{ToString(\"D\")}")]
     public readonly struct DateRange
     {
         public DateTime From { get; }
@@ -190,9 +192,12 @@ namespace AVS.CoreLib.Dates
         /// </param>
         public string ToString(string format)
         {
-            return format == "P" 
-                ? $"[{From:G} - {To:G}]"
-                : $"[{From.ToString(format)};{To.ToString(format)}]";
+            return format switch
+            {
+                "P" => $"[{From:G} - {To:G}]",
+                "D" => Days > 2 ? $"[{From:G};{To:G}] ({Days} days)" : $"[{From:G};{To:G}] ({Hours} hours)",
+                _ => $"[{From.ToString(format)};{To.ToString(format)}]"
+            };
         }
 
         #region static methods

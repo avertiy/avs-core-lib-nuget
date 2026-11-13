@@ -44,12 +44,12 @@ public static class RestResponseProjectionExtensions
             return response;
 
         var json = restResponse.Content;
-
         var proj = new Proj<T>(json);
 
         try
         {
             response.Data = map(proj);
+            response.Error = proj.Error;
         }
         catch(Exception ex)
         {
@@ -122,44 +122,3 @@ public static class RestResponseProjectionExtensions
         return response;
     }
 }
-
-/*
-    /// <summary>
-    /// Creates <see cref="Response{T}"/>
-    /// when response is successful content (json) will be deserialized by means of <see cref="Proj{T}"/> and Map function.
-    /// </summary>
-    public static Response<T> ToResponse<T>(this RestResponse restResponse) where T : new()
-    {
-        var isSuccess = restResponse.IsSuccessful();
-        var response = Response.Create<T>(restResponse.Source, content: restResponse.Content, restResponse.Error, restResponse.Request);
-
-        if (!isSuccess)
-            return response;
-
-        var json = restResponse.Content;
-
-        var proj = new Proj<T>(json);
-        response.Data = proj.Map();
-        return response;
-    }
-
-    /// <summary>
-    /// Creates <see cref="Response{T}"/>
-    /// when response is successful content (json) will be deserialized by means of <see cref="Proj{T}"/> and Map function.
-    /// </summary>
-    /// <typeparam name="T">abstraction / interface</typeparam>
-    /// <typeparam name="TType">concrete type for deserialization</typeparam>
-    public static Response<T> ToResponse<T, TType>(this RestResponse restResponse) where TType : class, T, new()
-    {
-        var isSuccess = restResponse.IsSuccessful();
-        var response = Response.Create<T>(restResponse.Source, content: restResponse.Content, restResponse.Error, restResponse.Request);
-
-        if (!isSuccess)
-            return response;
-
-        var json = restResponse.Content;
-
-        var proj = new Proj<T>(json);
-        response.Data = proj.Map<TType>();
-        return response;
-    }*/

@@ -1,23 +1,32 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Runtime.Serialization;
+using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Stringify;
 
 namespace AVS.CoreLib.Collections
 {
+    [DebuggerDisplay("{ToString()}")]
     public abstract class BaseDictionary<TKey, TValue> : IDictionary<TKey, TValue> where TKey : notnull
     {
-        protected IDictionary<TKey, TValue> Data;
-        protected bool ShouldSerializeData() => false;
+        private Dictionary<TKey, TValue> _data;
+        protected IDictionary<TKey, TValue> Data => _data;
+        protected virtual bool ShouldSerialize_Data() => false;
+        public int Count => _data.Count;
+        public bool IsReadOnly => Data.IsReadOnly;
+        public virtual int Capacity => _data.Capacity;
 
         protected BaseDictionary()
         {
-            Data = new Dictionary<TKey, TValue>();
+            _data = new Dictionary<TKey, TValue>();
         }
 
         protected BaseDictionary(int capacity)
         {
-            Data = new Dictionary<TKey, TValue>(capacity);
+            _data = new Dictionary<TKey, TValue>(capacity);
         }
 
         protected BaseDictionary(SerializationInfo info, StreamingContext context)
@@ -25,14 +34,22 @@ namespace AVS.CoreLib.Collections
             throw new System.NotImplementedException();
         }
 
+        /// <summary>
+        /// Ensures that the dictionary can hold up to 'capacity' entries without any further expansion of its backing storage
+        /// </summary>
+        public virtual int EnsureCapacity(int capacity)
+        {
+            return _data.EnsureCapacity(capacity);
+        }
+
         public virtual IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            return Data.GetEnumerator();
+            return _data.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return Data.GetEnumerator();
+            return _data.GetEnumerator();
         }
 
         public virtual void Add(KeyValuePair<TKey, TValue> item)
@@ -42,7 +59,7 @@ namespace AVS.CoreLib.Collections
 
         public virtual void Clear()
         {
-            Data.Clear();
+            _data.Clear();
         }
 
         public virtual bool Contains(TKey key, TValue value)
@@ -52,7 +69,7 @@ namespace AVS.CoreLib.Collections
 
         public virtual bool Contains(KeyValuePair<TKey, TValue> item)
         {
-            return Data.Contains(item);
+            return _data.Contains(item);
         }
 
         public virtual void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
@@ -62,63 +79,70 @@ namespace AVS.CoreLib.Collections
 
         public virtual bool Remove(KeyValuePair<TKey, TValue> item)
         {
-            return Data.Remove(item);
+            return _data.Remove(item.Key);
         }
 
-        public int Count => Data.Count;
+        
 
         public virtual bool ShouldSerializeCount()
         {
             return Count > 1;
         }
 
-        public bool IsReadOnly => Data.IsReadOnly;
+        
 
         public virtual bool ShouldSerializeIsReadOnly() => false;
 
         public virtual void Add(TKey key, TValue value)
         {
-            Data.Add(key, value);
+            _data.Add(key, value);
         }
 
         public virtual bool ContainsKey(TKey key)
         {
-            return Data.ContainsKey(key);
+            return _data.ContainsKey(key);
         }
 
         public virtual bool Remove(TKey key)
         {
-            return Data.Remove(key);
+            return _data.Remove(key);
         }
 
         public virtual bool TryGetValue(TKey key, out TValue value)
         {
-            return Data.TryGetValue(key, out value);
+            return _data.TryGetValue(key, out value);
         }
 
         public virtual TValue this[TKey key]
         {
-            get => Data[key];
-            set => Data[key] = value;
+            get => _data[key];
+            set => _data[key] = value;
         }
 
-        public virtual ICollection<TKey> Keys => Data.Keys;
+        public virtual ICollection<TKey> Keys => _data.Keys;
 
         protected virtual bool ShouldSerializeKeys()
         {
             return false;
         }
 
-        public virtual ICollection<TValue> Values => Data.Values;
+        public virtual ICollection<TValue> Values => _data.Values;
 
         protected virtual bool ShouldSerializeValues()
         {
             return false;
         }
 
+
         public override string ToString()
         {
-            return Data.Stringify(options: default);
+            var str = AsString().Truncate();
+            return $"Dicitonary<{typeof(TKey).Name},{typeof(TValue).Name} > #{Count} of {Capacity} {str}";
+        }
+
+        public string AsString()
+        {
+            return _data.Stringify(options: default);
         }
     }
 }

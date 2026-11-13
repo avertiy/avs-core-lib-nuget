@@ -60,6 +60,25 @@ public class ProxyProj<T, TResult>
 
     /// <summary>
     /// Deserializes json text into <typeparamref name="TType"/>, means of selector picks T[] data and produces the result by means of <see cref="Proxy"/>
+    /// </summary>
+    /// <typeparam name="TType">The concrete type for deserialization</typeparam>
+    /// <param name="selector">Selector to pick the data from deserialized object</param>
+    /// <param name="action">The action to process each array item [optional]</param>
+    public TResult? MapData<TType>(Func<TType, T> selector, Action<T>? action = null)
+    {
+        var obj = JsonHelper.Deserialize<TType>(JsonText);
+
+        if (obj != null)
+        {
+            var data = selector(obj);
+            Proxy.Add(data);
+        }
+
+        return Proxy.Create();
+    }
+
+    /// <summary>
+    /// Deserializes json text into <typeparamref name="TType"/>, means of selector picks T[] data and produces the result by means of <see cref="Proxy"/>
     /// <code>
     ///  var proxy = (IProxy{OKXPosition,UserPositions})builder;
     ///  Response{UserPositions} response = restResponse.ToResponse(proxy, proj => proj.MapArray{OKXResponse{OKXPosition}});

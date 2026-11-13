@@ -22,7 +22,10 @@ namespace AVS.CoreLib.REST.Models
         public Dictionary<string, string>? Headers { get; set; }
         //public Dictionary<string, object> Data { get; set; } = new();
 
-        public IParametersCollection Data { get; set; } = new ParametersCollection();
+        [Obsolete("Use Query/Body instead")]
+        public IParametersCollection Data => Query;
+        public IParametersCollection Query { get; } = new ParametersCollection();
+        public IParametersCollection Body { get; } = new ParametersCollection();
 
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]

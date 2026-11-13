@@ -145,6 +145,46 @@ namespace AVS.CoreLib.Extensions
 
         #endregion
 
+        /// <summary>
+        /// matches strings
+        /// </summary>
+        /// <returns>returns true when string are equal or one contains the other</returns>
+        public static bool Match(this string str, string other, StringComparison comparison = StringComparison.OrdinalIgnoreCase)
+        {
+            if (str.Equals(other, comparison))
+                return true;
+
+            if (str.Length == other.Length)
+                return false;
+
+            if (str.Length == 0 || other.Length == 0)
+                return false;
+
+            if (str.Length > other.Length)
+                return str.StartsWith(other, comparison);
+
+            if (other.StartsWith(str, comparison))
+                return true;
+
+            return false;
+        }
+
+        /// <summary>
+        /// Normalize strings if needed, then matches them
+        /// </summary>
+        /// <returns>returns true when string are equal or one contains the other</returns>
+        public static bool SmartMatch(this string str, string other, StringComparison comparison = StringComparison.OrdinalIgnoreCase)
+        {
+            if (str.ContainsAny('-', '_',' ') || other.ContainsAny('-', '_', ' '))
+            {
+                var normalizedStr = str.Replace("_", "-").Replace(" ", "-").Replace("-","");
+                var normalizedOtherStr = other.Replace("_", "-").Replace(" ", "-").Replace("-", "");
+                return normalizedStr.Match(normalizedOtherStr, comparison);
+            }
+
+            return str.Match(other, comparison);
+        }
+
         #region StartsWith and EndsWith methods
         public static bool StartsWith(this string value, params string[] values)
         {
@@ -441,6 +481,9 @@ namespace AVS.CoreLib.Extensions
             return str.EndsWith(end) ? str.Substring(0, str.Length - end.Length) : str;
         }
 
+        /// <summary>
+        /// Replaces all occurrences of the specified characters in the current instance with a new character.
+        /// </summary>
         public static string ReplaceAll(this string input, char[] oldChars, char newChar)
         {
             var sb = new StringBuilder(input);
@@ -451,6 +494,9 @@ namespace AVS.CoreLib.Extensions
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Replaces all occurrences of the specified strings in the current instance with a new string.    
+        /// </summary>
         public static string ReplaceAll(this string input, string[] values, string replacement = "")
         {
             var sb = new StringBuilder(input);

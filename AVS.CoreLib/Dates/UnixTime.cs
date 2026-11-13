@@ -6,27 +6,27 @@ using AVS.CoreLib.Enums;
 
 namespace AVS.CoreLib.Dates;
 
-[DebuggerDisplay("{Timestamp} ({Unit}, {LocalDateTime})")]
+[DebuggerDisplay("{Timestamp} ({Unit}, {DateTime:G})")]
 [JsonConverter(typeof(UnixTimeJsonConverter))]
 public readonly record struct UnixTime(long Timestamp) : IComparable<UnixTime> //Timestamp in milliseconds
 {
     public static string DateTimeFormat { get; set; } = "u";// u - universal date-time: 2009-06-15 13:45:00Z 
 
-    public DateTimeOffset Utc => DateTimeHelper.GetDateTimeOffset(Timestamp);
-    public DateTimeOffset LocalDateTime => Utc.ToLocalTime();
-
-    public long TimestampInSeconds => DateTimeHelper.NormalizeToSeconds(Timestamp);
-    //public long TimestampInMilliseconds => DateTimeHelper.NormalizeToSeconds(Timestamp);
-
     public TimeUnit Unit => DateTimeHelper.GetTimeUnit(Timestamp);
 
-    public DayOfWeek DayOfWeek => Utc.Date.DayOfWeek;
-    public DateTime Date => Utc.Date;
+    public DateTime DateTime => DateTimeHelper.FromUnixTimestamp(Timestamp);
+    public DateTime Date => DateTime.Date;
+    public DayOfWeek DayOfWeek => Date.DayOfWeek;
+
+    public DateTimeOffset Utc => DateTimeHelper.GetDateTimeOffset(Timestamp);
+    public DateTimeOffset LocalDateTime => Utc.ToLocalTime();
 
     public UnixTime(DateTime dateTime)
     : this(dateTime.ToUnixTimeMs())
     {
     }
+
+    public long ToSeconds() => DateTimeHelper.NormalizeToSeconds(Timestamp);
 
     public UnixTime AddDays(int days)
     {
@@ -183,7 +183,7 @@ public class UnixTimeJsonConverter : JsonConverter<UnixTime>
         {
             case JsonFormat.Array:
                     writer.WriteStartArray();
-                    writer.WriteNumberValue(obj.TimestampInSeconds);
+                    writer.WriteNumberValue(obj.ToSeconds());
                     writer.WriteStringValue(obj.LocalDateTime.ToString(UnixTime.DateTimeFormat));
                     writer.WriteEndArray();
                 break;
@@ -192,7 +192,7 @@ public class UnixTimeJsonConverter : JsonConverter<UnixTime>
                 break;
             case JsonFormat.Value:
             default:
-                writer.WriteNumberValue(obj.TimestampInSeconds);
+                writer.WriteNumberValue(obj.ToSeconds());
                 break;                
         }
     }

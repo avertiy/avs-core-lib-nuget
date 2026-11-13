@@ -11,8 +11,11 @@ namespace AVS.CoreLib.Abstractions.Rest
         string HttpMethod { get; set; }
         string BaseUrl { get; set; }
         string Path { get; set; }
-        Dictionary<string, string>? Headers { get; set; }
-        IParametersCollection Data { get; set; }
+        Dictionary<string, string>? Headers { get; }
+        //[Obsolete("Use Query/Body instead")]
+        //IParametersCollection Data { get; }
+        IParametersCollection Query { get; }
+        IParametersCollection Body { get; }
 
         /// <summary>
         /// Timeout in milliseconds

@@ -4,6 +4,9 @@ using System.Text;
 
 namespace AVS.CoreLib.Collections;
 
+/// <summary>
+/// Multi-value where one key can have multiple values. The values are stored in a list and can be accessed by index.
+/// </summary>
 [DebuggerDisplay("{ToString()}")]
 public sealed class MultiDictionary<TKey, TValue> : BaseDictionary<TKey, IList<TValue>> where TKey : notnull
 {

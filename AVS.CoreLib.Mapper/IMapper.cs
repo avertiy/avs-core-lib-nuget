@@ -23,17 +23,27 @@ namespace AVS.CoreLib.Mapper
     /// </summary>
     public interface IMapper
     {
+        /// <summary>
+        /// returns all registered mappingKeys
+        /// </summary>
         string[] Keys { get; }
+
+        /// <summary>
+        /// Registers delegate by given mappingKey
+        /// </summary>
         void RegisterDelegate(string mappingKey, Delegate @delegate);
+        /// <summary>
+        /// returns delegate by given mappinKey
+        /// </summary>
         Delegate this[string mappingKey] { get; }
 
         /// <summary>
-        /// Registers one-to-one mapping to PRODUCE NEW <see cref="TDestination"/> object <seealso cref="Map{TSource, TDestination}(TSource, string)"/>
+        /// Registers one-to-one mapping to PRODUCE NEW <typeparamref name="TDestination"/> object <seealso cref="Map{TSource, TDestination}(TSource, string)"/>
         /// </summary>
         void Register<TSource, TDestination>(Func<TSource, TDestination> @delegate);
 
         /// <summary>
-        /// Executes one-to-one mapping to PRODUCE NEW <see cref="TDestination"/> object
+        /// Executes one-to-one mapping to PRODUCE NEW <typeparamref name="TDestination"/> object
         /// </summary>
         /// <typeparam name="TSource">source type</typeparam>
         /// <typeparam name="TDestination">destination type</typeparam>
@@ -42,13 +52,13 @@ namespace AVS.CoreLib.Mapper
         TDestination Map<TSource, TDestination>(TSource source, string delegateRef);
 
         /// <summary>
-        /// Registers type mapping delegate to update existing <see cref="TTarget"/> object
+        /// Registers type mapping delegate to update existing <typeparamref name="TTarget"/> object
         /// <seealso cref="Update{TTarget, TSource}(TTarget, TSource, string)"/>
         /// </summary>
         void RegisterUpdate<TTarget, TSource>(Action<TTarget, TSource> @delegate);
 
         /// <summary>
-        /// Executes one-to-one mapping to UPDATE EXISTING <see cref="TTarget"/> object
+        /// Executes one-to-one mapping to UPDATE EXISTING <typeparamref name="TTarget"/> object
         /// </summary>
         /// <param name="target">target object</param>
         /// <param name="source">source object</param>

@@ -1,10 +1,7 @@
 ﻿#nullable enable
-
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace AVS.CoreLib.Abstractions.Responses
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public interface IResponse
     {
         /// <summary>
@@ -38,9 +35,14 @@ namespace AVS.CoreLib.Abstractions.Responses
     /// </summary>
     public interface IResponse<T> : IResponse
     {
-        /// <summary>
-        /// 
-        /// </summary>
         T? Data { get; set; }
-    }    
+    }
+
+    public interface IRESTApiResponse
+    {
+        bool Success { get; }
+        string GetError();
+    }
 }
+
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member

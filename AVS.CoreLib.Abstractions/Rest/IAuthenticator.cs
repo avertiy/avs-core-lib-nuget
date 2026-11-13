@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace AVS.CoreLib.Abstractions.Rest
 {
@@ -19,6 +20,24 @@ namespace AVS.CoreLib.Abstractions.Rest
         byte[] Sign(string payload, out byte[] bytes);
 
         byte[] ComputeHash(byte[] bytes);
+    }
+
+    public static class AuthenticatorExtensions
+    {
+        public static string GetSignature(this IAuthenticator authenticator, string payload, EncodingType encodingType = EncodingType.Base64)
+        {
+            var bytes = authenticator.Sign(payload);
+            var signature = encodingType == EncodingType.Base64
+                ? Convert.ToBase64String(bytes)
+                : Convert.ToHexString(bytes);
+            return signature;
+        }
+    }
+
+    public enum EncodingType
+    {
+        Base64 = 0,
+        Hex = 1,
     }
 }
 

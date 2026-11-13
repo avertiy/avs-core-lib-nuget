@@ -4,10 +4,13 @@ using System.Linq;
 
 namespace AVS.CoreLib.Mapper.Extensions
 {
+    /// <summary>
+    /// Map with TContext extensions
+    /// </summary>
     public static class MapperMapWithContextExtensions
     {
         /// <summary>
-        /// Register type mapping delegate to PRODUCE NEW <see cref="TDestination"/>
+        /// Register type mapping delegate to PRODUCE NEW <typeparamref name="TDestination"/>
         /// <seealso cref="Map{TSource, TDestination, TContext}"/>
         /// </summary>
         /// <typeparam name="TSource">source type</typeparam>
@@ -36,7 +39,7 @@ namespace AVS.CoreLib.Mapper.Extensions
         }
 
         /// <summary>        
-        /// Execute one-to-one mapping to PRODUCE NEW <see cref="TDestination"/> object
+        /// Execute one-to-one mapping to PRODUCE NEW <typeparamref name="TDestination"/> object
         /// <code>
         ///	var model = mapper.Map&lt;Model,Source,Context&gt;(source, ctx);
         /// </code>
@@ -63,7 +66,7 @@ namespace AVS.CoreLib.Mapper.Extensions
         }
 
         /// <summary>
-        /// Execute many-to-many mapping to PRODUCE NEW <see cref="TDestination"/> objects        
+        /// Execute many-to-many mapping to PRODUCE NEW <typeparamref name="TDestination"/> objects        
         /// <code>
         /// var entities = mapper.MapAll&lt;Source,Context,Enity&gt;(items, ctx, x=> ...(post action) );
         /// </code>

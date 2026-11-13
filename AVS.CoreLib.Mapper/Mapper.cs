@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace AVS.CoreLib.Mapper
 {
     /// <summary>
@@ -25,15 +26,20 @@ namespace AVS.CoreLib.Mapper
     /// </summary>
     public class Mapper : IMapper
     {
-        protected Dictionary<string, Delegate> Delegates { get; set; } = new();
+        protected ConcurrentDictionary<string, Delegate> Delegates { get; set; } = new();
+
 
         public string[] Keys => Delegates.Keys.ToArray();
 
+
         public void RegisterDelegate(string mappingKey, Delegate @delegate)
         {
-            Delegates.Add(mappingKey, @delegate);
+            Delegates.AddOrUpdate(mappingKey, @delegate, (key, @del) => @del);//Delegates.Add(mappingKey, @delegate);
         }
 
+        /// <summary>
+        /// gets Delegate by mappingKey
+        /// </summary>
         public Delegate this[string mappingKey]
         {
             get
@@ -47,7 +53,7 @@ namespace AVS.CoreLib.Mapper
 
         #region Map
         /// <summary>
-        /// Register type mapping delegate to PRODUCE NEW <see cref="TResult"/>
+        /// Register type mapping delegate to PRODUCE NEW <typeparamref name="TResult"/>
         /// <seealso cref="Map{TSource, TDestination}(TSource, string)"/>
         /// </summary>
         /// <typeparam name="TSource">source type</typeparam>
@@ -60,7 +66,7 @@ namespace AVS.CoreLib.Mapper
         }
 
         /// <summary>        
-        /// Execute one-to-one mapping to PRODUCE NEW <see cref="TDestination"/> object
+        /// Execute one-to-one mapping to PRODUCE NEW <typeparamref name="TDestination"/> object
         /// <code>
         ///	var model = mapper.Map&lt;Source,Model&gt;(source, delegateRef:nameof(MapperProfile.MapSourceToModel))
         /// </code>
@@ -87,7 +93,7 @@ namespace AVS.CoreLib.Mapper
 
         #region Update
         /// <summary>
-        /// Register type mapping delegate to update existing <see cref="TTarget"/> object
+        /// Register type mapping delegate to update existing <typeparamref name="TTarget"/> object
         /// <seealso cref="Update{TTarget, TSource}(TTarget, TSource, string)"/>
         /// <code>
         ///  mapper.RegisterUpdate&lt;Entity,Model&gt;(entity, model, key: UpdateEntityFromModel);
@@ -113,7 +119,7 @@ namespace AVS.CoreLib.Mapper
         }
 
         /// <summary>        
-        /// Execute one-to-one mapping to UPDATE EXISTING <see cref="TTarget"/> object
+        /// Execute one-to-one mapping to UPDATE EXISTING <typeparamref name="TTarget"/> object
         /// <code>
         ///	var updatedEntity = mapper.Update&lt;Entity,Model&gt;(existingEntity, model, delegateRef: nameof(MapperProfile.UpdateEntityFromModel));
         /// </code>
@@ -143,3 +149,4 @@ namespace AVS.CoreLib.Mapper
         #endregion
     }
 }
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member

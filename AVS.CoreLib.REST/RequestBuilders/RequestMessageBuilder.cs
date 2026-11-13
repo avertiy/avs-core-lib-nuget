@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -50,9 +51,9 @@ namespace AVS.CoreLib.REST.RequestBuilders
         {
             if (request.AuthType == AuthType.ApiKey)
                 if (UseTonce)
-                    request.Data["tonce"] = NonceHelper.GetTonce();
+                    request.Query["tonce"] = NonceHelper.GetTonce();
                 else
-                    request.Data["nonce"] = NonceHelper.GetNonce().ToString();
+                    request.Query["nonce"] = NonceHelper.GetNonce().ToString();
         }
 
         protected virtual HttpRequestMessage CreateHttpRequestMessage(IRequest request)
@@ -60,7 +61,10 @@ namespace AVS.CoreLib.REST.RequestBuilders
             var url = request.GetFullUrl(OrderQueryStringParameters);
             var httpMethod = new HttpMethod(request.HttpMethod);
             var requestMessage = new HttpRequestMessage(httpMethod, url);
-            var queryString = request.Data.ToHttpQueryString(orderByKey: OrderQueryStringParameters);
+
+            var queryString = request.Body.Any()
+                ? request.Body.ToHttpQueryString(orderByKey: OrderQueryStringParameters)
+                : request.Query.ToHttpQueryString(orderByKey: OrderQueryStringParameters);
 
             if (httpMethod != HttpMethod.Get)
                 requestMessage.Content = new StringContent(queryString);

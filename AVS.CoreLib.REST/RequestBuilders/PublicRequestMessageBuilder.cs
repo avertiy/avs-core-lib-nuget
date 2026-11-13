@@ -6,7 +6,6 @@ using System.Text.Json;
 using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.Extensions.Web;
 using AVS.CoreLib.REST.Extensions;
-using AVS.CoreLib.REST.Utilities;
 
 namespace AVS.CoreLib.REST.RequestBuilders
 {
@@ -33,12 +32,12 @@ namespace AVS.CoreLib.REST.RequestBuilders
                 {
                     if (UseApplicationJson)
                     {
-                        string jsonString = JsonSerializer.Serialize(request.Data);
+                        string jsonString = JsonSerializer.Serialize(request.Body);
                         requestMessage.Content = new StringContent(jsonString, Encoding.UTF8, "application/json");
                     }
                     else
                     {
-                        var queryString = request.Data.ToHttpQueryString(orderByKey: OrderQueryStringParameters);
+                        var queryString = request.Body.ToHttpQueryString(orderByKey: OrderQueryStringParameters);
                         requestMessage.Content = new StringContent(queryString);
                     }
                 }

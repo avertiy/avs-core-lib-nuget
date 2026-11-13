@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -12,6 +11,16 @@ namespace AVS.CoreLib.Extensions
 {
     public static class SystemExtensions
     {
+        /// <summary>
+        /// Converts integer value to <typeparamref name="T"/> enum value 
+        /// </summary>
+        public static T ToEnumValue<T>(this int value) where T : struct, Enum => (T)(object)value;
+
+        /// <summary>
+        /// Converts enum value to integer value
+        /// </summary>
+        public static int ToIntValue<T>(this T value) where T : struct, Enum => (int)(object)value;
+
         /// <summary>
         /// Retrieves the description associated with enum value, if defined; otherwise, returns the default value.ToString()
         /// name as a string.

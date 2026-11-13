@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using AVS.CoreLib.Abstractions.Responses;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.REST.Json;
 
@@ -18,6 +19,10 @@ public sealed class Proj<TResult>
     /// response content
     /// </summary>
     public string? JsonText { get; }
+    /// <summary>
+    /// contains error when map fails
+    /// </summary>
+    public string? Error { get; set; }
 
     /// <summary>
     /// Initializes new projection instance
@@ -35,7 +40,7 @@ public sealed class Proj<TResult>
     {
         return JsonHelper.Deserialize<T>(JsonText);
     }
-    
+
     #region Map
     /// <summary>
     /// Deserializes json text into <typeparamref name="TResult"/> value
@@ -74,7 +79,8 @@ public sealed class Proj<TResult>
     }
 
     /// <summary>
-    /// Deserilize json text into <typeparamref name="T"/>, <paramref name="convert"/> converts <typeparamref name="T"/> object into <typeparamref name="TResult"/>
+    /// Deserilize json text into <typeparamref name="T"/>, <paramref name="convert"/>,
+    /// converts deserialized <typeparamref name="T"/> object into <typeparamref name="TResult"/>
     /// <code>
     /// Response{IFuturesOrder} response = restResponse.ToResponse{IFuturesOrder}(proj => 
     ///     proj.Map{OKXOrder}(x => new FuturesOrder(){...}));
@@ -89,6 +95,73 @@ public sealed class Proj<TResult>
 
         var result = convert(obj);
         return result;
+    }
+
+    /// <summary>
+    /// Deserilize json text into <typeparamref name="T"/>,
+    /// validate deserialized object with <paramref name="predicate"/>, 
+    /// if predicate returns true <paramref name="onSucess"/> converts the object into <typeparamref name="TResult"/>,
+    /// otherwise retuns default with error message from <paramref name="getError"/>
+    /// <code>
+    /// Response{IServerTime} response = restResponse.ToResponse{IServerTime}
+    /// (
+    ///     proj => proj.Map{OKXResponse{OKXTime}}(
+    ///         predicate: x => x.Success,
+    ///         onSuccess: x => x.Data[0],
+    ///         getError: x => x.Message        
+    ///     )
+    /// );
+    /// </code>
+    /// </summary>
+    public TResult? Map<T>(Func<T, bool> predicate, Func<T, TResult?> onSucess, Func<T, string?> getError)
+    {
+        var obj = JsonHelper.Deserialize<T>(JsonText);
+
+        if (obj == null)
+            return default;
+
+        if (predicate(obj))
+        {
+            var result = onSucess(obj);
+            return result;
+        }
+        else
+        {
+            Error = getError(obj);
+            return default;
+        }
+    }
+
+    /// <summary>
+    /// Deserilize json text into <typeparamref name="TResponse"/> which is <see cref="IRESTApiResponse"/>
+    /// validates whether the api response is successful
+    /// if success <paramref name="selector"/> converts the object into <typeparamref name="TResult"/>,
+    /// otherwise retuns default with error message
+    /// <code>
+    /// Response{IServerTime} response = restResponse.ToResponse{IServerTime}
+    /// (
+    ///     proj => proj.Map{OKXResponse{OKXTime}}(x => x.Data[0])
+    /// );
+    /// </code>
+    /// </summary>
+    public TResult? MapResponse<TResponse>(Func<TResponse, TResult?> selector)
+        where TResponse : IRESTApiResponse
+    {
+        var response = JsonHelper.Deserialize<TResponse>(JsonText);
+
+        if (response == null)
+            return default;
+
+        if (response.Success)
+        {
+            var result = selector(response);
+            return result;
+        }
+        else
+        {
+            Error = response.GetError();
+            return default;
+        }
     }
 
     /// <summary>
