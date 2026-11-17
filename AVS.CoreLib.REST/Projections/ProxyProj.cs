@@ -64,12 +64,14 @@ public class ProxyProj<T, TResult>
     /// <typeparam name="TType">The concrete type for deserialization</typeparam>
     /// <param name="selector">Selector to pick the data from deserialized object</param>
     /// <param name="action">The action to process each array item [optional]</param>
-    public TResult? MapData<TType>(Func<TType, T> selector, Action<T>? action = null)
+    /// <param name="validate">optional validate deserialized TType object</param>
+    public TResult? MapData<TType>(Func<TType, T> selector, Action<T>? action = null, Action<TType, string>? validate = null)
     {
         var obj = JsonHelper.Deserialize<TType>(JsonText);
 
         if (obj != null)
         {
+            validate?.Invoke(obj, JsonText!);
             var data = selector(obj);
             Proxy.Add(data);
         }
@@ -87,12 +89,14 @@ public class ProxyProj<T, TResult>
     /// <typeparam name="TType">The concrete type for deserialization</typeparam>
     /// <param name="selector">Selector to pick the data (array) from deserialized object</param>
     /// <param name="action">The action to process each array item [optional]</param>
-    public TResult? MapData<TType>(Func<TType, T[]> selector, Action<T>? action = null)
+    /// <param name="validate">optional parameter to validate deserialization</param>
+    public TResult? MapDataArray<TType>(Func<TType, T[]> selector, Action<T>? action = null, Action<TType, string>? validate = null)
     {
         var obj = JsonHelper.Deserialize<TType>(JsonText);
 
         if (obj != null)
         {
+            validate?.Invoke(obj, JsonText!);
             var data = selector(obj);
             foreach (var item in data)
             {

@@ -21,7 +21,7 @@ namespace AVS.CoreLib.REST.Models
         
         public HttpStatusCode StatusCode { get; set; }
 
-        public string? Content { get; set; }
+        public string Content { get; set; }
 
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -63,7 +63,7 @@ namespace AVS.CoreLib.REST.Models
                 if (Error != null)
                     return $"({(int)StatusCode}){reqId} with Error={Error}";
 
-                if (Content != null)
+                if (!string.IsNullOrEmpty(Content))
                 {
                     if (Content.Length <= 360)
                         return $"({StatusCode}){reqId} Content={Content}";
@@ -80,14 +80,15 @@ namespace AVS.CoreLib.REST.Models
 
         public T? Deserialize<T>()
         {
-            if (Content == null)
+            if (string.IsNullOrEmpty(Content))
                 return default;
 
             try
             {
-                return JsonHelper.Deserialize<T>(Content);
+                var data = JsonHelper.Deserialize<T>(Content);
+                return data;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Error = ex.ToString();
                 throw;

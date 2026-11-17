@@ -174,7 +174,10 @@ namespace AVS.CoreLib.REST.Clients
             RateLimiter.Adjust(response.StatusCode);
         }
 
-        protected async ValueTask<(string? content, string? error)> GetContentAndError(HttpResponseMessage responseMessage)
+        /// <summary>
+        /// read content and error text from the response message
+        /// </summary>
+        protected static async ValueTask<(string content, string? error)> GetContentAndError(HttpResponseMessage responseMessage)
         {
             var content = await responseMessage.Content.ReadAsStringAsync();
             string? error;
@@ -183,8 +186,8 @@ namespace AVS.CoreLib.REST.Clients
             if (responseMessage.IsSuccessStatusCode)
             {
                 return ResponseHelper.ContainsError(content, out error)
-                    ? (content, error)
-                    : (content, null);
+                    ? (content ?? string.Empty, error)
+                    : (content ?? string.Empty, null);
             }
 
             if (string.IsNullOrEmpty(content))
