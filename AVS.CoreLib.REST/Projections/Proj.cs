@@ -18,7 +18,7 @@ public sealed class Proj<TResult>
     /// <summary>
     /// response content
     /// </summary>
-    public string? JsonText { get; }
+    public string JsonText { get; }
     /// <summary>
     /// contains error when map fails
     /// </summary>
@@ -28,7 +28,7 @@ public sealed class Proj<TResult>
     /// Initializes new projection instance
     /// </summary>
     [DebuggerStepThrough]
-    public Proj(string? jsonText)
+    public Proj(string jsonText)
     {
         JsonText = jsonText;
     }
@@ -251,7 +251,7 @@ public sealed class Proj<TResult>
     /// </summary>
     public IList<TResult> MapArray<T>(Action<T>? action = null) where T : class, TResult
     {
-        if (JsonText == null)
+        if (IsNullOrEmpty(JsonText))
             return Array.Empty<TResult>();
 
         if (JsonText.StartsWith('{'))
@@ -285,7 +285,7 @@ public sealed class Proj<TResult>
     /// </summary>
     public TResult? MapArray<T>(IProxy<T, TResult> proxy)
     {
-        if (JsonText == null)
+        if (IsNullOrEmpty(JsonText))
             return proxy.Create();
 
         if (JsonText.StartsWith('{'))
@@ -327,7 +327,7 @@ public sealed class Proj<TResult>
     {
         var proxy = new TProxy();
 
-        if (JsonText == null)
+        if (IsNullOrEmpty(JsonText))
             return proxy.Create();
 
         if (JsonText.StartsWith('{'))
@@ -411,12 +411,14 @@ public sealed class Proj<TResult>
     } 
     #endregion
 
-    /// <summary>
-    /// 
-    /// </summary>
     public override string ToString()
     {
         var jsonText = JsonText?.Truncate(maxLength: 255, TruncateOptions.CutOffTheMiddle) ?? string.Empty;
         return $"Proj<{typeof(TResult).Name}> Content={jsonText}";
+    }
+
+    internal static bool IsNullOrEmpty(string text)
+    {
+        return string.IsNullOrEmpty(text) || text.Equals("null", StringComparison.OrdinalIgnoreCase);
     }
 }

@@ -79,6 +79,8 @@ public static class RestResponseProjectionExtensions
 
         var proj = new ProxyProj<T, TResult>(restResponse.Content, proxy);
         response.Data = map(proj);
+        response.Error = proj.Error;
+
         return response;
     }
 

@@ -71,15 +71,18 @@ public struct Money : IComparable<decimal>, IComparable<Money>, IComparable<DecN
     public string ToStringExactValue(string format) => _value.ToString(format);
 
     public static decimal operator *(Money a, Money b) => (a._value * b._value);
+    public static Money operator *(Money a, Percent b) => new(a._value * b.GetExactValue());
     public static Money operator *(Money a, decimal b) => new(a._value * b);
     public static Money operator *(Money a, int b) => new(a._value * b);
     public static Money operator *(decimal a, Money b) => a * b._value;
 
 
-    public static decimal operator /(Money a, Money b) => (a._value / b._value);    
+    public static decimal operator /(Money a, Money b) => (a._value / b._value);
+    public static decimal operator /(Money a, Percent b) => (a._value / b.GetExactValue());
     public static Money operator /(Money a, decimal b) => new(a._value / b);
     public static Money operator /(Money a, int b) => new(a._value / b);
     public static decimal operator /(decimal a, Money b) => a / b._value;
+
 
     public static Money operator +(Money a, Money b) => new(a._value + b._value);
     public static Money operator +(Money a, decimal b) => new(a._value + b);

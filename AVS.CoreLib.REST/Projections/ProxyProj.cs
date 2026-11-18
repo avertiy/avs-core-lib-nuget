@@ -1,6 +1,7 @@
 ﻿#nullable enable
 using System;
 using System.Diagnostics;
+using AVS.CoreLib.Abstractions.Responses;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Reflection;
 using AVS.CoreLib.REST.Json;
@@ -13,14 +14,102 @@ namespace AVS.CoreLib.REST.Projections;
 [DebuggerDisplay("{ToString()}")]
 public class ProxyProj<T, TResult>
 {
-    public string? JsonText { get; }
+    public string JsonText { get; }
     public IProxy<T, TResult> Proxy { get; }
+    public string? Error { get; set; }
 
     [DebuggerStepThrough]
-    public ProxyProj(string? jsonText, IProxy<T, TResult> proxy)
+    public ProxyProj(string jsonText, IProxy<T, TResult> proxy)
     {
         JsonText = jsonText;
         Proxy = proxy;
+    }
+
+    /// <summary>
+    /// Straight deserialization without any mapping or proxying tricks
+    /// </summary>
+    public TType? Deserialize<TType>()
+    {
+        return JsonHelper.Deserialize<TType>(JsonText);
+    }
+
+    /// <summary>
+    /// Creates <typeparamref name="TResult"/> from <typeparamref name="T"/> data by means of <see cref="Proxy"/>
+    /// <code>
+    ///     // usecase
+    ///     proj => proj.MapData{BitGetResponse{BitGetPosition}}(x => x.Data); // deserialization and result creation are implicit
+    ///     
+    ///     // MapData could be split on 2 lines:
+    ///     proj => {
+    ///         var okxResponse = proj.Deserialize{OkxResponse{OkxPosition}}(); //explicit deserialization (better for debugging)
+    ///         return proj.CreateResult(okxResponse.Data);
+    ///     }
+    /// </code>
+    /// </summary>
+    public TResult CreateResult(T? data)
+    {
+        if (data != null)
+            Proxy.Add(data);
+        return Proxy.Create();
+    }
+
+    /// <summary>
+    /// Creates <typeparamref name="TResult"/> from <typeparamref name="T"/> data by means of <see cref="Proxy"/>
+    /// <code>
+    ///     // usecase
+    ///     proj => proj.MapData{BitGetResponse{BitGetPosition}}(x => x.Data); // deserialization and result creation are implicit
+    ///     
+    ///     // MapData could be split on 2 lines:
+    ///     proj => {
+    ///         var okxResponse = proj.Deserialize{OkxResponse{OkxPosition}}(); //explicit deserialization (better for debugging)
+    ///         return proj.CreateResult(okxResponse, x => x.Data);
+    ///     }
+    /// </code>
+    /// </summary>
+    public TResult CreateResult<TResponse>(TResponse? response, Func<TResponse, T?> selector)
+        where TResponse : class, IRESTApiResponse
+    {
+        if (response == null)
+            return Proxy.Create();
+
+        if (response.Success)
+        {
+            var data = selector(response);
+
+            if (data != null)
+            {
+                Proxy.Add(data);
+            }
+        }
+        else
+        {
+            Error = response.GetError();
+        }
+
+        return Proxy.Create();
+    }
+
+    public TResult CreateResult<TResponse>(TResponse? response, Func<TResponse, T[]?> selector)
+        where TResponse : class, IRESTApiResponse
+    {
+        if (response == null)
+            return Proxy.Create();
+
+        if (response.Success)
+        {
+            var data = selector(response);
+
+            if (data != null)
+            {
+                Proxy.AddRange(data);
+            }
+        }
+        else
+        {
+            Error = response.GetError();
+        }
+
+        return Proxy.Create();
     }
 
     /// <summary>
@@ -71,7 +160,7 @@ public class ProxyProj<T, TResult>
 
         if (obj != null)
         {
-            validate?.Invoke(obj, JsonText!);
+            validate?.Invoke(obj, JsonText);
             var data = selector(obj);
             Proxy.Add(data);
         }
@@ -96,7 +185,7 @@ public class ProxyProj<T, TResult>
 
         if (obj != null)
         {
-            validate?.Invoke(obj, JsonText!);
+            validate?.Invoke(obj, JsonText);
             var data = selector(obj);
             foreach (var item in data)
             {

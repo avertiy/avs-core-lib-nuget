@@ -14,6 +14,7 @@ namespace AVS.CoreLib.Structs;
 /// </summary>
 [JsonConverter(typeof(PctJsonConverter))]
 [DebuggerDisplay("Pct {ToString()}")]
+[Obsolete("Use Percent struct")]
 public struct Pct : IComparable<decimal>, IComparable<Pct>, IFormattable
 {
     private decimal _value; // stored internally as fraction e.g. 0.2525218 

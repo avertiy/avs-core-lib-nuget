@@ -36,6 +36,7 @@ namespace AVS.CoreLib.REST.Projections
         void Add(T item);
     }
 
+    
     public interface IContainer<in TKey, in TValue>
     {
         void Add(TKey key, TValue value);
@@ -55,6 +56,24 @@ namespace AVS.CoreLib.REST.Projections
         /// Maps the specified source object to the result type.
         /// </summary>
         TResult Map(TSource obj);
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public static class ProxyExtensions
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="container"></param>
+        /// <param name="items"></param>
+        public static void AddRange<T>(this IContainer<T> container, T[] items)
+        {
+            foreach (var item in items)
+                container.Add(item);
+        }
     }
 
 }
