@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System;
+using System.Reflection.Metadata;
 using AVS.CoreLib.Abstractions.Json;
 using AVS.CoreLib.REST.Json.Newtonsoft;
 
@@ -31,6 +32,27 @@ namespace AVS.CoreLib.REST.Json
         public static T? Deserialize<T>(string? json)
         {
             return Serializer.Deserialize<T>(json);
-        }        
+        }
+
+        /// <summary>
+        /// Parses json text into <typeparamref name="T"/>[] array
+        /// </summary>
+        public static T[]? DeserializeArray<T>(string? json)
+        {
+            if (json == null)
+                return null;
+
+            if (json.StartsWith('{'))
+            {
+                var obj = JsonHelper.Deserialize<T>(json);
+
+                if (obj == null)
+                    return null;
+
+                return [obj];
+            }
+
+            return JsonHelper.Deserialize<T[]>(json);
+        }
     }
 }

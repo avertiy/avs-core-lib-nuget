@@ -1,5 +1,6 @@
 ﻿#nullable enable
 using System;
+using AVS.CoreLib.Abstractions.Responses;
 using AVS.CoreLib.Exceptions;
 using AVS.CoreLib.REST.Models;
 using AVS.CoreLib.REST.Projections;
@@ -8,13 +9,14 @@ using AVS.CoreLib.REST.Responses;
 namespace AVS.CoreLib.REST.Extensions;
 
 /// <summary>
-/// 
+/// Contains json projection extensions
 /// </summary>
 public static class RestResponseProjectionExtensions
 {
     /// <summary>
-    /// 
+    /// Creates result <see cref="Response{T}"/> from the rest response 
     /// </summary>
+    [Obsolete("Use restResponse.ToResult()")]
     public static Response<T> ToResponse<T>(this RestResponse restResponse)
     {
         var isSuccess = restResponse.IsSuccessful();

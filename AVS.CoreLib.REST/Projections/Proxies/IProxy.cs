@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using AVS.CoreLib.Abstractions.Responses;
 
 namespace AVS.CoreLib.REST.Projections
 {
@@ -64,15 +65,26 @@ namespace AVS.CoreLib.REST.Projections
     public static class ProxyExtensions
     {
         /// <summary>
-        /// 
+        /// Add items to container
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="container"></param>
-        /// <param name="items"></param>
-        public static void AddRange<T>(this IContainer<T> container, T[] items)
+        public static void AddRange<T>(this IContainer<T> container, T[]? items, Action<T>? preprocess = null)
         {
-            foreach (var item in items)
-                container.Add(item);
+            if (items == null || items.Length == 0)
+                return;
+
+            if (preprocess == null)
+            {
+                foreach (var item in items)
+                    container.Add(item);
+            }
+            else
+            {
+                foreach (var item in items)
+                {
+                    preprocess.Invoke(item);
+                    container.Add(item);
+                }
+            }  
         }
     }
 

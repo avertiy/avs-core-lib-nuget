@@ -5,9 +5,11 @@ using System.Net;
 using System.Text.Json.Serialization;
 using AVS.CoreLib.Abstractions.Rest;
 using AVS.CoreLib.Collections;
+using AVS.CoreLib.Exceptions;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.REST.Helpers;
 using AVS.CoreLib.REST.Json;
+using AVS.CoreLib.REST.Responses;
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace AVS.CoreLib.REST.Models
 {
@@ -80,20 +82,43 @@ namespace AVS.CoreLib.REST.Models
 
         public T? Deserialize<T>()
         {
-            if (string.IsNullOrEmpty(Content))
-                return default;
+            return JsonHelper.Deserialize<T>(Content);
+        }
+
+        public T[]? DeserializeArray<T>()
+        {
+            return JsonHelper.DeserializeArray<T>(Content);
+        }
+
+        /// <summary>
+        /// Creates result <see cref="Response{T}"/> giving the caller a full control over deserialization
+        /// (deserialize to object or array, use proxy etc.)
+        /// </summary>
+        /// <remarks>the method is named ToResult although it returns Response{T}, it will be replaced with Result{T}</remarks>
+        public Response<TResult> ToResult<TResult>(Func<RestResponse, TResult>? map = null)
+        {
+            var isSuccess = IsSuccessful();
+            var result = Response.Create<TResult>(Source, content: Content, Error, Request);
+
+            if (!isSuccess)
+                return result;
 
             try
             {
-                var data = JsonHelper.Deserialize<T>(Content);
-                return data;
+                result.Data = map == null 
+                    ? Deserialize<TResult>()
+                    : map.Invoke(this);
+
+                result.Error = Error;
             }
             catch (Exception ex)
             {
-                Error = ex.ToString();
-                throw;
+                result.Error ??= $"Map to Response<{typeof(TResult).Name}> failed";
+                throw new MapJsonException($"Map to Response<{typeof(TResult).Name}> failed", ex) { JsonText = Content };
             }
-        }
+
+            return result;
+        } 
 
         internal static RestResponse Timeout(string source)
         {

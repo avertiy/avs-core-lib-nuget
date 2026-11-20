@@ -13,6 +13,32 @@ namespace AVS.CoreLib.REST.Extensions;
 
 public static class RestResponseExtensions
 {
+    /// <summary>
+    /// Deserialize and validate the deserialized object with the json text 
+    /// </summary>
+    public static T? Deserialize<T>(this RestResponse respose, Action<T, string> validate)
+    {
+        var obj = respose.Deserialize<T>();
+
+        if (obj != null)
+            validate.Invoke(obj, respose.Content);
+
+        return obj;
+    }
+
+    /// <summary>
+    /// Deserialize to T[] array and validate the deserialized object with the json text 
+    /// </summary>
+    public static T[]? DeserializeArray<T>(this RestResponse respose, Action<T[], string> validate)
+    {
+        var arr = respose.DeserializeArray<T>();
+
+        if (arr != null)
+            validate.Invoke(arr, respose.Content);
+
+        return arr;
+    }
+
     public static bool ContainsError(this RestResponse response, string errorText)
     {
         if (response.Error == null)

@@ -13,32 +13,14 @@ namespace AVS.CoreLib.REST.Projections;
 /// </summary>
 /// <typeparam name="TResult"></typeparam>
 [DebuggerDisplay("{ToString()}")]
-public sealed class Proj<TResult>
+public sealed class Proj<TResult> : Proj
 {
-    /// <summary>
-    /// response content
-    /// </summary>
-    public string JsonText { get; }
-    /// <summary>
-    /// contains error when map fails
-    /// </summary>
-    public string? Error { get; set; }
-
     /// <summary>
     /// Initializes new projection instance
     /// </summary>
     [DebuggerStepThrough]
-    public Proj(string jsonText)
+    public Proj(string jsonText) : base(jsonText)
     {
-        JsonText = jsonText;
-    }
-
-    /// <summary>
-    /// Straight deserialization without any mapping or proxying tricks
-    /// </summary>
-    public T? Deserialize<T>()
-    {
-        return JsonHelper.Deserialize<T>(JsonText);
     }
 
     #region Map
@@ -190,11 +172,9 @@ public sealed class Proj<TResult>
     {
         var obj = JsonHelper.Deserialize<T>(JsonText);
 
-        if (obj == null)
-            return default;
-
-        var result = mapper.Map(obj);
-        return result;
+        return obj == null 
+            ? default
+            : mapper.Map(obj);
     }
     /// <summary>
     /// Deserilize json text into <typeparamref name="T"/> then map with mapper to <typeparamref name="TResult"/>
@@ -249,27 +229,14 @@ public sealed class Proj<TResult>
     /// Deserializes json array into <typeparamref name="T[]"/> than fills in the list of <see cref="IList{TResult}"/>
     /// In case json text is an object { ... } it projects it as <see cref="IList{TResult}"/> with only one item
     /// </summary>
-    public IList<TResult> MapArray<T>(Action<T>? action = null) where T : class, TResult
+    public TResult[] MapArray<T>(Action<T>? action = null) where T : class, TResult
     {
-        if (IsNullOrEmpty(JsonText))
-            return Array.Empty<TResult>();
+        var arr = DeserializeArray<T>();
 
-        if (JsonText.StartsWith('{'))
-        {
-            var obj = JsonHelper.Deserialize<T>(JsonText);
-            if (obj == null)
-                return Array.Empty<TResult>();
+        if (arr == null || arr.Length == 0)
+            return [];
 
-            action?.Invoke(obj);
-            return new List<TResult>() { obj };
-        }
-
-        var arr = JsonHelper.Deserialize<T[]>(JsonText);
-
-        if (arr == null)
-            return Array.Empty<TResult>();
-
-        var list = new List<TResult>();
+        var list = new List<TResult>(arr.Length);
 
         foreach (var item in arr)
         {
@@ -277,41 +244,20 @@ public sealed class Proj<TResult>
             list.Add(item);
         }
 
-        return list;
+        return list.ToArray();
     }
 
     /// <summary>
     /// Deserializes json array into <typeparamref name="T[]"/>, than builds <typeparamref name="TResult"/> by means of a proxy builder
     /// </summary>
-    public TResult? MapArray<T>(IProxy<T, TResult> proxy)
+    public TResult MapArray<T>(IProxy<T, TResult> proxy, Action<T>? action = null)
     {
         if (IsNullOrEmpty(JsonText))
             return proxy.Create();
 
-        if (JsonText.StartsWith('{'))
-        {
-            var obj = JsonHelper.Deserialize<T>(JsonText);
-
-            if (obj == null)
-                return proxy.Create();
-
-            proxy.Add(obj);
-
-            return proxy.Create();
-        }
-
-        var arr = JsonHelper.Deserialize<T[]>(JsonText);
-
-        if (arr == null || arr.Length == 0)
-            return proxy.Create();
-
-        foreach (var item in arr)
-        {
-            proxy.Add(item);
-        }
-
-        var res = proxy.Create();
-        return res;
+        var arr = DeserializeArray<T>();
+        proxy.AddRange(arr);
+        return proxy.Create();
     }
 
     /// <summary>
@@ -326,42 +272,9 @@ public sealed class Proj<TResult>
     public TResult? MapArray<T, TProxy>(Action<T>? action = null) where TProxy : IProxy<T, TResult>, new()
     {
         var proxy = new TProxy();
-
-        if (IsNullOrEmpty(JsonText))
-            return proxy.Create();
-
-        if (JsonText.StartsWith('{'))
-        {
-            var obj = JsonHelper.Deserialize<T>(JsonText);
-
-            if (obj == null)
-                return proxy.Create();
-
-            action?.Invoke(obj);
-            proxy.Add(obj);
-
-            return proxy.Create();
-        }
-
-        var arr = JsonHelper.Deserialize<T[]>(JsonText);
-
-        if (arr == null || arr.Length == 0)
-            return proxy.Create();
-
-        if (action == null)
-            foreach (var item in arr)
-            {
-                proxy.Add(item);
-            }
-        else
-            foreach (var item in arr)
-            {
-                action.Invoke(item);
-                proxy.Add(item);
-            }
-
-        var res = proxy.Create();
-        return res;
+        var arr = DeserializeArray<T>();
+        proxy.AddRange(arr);
+        return proxy.Create();
     }
 
     #endregion
@@ -417,8 +330,5 @@ public sealed class Proj<TResult>
         return $"Proj<{typeof(TResult).Name}> Content={jsonText}";
     }
 
-    internal static bool IsNullOrEmpty(string text)
-    {
-        return string.IsNullOrEmpty(text) || text.Equals("null", StringComparison.OrdinalIgnoreCase);
-    }
+    
 }

@@ -5,6 +5,7 @@ using AVS.CoreLib.Abstractions.Responses;
 using AVS.CoreLib.Extensions;
 using AVS.CoreLib.Extensions.Reflection;
 using AVS.CoreLib.REST.Json;
+
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 namespace AVS.CoreLib.REST.Projections;
 
@@ -12,25 +13,14 @@ namespace AVS.CoreLib.REST.Projections;
 /// Provides mechanism to deserialize JSON text and map it to the <typeparamref name="TResult"/> object by means of proxy.
 /// </summary>
 [DebuggerDisplay("{ToString()}")]
-public class ProxyProj<T, TResult>
+public class ProxyProj<T, TResult> : Proj
 {
-    public string JsonText { get; }
     public IProxy<T, TResult> Proxy { get; }
-    public string? Error { get; set; }
 
     [DebuggerStepThrough]
-    public ProxyProj(string jsonText, IProxy<T, TResult> proxy)
+    public ProxyProj(string jsonText, IProxy<T, TResult> proxy) : base(jsonText)
     {
-        JsonText = jsonText;
         Proxy = proxy;
-    }
-
-    /// <summary>
-    /// Straight deserialization without any mapping or proxying tricks
-    /// </summary>
-    public TType? Deserialize<TType>()
-    {
-        return JsonHelper.Deserialize<TType>(JsonText);
     }
 
     /// <summary>
@@ -97,12 +87,8 @@ public class ProxyProj<T, TResult>
 
         if (response.Success)
         {
-            var data = selector(response);
-
-            if (data != null)
-            {
-                Proxy.AddRange(data);
-            }
+            var items = selector(response);
+            Proxy.AddRange(items);
         }
         else
         {
@@ -117,7 +103,7 @@ public class ProxyProj<T, TResult>
     /// </summary>
     public TResult? Map(Action<T>? action = null)
     {
-        var obj = JsonHelper.Deserialize<T>(JsonText);
+        var obj = Deserialize<T>();
 
         if (obj != null)
         {
@@ -131,19 +117,10 @@ public class ProxyProj<T, TResult>
     /// <summary>
     /// Deserializes json text into array of <typeparamref name="T"/>, then produces the result by means of <see cref="Proxy"/>
     /// </summary>
-    public TResult? MapArray(Action<T>? action = null)
+    public TResult MapArray(Action<T>? action = null)
     {
-        var arr = JsonHelper.Deserialize<T[]>(JsonText);
-
-        if (arr != null)
-        {
-            foreach (var item in arr)
-            {
-                action?.Invoke(item);
-                Proxy.Add(item);
-            }
-        }
-
+        var arr = DeserializeArray<T>();
+        Proxy.AddRange(arr, action);
         return Proxy.Create();
     }
 
@@ -154,9 +131,9 @@ public class ProxyProj<T, TResult>
     /// <param name="selector">Selector to pick the data from deserialized object</param>
     /// <param name="action">The action to process each array item [optional]</param>
     /// <param name="validate">optional validate deserialized TType object</param>
-    public TResult? MapData<TType>(Func<TType, T> selector, Action<T>? action = null, Action<TType, string>? validate = null)
+    public TResult MapData<TType>(Func<TType, T> selector, Action<T>? action = null, Action<TType, string>? validate = null)
     {
-        var obj = JsonHelper.Deserialize<TType>(JsonText);
+        var obj = Deserialize<TType>();
 
         if (obj != null)
         {
@@ -178,14 +155,12 @@ public class ProxyProj<T, TResult>
     /// <typeparam name="TType">The concrete type for deserialization</typeparam>
     /// <param name="selector">Selector to pick the data (array) from deserialized object</param>
     /// <param name="action">The action to process each array item [optional]</param>
-    /// <param name="validate">optional parameter to validate deserialization</param>
-    public TResult? MapDataArray<TType>(Func<TType, T[]> selector, Action<T>? action = null, Action<TType, string>? validate = null)
+    public TResult MapDataArray<TType>(Func<TType, T[]> selector, Action<T>? action = null)
     {
-        var obj = JsonHelper.Deserialize<TType>(JsonText);
+        var obj = Deserialize<TType>();
 
         if (obj != null)
         {
-            validate?.Invoke(obj, JsonText);
             var data = selector(obj);
             foreach (var item in data)
             {
